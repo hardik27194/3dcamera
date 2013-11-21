@@ -6,6 +6,7 @@
 //  Copyright (c) 2013年 tiange. All rights reserved.
 //
 
+#import <GPUImage.h>
 #import "EZAppDelegate.h"
 
 @implementation EZAppDelegate
@@ -18,6 +19,8 @@
 {
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     // Override point for customization after application launch.
+    cv::Mat mat;
+    GPUImageFilter* fg = [[GPUImageFilter alloc] init];
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
     return YES;
