@@ -16,6 +16,7 @@
 +(UIImage*) imageWithMat:(const cv::Mat&) image andImageOrientation: (UIImageOrientation) orientation;
 +(UIImage*) imageWithMat:(const cv::Mat&) image andDeviceOrientation: (UIDeviceOrientation) orientation;
 
+- (UIImage*)scaleToSize:(CGSize)size;
 - (UIImage *)thumbnailWithSize:(int)thumbSize;
 
 @end

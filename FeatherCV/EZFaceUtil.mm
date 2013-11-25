@@ -55,11 +55,6 @@ void EZFaceUtil::drawRegion(cv::Mat& inputFrame, cv::Rect& region)
 }
 
 
-void EZFaceUtil::resize(cv::Mat& inputFrame, cv::Mat& outputFrame, cv::Size& finalSize)
-{
-    cv::resize( inputFrame, outputFrame, finalSize, 0, 0, cv::INTER_LINEAR );
-}
-
 
 void EZFaceUtil::detectFace(cv::Mat& inputFrame, std::vector<EZFaceResult*>& faces, cv::Size cropSize)
 {
@@ -67,38 +62,33 @@ void EZFaceUtil::detectFace(cv::Mat& inputFrame, std::vector<EZFaceResult*>& fac
         cropSize = cv::Size(40, 40);
     }
     cv::Mat singleChannel(inputFrame.rows, inputFrame.cols, CV_8UC1);
+    EZDEBUG(@"Simply get gray");
     getGray(inputFrame, singleChannel);
     
     //clahe->apply(singleChannel, singleChannel);
-    
     equalizeHist(singleChannel, singleChannel);
 
     //-- Detect faces
     std::vector<cv::Rect> faceRects;
     
-    
     faceCascader.detectMultiScale( singleChannel, faceRects, 1.1, 3, CV_HAAR_SCALE_IMAGE|0, cv::Size(40, 40), cv::Size(singleChannel.rows, singleChannel.cols));
     
-    NSLog(@"detected face:%lu, frame rows:%d, cols:%d", faceRects.size(), singleChannel.rows, singleChannel.cols);
+    NSLog(@"frame rows:%d, cols:%d, original size:%d, %d", singleChannel.rows, singleChannel.cols, inputFrame.rows, inputFrame.cols);
     //cv::resize(src, dst, Size(1024, 768), 0, 0, INTER_CUBIC)
     
     for( int i = 0; i < faceRects.size(); i++ )
     {
         NSLog(@"face:%i, x:%d, y:%d, width:%d, height:%d", i, faceRects[i].x, faceRects[i].y, faceRects[i].width, faceRects[i].height);
-        //cv::Point center( faces[i].x + faces[i].width*0.5, faces[i].y + faces[i].height*0.5 );
-        //cv::Rect adjusted(faces[i]);
-        //adjusted.height = adjusted.height*1.15;
-        
-        //ellipse( singleChannel, center, cv::Size( faces[i].width*0.5, adjusted.height*0.5), 0, 0, 360, cv::Scalar( 255, 0, 255 ), 4, 8, 0 );
-        //cv::Mat
-        //Maybe some of the assumption is wrong.
+        //cv::Rect adjustedRect =  cv::Rect(ceilf((float)faceRects[i].x/ratio),ceilf((float)faceRects[i].y/ratio),ceilf((float)faceRects[i].width/ratio),ceilf((float)faceRects[i].height/ratio));
         cv::Mat faceReg(inputFrame, faceRects[i]);
         cv::Mat* retMat = new cv::Mat(cropSize.width, cropSize.height, CV_8UC1);
         cv::resize(faceReg, *retMat, cropSize);
         EZFaceResult* fres = new EZFaceResult();
         fres->orgRect = faceRects[i];
+         NSLog(@"x:%d, y:%d, width:%d, height:%d", fres->orgRect.x, fres->orgRect.y, fres->orgRect.width, fres->orgRect.height);
         fres->destRect = cv::Rect(0, 0, cropSize.width, cropSize.height);
         fres->face = retMat;
+        //fres->resizedImage = new cv::Mat(singleChannel);
         faces.push_back(fres);
     }
 }

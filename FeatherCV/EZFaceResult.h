@@ -18,5 +18,7 @@ public:
     cv::Rect orgRect;
     cv::Rect destRect;
     cv::Mat* face;
+    //For test purpose
+    cv::Mat* resizedImage;
 };
 #endif /* defined(__FeatherCV__EZFaceResult__) */

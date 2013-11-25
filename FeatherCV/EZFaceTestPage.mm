@@ -37,6 +37,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
     original = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 320, 320)];
     original.contentMode = UIViewContentModeScaleAspectFit;
     [self.view addSubview:original];
@@ -44,6 +45,12 @@
     cropped = [[UIImageView alloc] initWithFrame:CGRectMake(0, 320, 40, 40)];
     cropped.contentMode = UIViewContentModeScaleAspectFill;
     [self.view addSubview:cropped];
+    
+    int upper = 1;
+    int bottum = 2;
+    
+    int final = 190 * ((float)upper/(float)bottum);
+    EZDEBUG(@"final is:%i", final);
     
     clickedView = [[EZClickView alloc] initWithFrame:CGRectMake(0, 400, 60, 60)];
     clickedView.backgroundColor = [UIColor grayColor];
@@ -60,11 +67,27 @@
     cropped.backgroundColor = [UIColor greenColor];
 }
 
+- (UIImage*) scaleImage:(UIImage*)inputImg
+{
+    int maxLine = MAX(inputImg.size.width, inputImg.size.height);
+    int limit = 720;
+    if(maxLine <= limit){
+        return inputImg;
+    }else{
+        float ratio = (float)limit/(float)maxLine;
+        //calcedSize.width = org.width * ratio;
+        //calcedSize.height = org.height * ratio;
+        return [inputImg scaleToSize:CGSizeMake(inputImg.size.width*ratio, inputImg.size.height*ratio)];
+    }
+
+}
+
 - (void) iterateImages:(NSString*)imageName
 {
     EZFaceUtil faceUtil = singleton<EZFaceUtil>();
     std::vector<EZFaceResult*> faces;
     UIImage* testImage = [UIImage imageNamed:imageName];
+    testImage = [testImage resizedImageWithMaximumSize:CGSizeMake(720, 720)];
     cv::Mat target = testImage.toMat;
     EZDEBUG(@"The test image name:%@ row:%d, col:%d",imageName, target.rows, target.cols);
     faceUtil.detectFace(target, faces);
@@ -73,10 +96,13 @@
         EZDEBUG(@"Found face at:%d, %d,%d,%d resized to %d, %d",faces[i]->orgRect.x, faces[i]->orgRect.y,faces[i]->orgRect.width, faces[i]->orgRect.height, faces[i]->destRect.width, faces[i]->destRect.height);
         faceUtil.drawRegion(target, faces[i]->orgRect);
         cropped.image = [UIImage imageWithMat:*(faces[i]->face) andImageOrientation:testImage.imageOrientation];
+        //original.image = [UIImage imageWithMat:*(faces[i]->resizedImage) andImageOrientation:testImage.imageOrientation];
     }
     EZDEBUG(@"Test image orientation:%i", testImage.imageOrientation);
     
+    //if(faces.size() == 0){
     original.image = [UIImage imageWithMat:target andImageOrientation:testImage.imageOrientation];
+    //}
 }
 
 - (void)didReceiveMemoryWarning

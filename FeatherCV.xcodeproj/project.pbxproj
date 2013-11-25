@@ -144,6 +144,7 @@
 		18E34834183F05DD00C9D89D /* hou_1.JPG in Resources */ = {isa = PBXBuildFile; fileRef = 18E34833183F05DD00C9D89D /* hou_1.JPG */; };
 		18E34837183F064200C9D89D /* EZFaceUtil.mm in Sources */ = {isa = PBXBuildFile; fileRef = 18E34835183F064200C9D89D /* EZFaceUtil.mm */; };
 		18E3483A1843086200C9D89D /* EZFaceResult.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 18E348381843086100C9D89D /* EZFaceResult.cpp */; };
+		18E3483D18433FC000C9D89D /* UIImage+ResizeMagick.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E3483C18433FBF00C9D89D /* UIImage+ResizeMagick.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -392,6 +393,8 @@
 		18E34836183F064200C9D89D /* EZFaceUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZFaceUtil.h; sourceTree = "<group>"; };
 		18E348381843086100C9D89D /* EZFaceResult.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EZFaceResult.cpp; sourceTree = "<group>"; };
 		18E348391843086200C9D89D /* EZFaceResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZFaceResult.h; sourceTree = "<group>"; };
+		18E3483B18433FBF00C9D89D /* UIImage+ResizeMagick.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+ResizeMagick.h"; sourceTree = "<group>"; };
+		18E3483C18433FBF00C9D89D /* UIImage+ResizeMagick.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+ResizeMagick.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -585,6 +588,8 @@
 		18E346D5183DF91500C9D89D /* utility */ = {
 			isa = PBXGroup;
 			children = (
+				18E3483B18433FBF00C9D89D /* UIImage+ResizeMagick.h */,
+				18E3483C18433FBF00C9D89D /* UIImage+ResizeMagick.m */,
 				18E3474D183DFAA400C9D89D /* EZStyleImage.h */,
 				18E3474E183DFAA400C9D89D /* EZStyleImage.m */,
 				18E3474F183DFAA400C9D89D /* EZCycleDiminish.h */,
@@ -989,6 +994,7 @@
 				18E34738183DFA5800C9D89D /* EZCollectionPhotoCell.m in Sources */,
 				18E347DB183E050B00C9D89D /* ASIDownloadCache.m in Sources */,
 				18E347F7183E081D00C9D89D /* AFXMLRequestOperation.m in Sources */,
+				18E3483D18433FC000C9D89D /* UIImage+ResizeMagick.m in Sources */,
 				18E347F6183E081D00C9D89D /* AFJSONRequestOperation.m in Sources */,
 				18E34775183DFAA400C9D89D /* EZStyleImage.m in Sources */,
 				18E3468C183DF54400C9D89D /* main.m in Sources */,

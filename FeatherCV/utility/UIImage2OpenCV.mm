@@ -10,6 +10,22 @@
 
 @implementation UIImage (OpenCV)
 
+- (UIImage*)scaleToSize:(CGSize)size {
+    UIGraphicsBeginImageContext(size);
+    
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextTranslateCTM(context, 0.0, size.height);
+    CGContextScaleCTM(context, 1.0, -1.0);
+    
+    CGContextDrawImage(context, CGRectMake(0.0f, 0.0f, size.width, size.height), self.CGImage);
+    
+    UIImage* scaledImage = UIGraphicsGetImageFromCurrentImageContext();
+    
+    UIGraphicsEndImageContext();
+    
+    return scaledImage;
+}
+
 -(cv::Mat) toMat
 {
   CGImageRef imageRef = self.CGImage;
@@ -80,9 +96,7 @@
 +(UIImage*) imageWithMat:(const cv::Mat&) image andImageOrientation: (UIImageOrientation) orientation;
 {
   cv::Mat rgbaView;
-    image.channels();
-  
-  if (image.channels() == 3)
+if (image.channels() == 3)
   {
     cv::cvtColor(image, rgbaView, CV_BGR2RGBA);
   }
@@ -99,9 +113,9 @@
   
   CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
   
-    if (image.elemSize() == 1) {
-        colorSpace = CGColorSpaceCreateDeviceGray();
-    }
+    //if (image.elemSize() == 1) {
+    //    colorSpace = CGColorSpaceCreateDeviceGray();
+    //}
 
   CGDataProviderRef provider = CGDataProviderCreateWithCFData((__bridge CFDataRef)data);
   
@@ -111,8 +125,8 @@
   CGImageRef imageRef = CGImageCreate(image.cols,                                 //width
                                       image.rows,                                 //height
                                       8,                                          //bits per component
-                                      8 * image.elemSize(),                       //bits per pixel
-                                      image.step.p[0],                            //bytesPerRow
+                                      8 * 4,                       //bits per pixel
+                                      rgbaView.step.p[0],                            //bytesPerRow
                                       colorSpace,                                 //colorspace
                                       bmInfo,// bitmap info
                                       provider,                                   //CGDataProviderRef

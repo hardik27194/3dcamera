@@ -33,9 +33,6 @@ public:
     //So each
     virtual void detectFace(cv::Mat& inputFrame, std::vector<EZFaceResult*>& faces, cv::Size cropSize = cv::Size());
     
-    void resize(cv::Mat& inputFrame, cv::Mat& outputFrame, cv::Size& finalSize);
-    
-    //void mockMethod();
     //Draw a retangle which could show where is the face
     void drawRegion(cv::Mat& inputFrame, cv::Rect& region);
     //What's the purpose of this method, is to get mat gray out
