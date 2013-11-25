@@ -1,0 +1,392 @@
+//
+//  EZDataUtil.m
+//  Feather
+//
+//  Created by xietian on 13-10-16.
+//  Copyright (c) 2013年 tiange. All rights reserved.
+//
+
+#include <CoreLocation/CLLocation.h>
+#import "EZDataUtil.h"
+#import "EZFileUtil.h"
+#import "EZDisplayPhoto.h"
+#import "EZGeoUtility.h"
+#import "EZImageFileCache.h"
+#import "EZDisplayPhoto.h"
+
+@implementation EZAlbumResult
+
+@end
+
+@implementation EZDataUtil
+
++ (EZDataUtil*) getInstance
+{
+    static dispatch_once_t onceToken;
+    static EZDataUtil* instance = nil;
+    dispatch_once(&onceToken, ^{
+        instance = [[EZDataUtil alloc] init];
+    });
+    return instance;
+}
+
+- (id) init
+{
+    self = [super init];
+    _asyncQueue = dispatch_queue_create("album_fetch", DISPATCH_QUEUE_SERIAL);
+    return self;
+}
+
+//Will load Friends
+- (void) loadFriends:(EZEventBlock)success failure:(EZEventBlock)failure
+{
+    dispatch_async(dispatch_get_main_queue(), ^(){
+        success([self getAllContacts]);
+    });
+}
+
+//Dummy implementation now.
+//Will change to read from the address book later.
+- (NSArray*) getAllContacts
+{
+    NSMutableArray* res = [[NSMutableArray alloc] init];
+    
+    for(int i = 0; i < 20; i++){
+        EZPerson* person = [[EZPerson alloc] init];
+        person.personID = rand()/1000;
+        person.name = [NSString stringWithFormat:@"天哥:%i", i];
+        person.avatar = [EZFileUtil fileToURL:@"img02.jpg"].absoluteString;
+        if(i % 2 == 0){
+            person.joined = true;
+            person.avatar = [EZFileUtil fileToURL:@"img02.jpg"].absoluteString;
+
+        }else{
+            person.joined = false;
+            person.avatar = [EZFileUtil fileToURL:@"img01.jpg"].absoluteString;
+
+        }
+        [res addObject:person];
+    }
+    return res;
+}
+
+
+//Should I give the person id or what?
+//Let's give it. Expose the parameter make the function status free. More easier to debug
+- (void) likedPhoto:(int)combinePhotoID success:(EZEventBlock)success failure:(EZEventBlock)failure
+{
+    EZDEBUG(@"combinePhotoID:%i", combinePhotoID);
+    dispatch_async(dispatch_get_main_queue(), ^(){
+        success(nil);
+    });
+}
+
+//Will get current login person id
+- (int) getCurrentPersonID
+{
+    return 167791;
+}
+
+
+- (EZPerson*) getMyself
+{
+    EZPerson* res = [[EZPerson alloc] init];
+    res.personID = [self getCurrentPersonID];
+    res.name = @"天哥";
+    res.avatar = [EZFileUtil fileToURL:@"img02.jpg"].absoluteString;
+    res.joined = true;
+    return res;
+}
+
+
+- (EZPerson*) getPerson:(int)personID
+{
+    EZPerson* res = [[EZPerson alloc] init];
+    res.personID = personID;
+    res.name = [NSString stringWithFormat:@"天哥:%i", personID];
+    if(personID % 2){
+        res.avatar = [EZFileUtil fileToURL:@"img01.jpg"].absoluteString;
+    }else{
+        res.avatar = [EZFileUtil fileToURL:@"img02.jpg"].absoluteString;
+    }
+    res.joined = true;
+    return res;
+}
+//Get the person object
+- (void) getPersonID:(int)personID success:(EZEventBlock)success failure:(EZEventBlock)failure;
+{
+    EZPerson* res = [[EZPerson alloc] init];
+    res.personID = personID;
+    res.name = [NSString stringWithFormat:@"天哥:%i", personID];
+    if(personID % 2){
+        res.avatar = [EZFileUtil fileToURL:@"img01.jpg"].absoluteString;
+    }else{
+        res.avatar = [EZFileUtil fileToURL:@"img02.jpg"].absoluteString;
+    }
+    res.joined = true;
+    dispatch_async(dispatch_get_main_queue(), ^(){
+        success(res);
+    });
+}
+
+//Invite your friend
+- (void) inviteFriend:(EZPerson*)person success:(EZEventBlock)success failure:(EZEventBlock)failure
+{
+    dispatch_async(dispatch_get_main_queue(), ^(){
+        success(nil);
+    });
+}
+
+//Get converstaion regarding this photo
+- (void) getConversation:(int)combineID success:(EZEventBlock)success failure:(EZEventBlock)failure
+{
+    NSMutableArray* res = [[NSMutableArray alloc] init];
+    for(int i = 0; i < 10; i++){
+        EZConversation* cons = [[EZConversation alloc] init];
+        cons.speakerID = (i%2)?[self getCurrentPersonID]:10;
+        cons.createdTime = [NSDate date];
+        cons.content = @"我最爱相对论";
+        [res addObject:cons];
+    }
+    dispatch_async(dispatch_get_main_queue(), ^(){
+        success(res);
+    });
+}
+
+- (void) addConverstaion:(int)combinedID text:(NSString*)text success:(EZEventBlock)success failure:(EZEventBlock)failure
+{
+    EZConversation* cons = [[EZConversation alloc] init];
+    cons.speakerID = [self getCurrentPersonID];
+    cons.content = text;
+    dispatch_async(dispatch_get_main_queue(), ^(){
+        success(cons);
+    });
+}
+
+//The Photo object will returned.
+//How about thumbnail.
+//Should we generate it dynamically.
+//Maybe we should.
+//Photo here are serve as value object, carry value back and forth. 
+- (void) uploadPhoto:(UIImage*)image success:(EZEventBlock)success failure:(EZEventBlock)failure
+{
+    int currentUserID = [self getCurrentPersonID];
+    EZPhoto* photo = [[EZPhoto alloc] init];
+    photo.photoID = rand()%1000;
+    photo.ownerID = currentUserID;
+    
+    NSString* fullPath = [EZFileUtil saveImageToCache:image];
+    photo.url = [[NSURL fileURLWithPath:fullPath] absoluteString];
+    EZCombinedPhoto* cp = [[EZCombinedPhoto alloc] init];
+    cp.combinedID = rand()/1000;
+    cp.selfPhoto = photo;
+    cp.otherPhoto = [[EZPhoto alloc] init];
+    cp.otherPhoto.url = [EZFileUtil fileToURL:@"img02.jpg"].absoluteString;
+    cp.otherPhoto.ownerID = rand()%1000;
+    EZDisplayPhoto* dp = [[EZDisplayPhoto alloc] init];
+    dp.combinedPhotos = @[cp];
+    dispatch_async(dispatch_get_main_queue(), ^(){
+        success(dp);
+    });
+}
+
+- (void) getCombinedPhoto:(int)personID start:(int)start limit:(int)limit success:(EZEventBlock)success failure:(EZEventBlock)failure
+{
+    EZDEBUG(@"Will query photo for:%i, start:%i, limit:%i", personID, start, limit);
+    NSMutableArray* res = [[NSMutableArray alloc] init];
+    for(int i = 0; i < 20; i++){
+        EZDisplayPhoto* dp = [[EZDisplayPhoto alloc] init];
+        
+        EZPhoto* photo = [[EZPhoto alloc] init];
+        photo.photoID = rand()%1000;
+        photo.ownerID = personID;
+        if((i+1 % 7) == 0){
+            dp.displayType = 1;
+        }
+        NSString* fullPath = [EZFileUtil fileToURL:@"img01.jpg"].absoluteString;
+        photo.url = fullPath;
+        EZCombinedPhoto* cp = [[EZCombinedPhoto alloc] init];
+        /**
+        if(((i+1) % 7) == 0){
+            cp.displayType = 1;
+        }
+        cp.createdTime = [NSDate date];
+        **/
+        cp.combinedID = rand()/1000;
+        cp.selfPhoto = photo;
+        cp.otherPhoto = [[EZPhoto alloc] init];
+        cp.otherPhoto.url = [EZFileUtil fileToURL:@"img02.jpg"].absoluteString;
+        cp.otherPhoto.ownerID = rand()%1000;
+        cp.likedByMe = cp.combinedID % 2;
+        cp.likedByOthers = cp.otherPhoto.ownerID % 2;
+        dp.combinedPhotos = @[cp];
+        [res addObject:dp];
+    }
+    
+    dispatch_async(dispatch_get_main_queue(), ^(){
+        success(res);
+    });
+
+}
+
+- (void) fetchImageFromAssetURL:(NSString*)url  success:(EZEventBlock)success failure:(EZEventBlock)failure
+{
+    __block NSString* fileURL = [[EZImageFileCache getInstance] getImage:url];
+    if(fileURL){
+        success(fileURL);
+        return;
+    }
+    ALAssetsLibraryAssetForURLResultBlock resultblock = ^(ALAsset *myasset)
+    {
+        EZDEBUG(@"get image");
+        ALAssetRepresentation *rep = [myasset defaultRepresentation];
+        CGImageRef iref = [rep fullResolutionImage];
+        if (iref) {
+            EZDEBUG(@"Really get it");
+            UIImage* largeimage = [UIImage imageWithCGImage:iref];
+            //[largeimage retain];
+            fileURL = [[EZImageFileCache getInstance] storeImage:largeimage key:url];
+            dispatch_async(dispatch_get_main_queue(), ^(){
+                success(fileURL);
+            });
+            
+        }else{
+            EZDEBUG(@"Don't get it, what's wrong");
+        }
+    };
+    
+    ALAssetsLibraryAccessFailureBlock failureblock  = ^(NSError *myerror)
+    {
+        NSLog(@"booya, cant get image - %@",[myerror localizedDescription]);
+        if(failure){
+            dispatch_async(dispatch_get_main_queue(), ^(){
+                failure(myerror);
+            });
+        }
+    };
+
+    NSURL *asseturl = [NSURL URLWithString:url];
+    if(_assetLibaray){
+        _assetLibaray = [[ALAssetsLibrary alloc] init];
+    }
+    EZDEBUG(@"try to get image from:%@", url);
+    dispatch_async(_asyncQueue, ^(){
+        [_assetLibaray assetForURL:asseturl
+                       resultBlock:resultblock
+                      failureBlock:failureblock];
+    });
+}
+
+
+- (void) saveImage:(UIImage*)shotImage success:(EZEventBlock)success failure:(EZEventBlock)failure
+{
+    //ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
+    [_assetLibaray writeImageDataToSavedPhotosAlbum:UIImagePNGRepresentation(shotImage) metadata:nil completionBlock:^(NSURL *assetURL, NSError *error)
+     {
+         if (error) {
+             NSLog(@"ERROR: the image failed to be written");
+             failure(error);
+         }
+         else {
+             NSLog(@"PHOTO SAVED - assetURL: %@", assetURL);
+             [self assetURLToAsset:assetURL success:success];
+         }
+     }];
+}
+
+- (void) assetURLToAsset:(NSURL *)url success:(EZEventBlock)success
+{
+    ALAssetsLibraryAssetForURLResultBlock resultblock = ^(ALAsset *myasset)
+    {
+        success(myasset);
+    };
+    
+    ALAssetsLibraryAccessFailureBlock failureblock  = ^(NSError *myerror)
+    {
+        //NSLog(@"Can't get image - %@",[myerror localizedDescription]);
+        EZDEBUG(@"assets fetch error:%@", myerror);
+    };
+    
+    //[NSURL *asseturl = [NSURL URLWithString:yourURL];
+    //ALAssetsLibrary* assetslibrary = [[[ALAssetsLibrary alloc] init] autorelease];
+    [_assetLibaray assetForURL:url
+                    resultBlock:resultblock
+                   failureBlock:failureblock];
+}
+
+//Now keep it simple and stupid, only change it at the second iteration
+- (void) loadAlbumPhoto:(int)start limit:(int)limit success:(EZEventBlock)success failure:(EZEventBlock)failure
+{
+    EZDEBUG(@"Try to fetch %i, %i", start, limit);
+    NSMutableArray* res = [[NSMutableArray alloc] init];
+    //NSMutableDictionary* used = [[NSMutableDictionary alloc] init];
+    if (_assetLibaray == nil) {
+        _assetLibaray = [[ALAssetsLibrary alloc] init];
+    }
+    
+    // setup our failure view controller in case enumerateGroupsWithTypes fails
+    ALAssetsLibraryAccessFailureBlock failureBlock = ^(NSError *error) {
+        
+        NSString *errorMessage = nil;
+        switch ([error code]) {
+            case ALAssetsLibraryAccessUserDeniedError:
+            case ALAssetsLibraryAccessGloballyDeniedError:
+                errorMessage = @"The user has declined access to it.";
+                break;
+            default:
+                errorMessage = @"Reason unknown.";
+                break;
+        }
+        EZDEBUG(@"Asset access error:%@", errorMessage);
+    };
+    
+    __block int groupCount = 1;
+    __block int groupPos = 0;
+    __block int photoCount = 0;
+    // emumerate through our groups and only add groups that contain photos
+    ALAssetsLibraryGroupsEnumerationResultsBlock listGroupBlock = ^(ALAssetsGroup *group, BOOL *stop) {
+        
+        ALAssetsFilter *onlyPhotosFilter = [ALAssetsFilter allPhotos];
+        [group setAssetsFilter:onlyPhotosFilter];
+        //if ([group numberOfAssets] > 0)
+        //{
+            //[self.groups addObject:group];
+        //}
+        int assetCount = [group numberOfAssets];
+        EZDEBUG(@"assetCount:%i", assetCount);
+        [group enumerateAssetsUsingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop) {
+            //EZDEBUG(@"stopped:%i, index:%i", *stop, index);
+            if(!(*stop)){
+                EZDisplayPhoto* ed = [[EZDisplayPhoto alloc] init];
+                ed.isFront = true;
+                EZPhoto* ep = [[EZPhoto alloc] init];
+                ed.pid = ++photoCount;
+                ep.asset = result;
+                ep.isLocal = true;
+                ed.myPhoto = ep;
+                //EZDEBUG(@"Before size");
+                ep.size = [result defaultRepresentation].dimensions;
+                //EZDEBUG(@"after size");
+                [res insertObject:ed atIndex:0];
+            }else{
+                ++groupPos;
+                if(groupPos >= groupCount){
+                    success(res);
+                }
+            }
+            
+        }];
+    };
+    
+    // enumerate only photos
+    //ALAssetsGroupAlbum | ALAssetsGroupEvent | ALAssetsGroupFaces |
+    NSUInteger groupTypes =  ALAssetsGroupSavedPhotos;
+    [_assetLibaray enumerateGroupsWithTypes:groupTypes usingBlock:listGroupBlock failureBlock:failureBlock];}
+
+- (void) checkPhotoAlbum:(EZEventBlock)success failure:(EZEventBlock)failure
+{
+    
+
+}
+
+@end

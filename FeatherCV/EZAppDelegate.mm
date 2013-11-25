@@ -8,6 +8,8 @@
 
 #import <GPUImage.h>
 #import "EZAppDelegate.h"
+#import "EZFaceTestPage.h"
+
 
 @implementation EZAppDelegate
 
@@ -19,8 +21,10 @@
 {
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     // Override point for customization after application launch.
-    cv::Mat mat;
-    GPUImageFilter* fg = [[GPUImageFilter alloc] init];
+    //cv::Mat mat;
+    //GPUImageFilter* fg = [[GPUImageFilter alloc] init];
+    EZFaceTestPage* ft = [[EZFaceTestPage alloc] init];
+    self.window.rootViewController = ft;
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
     return YES;
