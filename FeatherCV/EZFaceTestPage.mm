@@ -10,6 +10,7 @@
 #import "EZFaceUtil.h"
 #import "UIImage2OpenCV.h"
 #import "EZClickView.h"
+//#import <GraphicsServices/GraphicsServices.h>
 
 @interface EZFaceTestPage (){
     UIImageView* original;
@@ -29,7 +30,7 @@
     _currentPos = 0;
     if (self) {
         // Custom initialization
-        _testImages = @[@"hou_1.JPG",@"yue_1.JPG",@"tian_1.JPG",@"test.JPG",@"img01.jpg",@"tian_2.jpg"];
+        _testImages = @[@"hou_1.JPG",@"smile_face.png",@"yue_1.JPG",@"tian_1.JPG",@"test.JPG",@"img01.jpg",@"tian_2.jpg"];
     }
     return self;
 }
@@ -46,6 +47,7 @@
     cropped.contentMode = UIViewContentModeScaleAspectFill;
     [self.view addSubview:cropped];
     
+    NSLog(@"Screen Brightness: %f",[[UIScreen mainScreen] brightness]);
     int upper = 1;
     int bottum = 2;
     
@@ -86,19 +88,27 @@
 {
     EZFaceUtil faceUtil = singleton<EZFaceUtil>();
     std::vector<EZFaceResult*> faces;
-    UIImage* testImage = [UIImage imageNamed:imageName];
-    testImage = [testImage resizedImageWithMaximumSize:CGSizeMake(720, 720)];
+    std::vector<EZFaceResult*> filteredFaces;
+    UIImage* srcImage = [UIImage imageNamed:imageName];
+    UIImage* testImage = [srcImage resizedImageWithMaximumSize:CGSizeMake(720, 720)];
     cv::Mat target = testImage.toMat;
     EZDEBUG(@"The test image name:%@ row:%d, col:%d",imageName, target.rows, target.cols);
-    faceUtil.detectFace(target, faces);
-    EZDEBUG(@"Final face is:%lu", faces.size());
-    for(int i = 0; i < faces.size(); i++){
-        EZDEBUG(@"Found face at:%d, %d,%d,%d resized to %d, %d",faces[i]->orgRect.x, faces[i]->orgRect.y,faces[i]->orgRect.width, faces[i]->orgRect.height, faces[i]->destRect.width, faces[i]->destRect.height);
-        faceUtil.drawRegion(target, faces[i]->orgRect);
-        cropped.image = [UIImage imageWithMat:*(faces[i]->face) andImageOrientation:testImage.imageOrientation];
+    faceUtil.detectFace(target, faces, true);
+    
+    faceUtil.filterFaces(target, faces, filteredFaces);
+    EZDEBUG(@"Final face is:%lu, filtered faces:%lu", faces.size(), filteredFaces.size());
+    for(int i = 0; i < filteredFaces.size(); i++){
+        EZDEBUG(@"Found face at:%d, %d,%d,%d resized to %d, %d",filteredFaces[i]->orgRect.x, filteredFaces[i]->orgRect.y,filteredFaces[i]->orgRect.width, filteredFaces[i]->orgRect.height, filteredFaces[i]->destRect.width, filteredFaces[i]->destRect.height);
+        faceUtil.drawRegion(target, filteredFaces[i]->orgRect);
+        cropped.image = [UIImage imageWithMat:*(filteredFaces[i]->face) andImageOrientation:testImage.imageOrientation];
+        faceUtil.containsSmiles(srcImage, ^(NSNumber* num){
+            if(num.intValue > 0){
+                EZDEBUG(@"detected smile for:%i, %i, %i,%i", filteredFaces[i]->orgRect.x, filteredFaces[i]->orgRect.y, filteredFaces[i]->orgRect.width, filteredFaces[i]->orgRect.height);
+            }
+        });
         //original.image = [UIImage imageWithMat:*(faces[i]->resizedImage) andImageOrientation:testImage.imageOrientation];
     }
-    EZDEBUG(@"Test image orientation:%i", testImage.imageOrientation);
+    //EZDEBUG(@"Test image orientation:%i", testImage.imageOrientation);
     
     //if(faces.size() == 0){
     original.image = [UIImage imageWithMat:target andImageOrientation:testImage.imageOrientation];

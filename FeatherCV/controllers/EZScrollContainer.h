@@ -14,9 +14,10 @@
 
 #import <UIKit/UIKit.h>
 #import "EZAppConstants.h"
+#import "DLCImagePickerController.h"
 //@class PageViewController;
 
-@interface EZScrollContainer : UIViewController<UIScrollViewDelegate>
+@interface EZScrollContainer : UIViewController<UIScrollViewDelegate, DLCImagePickerDelegate>
 {
 	//IBOutlet UIScrollView *scrollView;
 	//IBOutlet UIPageControl *pageControl;
@@ -30,15 +31,16 @@
 
 @property (nonatomic, strong) UIImagePickerController* picker;
 
+@property (nonatomic, strong) DLCImagePickerController* dlcPicker;
 //I will adde the camera into this container
 @property (nonatomic, strong) UIView* cameraContainer;
+
 
 //This mean which index are displayed in the middle
 @property (nonatomic, assign) NSInteger currentIndex;
 
 - (void) addChildren:(NSArray *)children;
 
-- (void) setIndex:(int)idx animated:(BOOL)animated;
-//- (IBAction)changePage:(id)sender;
+- (void) setIndex:(int)idx animated:(BOOL)animated slide:(BOOL)slide;
 
 @end

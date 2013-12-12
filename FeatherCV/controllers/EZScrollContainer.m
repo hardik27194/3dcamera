@@ -76,14 +76,14 @@
 }
 
 //This will be called when something happened like the rotation.
-- (void) setIndex:(int)idx animated:(BOOL)animated
+- (void) setIndex:(int)idx animated:(BOOL)animated slide:(BOOL)slide
 {
     _currentIndex = idx;
-    [self createController:idx];
+    [self createController:idx slide:slide];
     CGRect bound = [UIScreen mainScreen].bounds;
     bound.origin.x = idx * bound.size.width;
     EZDEBUG(@"before scroll contentOffset:%f", _scrollView.contentOffset.x);
-    [_scrollView scrollRectToVisible:bound animated:YES];
+    [_scrollView scrollRectToVisible:bound animated:animated];
     EZDEBUG(@"after scroll contentOffset:%f", _scrollView.contentOffset.x);
 }
 
@@ -139,8 +139,8 @@
 	NSInteger upperNumber = lowerNumber + 1;
 	
 	EZDEBUG(@"fractionalPage:%f,small number, big number:%i, %i", fractionalPage, lowerNumber, upperNumber);
-    [self createController:lowerNumber];
-    [self createController:upperNumber];
+    [self createController:lowerNumber slide:YES];
+    [self createController:upperNumber slide:YES];
 }
 
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)newScrollView
@@ -153,6 +153,7 @@
     
     NSLog(@"endScrollAnimation, currentPage:%i, updatedPage:%i", _currentIndex, lowerNumber);
     _currentIndex = lowerNumber;
+    
     [self removeUnusedView];
 }
 
@@ -169,10 +170,55 @@
     [self removeUnusedView];
 }
 
+
+//I will put this image to another place.
+- (void)takePicture:(DLCImagePickerController*)picker imageInfo:(NSDictionary*)info
+{
+    
+}
+
+
+- (void)imagePickerController:(DLCImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
+{
+    
+    
+}
+
+- (void)imagePickerControllerDidCancel:(DLCImagePickerController *)picker
+{
+    
+}
+
+//I will use the new ImagePicker to complete my job
+- (UIViewController*) createController:(int)pos slide:(BOOL)slide
+{
+    EZDEBUG(@"Create Controller:%i", pos);
+    if(pos != 2){
+        return nil;
+    }
+    if(_dlcPicker){
+        return _dlcPicker;
+    }
+    
+    _dlcPicker = [[DLCImagePickerController alloc] init];
+    _dlcPicker.delegate = self;
+    CGRect bound = [UIScreen mainScreen].bounds;
+    _dlcPicker.view.frame = bound;
+    [_cameraContainer addSubview:_dlcPicker.view];
+    UIViewController* uc = [_children objectAtIndex:2];
+    uc.view.alpha = 1;
+    //CGRect frame = self.view.frame;
+    //frame.origin.x = self.view.frame.size.width * pos;
+    //_picker.view.alpha = 0.5;
+    return _dlcPicker;
+    
+}
+
 //When will this get called?
 //Mean If I found here I will not get it from the array
-- (UIViewController*) createController:(int)pos
+- (UIViewController*) createControllerOldPicker:(int)pos slide:(BOOL)slide
 {
+    EZDEBUG(@"Create Controller:%i", pos);
     if(pos != 2){
         return nil;
     }
@@ -181,7 +227,7 @@
     }
     
     
-    _picker = [[EZUIUtility sharedEZUIUtility] getCamera:NO completed:^(UIImage* img){
+    _picker = [[EZUIUtility sharedEZUIUtility] getCamera:NO slide:slide completed:^(UIImage* img){
         EZDEBUG(@"images ready");
     }];
     EZDEBUG(@"Will try to initialize the image picker, alpha:%f", _picker.view.alpha);
@@ -199,7 +245,7 @@
 
 - (void) removeUnusedView
 {
-    EZDEBUG(@"remove unused:%i", _currentIndex);
+    EZDEBUG(@"remove unused:%li", (long)_currentIndex);
 
     if(_currentIndex != 2){
         EZDEBUG(@"remove picker");

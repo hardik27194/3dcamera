@@ -33,21 +33,26 @@ SINGLETON_FOR_CLASS(EZUIUtility)
 }
 
 
-- (UIImagePickerController*) getCamera:(BOOL)isAlbum completed:(EZEventBlock)block
+- (UIImagePickerController*) getCamera:(BOOL)isAlbum slide:(BOOL)slide completed:(EZEventBlock)block
 {
     if ([UIImagePickerController isSourceTypeAvailable:
                             UIImagePickerControllerSourceTypeCamera] == NO
                           && !isAlbum)
         return nil;
-    
+    _triggerBySlide = slide;
     //[UIApplication sharedApplication].statusBarHidden = true;
     _completed = block;
     UIImagePickerController *cameraUI = [[UIImagePickerController alloc] init];
+    EZDEBUG(@"Slide:%i", slide);
+    
     cameraUI.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
     if(isAlbum){
         cameraUI.sourceType = UIImagePickerControllerSourceTypeSavedPhotosAlbum;
     }else{
         cameraUI.sourceType = UIImagePickerControllerSourceTypeCamera;
+        if(slide){
+            cameraUI.cameraDevice = UIImagePickerControllerCameraDeviceFront;
+        }
     }
     // Displays a control that allows the user to choose picture or
     // movie capture, if both are available:

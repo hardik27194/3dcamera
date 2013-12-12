@@ -18,7 +18,9 @@ public:
     cv::Rect orgRect;
     cv::Rect destRect;
     cv::Mat* face;
+    float smileDegree;
     //For test purpose
     cv::Mat* resizedImage;
+    
 };
 #endif /* defined(__FeatherCV__EZFaceResult__) */

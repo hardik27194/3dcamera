@@ -7,8 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
-
 #import "EZAppConstants.h"
+//#import "DLCImagePickerController.h"
 
 
 #define randBack(color)  [[EZUIUtility sharedEZUIUtility] getBackgroundColor:color]
@@ -16,6 +16,10 @@
 @interface EZUIUtility : NSObject<UIImagePickerControllerDelegate, UINavigationControllerDelegate>
 
 @property (nonatomic, assign) BOOL cameraRaised;
+
+
+//The trigger by slide will affect whether I will use the turning functionality or not.
+@property (nonatomic, assign) BOOL triggerBySlide;
 
 @property (nonatomic, strong) EZEventBlock completed;
 
@@ -27,8 +31,7 @@
 
 - (void) raiseCamera:(BOOL)isAlbum controller:(UIViewController*)controller completed:(EZEventBlock)block;
 
-- (UIImagePickerController*) getCamera:(BOOL)isAlbum completed:(EZEventBlock)block;
-
+- (UIImagePickerController*) getCamera:(BOOL)isAlbum slide:(BOOL)slide completed:(EZEventBlock)block;
 
 //+ (EZUIUtility*) getInstance;
 SINGLETON_FOR_HEADER(EZUIUtility);

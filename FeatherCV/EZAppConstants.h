@@ -34,6 +34,10 @@
 
 #define EZCameraIsReady @"EZCameraIsReady"
 
+#define EZTakePicture @"EZTakePicture"
+
+#define EZTriggerCamera @"EZTriggerCamera"
+
 #define EZZoomoutAlbum @"EZZoomoutAlbum"
 #define EZZoominAlbum @"EZZoominAlbum"
 

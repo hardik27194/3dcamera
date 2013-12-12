@@ -10,8 +10,11 @@
 #import "EZPhotoCell.h"
 #import "EZDisplayPhoto.h"
 #import "EZThreadUtility.h"
+#import "EZMessageCenter.h"
+#import "EZFileUtil.h"
 
 
+static int photoCount = 1;
 @interface EZAlbumTablePage ()
 
 @end
@@ -54,6 +57,13 @@
     },^(NSError* err){
         EZDEBUG(@"Error detail:%@", err);
     });
+    
+    //The right thing to do here.
+    //Maybe the whole thing already get triggered.
+    //I can use simple thing to do this.s
+    [[EZMessageCenter getInstance] registerEvent:EZTakePicture block:^(EZDisplayPhoto* dp){
+        EZDEBUG(@"A photo get generated");
+    }];
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
  
