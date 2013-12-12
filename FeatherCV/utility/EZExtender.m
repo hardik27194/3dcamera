@@ -315,6 +315,32 @@ NSString* doubleString(NSString* str)
     return ms;
 }
 
+
+- (NSString*) getIntegerStr
+{
+    //NSMutableString* res = [[NSMutableString alloc] init];
+    NSString* res = nil;
+    unichar chars[self.length];// = malloc(sizeof(unichar) * self.length);
+    //EZDEBUG(@"The whole length is:%i", self.length);
+    int pos = 0;
+    for(int i =0; i < self.length; i++){
+        unichar val = [self characterAtIndex:i];
+        if(val >= '0' && val <= '9'){
+            chars[pos++] = val;
+        }
+    }
+    //EZDEBUG(@"The final pos is:%i", pos);
+    if(pos > 0){
+        res = [NSString stringWithCharacters:chars length:pos];
+        //chars[pos] = 0;
+        //free(chars);
+    }
+    
+    //EZDEBUG(@"Final string length:%i", res.length);
+    //free(chars);
+    return res;
+}
+
 - (NSString*) truncate:(NSInteger)length
 {
     if(self.length > length){

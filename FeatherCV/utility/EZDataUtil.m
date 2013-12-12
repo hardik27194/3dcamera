@@ -7,12 +7,14 @@
 //
 
 #include <CoreLocation/CLLocation.h>
+#import <AddressBookUI/AddressBookUI.h>
 #import "EZDataUtil.h"
 #import "EZFileUtil.h"
 #import "EZDisplayPhoto.h"
 #import "EZGeoUtility.h"
 #import "EZImageFileCache.h"
 #import "EZDisplayPhoto.h"
+#import "EZExtender.h"
 
 @implementation EZAlbumResult
 
@@ -38,23 +40,115 @@
 }
 
 //Will load Friends
+//Let me write down the logic when I am in the context now.
+//1. I will do following thing when user start my app.
+//Load the contacts from the phone book.
+//In the meanwhile, I will upload the phone book info to the server side.
+//What will happen?
+//At the server side I will check whether this user is already login or not.
+//If he already login, fetch it's information like avartar and other information back.
+//Yes, The more I write the more love I have toward my Apps.
+//Yes, It is my App, just like it is my life and it is my Child.
+//This time, it is real. What I do define who am I.
+//Do it like Steve Jobs toward his customer.
+//I love this game.
 - (void) loadFriends:(EZEventBlock)success failure:(EZEventBlock)failure
 {
     dispatch_async(dispatch_get_main_queue(), ^(){
-        success([self getAllContacts]);
+        //success([self getAllContacts]);
+        [self getAllContacts:success];
     });
+}
+
+
+//Read the Contacts list out
+- (void) getPhotoBooks:(EZEventBlock)blk
+{
+    
+    //NSError *error = nil;
+    CFErrorRef error = nil;
+    ABAddressBookRef allPeople = ABAddressBookCreateWithOptions(NULL, &error);
+    //ABAddressBookRef allPeople = ABAddressBookCreate()
+    
+    
+    ABAddressBookRequestAccessWithCompletion(allPeople,
+                                                 ^(bool granted, CFErrorRef error) {
+    CFArrayRef allContacts = ABAddressBookCopyArrayOfAllPeople(allPeople);
+    CFIndex numberOfContacts  = ABAddressBookGetPersonCount(allPeople);
+    
+    NSLog(@"numberOfContacts------------------------------------%ld",numberOfContacts);
+    
+    NSMutableArray* res = [[NSMutableArray alloc] init];
+    for(int i = 0; i < numberOfContacts; i++){
+        NSString* name = @"";
+        NSString* phone = @"";
+        NSString* email = @"";
+        
+        ABRecordRef aPerson = CFArrayGetValueAtIndex(allContacts, i);
+        ABMultiValueRef fnameProperty = ABRecordCopyValue(aPerson, kABPersonFirstNameProperty);
+        ABMultiValueRef lnameProperty = ABRecordCopyValue(aPerson, kABPersonLastNameProperty);
+        
+        ABMultiValueRef phoneProperty = ABRecordCopyValue(aPerson, kABPersonPhoneProperty);
+        ABMultiValueRef emailProperty = ABRecordCopyValue(aPerson, kABPersonEmailProperty);
+        
+        NSArray *emailArray = (__bridge NSArray *)ABMultiValueCopyArrayOfAllValues(emailProperty);
+        NSArray *phoneArray = (__bridge NSArray *)ABMultiValueCopyArrayOfAllValues(phoneProperty);
+        
+        
+        if (lnameProperty != nil) {
+            name = [NSString stringWithFormat:@"%@", lnameProperty];
+        }
+        if (fnameProperty != nil) {
+            name = [name stringByAppendingString:[NSString stringWithFormat:@" %@", fnameProperty]];
+        }
+        
+        if ([phoneArray count] > 0) {
+            if ([phoneArray count] > 1) {
+                for (int i = 0; i < [phoneArray count]; i++) {
+                    phone = [phone stringByAppendingString:[NSString stringWithFormat:@"%@\n", [phoneArray objectAtIndex:i]]];
+                }
+            }else {
+                phone = [NSString stringWithFormat:@"%@", [phoneArray objectAtIndex:0]];
+            }
+        }
+        
+        if ([emailArray count] > 0) {
+            if ([emailArray count] > 1) {
+                for (int i = 0; i < [emailArray count]; i++) {
+                    email = [email stringByAppendingString:[NSString stringWithFormat:@"%@\n", [emailArray objectAtIndex:i]]];
+                }
+            }else {
+                email = [NSString stringWithFormat:@"%@", [emailArray objectAtIndex:0]];
+            }
+        }
+        phone = phone.getIntegerStr;
+        NSLog(@"NAME : %@",name);
+        NSLog(@"PHONE: %@",phone);
+        NSLog(@"EMAIL: %@",email);
+        NSLog(@"\n");
+        EZPerson* person = [[EZPerson alloc] init];
+        person.name = name;
+        person.mobile = phone;
+        person.email = email;
+        [res addObject:person];
+    }
+    if(blk){
+        blk(res);
+    }
+                                                 });
+    //return res;
 }
 
 //Dummy implementation now.
 //Will change to read from the address book later.
-- (NSArray*) getAllContacts
+- (void) getAllContacts:(EZEventBlock)blk
 {
     NSMutableArray* res = [[NSMutableArray alloc] init];
-    
+    [self getPhotoBooks:^(NSArray* photo){
     for(int i = 0; i < 20; i++){
         EZPerson* person = [[EZPerson alloc] init];
         person.personID = rand()/1000;
-        person.name = [NSString stringWithFormat:@"天哥:%i", i];
+        //person.name = [NSString stringWithFormat:@"天哥:%i", i];
         person.avatar = [EZFileUtil fileToURL:@"img02.jpg"].absoluteString;
         if(i % 2 == 0){
             person.joined = true;
@@ -67,7 +161,7 @@
         }
         [res addObject:person];
     }
-    return res;
+    }];
 }
 
 

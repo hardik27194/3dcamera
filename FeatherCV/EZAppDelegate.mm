@@ -28,6 +28,7 @@
 #import "EZContactsPage.h"
 #import "EZMainPage.h"
 #import "DLCImagePickerController.h"
+#import "EZContactTablePage.h"
 
 
 @implementation EZAppDelegate
@@ -151,9 +152,10 @@
 {
     [self setupEvent];
     EZScrollContainer* scrollContainer = [[EZScrollContainer alloc] initWithNibName:Nil bundle:nil];
-    UIViewController* v1 = [[UIViewController alloc] init];
-    v1.view.backgroundColor = [UIColor greenColor];
-    
+    //UIViewController* v1 = [[UIViewController alloc] init];
+    //v1.view.backgroundColor = [UIColor greenColor];
+    EZContactTablePage* contactPage = [[EZContactTablePage alloc] initWithStyle:UITableViewStylePlain];
+    [contactPage reloadPersons];
     //UIViewController* v2 = [[UIViewController alloc] init];
     //v2.view.backgroundColor = [UIColor yellowColor];
     //EZFaceDetector* fd = [[EZFaceDetector alloc] init];
@@ -161,10 +163,12 @@
     int currentPerson = [[EZDataUtil getInstance] getCurrentPersonID];
     EZDEBUG(@"Current personID:%i", currentPerson);
     EZQueryBlock qb = ^(int start, int limit, EZEventBlock success, EZEventBlock failure){
-        [[EZDataUtil getInstance] loadAlbumPhoto:start limit:limit success:success failure:failure];
+        //[[EZDataUtil getInstance] loadAlbumPhoto:start limit:limit success:success failure:failure];
     };
     //EZAlbumCollectionPage* albumPage = [EZAlbumCollectionPage createGridAlbumPage:true ownID:currentPerson queryBlock:qb];
     EZAlbumTablePage* albumPage = [[EZAlbumTablePage alloc] initWithQueryBlock:qb];
+    UIViewController* dummyPage = [[UIViewController alloc] init];
+    
     //albumPage.queryBlock = qb;
     UINavigationController* mainNav = [[UINavigationController alloc] initWithRootViewController:albumPage];
     
@@ -195,7 +199,7 @@
     //[scrollContainer addViewController:v2];
     //[scrollContainer addViewController:v3];
     //EZDEBUG(@"view pointer:%i", (int)scrollContainer.view);
-    [scrollContainer addChildren:@[v1, albumPage, v3]];
+    [scrollContainer addChildren:@[contactPage, dummyPage, v3]];
     scrollContainer.currentIndex = 1;
     
     [[EZMessageCenter getInstance] registerEvent:EZCameraCompleted block:^(UIImage* img){
@@ -250,9 +254,13 @@
     //} failure:^(NSError* err){
     //    EZDEBUG(@"err:%@", err);
     //}];
+    EZDEBUG(@"before get scrollView");
     self.window.rootViewController = [self createScrollView];
+    EZDEBUG(@"After get scrollView");
     [[NSNotificationCenter defaultCenter] addObserver:self  selector:@selector(orientationChanged:)  name:UIDeviceOrientationDidChangeNotification  object:[UIDevice currentDevice]];
+    EZDEBUG(@"Register orientation change");
     [self.window makeKeyAndVisible];
+    EZDEBUG(@"Visible enabled");
     return YES;
 }
 

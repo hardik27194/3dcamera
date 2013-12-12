@@ -60,9 +60,9 @@
     _contacts = [[NSMutableArray alloc] init];
     self.collectionView.alwaysBounceVertical = true;
     [self createHiddenButton];
-    UISwipeGestureRecognizer* swiper = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipped:)];
-    swiper.direction = UISwipeGestureRecognizerDirectionLeft;
-    [self.collectionView addGestureRecognizer:swiper];
+    //UISwipeGestureRecognizer* swiper = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipped:)];
+    //swiper.direction = UISwipeGestureRecognizerDirectionLeft;
+    //[self.collectionView addGestureRecognizer:swiper];
     self.collectionView.backgroundColor = [UIColor whiteColor];
     __weak EZContactsPage* weakSelf = self;
     [[EZDataUtil getInstance] loadFriends:^(NSArray* friends){

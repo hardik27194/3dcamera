@@ -10,6 +10,7 @@
 #import "EZGeoUtility.h"
 #import "EZImageFileCache.h"
 #import "EZDataUtil.h"
+#import "EZExtender.h"
 
 @implementation EZTestSuites
 
@@ -18,7 +19,31 @@
     
     //[EZTestSuites testImageCache];
     //assert(false);
-    [EZTestSuites testAssetFetch];
+    //[EZTestSuites testAssetFetch];
+    //[EZTestSuites testAddressBook];
+    //[EZTestSuites testGetNumberFromString];
+}
+
+
++ (void) testGetNumberFromString
+{
+    EZDEBUG(@"Get the number from string");
+    NSString* number1 = @"haha123-456-789aab";
+    NSString* fetched = [number1 getIntegerStr];
+    EZDEBUG(@"The integer is:%@", fetched);
+    
+    NSString* number2 = @"987-654-321hehehe";
+    NSString* integer2 = [number2 getIntegerStr];
+    EZDEBUG(@"The second integer is:%@", integer2);
+    
+}
+
++ (void) testAddressBook
+{
+    [[EZDataUtil getInstance] getPhotoBooks:^(NSArray* books){
+        EZDEBUG(@"The total fetched persons:%i", books.count);
+    }];
+    
 }
 
 + (void) testAssetFetch

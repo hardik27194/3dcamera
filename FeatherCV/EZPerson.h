@@ -18,6 +18,8 @@
 
 @property (nonatomic, strong) NSString* avatar;
 
+@property (nonatomic, strong) NSString* email;
+
 @property (nonatomic, strong) NSDate* joinedTime;
 
 //If this user is already feather client or not

@@ -74,7 +74,7 @@
 //I will try to get the all the user from the address book.
 //Every time user get to the contact page will call it?
 //This is small detail, which is poilicy. Let's define this later.
-- (NSArray*) getAllContacts;
+- (void) getAllContacts:(EZEventBlock)blk;
 
 //This method will enable the user to upload all it's contacts information to the server.
 //The server will get the uploaded information and return a list which update the current user information.
@@ -101,7 +101,7 @@
 
 - (void) fetchImageFromAssetURL:(NSString*)url  success:(EZEventBlock)success failure:(EZEventBlock)failure;
 
-
+- (void) getPhotoBooks:(EZEventBlock)blk;
 //Have thumbnail eat up all memory was not a good thing to do.
 //So I will use this method to pervent this from happening
 - (void) loadAlbumPhoto:(int)start limit:(int)limit success:(EZEventBlock)success failure:(EZEventBlock)failure;

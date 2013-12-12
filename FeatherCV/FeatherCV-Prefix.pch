@@ -21,4 +21,5 @@
     #import <CoreData/CoreData.h>
     #import "EZAppConstants.h"
     #import "UIImage+ResizeMagick.h"
+    #import "AFNetworking.h"
 #endif

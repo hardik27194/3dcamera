@@ -111,6 +111,8 @@ typedef void  (^ IterateOperation)(id obj);
 
 - (NSString*) truncate:(NSInteger)length;
 
+- (NSString*) getIntegerStr;
+
 - (BOOL) isEmpty;
 
 - (BOOL) isNotEmpty;

@@ -46,6 +46,7 @@
 		18A370391855C2A40022F0A8 /* micro_carbon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 18A370171855C2A40022F0A8 /* micro_carbon@2x.png */; };
 		18A3703A1855C2A40022F0A8 /* photo_bar.png in Resources */ = {isa = PBXBuildFile; fileRef = 18A370181855C2A40022F0A8 /* photo_bar.png */; };
 		18A3703B1855C2A40022F0A8 /* photo_bar@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 18A370191855C2A40022F0A8 /* photo_bar@2x.png */; };
+		18A3703E1859AE850022F0A8 /* EZContactTablePage.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A3703D1859AE850022F0A8 /* EZContactTablePage.m */; };
 		18E3467E183DF54400C9D89D /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18E3467D183DF54400C9D89D /* Foundation.framework */; };
 		18E34680183DF54400C9D89D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18E3467F183DF54400C9D89D /* CoreGraphics.framework */; };
 		18E34682183DF54400C9D89D /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18E34681183DF54400C9D89D /* UIKit.framework */; };
@@ -260,6 +261,8 @@
 		18A370171855C2A40022F0A8 /* micro_carbon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "micro_carbon@2x.png"; sourceTree = "<group>"; };
 		18A370181855C2A40022F0A8 /* photo_bar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = photo_bar.png; sourceTree = "<group>"; };
 		18A370191855C2A40022F0A8 /* photo_bar@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "photo_bar@2x.png"; sourceTree = "<group>"; };
+		18A3703C1859AE850022F0A8 /* EZContactTablePage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZContactTablePage.h; sourceTree = "<group>"; };
+		18A3703D1859AE850022F0A8 /* EZContactTablePage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZContactTablePage.m; sourceTree = "<group>"; };
 		18E3467A183DF54400C9D89D /* FeatherCV.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FeatherCV.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		18E3467D183DF54400C9D89D /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		18E3467F183DF54400C9D89D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -703,6 +706,8 @@
 				18E34721183DFA3300C9D89D /* EZContactCell.m */,
 				18E34722183DFA3300C9D89D /* EZDummyPage.h */,
 				18E34723183DFA3300C9D89D /* EZDummyPage.m */,
+				18A3703C1859AE850022F0A8 /* EZContactTablePage.h */,
+				18A3703D1859AE850022F0A8 /* EZContactTablePage.m */,
 			);
 			path = controllers;
 			sourceTree = "<group>";
@@ -1158,6 +1163,7 @@
 				18E3474B183DFA7300C9D89D /* EZLikeSatus.m in Sources */,
 				18E347F5183E081D00C9D89D /* AFDownloadRequestOperation.m in Sources */,
 				18E34780183DFAA400C9D89D /* EZUploadHandler.m in Sources */,
+				18A3703E1859AE850022F0A8 /* EZContactTablePage.m in Sources */,
 				18E34782183DFAA400C9D89D /* EZWeiboUtil.m in Sources */,
 				18E34837183F064200C9D89D /* EZFaceUtil.mm in Sources */,
 				18E347FC183E081D00C9D89D /* AFNetworkActivityIndicatorManager.m in Sources */,
