@@ -461,7 +461,10 @@
                 ed.pid = ++photoCount;
                 ep.asset = result;
                 ep.isLocal = true;
-                ed.myPhoto = ep;
+                ed.photo = ep;
+                ed.photo.owner = [[EZPerson alloc] init];
+                ed.photo.owner.name = @"天哥";
+                ed.photo.owner.avatar = [EZFileUtil fileToURL:@"tian_2.jpeg"];
                 //EZDEBUG(@"Before size");
                 ep.size = [result defaultRepresentation].dimensions;
                 //EZDEBUG(@"after size");

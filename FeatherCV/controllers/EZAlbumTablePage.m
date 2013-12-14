@@ -88,7 +88,7 @@ static int photoCount = 1;
 - (CGFloat) tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     EZDisplayPhoto* cp = [_combinedPhotos objectAtIndex:indexPath.row];
-    CGFloat imageHeight = cp.myPhoto.size.height/cp.myPhoto.size.width * 320 + 40;
+    CGFloat imageHeight = cp.photo.size.height/cp.photo.size.width * 320 + 40;
     //EZDEBUG(@"image width:%f, height:%f, final height:%f", cp.myPhoto.size.width, cp.myPhoto.size.height, imageHeight);
     return imageHeight;
     //return 400;
@@ -108,7 +108,7 @@ static int photoCount = 1;
     EZDisplayPhoto* cp = [_combinedPhotos objectAtIndex:indexPath.row];
     cell.currentPos = indexPath.row;
     //EZCombinedPhoto* curPhoto = [cp.combinedPhotos objectAtIndex:cp.selectedCombinePhoto];
-    EZPhoto* myPhoto = cp.myPhoto;
+    EZPhoto* myPhoto = cp.photo;
     // Configure the cell...
     if(_isScrolling){
         [cell displayImage:[myPhoto getThumbnail]];
@@ -153,7 +153,7 @@ static int photoCount = 1;
             pcell.isLarge = true;
             [[EZThreadUtility getInstance] executeBlockInQueue:^(){
                 EZDisplayPhoto* cp = [_combinedPhotos objectAtIndex:pcell.currentPos];
-                [pcell displayEffectImage:[cp.myPhoto getLocalImage]];
+                [pcell displayEffectImage:[cp.photo getLocalImage]];
             }];
         }
     }

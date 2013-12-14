@@ -12,6 +12,12 @@
 #import "EZExtender.h"
 #import "AFNetworking.h"
 #import "EZExtender.h"
+
+
+#define ToolRegionHeight 60
+#define InitialFeedbackRegion 60
+
+
 @implementation EZPhotoCell
 
 - (id) initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
@@ -27,6 +33,36 @@
         _frontNoEffects = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 320, 320)];
         _frontNoEffects.contentMode = UIViewContentModeScaleAspectFill;
         
+        
+        _toolRegion = [[UIView alloc] initWithFrame:CGRectMake(0, 320, 60, 320)];
+        _toolRegion.backgroundColor = RGBCOLOR(128, 128, 255);
+        //My feedback will grow gradually.
+        _headIcon = [[EZClickImage alloc] initWithFrame:CGRectMake(15, (ToolRegionHeight-40)/2, 40, 40)];
+        [_headIcon enableRoundImage];
+        _headIcon.backgroundColor = [UIColor grayColor];
+        
+        _linkIcon = [[EZClickImage alloc] initWithFrame:CGRectMake(15+40+10, (ToolRegionHeight - 40)/2, 40, 40)];
+        [_linkIcon enableRoundImage];
+        _linkIcon.backgroundColor = [UIColor grayColor];
+        
+        _backIcon = [[EZClickImage alloc] initWithFrame:CGRectMake(15+80+20, (ToolRegionHeight - 40)/2, 40, 40)];
+        [_backIcon enableRoundImage];
+        _backIcon.backgroundColor = [UIColor grayColor];
+        
+        _countIcon = [[UILabel alloc] initWithFrame:CGRectMake(15+120+30, (ToolRegionHeight - 40)/2, 40, 40)];
+        _countIcon.font = [UIFont systemFontOfSize:16];
+        _countIcon.textAlignment = NSTextAlignmentCenter;
+        _countIcon.backgroundColor = [UIColor grayColor];
+        [_countIcon enableRoundImage];
+        
+        [_toolRegion addSubview:_headIcon];
+        [_toolRegion addSubview:_linkIcon];
+        [_toolRegion addSubview:_backIcon];
+        [_toolRegion addSubview:_countIcon];
+        
+        _feedbackRegion = [[UIView alloc] initWithFrame:CGRectMake(0, _toolRegion.frame.origin.y + _toolRegion.frame.size.height, 40, 320)];
+        _feedbackRegion.backgroundColor = RGBCOLOR(255, 128, 128);
+        
         //_frontImage.layer.cornerRadius = 5;
         _frontImage.clipsToBounds = true;
         _backImage = [EZStyleImage createFilteredImage:CGRectMake(0, 0, 320, 320)];
@@ -41,6 +77,8 @@
         //[self addSubview:_frontImage];
         //[self.contentView addSubview:_backImage];
         [self.contentView addSubview:_container];
+        [self.contentView addSubview:_toolRegion];
+        [self.contentView addSubview:_feedbackRegion];
         [_container addSubview:_frontImage];
         [_container addSubview:_frontNoEffects];
         //[self.contentView addSubview:_imageClick];

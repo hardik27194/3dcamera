@@ -332,14 +332,15 @@
     //static NSString *CellIdentifier = @"PhotoCell";
     EZDisplayPhoto* cp = [_combinedPhotos objectAtIndex:indexPath.row];
     cell.currentID = cp.pid;
-    EZCombinedPhoto* curPhoto = [cp.combinedPhotos objectAtIndex:cp.selectedCombinePhoto];
-    EZPhoto* myPhoto = cp.myPhoto;
+    //EZCombinedPhoto* curPhoto = [cp.combinedPhotos objectAtIndex:cp.selectedCombinePhoto];
+    EZPhoto* myPhoto = cp.photo;
+    
     __weak EZCollectionPhotoCell* weakCell = cell;
     cell.container.releasedBlock = ^(id sender){
         if(cp.isFront){
-            [weakCell switchImageTo:curPhoto.otherPhoto.url];
+            //[weakCell switchImageTo:curPhoto.otherPhoto.url];
         }else{
-            [weakCell switchImageTo:curPhoto.selfPhoto.url];
+            //[weakCell switchImageTo:curPhoto.selfPhoto.url];
         }
         cp.isFront = !cp.isFront;
     };
@@ -364,9 +365,9 @@
         EZPerson* owner = [[EZDataUtil getInstance] getPerson:_ownerID];
         [cell.headIcon setImageWithURL:str2url(owner.avatar) placeholderImage:PlaceHolderSmall];
     }else{
-        [cell displayPhoto:curPhoto.otherPhoto.url];
-        EZPerson* other = [[EZDataUtil getInstance] getPerson:curPhoto.otherPhoto.ownerID];
-        [cell.headIcon setImageWithURL:str2url(other.avatar) placeholderImage:PlaceHolderSmall];
+        [cell displayPhoto:myPhoto.url];
+        //EZPerson* other = [[EZDataUtil getInstance] getPerson:curPhoto.otherPhoto.ownerID];
+        //[cell.headIcon setImageWithURL:str2url(other.avatar) placeholderImage:PlaceHolderSmall];
     }
     cell.shareButton.releasedBlock = ^(id obj){
         EZDEBUG(@"Raise the buildin share sheet");

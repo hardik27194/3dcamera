@@ -30,6 +30,14 @@
 
 @property (nonatomic, assign) BOOL isLarge;
 
+//The purpose of the container is to limit the scope of the flip animation.
+//Otherwise the whole thing rotate together, this is not what I expected.
+@property (nonatomic, strong) EZClickView* container;
+
+@property (nonatomic, strong) UIView* toolRegion;
+
+@property (nonatomic, strong) UIView* feedbackRegion;
+
 //The UIImage which have no effects
 @property (nonatomic, strong) UIImageView* frontNoEffects;
 
@@ -37,12 +45,23 @@
 
 @property (nonatomic, strong) EZStyleImage* backImage;
 
-//The purpose of the container is to limit the scope of the flip animation.
-//Otherwise the whole thing rotate together, this is not what I expected.
-@property (nonatomic, strong) EZClickView* container;
+
+
+@property (nonatomic, strong) EZClickImage* headIcon;
+
+//The icon which represent the relationship between the headIcon and other icons
+//Which could be lock or other icons.
+@property (nonatomic, strong) EZClickImage* linkIcon;
+
+//The head icon for the image which on the back of the current image.
+@property (nonatomic, strong) EZClickImage* backIcon;
+
+//The icon will show the available image to match this image
+@property (nonatomic, strong) UILabel* countIcon;
+
+@property (nonatomic, strong) UITextView* photoWord;
 
 @property (nonatomic, strong) EZClickImage* likeButton;
-
 //You can talk as you like.
 @property (nonatomic, strong) EZClickImage* talkButton;
 

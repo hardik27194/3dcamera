@@ -58,7 +58,11 @@
 @property (nonatomic, strong) NSDate* uploadedTime;
 
 //The comment given by the owner
-@property (nonatomic, assign) NSString* comment;
+@property (nonatomic, strong) NSString* photoTalk;
+
+//It is true,mean only visible to specified user
+//Otherwise mean everybody can combine with it
+@property (nonatomic, assign) BOOL isPeerOnly;
 
 //The size for the image. why do I need it?
 //I need this because, I need to determine the height for the

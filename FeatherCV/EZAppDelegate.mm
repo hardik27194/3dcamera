@@ -214,7 +214,7 @@
                 //ed.pid = ++photoCount;
                 ep.asset = asset;
                 ep.isLocal = true;
-                ed.myPhoto = ep;
+                ed.photo = ep;
                 //EZDEBUG(@"Before size");
                 ep.size = [asset defaultRepresentation].dimensions;
                 [albumPage addPhoto:ed];
