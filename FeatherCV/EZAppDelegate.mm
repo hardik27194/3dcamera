@@ -155,7 +155,8 @@
     //UIViewController* v1 = [[UIViewController alloc] init];
     //v1.view.backgroundColor = [UIColor greenColor];
     EZContactTablePage* contactPage = [[EZContactTablePage alloc] initWithStyle:UITableViewStylePlain];
-    [contactPage reloadPersons];
+    //[contactPage reloadPersons];
+    UINavigationController* contactNav = [[UINavigationController alloc] initWithRootViewController:contactPage];
     //UIViewController* v2 = [[UIViewController alloc] init];
     //v2.view.backgroundColor = [UIColor yellowColor];
     //EZFaceDetector* fd = [[EZFaceDetector alloc] init];
@@ -199,7 +200,7 @@
     //[scrollContainer addViewController:v2];
     //[scrollContainer addViewController:v3];
     //EZDEBUG(@"view pointer:%i", (int)scrollContainer.view);
-    [scrollContainer addChildren:@[contactPage, dummyPage, v3]];
+    [scrollContainer addChildren:@[contactNav, dummyPage, v3]];
     scrollContainer.currentIndex = 1;
     
     [[EZMessageCenter getInstance] registerEvent:EZCameraCompleted block:^(UIImage* img){

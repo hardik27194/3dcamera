@@ -8,6 +8,9 @@
 
 #import "EZContactTablePage.h"
 #import "EZDataUtil.h"
+#import "EZContactTableCell.h"
+#import "EZClickView.h"
+#import "EZClickImage.h"
 
 @interface EZContactTablePage ()
 
@@ -20,7 +23,8 @@
     self = [super initWithStyle:style];
     if (self) {
         // Custom initialization
-        [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"Cell"];
+        self.title = @"朋友";
+        [self.tableView registerClass:[EZContactTableCell class] forCellReuseIdentifier:@"Cell"];
         _contacts = [[NSMutableArray alloc] init];
     }
     return self;
@@ -29,12 +33,15 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    [self reloadPersons];
 }
 
 - (void) reloadPersons
 {
     [[EZDataUtil getInstance] getAllContacts:^(NSArray* persons){
+        
         [_contacts addObjectsFromArray:persons];
+        EZDEBUG(@"Loaded person:%i, exist persons:%i", persons.count, _contacts.count);
         [self.tableView reloadData];
     }];
 
@@ -61,11 +68,19 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *CellIdentifier = @"Cell";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
+    EZContactTableCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
     
     EZPerson* person = [_contacts objectAtIndex:indexPath.row];
-    cell.textLabel.text = person.name;
-    [cell.imageView setImageWithURL:str2url(person.avatar)];
+    cell.name.text = person.name;
+    [(UIImageView*)cell.headIcon setImageWithURL:str2url(person.avatar)];
+    
+    cell.clickRegion.releasedBlock = ^(id object){
+        EZDEBUG(@"region clicked");
+    };
+    cell.headIcon.releasedBlock = ^(id object){
+        EZDEBUG(@"Header clicked");
+    };
+    
     EZDEBUG(@"I will show the person:%@, pos:%i", person.name, indexPath.row);
     return cell;
 }

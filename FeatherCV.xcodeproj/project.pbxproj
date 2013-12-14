@@ -47,6 +47,8 @@
 		18A3703A1855C2A40022F0A8 /* photo_bar.png in Resources */ = {isa = PBXBuildFile; fileRef = 18A370181855C2A40022F0A8 /* photo_bar.png */; };
 		18A3703B1855C2A40022F0A8 /* photo_bar@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 18A370191855C2A40022F0A8 /* photo_bar@2x.png */; };
 		18A3703E1859AE850022F0A8 /* EZContactTablePage.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A3703D1859AE850022F0A8 /* EZContactTablePage.m */; };
+		18A370411859B7C20022F0A8 /* EZContactTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A370401859B7C20022F0A8 /* EZContactTableCell.m */; };
+		18A37044185BF97E0022F0A8 /* EZPhotoRelation.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A37043185BF97E0022F0A8 /* EZPhotoRelation.m */; };
 		18E3467E183DF54400C9D89D /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18E3467D183DF54400C9D89D /* Foundation.framework */; };
 		18E34680183DF54400C9D89D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18E3467F183DF54400C9D89D /* CoreGraphics.framework */; };
 		18E34682183DF54400C9D89D /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18E34681183DF54400C9D89D /* UIKit.framework */; };
@@ -263,6 +265,10 @@
 		18A370191855C2A40022F0A8 /* photo_bar@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "photo_bar@2x.png"; sourceTree = "<group>"; };
 		18A3703C1859AE850022F0A8 /* EZContactTablePage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZContactTablePage.h; sourceTree = "<group>"; };
 		18A3703D1859AE850022F0A8 /* EZContactTablePage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZContactTablePage.m; sourceTree = "<group>"; };
+		18A3703F1859B7C20022F0A8 /* EZContactTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZContactTableCell.h; sourceTree = "<group>"; };
+		18A370401859B7C20022F0A8 /* EZContactTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZContactTableCell.m; sourceTree = "<group>"; };
+		18A37042185BF97E0022F0A8 /* EZPhotoRelation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZPhotoRelation.h; sourceTree = "<group>"; };
+		18A37043185BF97E0022F0A8 /* EZPhotoRelation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZPhotoRelation.m; sourceTree = "<group>"; };
 		18E3467A183DF54400C9D89D /* FeatherCV.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FeatherCV.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		18E3467D183DF54400C9D89D /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		18E3467F183DF54400C9D89D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -708,6 +714,8 @@
 				18E34723183DFA3300C9D89D /* EZDummyPage.m */,
 				18A3703C1859AE850022F0A8 /* EZContactTablePage.h */,
 				18A3703D1859AE850022F0A8 /* EZContactTablePage.m */,
+				18A3703F1859B7C20022F0A8 /* EZContactTableCell.h */,
+				18A370401859B7C20022F0A8 /* EZContactTableCell.m */,
 			);
 			path = controllers;
 			sourceTree = "<group>";
@@ -868,6 +876,8 @@
 				18E34744183DFA7300C9D89D /* EZLikeSatus.m */,
 				18E34745183DFA7300C9D89D /* EZDisplayPhoto.h */,
 				18E34746183DFA7300C9D89D /* EZDisplayPhoto.m */,
+				18A37042185BF97E0022F0A8 /* EZPhotoRelation.h */,
+				18A37043185BF97E0022F0A8 /* EZPhotoRelation.m */,
 			);
 			name = dataobjects;
 			sourceTree = "<group>";
@@ -1176,7 +1186,9 @@
 				18E34738183DFA5800C9D89D /* EZCollectionPhotoCell.m in Sources */,
 				18E347DB183E050B00C9D89D /* ASIDownloadCache.m in Sources */,
 				18E347F7183E081D00C9D89D /* AFXMLRequestOperation.m in Sources */,
+				18A370411859B7C20022F0A8 /* EZContactTableCell.m in Sources */,
 				18E3483D18433FC000C9D89D /* UIImage+ResizeMagick.m in Sources */,
+				18A37044185BF97E0022F0A8 /* EZPhotoRelation.m in Sources */,
 				18E347F6183E081D00C9D89D /* AFJSONRequestOperation.m in Sources */,
 				18E34775183DFAA400C9D89D /* EZStyleImage.m in Sources */,
 				18E3468C183DF54400C9D89D /* main.m in Sources */,

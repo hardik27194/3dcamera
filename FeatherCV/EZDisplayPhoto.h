@@ -10,12 +10,11 @@
 #import "EZPhoto.h"
 
 typedef enum {
-    kEZNotShared,
-    kEZUploadWaiting,
-    //Upload Waiting and Waiting to join is the same.
-    //kEZWaitingToJoin,
-    
-    //Final status
+    kEZStartStatus,
+    kEZSendSharedRequest,//either shared with another person or shared with anonymous person
+    kEZShareAvailable,
+    kEZWaitingPicture,
+
     kEZCombined,
     //Ask a new image from you.
     kEZRemoteRequest
@@ -31,22 +30,30 @@ typedef enum {
 @interface EZDisplayPhoto : NSObject
 
 //Just for the purpose of asynchronize the photos.
+//I don't get it.
 @property (nonatomic, assign) int pid;
 
-@property (nonatomic, strong) EZPhoto* myPhoto;
+@property (nonatomic, strong) EZPhoto* photo;
 
-@property (nonatomic, assign) CGSize imageSize;
+//@property (nonatomic, assign) CGSize imageSize;
 
 @property (nonatomic, assign) EZCombinedStatus combineStatus;
+
+//Which photo do I need use as my background.
+@property (nonatomic, assign) int preferredPos;
 //Transition field. will not persistent to the database.
 @property (nonatomic, assign) BOOL isFront;
 
-//Mean the photo which will show on the back of this photo
-@property (nonatomic, assign) int selectedCombinePhoto;
+//Whether I am turning the image or not
+@property (nonatomic, assign) BOOL isTurning;
 
-@property (nonatomic, strong) NSArray* combinedPhotos;
+//What's the status of the turning angle.
+//To visualize the whole process, is that, we will uploading the image
+//In the meanwhile, we will try to download the image.
+//Once the image is done, but we can get the progress easily, right?
+//Just fake the process.
+//Initially, it is faster, the decrease exponentially, this is really great.
+@property (nonatomic, assign) CGFloat turningDegree;
 
-//Whether it is a date or a photo.
-@property (nonatomic, assign) int displayType;
 
 @end

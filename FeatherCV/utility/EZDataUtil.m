@@ -79,7 +79,7 @@
     NSLog(@"numberOfContacts------------------------------------%ld",numberOfContacts);
     
     NSMutableArray* res = [[NSMutableArray alloc] init];
-    for(int i = 0; i < numberOfContacts; i++){
+    for(int i = 0; i < 2; i++){
         NSString* name = @"";
         NSString* phone = @"";
         NSString* email = @"";
@@ -132,6 +132,8 @@
         person.email = email;
         [res addObject:person];
     }
+                                                     
+    EZDEBUG(@"Completed photobook reading, will call back now");
     if(blk){
         blk(res);
     }
@@ -143,14 +145,15 @@
 //Will change to read from the address book later.
 - (void) getAllContacts:(EZEventBlock)blk
 {
-    NSMutableArray* res = [[NSMutableArray alloc] init];
-    [self getPhotoBooks:^(NSArray* photo){
-    for(int i = 0; i < 20; i++){
-        EZPerson* person = [[EZPerson alloc] init];
+    [self getPhotoBooks:^(NSArray* persons){
+        int i = 0;
+        EZDEBUG(@"Get photoBook callback called:%i", persons.count);
+    for(EZPerson* person in persons){
+        //EZPerson* person = [[EZPerson alloc] init];
         person.personID = rand()/1000;
         //person.name = [NSString stringWithFormat:@"天哥:%i", i];
         person.avatar = [EZFileUtil fileToURL:@"img02.jpg"].absoluteString;
-        if(i % 2 == 0){
+        if(++i % 2 == 0){
             person.joined = true;
             person.avatar = [EZFileUtil fileToURL:@"img02.jpg"].absoluteString;
 
@@ -159,8 +162,9 @@
             person.avatar = [EZFileUtil fileToURL:@"img01.jpg"].absoluteString;
 
         }
-        [res addObject:person];
+        //[res addObject:person];
     }
+        blk(persons);
     }];
 }
 
