@@ -186,7 +186,7 @@
 }
 
 
-- (EZPerson*) getMyself
+- (EZPerson*) getCurrentPerson
 {
     EZPerson* res = [[EZPerson alloc] init];
     res.personID = [self getCurrentPersonID];
@@ -238,24 +238,16 @@
 //Get converstaion regarding this photo
 - (void) getConversation:(int)combineID success:(EZEventBlock)success failure:(EZEventBlock)failure
 {
-    NSMutableArray* res = [[NSMutableArray alloc] init];
-    for(int i = 0; i < 10; i++){
-        EZConversation* cons = [[EZConversation alloc] init];
-        cons.speakerID = (i%2)?[self getCurrentPersonID]:10;
-        cons.createdTime = [NSDate date];
-        cons.content = @"我最爱相对论";
-        [res addObject:cons];
-    }
-    dispatch_async(dispatch_get_main_queue(), ^(){
-        success(res);
-    });
+   
 }
 
+//The converstation will add to the relationship.
 - (void) addConverstaion:(int)combinedID text:(NSString*)text success:(EZEventBlock)success failure:(EZEventBlock)failure
 {
     EZConversation* cons = [[EZConversation alloc] init];
-    cons.speakerID = [self getCurrentPersonID];
-    cons.content = text;
+    //cons.speakerID = [self getCurrentPersonID];
+    //cons.content = text;
+    cons.text = text;
     dispatch_async(dispatch_get_main_queue(), ^(){
         success(cons);
     });
@@ -271,8 +263,8 @@
     int currentUserID = [self getCurrentPersonID];
     EZPhoto* photo = [[EZPhoto alloc] init];
     photo.photoID = rand()%1000;
-    photo.ownerID = currentUserID;
-    
+    //photo.ownerID = currentUserID;
+    photo.owner = currentPerson;
     NSString* fullPath = [EZFileUtil saveImageToCache:image];
     photo.url = [[NSURL fileURLWithPath:fullPath] absoluteString];
     EZCombinedPhoto* cp = [[EZCombinedPhoto alloc] init];
@@ -280,51 +272,13 @@
     cp.selfPhoto = photo;
     cp.otherPhoto = [[EZPhoto alloc] init];
     cp.otherPhoto.url = [EZFileUtil fileToURL:@"img02.jpg"].absoluteString;
-    cp.otherPhoto.ownerID = rand()%1000;
+    //cp.otherPhoto.ownerID = rand()%1000;
     EZDisplayPhoto* dp = [[EZDisplayPhoto alloc] init];
-    dp.combinedPhotos = @[cp];
+    //dp.combinedPhotos = @[cp];
+    
     dispatch_async(dispatch_get_main_queue(), ^(){
         success(dp);
     });
-}
-
-- (void) getCombinedPhoto:(int)personID start:(int)start limit:(int)limit success:(EZEventBlock)success failure:(EZEventBlock)failure
-{
-    EZDEBUG(@"Will query photo for:%i, start:%i, limit:%i", personID, start, limit);
-    NSMutableArray* res = [[NSMutableArray alloc] init];
-    for(int i = 0; i < 20; i++){
-        EZDisplayPhoto* dp = [[EZDisplayPhoto alloc] init];
-        
-        EZPhoto* photo = [[EZPhoto alloc] init];
-        photo.photoID = rand()%1000;
-        photo.ownerID = personID;
-        if((i+1 % 7) == 0){
-            dp.displayType = 1;
-        }
-        NSString* fullPath = [EZFileUtil fileToURL:@"img01.jpg"].absoluteString;
-        photo.url = fullPath;
-        EZCombinedPhoto* cp = [[EZCombinedPhoto alloc] init];
-        /**
-        if(((i+1) % 7) == 0){
-            cp.displayType = 1;
-        }
-        cp.createdTime = [NSDate date];
-        **/
-        cp.combinedID = rand()/1000;
-        cp.selfPhoto = photo;
-        cp.otherPhoto = [[EZPhoto alloc] init];
-        cp.otherPhoto.url = [EZFileUtil fileToURL:@"img02.jpg"].absoluteString;
-        cp.otherPhoto.ownerID = rand()%1000;
-        cp.likedByMe = cp.combinedID % 2;
-        cp.likedByOthers = cp.otherPhoto.ownerID % 2;
-        dp.combinedPhotos = @[cp];
-        [res addObject:dp];
-    }
-    
-    dispatch_async(dispatch_get_main_queue(), ^(){
-        success(res);
-    });
-
 }
 
 - (void) fetchImageFromAssetURL:(NSString*)url  success:(EZEventBlock)success failure:(EZEventBlock)failure
@@ -451,10 +405,11 @@
             //[self.groups addObject:group];
         //}
         int assetCount = [group numberOfAssets];
-        EZDEBUG(@"assetCount:%i", assetCount);
+        EZDEBUG(@"assetCount:%i, stop:%i", assetCount, *stop);
+        if(assetCount > 0){
         [group enumerateAssetsUsingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop) {
-            //EZDEBUG(@"stopped:%i, index:%i", *stop, index);
-            if(!(*stop)){
+            EZDEBUG(@"stopped:%i, index:%i, assertCount:%i", *stop, index, assetCount);
+            if(index != NSNotFound){
                 EZDisplayPhoto* ed = [[EZDisplayPhoto alloc] init];
                 ed.isFront = true;
                 EZPhoto* ep = [[EZPhoto alloc] init];
@@ -464,19 +419,22 @@
                 ed.photo = ep;
                 ed.photo.owner = [[EZPerson alloc] init];
                 ed.photo.owner.name = @"天哥";
-                ed.photo.owner.avatar = [EZFileUtil fileToURL:@"tian_2.jpeg"];
+                ed.photo.owner.avatar = [EZFileUtil fileToURL:@"tian_2.jpeg"].absoluteString;
                 //EZDEBUG(@"Before size");
                 ep.size = [result defaultRepresentation].dimensions;
-                //EZDEBUG(@"after size");
+                
+                EZDEBUG(@"after size:%f, %f", ep.size.width, ep.size.height);
                 [res insertObject:ed atIndex:0];
-            }else{
-                ++groupPos;
-                if(groupPos >= groupCount){
-                    success(res);
-                }
             }
             
         }];
+        }else{
+            //++groupPos;
+            EZDEBUG(@"groupPos:%i, groupCount:%i", groupPos, groupCount);
+            //if(groupPos >= groupCount){
+            success(res);
+            //}
+        }
     };
     
     // enumerate only photos

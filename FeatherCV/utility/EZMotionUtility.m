@@ -7,7 +7,10 @@
 //
 
 #import "EZMotionUtility.h"
-#define EZMotionUpdateFreq 0.1
+
+//Mean 50 time per seconds
+#define EZMotionUpdateFreq 0.02
+#define EZMaxQueueLength 200
 
 @implementation EZMotionData
 
@@ -37,6 +40,7 @@ static EZMotionUtility* instance;
     _motionManager = [[CMMotionManager alloc] init];
     _registeredHandler = [[NSMutableDictionary alloc] init];
     _updateStatus = [[NSMutableDictionary alloc] init];
+    _storedMotions = [[NSMutableArray alloc] init];
     return self;
 }
 
@@ -77,6 +81,7 @@ static EZMotionUtility* instance;
     for(EZRegisteredHandler* rh in handlerList){
         [self removeHandler:rh];
     }
+    
 }
 
 - (void) removeHandler:(EZRegisteredHandler*)rh
@@ -95,6 +100,7 @@ static EZMotionUtility* instance;
 {
     //EZDEBUG(@"update handle get called, type:%i", type);
     NSMutableArray* handlerList = [_updateStatus objectForKey:@(type)];
+    EZDEBUG(@"handlerlist is:%i, for type:%i", handlerList.count, type);
     for(EZRegisteredHandler* rh in handlerList){
         rh.handler(md);
     }
@@ -125,14 +131,22 @@ static EZMotionUtility* instance;
             break;
             }
         case kEZRotation:{
+            EZDEBUG(@"rotate will called:%i", [_motionManager isDeviceMotionAvailable]);
             if([_motionManager isDeviceMotionAvailable]){
                 [_motionManager setDeviceMotionUpdateInterval:EZMotionUpdateFreq];
                 [_motionManager startDeviceMotionUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMDeviceMotion *motion, NSError *error) {
+                    EZDEBUG(@"The motion uppdated:%i",(int)error);
                     if(motion){
                         EZMotionData* md = [[EZMotionData alloc] init];
                         md.pitch = motion.attitude.pitch;
                         md.roll = motion.attitude.roll;
                         md.yaw = motion.attitude.yaw;
+                        md.currentMotion = motion.attitude;
+                        md.storedMotion = _storedMotions;
+                        [_storedMotions addObject:motion.attitude];
+                        if(_storedMotions.count > EZMaxQueueLength){
+                            [_storedMotions removeObjectAtIndex:0];
+                        }
                         [weakSelf updateHandler:md type:type];
                     }else{
                         EZDEBUG(@"Encounter error during motion update:%@", error);

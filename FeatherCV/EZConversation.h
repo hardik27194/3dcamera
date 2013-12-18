@@ -18,6 +18,7 @@ typedef enum {
     kConversationInteresting
 }EZConversationType;
 
+@class EZPerson;
 @interface EZConversation : NSObject
 
 @property (nonatomic, assign) int conversationID;

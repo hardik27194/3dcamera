@@ -132,7 +132,7 @@
     //NSString* pathStr = [NSString stringWithFormat:@"file:/%@/%@",[[NSBundle mainBundle] bundlePath],fileName];
     NSString* fullPath = [self fileToAbosolute:fileName];
     NSURL* res = [NSURL fileURLWithPath:fullPath];
-    EZDEBUG(@"Home made directory name:%@, URL is:%@", fullPath, res);
+    //EZDEBUG(@"Home made directory name:%@, URL is:%@", fullPath, res);
     return res;
 }
 

@@ -8,8 +8,22 @@
 
 #import "DLCImagePickerController.h"
 #import "DLCGrayscaleContrastFilter.h"
+#import "EZMotionUtility.h"
 
 #define kStaticBlurSize 2.0f
+@interface EZMotionRecord : NSObject 
+
+@property (nonatomic, strong) CMAttitude* attitude;
+
+@property (nonatomic, assign) CGFloat turnedAngle;
+
+@property (nonatomic, strong) NSDate* currentTime;
+
+@end
+
+@implementation EZMotionRecord
+@end
+
 
 @implementation DLCImagePickerController {
     GPUImageStillCamera *stillCamera;
@@ -17,6 +31,7 @@
     GPUImageOutput<GPUImageInput> *blurFilter;
     GPUImageCropFilter *cropFilter;
     GPUImagePicture *staticPicture;
+    
     UIImageOrientation staticPictureOriginalOrientation;
     BOOL isStatic;
     BOOL hasBlur;
@@ -67,9 +82,18 @@
     return [self initWithNibName:@"DLCImagePicker" bundle:nil];
 }
 
+//This method will change the turnStatus
+//It will change the status to captured
+- (void) captureTurnedImage
+{
+    _turnStatus = kSelfCaptured;
+    [self captureImage];
+}
+
 -(void)viewDidLoad {
     
     [super viewDidLoad];
+    _senseRotate = true;
     self.wantsFullScreenLayout = YES;
     //set background color
     self.view.backgroundColor = [UIColor colorWithPatternImage:
@@ -111,10 +135,61 @@
     });
 }
 
--(void) viewWillAppear:(BOOL)animated {
+
+//I will obey this rule, only when I visible, it make sense to register the handle.
+-(void) becomeVisible
+{
+    EZDEBUG(@"BecomeVisible get called");
     [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
-    [super viewWillAppear:animated];
+    if(_senseRotate){
+        [[EZMotionUtility getInstance] registerHandler:^(EZMotionData* md){
+            //CMAttitude* cur = md.currentMotion;
+            if(md.storedMotion.count > 50){
+                CMAttitude* prev = [md.storedMotion objectAtIndex:50];
+                [prev multiplyByInverseOfAttitude:md.currentMotion];
+                CGFloat absYDelta = fabsf(prev.quaternion.y);
+                EZDEBUG(@"The thread id:%i, delta x:%f, y:%f, z:%f, w:%f",[NSThread currentThread].isMainThread, prev.quaternion.x, prev.quaternion.y, prev.quaternion.z, prev.quaternion.w);
+                if(absYDelta > 0.90){
+                    EZDEBUG(@"Will rotate for %f", absYDelta);
+                    //[stillCamera rotateCamera];
+                    
+                    [md.storedMotion removeAllObjects];
+                    for(int i = 1; i < 51; i++){
+                        [md.storedMotion addObject:md.currentMotion];
+                    }
+                    
+                    if(_turnStatus == kSelfCaptured){
+                        [self performSelector:@selector(captureTurnedImage)
+                                   withObject:nil
+                                   afterDelay:3.0];
+                    }else{
+                    if(!stillCamera.isBackFacingCameraPresent){
+                        dispatch_async(dispatch_get_main_queue(),^(){
+                        [self switchCamera];
+                        [self performSelector:@selector(captureTurnedImage)
+                                   withObject:nil
+                                   afterDelay:3.0];
+                    });
+                    }
+                    }
+                }
+            }
+        } key:@"CameraMotion" type:kEZRotation];
+    }
+    [stillCamera startCameraCapture];
+    //[super viewWillAppear:animated];
+    
 }
+
+- (void) becomeInvisible
+{
+    EZDEBUG(@"BecomeInvisible get called");
+    //[super viewDidDisappear:animated];
+    [stillCamera stopCameraCapture];
+    [[EZMotionUtility getInstance] unregisterHandler:@"CameraMotion"];
+    
+}
+
 
 -(void) viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
@@ -164,7 +239,7 @@
     if ([UIImagePickerController isSourceTypeAvailable: UIImagePickerControllerSourceTypeCamera]) {
         // Has camera
         
-        stillCamera = [[GPUImageStillCamera alloc] initWithSessionPreset:AVCaptureSessionPresetPhoto cameraPosition:AVCaptureDevicePositionBack];
+        stillCamera = [[GPUImageStillCamera alloc] initWithSessionPreset:AVCaptureSessionPresetPhoto cameraPosition:AVCaptureDevicePositionFront];
                 
         stillCamera.outputImageOrientation = UIInterfaceOrientationPortrait;
         runOnMainQueueWithoutDeadlocking(^{
@@ -335,6 +410,8 @@
     [self presentViewController:imagePickerController animated:YES completion:NULL];
 }
 
+
+
 -(IBAction)toggleFlash:(UIButton *)button{
     [button setSelected:!button.selected];
 }
@@ -369,7 +446,7 @@
 }
 
 -(IBAction) switchCamera {
-    
+    EZDEBUG(@"Switch");
     [self.cameraToggleButton setEnabled:NO];
     [stillCamera rotateCamera];
     [self.cameraToggleButton setEnabled:YES];

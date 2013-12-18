@@ -12,6 +12,7 @@
 #import "EZThreadUtility.h"
 #import "EZMessageCenter.h"
 #import "EZFileUtil.h"
+#import "EZClickView.h"
 
 
 static int photoCount = 1;
@@ -51,13 +52,16 @@ static int photoCount = 1;
     [super viewDidLoad];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     __weak EZAlbumTablePage* weakSelf = self;
+    EZDEBUG(@"Query block is:%i",(int)_queryBlock);
+    /**
     _queryBlock(0, 100, ^(NSArray* arr){
+        EZDEBUG(@"Query completed:%i, I will reload", arr.count);
         weakSelf.combinedPhotos = [[NSMutableArray alloc] initWithArray:arr];
         [weakSelf.tableView reloadData];
     },^(NSError* err){
         EZDEBUG(@"Error detail:%@", err);
     });
-    
+    **/
     //The right thing to do here.
     //Maybe the whole thing already get triggered.
     //I can use simple thing to do this.s
@@ -88,7 +92,8 @@ static int photoCount = 1;
 - (CGFloat) tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     EZDisplayPhoto* cp = [_combinedPhotos objectAtIndex:indexPath.row];
-    CGFloat imageHeight = cp.photo.size.height/cp.photo.size.width * 320 + 40;
+    CGFloat imageHeight = cp.photo.size.height/cp.photo.size.width * 320 + 120;
+    EZDEBUG(@"The row height is:%f, width:%f, %f", imageHeight, cp.photo.size.width, cp.photo.size.height);
     //EZDEBUG(@"image width:%f, height:%f, final height:%f", cp.myPhoto.size.width, cp.myPhoto.size.height, imageHeight);
     return imageHeight;
     //return 400;
@@ -103,20 +108,27 @@ static int photoCount = 1;
 {
     static NSString *CellIdentifier = @"PhotoCell";
     EZPhotoCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
-    [cell backToOriginSize];
+    //[cell backToOriginSize];
     cell.isLarge = false;
     EZDisplayPhoto* cp = [_combinedPhotos objectAtIndex:indexPath.row];
+    [cell adjustCellSize:cp.photo.size];
+    //This is for later update purpose. great, let's get whole thing up and run.
     cell.currentPos = indexPath.row;
     //EZCombinedPhoto* curPhoto = [cp.combinedPhotos objectAtIndex:cp.selectedCombinePhoto];
     EZPhoto* myPhoto = cp.photo;
     // Configure the cell...
+    //[cell displayImage:[myPhoto getLocalImage]];
     if(_isScrolling){
         [cell displayImage:[myPhoto getThumbnail]];
     }else{
         cell.isLarge = true;
         //[cell displayImage:[myPhoto getLocalImage]];
-        [cell displayEffectImage:[myPhoto getLocalImage]];
+        //[cell displayEffectImage:[myPhoto getLocalImage]];
     }
+    __weak EZPhotoCell* weakCell = cell;
+    cell.container.releasedBlock = ^(id obj){
+        EZDEBUG(@"The container size:%f, %f", weakCell.container.frame.size.width, weakCell.container.frame.size.height);
+    };
     //self.tableView.isDecelerating
     
     
@@ -148,6 +160,7 @@ static int photoCount = 1;
 {
     NSArray* cells = [self.tableView visibleCells];
     EZDEBUG(@"Scroll stopped:%i", cells.count);
+    /**
     for(EZPhotoCell* pcell in cells){
         if(!pcell.isLarge){
             pcell.isLarge = true;
@@ -157,6 +170,7 @@ static int photoCount = 1;
             }];
         }
     }
+    **/
 }
 
 /*

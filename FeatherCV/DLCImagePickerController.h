@@ -10,6 +10,16 @@
 #import "GPUImage.h"
 #import "DLCBlurOverlayView.h"
 
+typedef enum {
+    //This is the initial status
+    kCameraNormal,
+    //Detect a half turn, we will have another time count
+    kCameraHalfTurn,
+    //Mean I am in the turned status
+    kCameraTurned,
+    kSelfCaptured
+} EZCameraTurnStatus;
+
 @class DLCImagePickerController;
 
 @protocol DLCImagePickerDelegate <NSObject>
@@ -23,6 +33,8 @@
 
 @interface DLCImagePickerController : UIViewController <UINavigationControllerDelegate,UIImagePickerControllerDelegate> 
 
+
+@property (nonatomic, assign) EZCameraTurnStatus turnStatus;
 @property (nonatomic, weak) IBOutlet GPUImageView *imageView;
 @property (nonatomic, weak) id <DLCImagePickerDelegate> delegate;
 @property (nonatomic, weak) IBOutlet UIButton *photoCaptureButton;
@@ -44,5 +56,13 @@
 
 @property (nonatomic, assign) CGFloat outputJPEGQuality;
 @property (nonatomic, assign) CGSize requestedImageSize;
+@property (nonatomic, assign) BOOL senseRotate;
+
+
+//This method will change the turnStatus
+- (void) captureTurnedImage;
+
+-(void) becomeVisible;
+- (void) becomeInvisible;
 
 @end

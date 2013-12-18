@@ -143,6 +143,18 @@
     [self createController:upperNumber slide:YES];
 }
 
+- (void) scrollEnded
+{
+    EZDEBUG(@"scrollEnded get called");
+    if(_currentIndex != 2){
+        //[_picker viewDidDisappear:YES];
+        [_dlcPicker becomeInvisible];
+    }else{
+        [_dlcPicker becomeVisible];
+    }
+
+}
+
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)newScrollView
 {
     CGFloat pageWidth = _scrollView.frame.size.width;
@@ -153,9 +165,11 @@
     
     NSLog(@"endScrollAnimation, currentPage:%i, updatedPage:%i", _currentIndex, lowerNumber);
     _currentIndex = lowerNumber;
-    
-    [self removeUnusedView];
+    [self scrollEnded];
+    //[self removeUnusedView];
 }
+
+
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)newScrollView
 {
@@ -167,7 +181,8 @@
     
     NSLog(@"endDecelerating, currentPage:%i, updatedPage:%i", _currentIndex, lowerNumber);
     _currentIndex = lowerNumber;
-    [self removeUnusedView];
+    [self scrollEnded];
+    //[self removeUnusedView];
 }
 
 
@@ -196,6 +211,7 @@
     if(pos != 2){
         return nil;
     }
+    //return nil;
     if(_dlcPicker){
         return _dlcPicker;
     }

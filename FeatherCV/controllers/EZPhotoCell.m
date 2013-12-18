@@ -17,6 +17,9 @@
 #define ToolRegionHeight 60
 #define InitialFeedbackRegion 60
 
+#define ToolRegionRect CGRectMake(0, 320, 320, 60)
+
+#define FeedbackRegionRect CGRectMake(0,380, 320, 40)
 
 @implementation EZPhotoCell
 
@@ -34,7 +37,7 @@
         _frontNoEffects.contentMode = UIViewContentModeScaleAspectFill;
         
         
-        _toolRegion = [[UIView alloc] initWithFrame:CGRectMake(0, 320, 60, 320)];
+        _toolRegion = [[UIView alloc] initWithFrame:ToolRegionRect];
         _toolRegion.backgroundColor = RGBCOLOR(128, 128, 255);
         //My feedback will grow gradually.
         _headIcon = [[EZClickImage alloc] initWithFrame:CGRectMake(15, (ToolRegionHeight-40)/2, 40, 40)];
@@ -59,10 +62,11 @@
         [_toolRegion addSubview:_linkIcon];
         [_toolRegion addSubview:_backIcon];
         [_toolRegion addSubview:_countIcon];
+        _toolRegion.alpha = 0.5;
         
-        _feedbackRegion = [[UIView alloc] initWithFrame:CGRectMake(0, _toolRegion.frame.origin.y + _toolRegion.frame.size.height, 40, 320)];
+        _feedbackRegion = [[UIView alloc] initWithFrame:FeedbackRegionRect];
         _feedbackRegion.backgroundColor = RGBCOLOR(255, 128, 128);
-        
+        _feedbackRegion.alpha = 0.5;
         //_frontImage.layer.cornerRadius = 5;
         _frontImage.clipsToBounds = true;
         _backImage = [EZStyleImage createFilteredImage:CGRectMake(0, 0, 320, 320)];
@@ -90,6 +94,19 @@
     return self;
 }
 
+//Newly added method.
+//I will adjust the image size and layout accordingly.
+- (void) adjustCellSize:(CGSize)size
+{
+    CGFloat adjustedHeight = [self calHeight:size];
+    //CGRect adjustedFrame = CGRectMake(0, 0, 320, adjustedHeight);
+    [_container setSize:CGSizeMake(320, adjustedHeight)];
+    [_frontNoEffects setSize:CGSizeMake(320, adjustedHeight)];
+    [_toolRegion setPosition:CGPointMake(0, adjustedHeight)];
+    [_feedbackRegion setPosition:CGPointMake(0, adjustedHeight+_toolRegion.frame.size.height)];
+    
+}
+
 - (void) displayEffectImage:(UIImage*)img
 {
     CGSize imgSize = img.size;
@@ -112,17 +129,19 @@
 - (void) displayImage:(UIImage*)img
 {
     [_frontImage removeFromSuperview];
-    CGSize imgSize = img.size;
-    CGFloat adjustedHeight = [self calHeight:imgSize];
+    //CGSize imgSize = img.size;
+    //CGFloat adjustedHeight = [self calHeight:imgSize];
     //CGFloat deltaHeight = adjustedHeight - 320;
     //EZDEBUG(@"imageSize:%f,%f, adjustedHeight:%f", imgSize.width, imgSize.height, adjustedHeight);
-    CGSize updatedSize = CGSizeMake(320, adjustedHeight);
-    [_container setSize:updatedSize];
+    //CGSize updatedSize = CGSizeMake(320, adjustedHeight);
+    //[_container setSize:updatedSize];
     //[_frontImage setSize:updatedSize];
-    [_frontNoEffects setSize:updatedSize];
+    //[_frontNoEffects setSize:updatedSize];
     [_frontNoEffects setImage:img];
 }
 
+//Why not get the size directly?
+//This is hard.
 - (CGFloat) calHeight:(CGSize)size
 {
     return 320 * size.height/size.width;
@@ -132,6 +151,8 @@
 {
     [_container setSize:CGSizeMake(320, 320)];
     [_frontImage setSize:CGSizeMake(320, 320)];
+    [_toolRegion setFrame:ToolRegionRect];
+    [_feedbackRegion setFrame:FeedbackRegionRect];
 }
 
 //What's the purpose of this method?

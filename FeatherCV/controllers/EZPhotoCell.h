@@ -80,6 +80,8 @@
 //I will use small image initially, then switch to the large image.
 @property (nonatomic, assign) BOOL isLargeImage;
 
+//- (void) adjust
+
 - (void) displayPhoto:(NSString*)photo;
 
 //I am happy that define a good interface to handle the image switch action
@@ -89,7 +91,13 @@
 
 - (void) displayEffectImage:(UIImage*)img;
 
+//Why have a different method do this?
+//Why not use a single method to handle all of them?
+//This is great idea.
 - (void) backToOriginSize;
+
+- (void) adjustCellSize:(CGSize)size;
+
 
 - (id) init;
 

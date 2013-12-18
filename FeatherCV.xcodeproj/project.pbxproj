@@ -100,7 +100,6 @@
 		18E34724183DFA3300C9D89D /* EZAlbumTablePage.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E3470D183DFA3300C9D89D /* EZAlbumTablePage.m */; };
 		18E34725183DFA3300C9D89D /* EZPhotoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E3470F183DFA3300C9D89D /* EZPhotoCell.m */; };
 		18E34726183DFA3300C9D89D /* EZScrollContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E34711183DFA3300C9D89D /* EZScrollContainer.m */; };
-		18E34727183DFA3300C9D89D /* EZAlbumCollectionPage.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E34713183DFA3300C9D89D /* EZAlbumCollectionPage.m */; };
 		18E34728183DFA3300C9D89D /* EZContactsPage.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E34715183DFA3300C9D89D /* EZContactsPage.m */; };
 		18E34729183DFA3300C9D89D /* EZBaseCollectionPage.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E34717183DFA3300C9D89D /* EZBaseCollectionPage.m */; };
 		18E3472A183DFA3300C9D89D /* EZTiltMainView.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E34719183DFA3300C9D89D /* EZTiltMainView.m */; };
@@ -332,8 +331,6 @@
 		18E3470F183DFA3300C9D89D /* EZPhotoCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZPhotoCell.m; sourceTree = "<group>"; };
 		18E34710183DFA3300C9D89D /* EZScrollContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZScrollContainer.h; sourceTree = "<group>"; };
 		18E34711183DFA3300C9D89D /* EZScrollContainer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZScrollContainer.m; sourceTree = "<group>"; };
-		18E34712183DFA3300C9D89D /* EZAlbumCollectionPage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZAlbumCollectionPage.h; sourceTree = "<group>"; };
-		18E34713183DFA3300C9D89D /* EZAlbumCollectionPage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZAlbumCollectionPage.m; sourceTree = "<group>"; };
 		18E34714183DFA3300C9D89D /* EZContactsPage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZContactsPage.h; sourceTree = "<group>"; };
 		18E34715183DFA3300C9D89D /* EZContactsPage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZContactsPage.m; sourceTree = "<group>"; };
 		18E34716183DFA3300C9D89D /* EZBaseCollectionPage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZBaseCollectionPage.h; sourceTree = "<group>"; };
@@ -694,8 +691,6 @@
 				18E3470F183DFA3300C9D89D /* EZPhotoCell.m */,
 				18E34710183DFA3300C9D89D /* EZScrollContainer.h */,
 				18E34711183DFA3300C9D89D /* EZScrollContainer.m */,
-				18E34712183DFA3300C9D89D /* EZAlbumCollectionPage.h */,
-				18E34713183DFA3300C9D89D /* EZAlbumCollectionPage.m */,
 				18E34714183DFA3300C9D89D /* EZContactsPage.h */,
 				18E34715183DFA3300C9D89D /* EZContactsPage.m */,
 				18E34716183DFA3300C9D89D /* EZBaseCollectionPage.h */,
@@ -1177,7 +1172,6 @@
 				18E34782183DFAA400C9D89D /* EZWeiboUtil.m in Sources */,
 				18E34837183F064200C9D89D /* EZFaceUtil.mm in Sources */,
 				18E347FC183E081D00C9D89D /* AFNetworkActivityIndicatorManager.m in Sources */,
-				18E34727183DFA3300C9D89D /* EZAlbumCollectionPage.m in Sources */,
 				18E34781183DFAA400C9D89D /* EZMessageCenter.m in Sources */,
 				18E3472F183DFA3400C9D89D /* EZDummyPage.m in Sources */,
 				18E3477B183DFAA400C9D89D /* EZExtender.m in Sources */,
@@ -1362,6 +1356,7 @@
 		18E346AD183DF54500C9D89D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1384,6 +1379,7 @@
 		18E346AE183DF54500C9D89D /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				FRAMEWORK_SEARCH_PATHS = (

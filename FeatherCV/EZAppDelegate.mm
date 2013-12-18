@@ -24,7 +24,6 @@
 #import "EZTestSuites.h"
 #import "EZViewContainer.h"
 #import "EZTiltMainView.h"
-#import "EZAlbumCollectionPage.h"
 #import "EZContactsPage.h"
 #import "EZMainPage.h"
 #import "DLCImagePickerController.h"
@@ -37,26 +36,6 @@
 @synthesize managedObjectModel = _managedObjectModel;
 @synthesize persistentStoreCoordinator = _persistentStoreCoordinator;
 
-- (EZCombinedPhoto*) generatedCombinedDummy:(NSString*)myName friend:(NSString*)friendName
-{
-    EZCombinedPhoto* res = [[EZCombinedPhoto alloc] init];
-    EZPhoto* ep = [[EZPhoto alloc] init];
-    ep.url = [EZFileUtil fileToURL:@"img01.jpg"].absoluteString;
-    ep.ownerID = 1;
-    
-    EZPhoto* ep2 = [[EZPhoto alloc] init];
-    ep2.url = [EZFileUtil fileToURL:@"img02.jpg"].absoluteString;
-    
-    res.selfPhoto = ep;
-    res.otherPhoto = ep2;
-    EZConversation* conv = [[EZConversation alloc] init];
-    conv.content = @"我爱好照片";
-    conv.conversationID = 10;
-    conv.createdTime = [NSDate date];
-    //res.conversations = @[conv];
-    return res;
-}
-
 
 - (NSMutableArray*) createPersons
 {
@@ -66,18 +45,6 @@
         person.name = [NSString stringWithFormat:@"天哥:%i", i];
         person.avatar = [EZFileUtil fileToURL:@"img02.jpg"].absoluteString;
         [res addObject:person];
-    }
-    return res;
-}
-//This method only for test purpose,
-//so that I can move ahead. Just decouple with your environment and move as fast as you can.
-//Enjoy, coding can make you happy, why do you keep yourself from doing this for so long a time?
-- (NSArray*) getDummyPhotos
-{
-    NSMutableArray* res = [[NSMutableArray alloc] init];
-    //EZCombinedPhoto* cp = [[EZCombinedPhoto alloc] init];
-    for(int i = 0; i < 100; i++){
-        [res addObject:[self generatedCombinedDummy:@"dummy1" friend:@"dummy2"]];
     }
     return res;
 }
@@ -161,14 +128,14 @@
     //v2.view.backgroundColor = [UIColor yellowColor];
     //EZFaceDetector* fd = [[EZFaceDetector alloc] init];
     
-    int currentPerson = [[EZDataUtil getInstance] getCurrentPersonID];
-    EZDEBUG(@"Current personID:%i", currentPerson);
-    EZQueryBlock qb = ^(int start, int limit, EZEventBlock success, EZEventBlock failure){
-        //[[EZDataUtil getInstance] loadAlbumPhoto:start limit:limit success:success failure:failure];
+    int currentPersonID = [[EZDataUtil getInstance] getCurrentPersonID];
+    EZDEBUG(@"Current personID:%i", currentPersonID);
+    EZQueryBlock qb = ^(NSInteger start, NSInteger limit, EZEventBlock success, EZEventBlock failure){
+        [[EZDataUtil getInstance] loadAlbumPhoto:start limit:limit success:success failure:failure];
     };
     //EZAlbumCollectionPage* albumPage = [EZAlbumCollectionPage createGridAlbumPage:true ownID:currentPerson queryBlock:qb];
     EZAlbumTablePage* albumPage = [[EZAlbumTablePage alloc] initWithQueryBlock:qb];
-    UIViewController* dummyPage = [[UIViewController alloc] init];
+    //UIViewController* dummyPage = [[UIViewController alloc] init];
     
     //albumPage.queryBlock = qb;
     UINavigationController* mainNav = [[UINavigationController alloc] initWithRootViewController:albumPage];
@@ -200,7 +167,7 @@
     //[scrollContainer addViewController:v2];
     //[scrollContainer addViewController:v3];
     //EZDEBUG(@"view pointer:%i", (int)scrollContainer.view);
-    [scrollContainer addChildren:@[contactNav, dummyPage, v3]];
+    [scrollContainer addChildren:@[contactNav, mainNav, v3]];
     scrollContainer.currentIndex = 1;
     
     [[EZMessageCenter getInstance] registerEvent:EZCameraCompleted block:^(UIImage* img){
@@ -264,42 +231,6 @@
     EZDEBUG(@"Visible enabled");
     return YES;
 }
-
-- (BOOL)applicationOld:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
-{
-    _cameraRaised = false;
-    [EZTestSuites testAll];
-    
-    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    
-    // Override point for customization after application launch.
-    EZMainPage* mainPage = [[EZMainPage alloc] init];
-    EZTiltMainView* tiltPage = [[EZTiltMainView alloc] init];
-    EZViewContainer* container = [[EZViewContainer alloc] init];
-    container.zoomInView = mainPage;
-    container.zoomOutView = tiltPage;
-    [container showView:mainPage];
-    int currentPerson = [[EZDataUtil getInstance] getCurrentPersonID];
-    EZDEBUG(@"Current personID:%i", currentPerson);
-    EZQueryBlock qb = ^(int start, int limit, EZEventBlock success, EZEventBlock failure){
-        [[EZDataUtil getInstance] loadAlbumAsDisplayPhoto:start limit:limit success:success failure:failure];
-    };
-    EZAlbumCollectionPage* albumPage = [EZAlbumCollectionPage createGridAlbumPage:true ownID:currentPerson queryBlock:qb];
-    //albumPage.combinedPhotos = [[NSMutableArray alloc] initWithArray:[self getDummyPhotos]];
-    //I would like to get the photo taking screen show off
-    [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
-    [[NSNotificationCenter defaultCenter] addObserver:self  selector:@selector(orientationChanged:)  name:UIDeviceOrientationDidChangeNotification  object:[UIDevice currentDevice]];
-    UINavigationController* rootNav = [[UINavigationController alloc] initWithRootViewController:albumPage];
-    self.window.rootViewController = rootNav;
-    EZContactsPage* contactPage = [[EZContactsPage alloc] initPage];
-    contactPage.contacts = [self createPersons];
-    //self.window.rootViewController = contactPage;
-    
-    self.window.backgroundColor = [UIColor greenColor];
-    [self.window makeKeyAndVisible];
-    return YES;
-}
-
 
 - (BOOL)applicationTestFace:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {

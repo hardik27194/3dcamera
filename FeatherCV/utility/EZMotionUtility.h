@@ -26,6 +26,9 @@ typedef enum {
 @property (nonatomic, assign) CGFloat pitch;
 @property (nonatomic, assign) CGFloat roll;
 
+@property (nonatomic, strong) NSMutableArray* storedMotion;
+@property (nonatomic, strong) CMAttitude* currentMotion;
+
 @end
 
 @interface EZRegisteredHandler : NSObject
@@ -47,6 +50,8 @@ typedef enum {
 @property(nonatomic, strong) NSMutableDictionary* registeredHandler;
 
 @property(nonatomic, strong) NSMutableDictionary* updateStatus;
+
+@property(nonatomic, strong) NSMutableArray* storedMotions;
 
 + (EZMotionUtility*) getInstance;
 

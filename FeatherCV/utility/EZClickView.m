@@ -39,6 +39,8 @@
     if(!_pressedView){
         _pressedView = [[UIView alloc] initWithFrame:self.bounds];
         [self addSubview:_pressedView];
+    }else{
+        [_pressedView setFrame:self.bounds];
     }
     //Then my code will be very strong.
     [self bringSubviewToFront:_pressedView];

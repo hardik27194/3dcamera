@@ -45,11 +45,12 @@
 //Will get current login person id
 - (int) getCurrentPersonID;
 
+- (EZPerson*) getCurrentPerson;
+
 //Why this method?
 //Normally, the person is already in the cache by check the photos.
 - (EZPerson*) getPerson:(int)personID;
 
-- (EZPerson*) getMyself;
 //Get the person object
 //- (EZPerson*) getPerson:(int)personID;
 - (void) getPersonID:(int)personID success:(EZEventBlock)success failure:(EZEventBlock)failure;
@@ -69,7 +70,7 @@
 - (void) inviteFriend:(EZPerson*)person success:(EZEventBlock)success failure:(EZEventBlock)failure;
 
 //Will check the combined photo from a particular person
-- (void) getCombinedPhoto:(int)personID start:(int)start limit:(int)limit success:(EZEventBlock)success failure:(EZEventBlock)failure;
+//- (void) getCombinedPhoto:(int)personID start:(int)start limit:(int)limit success:(EZEventBlock)success failure:(EZEventBlock)failure;
 
 //I will try to get the all the user from the address book.
 //Every time user get to the contact page will call it?

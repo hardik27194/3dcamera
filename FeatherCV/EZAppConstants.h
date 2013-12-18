@@ -16,6 +16,7 @@
 
 #define functionalBarTitleColor RGBCOLOR(79,79,79)
 
+#define currentPerson [[EZDataUtil getInstance] getCurrentPerson] 
 //This is from show hair.
 //Who will manage the session.
 //From Mobile's perspective, I should handle the session.
