@@ -475,7 +475,7 @@
 }
 
 -(void) prepareStaticFilter {
-    
+    EZDEBUG(@"Prepare static image get called");
     [staticPicture addTarget:filter];
 
     // blur is terminal filter
@@ -625,13 +625,19 @@
         [stillCamera stopCameraCapture];
         [self removeAllTargets];
         
+        UIImage* flipped = img;
         if(flip){
-            img = [img flipImage];
+            flipped = [img flipImage];
         }
-        staticPicture = [[GPUImagePicture alloc] initWithImage:img smoothlyScaleOutput:NO];
-        staticPictureOriginalOrientation = img.imageOrientation;
+        staticPicture = [[GPUImagePicture alloc] initWithImage:flipped smoothlyScaleOutput:NO];
+        staticPictureOriginalOrientation = flipped.imageOrientation;
         
-        [self prepareFilter];
+        //UIImageView* iview = [[UIImageView alloc] initWithFrame:CGRectMake(0, 400, 100, 100)];
+        //iview.image = flipped;
+        EZDEBUG(@"Capture the flip is:%i, flipped orientation:%i, orginal:%i", flip, flipped.imageOrientation, img.imageOrientation);
+        //[self.view addSubview:iview];
+        
+        [self prepareStaticFilter];
         [self.retakeButton setHidden:NO];
         [self.photoCaptureButton setTitle:@"Done" forState:UIControlStateNormal];
         [self.photoCaptureButton setImage:nil forState:UIControlStateNormal];
