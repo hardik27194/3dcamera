@@ -9,15 +9,26 @@
 #import <Foundation/Foundation.h>
 #import "GPUImage.h"
 #import "DLCBlurOverlayView.h"
+#import "EZSoundEffect.h"
 
 typedef enum {
     //This is the initial status
     kCameraNormal,
     //Detect a half turn, we will have another time count
     kCameraHalfTurn,
+    //Will not do anything during this period
+    //Turned Dormant
+    kCameraTurnDormant,
+    
+    //
+    kSelfShotDormant,
+    kSelfShot,
     //Mean I am in the turned status
-    kCameraTurned,
-    kSelfCaptured
+    kCameraCapturing,
+    kSelfCaptured,
+    kSelfCapturedAgain,
+    //Only do the turn for the self captured.
+    kNormalCaptured
 } EZCameraTurnStatus;
 
 @class DLCImagePickerController;
@@ -57,6 +68,17 @@ typedef enum {
 @property (nonatomic, assign) CGFloat outputJPEGQuality;
 @property (nonatomic, assign) CGSize requestedImageSize;
 @property (nonatomic, assign) BOOL senseRotate;
+
+@property (nonatomic, strong) EZSoundEffect* pageTurn;
+@property (nonatomic, strong) EZSoundEffect* shotReady;
+
+//What's the purpose of this method?
+//The purpose is to make sure if we are using the automatic shot or not.
+//If it is, we will switch back to front facing.
+@property (nonatomic, assign) BOOL selfShot;
+
+//If current camera point forward
+@property (nonatomic, assign) BOOL isFrontCamera;
 
 
 //This method will change the turnStatus

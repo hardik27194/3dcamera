@@ -9,6 +9,7 @@
 #import "DLCImagePickerController.h"
 #import "DLCGrayscaleContrastFilter.h"
 #import "EZMotionUtility.h"
+#import "EZSoundEffect.h"
 
 #define kStaticBlurSize 2.0f
 @interface EZMotionRecord : NSObject 
@@ -31,7 +32,7 @@
     GPUImageOutput<GPUImageInput> *blurFilter;
     GPUImageCropFilter *cropFilter;
     GPUImagePicture *staticPicture;
-    
+    NSMutableArray* _recordedMotions;
     UIImageOrientation staticPictureOriginalOrientation;
     BOOL isStatic;
     BOOL hasBlur;
@@ -87,14 +88,18 @@
 - (void) captureTurnedImage
 {
     _turnStatus = kSelfCaptured;
-    [self captureImage];
+    _selfShot = true;
+    [self captureImageInner];
 }
 
 -(void)viewDidLoad {
     
     [super viewDidLoad];
     _senseRotate = true;
+    _recordedMotions = [[NSMutableArray alloc] init];
     self.wantsFullScreenLayout = YES;
+    _pageTurn = [[EZSoundEffect alloc] initWithSoundNamed:@"page_turn.aiff"];
+    _shotReady = [[EZSoundEffect alloc] initWithSoundNamed:@"shot_voice.aiff"];
     //set background color
     self.view.backgroundColor = [UIColor colorWithPatternImage:
                                  [UIImage imageNamed:@"micro_carbon"]];
@@ -133,8 +138,16 @@
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         [self setUpCamera];
     });
+    _isFrontCamera = false;
 }
 
+- (void) clearMotionEffects:(EZMotionData*)md attr:(CMAttitude*)attr
+{
+    [md.storedMotion removeAllObjects];
+    for(int i = 1; i < 51; i++){
+        [md.storedMotion addObject:attr];
+    }
+}
 
 //I will obey this rule, only when I visible, it make sense to register the handle.
 -(void) becomeVisible
@@ -143,38 +156,154 @@
     [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
     if(_senseRotate){
         [[EZMotionUtility getInstance] registerHandler:^(EZMotionData* md){
+            //EZDEBUG(@"motion turn is main:%i", [NSThread currentThread].isMainThread);
             //CMAttitude* cur = md.currentMotion;
-            if(md.storedMotion.count > 50){
-                CMAttitude* prev = [md.storedMotion objectAtIndex:50];
+            for(int curPos = 2;curPos < MIN(md.storedMotion.count, 50); curPos++){
+                CMAttitude* prev = [[md.storedMotion objectAtIndex:(md.storedMotion.count - curPos)] copy];
                 [prev multiplyByInverseOfAttitude:md.currentMotion];
+                
                 CGFloat absYDelta = fabsf(prev.quaternion.y);
-                EZDEBUG(@"The thread id:%i, delta x:%f, y:%f, z:%f, w:%f",[NSThread currentThread].isMainThread, prev.quaternion.x, prev.quaternion.y, prev.quaternion.z, prev.quaternion.w);
+                if(curPos == 2){
+                //EZDEBUG(@"-------------delta x:%f, y:%f, z:%f, w:%f", prev.quaternion.x, prev.quaternion.y, prev.quaternion.z, prev.quaternion.w);
+                }
+                if(_turnStatus == kCameraHalfTurn || _turnStatus == kSelfShotDormant){
+                    EZDEBUG(@"switch to face shot:%i", _turnStatus);
+                    for(int i = 1; i < 20; i++){
+                        CMAttitude* recent = [[md.storedMotion objectAtIndex:md.storedMotion.count - i] copy];
+                        [recent multiplyByInverseOfAttitude:md.currentMotion];
+                        CGFloat absDelta = fabsf(recent.quaternion.y);
+                        EZDEBUG(@"delta:%f", absDelta);
+                        
+                        if(absDelta > 0.5){
+                            EZDEBUG(@"Will turn the camera, is front:%i", stillCamera.isFrontFacing);
+                            _turnStatus = kCameraTurnDormant;
+                            [self clearMotionEffects:md attr:md.currentMotion];
+                            
+                            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC));
+                            dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+                                EZDEBUG(@"Dormant is timeout");
+                                if(_turnStatus == kCameraTurnDormant){
+                                    _turnStatus = kCameraNormal;
+                                }
+                            });
+                            //[md.storedMotion removeAllObjects];
+                            //if(!stillCamera.isFrontFacing){
+                            [_pageTurn play];
+                            [self switchCameraInner];
+                            break;
+                        }
+                        /**
+                        else if(_turnStatus == kSelfShotDormant && absDelta > 0.2){
+                            EZDEBUG(@"Self shot disturbed: absDelta:%f", absDelta);
+                            [self clearMotionEffects:md attr:md.currentMotion];
+                            _turnStatus = kCameraNormal;
+                            break;
+                        }
+                         **/
+                        //[[CMAttitude alloc]]
+                    }
+                    return;
+                }
+
                 if(absYDelta > 0.90){
-                    EZDEBUG(@"Will rotate for %f", absYDelta);
+                    EZDEBUG(@"Will rotate for %f, _turnStatus:%i, curPos:%i", absYDelta, _turnStatus, curPos);
                     //[stillCamera rotateCamera];
                     
-                    [md.storedMotion removeAllObjects];
-                    for(int i = 1; i < 51; i++){
-                        [md.storedMotion addObject:md.currentMotion];
+                    //[md.storedMotion removeAllObjects];
+                    [self clearMotionEffects:md attr:md.currentMotion];
+                    //So we will just ignore the capturing?
+                    //User expecting have another action
+                    if(_turnStatus == kCameraNormal){
+                        EZDEBUG(@"I am in half turn now");
+                        if(stillCamera.isFrontFacing){
+                            EZDEBUG(@"Will start capture now, isFront:%i", stillCamera.isFrontFacing);
+                            _turnStatus = kSelfShotDormant;
+                            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC));
+                            dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+                                EZDEBUG(@"shot started:%i", _turnStatus);
+                                if(_turnStatus == kSelfShotDormant){
+                                    _turnStatus = kCameraCapturing;
+                                    [_pageTurn play];
+                                    if(stillCamera.isFrontFacing){
+                                        [self switchCameraInner];
+                                    }
+                                    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC));
+                                    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+                                        [_shotReady play];
+                                    });
+                                    
+                                    [self performSelector:@selector(captureTurnedImage)
+                                               withObject:nil
+                                               afterDelay:3.0];
+                                }
+                            });
+                        }else{
+                        _turnStatus = kCameraHalfTurn;
+                        double delayInSeconds = 0.6;
+                        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+                        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+                            
+                            if(_turnStatus == kCameraHalfTurn){
+                                EZDEBUG(@"Clear the half turn to normal");
+                                _turnStatus = kCameraNormal;
+                            }
+                            EZDEBUG(@"after clear half turn status %i", _turnStatus);
+                        });
+                        }
+                        return;
+                    }
+                    /**
+                    if(_turnStatus == kSelfCaptured){
+                        EZDEBUG(@"Self captured first time, ignore it");
+                        _turnStatus = kSelfCapturedAgain;
+                        return;
                     }
                     
-                    if(_turnStatus == kSelfCaptured){
+                    if(_turnStatus == kSelfCapturedAgain){
+                        EZDEBUG(@"Will capture again, is front:%i", stillCamera.isFrontFacingCameraPresent);
+                        _turnStatus = kCameraCapturing;
+                        [self retakePhoto:retakeButton];
+                        [_pageTurn play];
+                        if(stillCamera.isFrontFacing){
+                            [self switchCameraInner];
+                        }
+                        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC));
+                        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+                            [_shotReady play];
+                        });
                         [self performSelector:@selector(captureTurnedImage)
                                    withObject:nil
                                    afterDelay:3.0];
-                    }else{
-                    if(!stillCamera.isBackFacingCameraPresent){
-                        dispatch_async(dispatch_get_main_queue(),^(){
-                        [self switchCamera];
-                        [self performSelector:@selector(captureTurnedImage)
-                                   withObject:nil
-                                   afterDelay:3.0];
-                    });
+                        return;
                     }
+                    **/
+                    /**
+                    if(_turnStatus == kCameraNormal && stillCamera.isFrontFacing){
+                        EZDEBUG(@"Will start capture now, isFront:%i", stillCamera.isFrontFacing);
+                        _turnStatus = kSelfShotDormant;
+                        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC));
+                        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+                            if(_turnStatus == kSelfShotDormant){
+                                _turnStatus = kCameraCapturing;
+                                [_pageTurn play];
+                                if(stillCamera.isFrontFacing){
+                                    [self switchCameraInner];
+                                }
+                                [self performSelector:@selector(captureTurnedImage)
+                                       withObject:nil
+                                       afterDelay:3.0];
+                            }
+                        });
+                        
+                        return;
                     }
+                     **/
                 }
             }
         } key:@"CameraMotion" type:kEZRotation];
+    }
+    if(!stillCamera.isBackFacingCameraPresent){
+        [self switchCamera];
     }
     [stillCamera startCameraCapture];
     //[super viewWillAppear:animated];
@@ -239,7 +368,7 @@
     if ([UIImagePickerController isSourceTypeAvailable: UIImagePickerControllerSourceTypeCamera]) {
         // Has camera
         
-        stillCamera = [[GPUImageStillCamera alloc] initWithSessionPreset:AVCaptureSessionPresetPhoto cameraPosition:AVCaptureDevicePositionFront];
+        stillCamera = [[GPUImageStillCamera alloc] initWithSessionPreset:AVCaptureSessionPresetPhoto cameraPosition:AVCaptureDevicePositionBack];
                 
         stillCamera.outputImageOrientation = UIInterfaceOrientationPortrait;
         runOnMainQueueWithoutDeadlocking(^{
@@ -446,7 +575,19 @@
 }
 
 -(IBAction) switchCamera {
-    EZDEBUG(@"Switch");
+    EZDEBUG(@"Switch is front:%i", stillCamera.isFrontFacing);
+    if(!stillCamera.isFrontFacing){
+        _turnStatus = kSelfShot;
+    }
+    [self switchCameraOnly];
+}
+
+-(void) switchCameraInner {
+    //[_pageTurn play];
+    [self switchCameraOnly];
+}
+
+- (void) switchCameraOnly {
     [self.cameraToggleButton setEnabled:NO];
     [stillCamera rotateCamera];
     [self.cameraToggleButton setEnabled:YES];
@@ -458,8 +599,8 @@
             [self.flashToggleButton setEnabled:NO];
         }
     }
-}
 
+}
 -(void) prepareForCapture {
     [stillCamera.inputCamera lockForConfiguration:nil];
     if(self.flashToggleButton.selected &&
@@ -473,8 +614,12 @@
     }
 }
 
+-(void)captureImage{
+    _selfShot = false;
+    [self captureImageInner];
+}
 
--(void)captureImage {
+-(void)captureImageInner {
     
     void (^completion)(UIImage *, NSError *) = ^(UIImage *img, NSError *error) {
         
@@ -490,9 +635,9 @@
         [self.photoCaptureButton setTitle:@"Done" forState:UIControlStateNormal];
         [self.photoCaptureButton setImage:nil forState:UIControlStateNormal];
         [self.photoCaptureButton setEnabled:YES];
-        if(![self.filtersToggleButton isSelected]){
-            [self showFilters];
-        }
+        //if(![self.filtersToggleButton isSelected]){
+        //    [self showFilters];
+        //}
     };
     
     
@@ -559,14 +704,20 @@
 }
 
 -(IBAction) retakePhoto:(UIButton *)button {
+    _turnStatus = kCameraNormal;
     [self.retakeButton setHidden:YES];
     [self.libraryToggleButton setHidden:NO];
     staticPicture = nil;
     staticPictureOriginalOrientation = UIImageOrientationUp;
     isStatic = NO;
     [self removeAllTargets];
+    EZDEBUG(@"selfShot:%i, front:%i", _selfShot, stillCamera.isFrontFacing);
+    if(_selfShot && !stillCamera.isFrontFacing){
+        [stillCamera rotateCamera];
+    }
     [stillCamera startCameraCapture];
     [self.cameraToggleButton setEnabled:YES];
+    
     
     if([UIImagePickerController isSourceTypeAvailable: UIImagePickerControllerSourceTypeCamera]
        && stillCamera

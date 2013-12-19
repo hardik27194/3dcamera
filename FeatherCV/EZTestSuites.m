@@ -11,6 +11,7 @@
 #import "EZImageFileCache.h"
 #import "EZDataUtil.h"
 #import "EZExtender.h"
+#import "EZSoundEffect.h"
 
 @implementation EZTestSuites
 
@@ -22,8 +23,14 @@
     //[EZTestSuites testAssetFetch];
     //[EZTestSuites testAddressBook];
     //[EZTestSuites testGetNumberFromString];
+    [EZTestSuites testSoundEffects];
 }
 
++ (void) testSoundEffects
+{
+    EZSoundEffect* sf = [[EZSoundEffect alloc] initWithSoundNamed:@"page_turn.aiff"];
+    [sf play];
+}
 
 + (void) testGetNumberFromString
 {

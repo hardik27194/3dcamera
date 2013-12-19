@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		18512A331861BE6300282264 /* shot_voice.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 18512A321861BE6300282264 /* shot_voice.aiff */; };
 		18A36FD9184C7F820022F0A8 /* smile_face.png in Resources */ = {isa = PBXBuildFile; fileRef = 18A36FD8184C7F820022F0A8 /* smile_face.png */; };
 		18A36FEF1855C1DB0022F0A8 /* DLCImagePickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A36FEC1855C1DB0022F0A8 /* DLCImagePickerController.m */; };
 		18A36FF01855C1DB0022F0A8 /* DLCBlurOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A36FEE1855C1DB0022F0A8 /* DLCBlurOverlayView.m */; };
@@ -49,6 +50,8 @@
 		18A3703E1859AE850022F0A8 /* EZContactTablePage.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A3703D1859AE850022F0A8 /* EZContactTablePage.m */; };
 		18A370411859B7C20022F0A8 /* EZContactTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A370401859B7C20022F0A8 /* EZContactTableCell.m */; };
 		18A37044185BF97E0022F0A8 /* EZPhotoRelation.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A37043185BF97E0022F0A8 /* EZPhotoRelation.m */; };
+		18C0E76B1861A08700D694CE /* page_turn.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 18C0E76A1861A08700D694CE /* page_turn.aiff */; };
+		18C0E76E1861A0FF00D694CE /* EZSoundEffect.m in Sources */ = {isa = PBXBuildFile; fileRef = 18C0E76D1861A0FF00D694CE /* EZSoundEffect.m */; };
 		18E3467E183DF54400C9D89D /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18E3467D183DF54400C9D89D /* Foundation.framework */; };
 		18E34680183DF54400C9D89D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18E3467F183DF54400C9D89D /* CoreGraphics.framework */; };
 		18E34682183DF54400C9D89D /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18E34681183DF54400C9D89D /* UIKit.framework */; };
@@ -220,6 +223,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		18512A321861BE6300282264 /* shot_voice.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = shot_voice.aiff; sourceTree = "<group>"; };
 		18A36FD8184C7F820022F0A8 /* smile_face.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = smile_face.png; sourceTree = "<group>"; };
 		18A36FEB1855C1DB0022F0A8 /* DLCImagePickerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DLCImagePickerController.h; sourceTree = "<group>"; };
 		18A36FEC1855C1DB0022F0A8 /* DLCImagePickerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DLCImagePickerController.m; sourceTree = "<group>"; };
@@ -268,6 +272,9 @@
 		18A370401859B7C20022F0A8 /* EZContactTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZContactTableCell.m; sourceTree = "<group>"; };
 		18A37042185BF97E0022F0A8 /* EZPhotoRelation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZPhotoRelation.h; sourceTree = "<group>"; };
 		18A37043185BF97E0022F0A8 /* EZPhotoRelation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZPhotoRelation.m; sourceTree = "<group>"; };
+		18C0E76A1861A08700D694CE /* page_turn.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = page_turn.aiff; sourceTree = "<group>"; };
+		18C0E76C1861A0FF00D694CE /* EZSoundEffect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZSoundEffect.h; sourceTree = "<group>"; };
+		18C0E76D1861A0FF00D694CE /* EZSoundEffect.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZSoundEffect.m; sourceTree = "<group>"; };
 		18E3467A183DF54400C9D89D /* FeatherCV.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FeatherCV.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		18E3467D183DF54400C9D89D /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		18E3467F183DF54400C9D89D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -577,6 +584,15 @@
 			name = UI;
 			sourceTree = "<group>";
 		};
+		18C0E7691861A07200D694CE /* sound_effects */ = {
+			isa = PBXGroup;
+			children = (
+				18512A321861BE6300282264 /* shot_voice.aiff */,
+				18C0E76A1861A08700D694CE /* page_turn.aiff */,
+			);
+			path = sound_effects;
+			sourceTree = "<group>";
+		};
 		18E34671183DF54400C9D89D = {
 			isa = PBXGroup;
 			children = (
@@ -622,6 +638,7 @@
 		18E34685183DF54400C9D89D /* FeatherCV */ = {
 			isa = PBXGroup;
 			children = (
+				18C0E7691861A07200D694CE /* sound_effects */,
 				18A36FE91855C1470022F0A8 /* camera */,
 				18E34829183F037400C9D89D /* facehandle */,
 				18E34789183E029400C9D89D /* thirdparty */,
@@ -779,6 +796,8 @@
 				18E34774183DFAA400C9D89D /* EZImageFileCache.m */,
 				18E346DA183DF96D00C9D89D /* UIImage2OpenCV.h */,
 				18E346DB183DF96D00C9D89D /* UIImage2OpenCV.mm */,
+				18C0E76C1861A0FF00D694CE /* EZSoundEffect.h */,
+				18C0E76D1861A0FF00D694CE /* EZSoundEffect.m */,
 			);
 			path = utility;
 			sourceTree = "<group>";
@@ -1119,9 +1138,11 @@
 				18E34706183DF9D700C9D89D /* user-icon-placeholder-60@2x.png in Resources */,
 				18E34830183F045900C9D89D /* tian_1.JPG in Resources */,
 				18E34825183F02D600C9D89D /* haarcascade_profileface.xml in Resources */,
+				18C0E76B1861A08700D694CE /* page_turn.aiff in Resources */,
 				18E346F5183DF9C400C9D89D /* half_love_left@2x.png in Resources */,
 				18E346FF183DF9C400C9D89D /* talk-btn-pressed@2x.png in Resources */,
 				18E3481F183F02D600C9D89D /* haarcascade_mcs_lefteye.xml in Resources */,
+				18512A331861BE6300282264 /* shot_voice.aiff in Resources */,
 				18A370221855C2A40022F0A8 /* blur.png in Resources */,
 				18A370241855C2A40022F0A8 /* front-camera.png in Resources */,
 				18E34828183F02D600C9D89D /* haarcascade_upperbody.xml in Resources */,
@@ -1220,6 +1241,7 @@
 				18E34787183DFAA400C9D89D /* EZDataUtil.m in Sources */,
 				18E3477F183DFAA400C9D89D /* EZReachability.m in Sources */,
 				18E3474C183DFA7300C9D89D /* EZDisplayPhoto.m in Sources */,
+				18C0E76E1861A0FF00D694CE /* EZSoundEffect.m in Sources */,
 				18E347D5183E050B00C9D89D /* Reachability.m in Sources */,
 				18E347DD183E050B00C9D89D /* ASIDataCompressor.m in Sources */,
 				18E34784183DFAA400C9D89D /* EZGeoUtility.m in Sources */,

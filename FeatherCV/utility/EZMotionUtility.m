@@ -100,7 +100,7 @@ static EZMotionUtility* instance;
 {
     //EZDEBUG(@"update handle get called, type:%i", type);
     NSMutableArray* handlerList = [_updateStatus objectForKey:@(type)];
-    EZDEBUG(@"handlerlist is:%i, for type:%i", handlerList.count, type);
+    //EZDEBUG(@"handlerlist is:%i, for type:%i", handlerList.count, type);
     for(EZRegisteredHandler* rh in handlerList){
         rh.handler(md);
     }
@@ -135,7 +135,7 @@ static EZMotionUtility* instance;
             if([_motionManager isDeviceMotionAvailable]){
                 [_motionManager setDeviceMotionUpdateInterval:EZMotionUpdateFreq];
                 [_motionManager startDeviceMotionUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMDeviceMotion *motion, NSError *error) {
-                    EZDEBUG(@"The motion uppdated:%i",(int)error);
+                    //EZDEBUG(@"The motion uppdated:%i",(int)error);
                     if(motion){
                         EZMotionData* md = [[EZMotionData alloc] init];
                         md.pitch = motion.attitude.pitch;
