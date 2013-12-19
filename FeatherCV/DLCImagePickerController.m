@@ -215,7 +215,7 @@
                     //User expecting have another action
                     if(_turnStatus == kCameraNormal){
                         EZDEBUG(@"I am in half turn now");
-                        if(stillCamera.isFrontFacing){
+                        //if(stillCamera.isFrontFacing){
                             EZDEBUG(@"Will start capture now, isFront:%i", stillCamera.isFrontFacing);
                             _turnStatus = kSelfShotDormant;
                             dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC));
@@ -237,11 +237,12 @@
                                                afterDelay:3.0];
                                 }
                             });
-                        }else{
+                        //}else{
+                        /**
                         _turnStatus = kCameraHalfTurn;
                         double delayInSeconds = 0.6;
-                        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
-                        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+                        dispatch_time_t popTime2 = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+                        dispatch_after(popTime2, dispatch_get_main_queue(), ^(void){
                             
                             if(_turnStatus == kCameraHalfTurn){
                                 EZDEBUG(@"Clear the half turn to normal");
@@ -249,7 +250,8 @@
                             }
                             EZDEBUG(@"after clear half turn status %i", _turnStatus);
                         });
-                        }
+                        //}
+                         **/
                         return;
                     }
                     /**
@@ -629,6 +631,7 @@
         if(flip){
             flipped = [img flipImage];
         }
+        //flipped.imageOrientation = 4;
         staticPicture = [[GPUImagePicture alloc] initWithImage:flipped smoothlyScaleOutput:NO];
         staticPictureOriginalOrientation = flipped.imageOrientation;
         
