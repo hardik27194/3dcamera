@@ -89,7 +89,7 @@
 {
     _turnStatus = kSelfCaptured;
     _selfShot = true;
-    [self captureImageInner];
+    [self captureImageInner:YES];
 }
 
 -(void)viewDidLoad {
@@ -302,9 +302,7 @@
             }
         } key:@"CameraMotion" type:kEZRotation];
     }
-    if(!stillCamera.isBackFacingCameraPresent){
-        [self switchCamera];
-    }
+
     [stillCamera startCameraCapture];
     //[super viewWillAppear:animated];
     
@@ -369,8 +367,8 @@
         // Has camera
         
         stillCamera = [[GPUImageStillCamera alloc] initWithSessionPreset:AVCaptureSessionPresetPhoto cameraPosition:AVCaptureDevicePositionBack];
-                
         stillCamera.outputImageOrientation = UIInterfaceOrientationPortrait;
+        //stillCamera.horizontallyMirrorFrontFacingCamera = TRUE;
         runOnMainQueueWithoutDeadlocking(^{
             [stillCamera startCameraCapture];
             if([stillCamera.inputCamera hasTorch]){
@@ -575,10 +573,10 @@
 }
 
 -(IBAction) switchCamera {
-    EZDEBUG(@"Switch is front:%i", stillCamera.isFrontFacing);
-    if(!stillCamera.isFrontFacing){
-        _turnStatus = kSelfShot;
-    }
+    EZDEBUG(@"Switch is front:%i, orientation:%i", stillCamera.isFrontFacing, stillCamera.horizontallyMirrorFrontFacingCamera);
+    //if(!stillCamera.isFrontFacing){
+    //    _turnStatus = kSelfShot;
+    //}
     [self switchCameraOnly];
 }
 
@@ -616,10 +614,10 @@
 
 -(void)captureImage{
     _selfShot = false;
-    [self captureImageInner];
+    [self captureImageInner:NO];
 }
 
--(void)captureImageInner {
+-(void)captureImageInner:(BOOL)flip {
     
     void (^completion)(UIImage *, NSError *) = ^(UIImage *img, NSError *error) {
         
@@ -627,6 +625,9 @@
         [stillCamera stopCameraCapture];
         [self removeAllTargets];
         
+        if(flip){
+            img = [img flipImage];
+        }
         staticPicture = [[GPUImagePicture alloc] initWithImage:img smoothlyScaleOutput:NO];
         staticPictureOriginalOrientation = img.imageOrientation;
         

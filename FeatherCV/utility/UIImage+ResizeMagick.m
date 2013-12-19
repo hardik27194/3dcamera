@@ -17,6 +17,20 @@
 // widthxheight!	Exact dimensions, no aspect ratio preserved.
 // widthxheight#	Crop to this exact dimensions.
 
+- (UIImage *) flipImage
+{
+    //UIImage* sourceImage = [UIImage imageNamed:@"whatever.png"];
+    UIImageOrientation flippingOrientation;
+    if(self.imageOrientation>=4){
+        flippingOrientation = self.imageOrientation - 4;
+    }else{
+        flippingOrientation = self.imageOrientation + 4;
+    }
+    UIImage* flippedImage = [UIImage imageWithCGImage:self.CGImage
+                                                scale: self.scale orientation: flippingOrientation];
+    return flippedImage;
+}
+
 - (UIImage *) resizedImageByMagick: (NSString *) spec
 {
 
