@@ -28,6 +28,7 @@ typedef enum {
 
 @property (nonatomic, strong) NSMutableArray* storedMotion;
 @property (nonatomic, strong) CMAttitude* currentMotion;
+@property (nonatomic, strong) CMAttitude* previousMotion;
 
 @end
 

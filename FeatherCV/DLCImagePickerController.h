@@ -72,6 +72,8 @@ typedef enum {
 @property (nonatomic, strong) EZSoundEffect* pageTurn;
 @property (nonatomic, strong) EZSoundEffect* shotReady;
 
+@property (nonatomic, strong) NSMutableArray* storedMotionDelta;
+
 //What's the purpose of this method?
 //The purpose is to make sure if we are using the automatic shot or not.
 //If it is, we will switch back to front facing.
