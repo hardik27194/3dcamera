@@ -8,6 +8,8 @@
 
 #import "DLCImagePickerController.h"
 #import "DLCGrayscaleContrastFilter.h"
+#import "EZFaceBlurFilter.h"
+#import "EZFaceBlurFilter2.h"
 #import "EZMotionUtility.h"
 #import "EZSoundEffect.h"
 
@@ -31,6 +33,7 @@
     GPUImageOutput<GPUImageInput> *filter;
     GPUImageOutput<GPUImageInput> *blurFilter;
     GPUImageCropFilter *cropFilter;
+    EZFaceBlurFilter2* faceBlurFilter;
     GPUImagePicture *staticPicture;
     //NSMutableArray* _recordedMotions;
     CMAttitude* _prevMotion;
@@ -134,7 +137,10 @@
     
     //we need a crop filter for the live video
     cropFilter = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.0f, 0.0f, 1.0f, 0.75f)];
-    
+    faceBlurFilter = [[EZFaceBlurFilter2 alloc] init];
+    //[faceBlurFilter setExcludeCircleRadius:80.0/320.0];
+    //[faceBlurFilter setExcludeCirclePoint:CGPointMake(0.5f, 0.5f)];
+    //[faceBlurFilter setAspectRatio:1.0f];
     filter = [[GPUImageFilter alloc] init];
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
@@ -420,15 +426,16 @@
 -(void) prepareLiveFilter {
     
     [stillCamera addTarget:cropFilter];
-    [cropFilter addTarget:filter];
+    [cropFilter addTarget:faceBlurFilter];
+    [faceBlurFilter addTarget:filter];
     //blur is terminal filter
-    if (hasBlur) {
-        [filter addTarget:blurFilter];
-        [blurFilter addTarget:self.imageView];
+    //if (hasBlur) {
+    //    [filter addTarget:blurFilter];
+    //    [blurFilter addTarget:self.imageView];
     //regular filter is terminal
-    } else {
-        [filter addTarget:self.imageView];
-    }
+    //} else {
+    [filter addTarget:self.imageView];
+    //}
     
     [filter prepareForImageCapture];
     
@@ -436,16 +443,18 @@
 
 -(void) prepareStaticFilter {
     EZDEBUG(@"Prepare static image get called");
-    [staticPicture addTarget:filter];
+    [staticPicture addTarget:faceBlurFilter];
+    [faceBlurFilter addTarget:filter];
 
     // blur is terminal filter
-    if (hasBlur) {
-        [filter addTarget:blurFilter];
-        [blurFilter addTarget:self.imageView];
+    //if (hasBlur) {
+    //    [filter addTarget:blurFilter];
+    //    [blurFilter addTarget:self.imageView];
     //regular filter is terminal
-    } else {
-        [filter addTarget:self.imageView];
-    }
+    //} else {
+        
+    [filter addTarget:self.imageView];
+    //}
     
     GPUImageRotationMode imageViewRotationMode = kGPUImageNoRotation;
     switch (staticPictureOriginalOrientation) {
@@ -477,7 +486,7 @@
     
     //regular filter
     [filter removeAllTargets];
-    
+    [faceBlurFilter removeAllTargets];
     //blur
     [blurFilter removeAllTargets];
 }
@@ -493,7 +502,7 @@
     UIImagePickerController* imagePickerController = [[UIImagePickerController alloc] init];
     imagePickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
     imagePickerController.delegate = self;
-    imagePickerController.allowsEditing = YES;
+    imagePickerController.allowsEditing = NO;
     [self presentViewController:imagePickerController animated:YES completion:NULL];
 }
 
@@ -614,26 +623,30 @@
     if ((currentCameraPosition != AVCaptureDevicePositionFront) || (![contextClass supportsFastTextureUpload])) {
         // Image full-resolution capture is currently possible just on the final (destination filter), so
         // create a new paralel chain, that crops and resizes our image
+        EZDEBUG(@"Prepare for the capture");
         [self removeAllTargets];
         
-        GPUImageCropFilter *captureCrop = [[GPUImageCropFilter alloc] initWithCropRegion:cropFilter.cropRegion];
-        [stillCamera addTarget:captureCrop];
-        GPUImageFilter *finalFilter = captureCrop;
+        //GPUImageCropFilter *captureCrop = [[GPUImageCropFilter alloc] initWithCropRegion:cropFilter.cropRegion];
+        [stillCamera addTarget:faceBlurFilter];
+        GPUImageFilter *finalFilter = faceBlurFilter;
         
+        /**
         if (!CGSizeEqualToSize(requestedImageSize, CGSizeZero)) {
             GPUImageFilter *captureResize = [[GPUImageFilter alloc] init];
             [captureResize forceProcessingAtSize:requestedImageSize];
             [captureCrop addTarget:captureResize];
             finalFilter = captureResize;
         }
-        
+        **/
         [finalFilter prepareForImageCapture];
-        
+        EZDEBUG(@"Capture before get inside");
         [stillCamera capturePhotoAsImageProcessedUpToFilter:finalFilter withCompletionHandler:completion];
+        EZDEBUG(@"Capture without crop");
     } else {
         // A workaround inside capturePhotoProcessedUpToFilter:withImageOnGPUHandler: would cause the above method to fail,
         // so we just grap the current crop filter output as an aproximation (the size won't match trough)
         UIImage *img = [cropFilter imageFromCurrentlyProcessedOutput];
+        EZDEBUG(@"Capture with crop");
         completion(img, nil);
     }
 }
@@ -664,10 +677,14 @@
         UIImage *currentFilteredVideoFrame = [processUpTo imageFromCurrentlyProcessedOutputWithOrientation:staticPictureOriginalOrientation];
 
         NSDictionary *info = [[NSDictionary alloc] initWithObjectsAndKeys:
-                              UIImageJPEGRepresentation(currentFilteredVideoFrame, self.outputJPEGQuality), @"data", currentFilteredVideoFrame, @"image", nil];
+                              UIImagePNGRepresentation(currentFilteredVideoFrame), @"data", currentFilteredVideoFrame, @"image", nil];
+        
         //[info setValue:currentFilteredVideoFrame forKey:@"image"];
         NSLog(@"image size:%f, %f", currentFilteredVideoFrame.size.width, currentFilteredVideoFrame.size.height);
         [self.delegate imagePickerController:self didFinishPickingMediaWithInfo:info];
+        [self retakePhoto:retakeButton];
+        [self.photoCaptureButton setEnabled:YES];
+
     }
 }
 

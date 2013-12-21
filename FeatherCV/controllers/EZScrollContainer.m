@@ -11,10 +11,11 @@
 //  this copyright and permission notice. Attribution in compiled projects is
 //  appreciated but not required.
 //
-
+#import <AssetsLibrary/AssetsLibrary.h>
 #import "EZScrollContainer.h"
 #import "EZClickView.h"
 #import "EZUIUtility.h"
+
 //#import "PageViewController.h"
 //#import "DataSource.h"
 
@@ -195,7 +196,19 @@
 
 - (void)imagePickerController:(DLCImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
-    
+    EZDEBUG(@"Store image get called");
+    ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
+    UIImage* img = [info objectForKey:@"image"];
+    [library writeImageToSavedPhotosAlbum:img.CGImage metadata:nil completionBlock:^(NSURL *assetURL, NSError *error2)
+     {
+         //             report_memory(@"After writing to library");
+         if (error2) {
+             EZDEBUG(@"ERROR: the image failed to be written");
+         }
+         else {
+             EZDEBUG(@"PHOTO SAVED - assetURL: %@", assetURL);
+         }
+     }];
     
 }
 
