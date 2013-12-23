@@ -108,7 +108,7 @@ NSString *const kFaceBlurFragmentShaderString = SHADER_STRING
     // First pass: apply a variable Gaussian blur
     blurFilter = [[GPUImageGaussianBlurFilter alloc] init];
     //blurFilter.blurSize = 2.0;
-    self.blurSize = 10.0;
+    self.blurSize = 5.0;
     [self addFilter:blurFilter];
     
     // Second pass: combine the blurred image with the original sharp one

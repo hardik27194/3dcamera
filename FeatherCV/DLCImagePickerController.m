@@ -32,13 +32,17 @@
 @implementation DLCImagePickerController {
     GPUImageStillCamera * stillCamera;
     GPUImageWhiteBalanceFilter* whiteBalancerFilter;
-    GPUImageOutput<GPUImageInput> *filter;
+    GPUImageSaturationFilter *contrastfilter;
     GPUImageToneCurveFilter* tongFilter;
     GPUImageOutput<GPUImageInput> *blurFilter;
     GPUImageCropFilter *cropFilter;
+    GPUImageFilter* simpleFilter;
     EZFaceBlurFilter* faceBlurFilter;
+    
+    GPUImageFilter* filter;
     GPUImagePicture *staticPicture;
     NSMutableArray* tongParameters;
+    NSMutableArray* redParameters;
     //NSMutableArray* _recordedMotions;
     CMAttitude* _prevMotion;
     UIImageOrientation staticPictureOriginalOrientation;
@@ -138,6 +142,7 @@
     _slider4.value = 0.75;
     _slider5.value = 1.0;
     tongParameters = [[NSMutableArray alloc] init];
+    redParameters = [[NSMutableArray alloc] init];
     [_slider1 rotateAngle:-M_PI_2 ];
     [_slider2 rotateAngle:-M_PI_2 ];
     [_slider3 rotateAngle:-M_PI_2 ];
@@ -180,16 +185,22 @@
     //we need a crop filter for the live video
     cropFilter = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.0f, 0.0f, 1.0f, 0.75f)];
     faceBlurFilter = [[EZFaceBlurFilter alloc] init];//[[EZFaceBlurFilter alloc] init];
+    filter = [[GPUImageFilter alloc] init];
     tongFilter = [[GPUImageToneCurveFilter alloc] init];
-    [tongParameters addObjectsFromArray:@[pointValue(0.0, 0.0), pointValue(0.25, 0.3025), pointValue(0.5, 0.57558), pointValue(0.75, 0.8089), pointValue(1.0, 1.0)]];
+    [tongParameters addObjectsFromArray:@[pointValue(0.0, 0.0), pointValue(0.25, 0.273), pointValue(0.5, 0.524), pointValue(0.75, 0.774), pointValue(1.0, 1.0)]];
+    
+    [redParameters addObjectsFromArray:@[pointValue(0.0, 0.0), pointValue(0.25, 0.2615), pointValue(0.5, 0.512), pointValue(0.75, 0.762), pointValue(1.0, 1.0)]];
     //faceBlurFilter.blurSize = 2.0;
     //[faceBlurFilter setExcludeCircleRadius:80.0/320.0];
     //[faceBlurFilter setExcludeCirclePoint:CGPointMake(0.5f, 0.5f)];
     //[faceBlurFilter setAspectRatio:1.0f];
-    filter = [[GPUImageSaturationFilter alloc] init];
+    [tongFilter setRgbCompositeControlPoints:tongParameters];
+    [tongFilter setRedControlPoints:redParameters];
+    simpleFilter = [[GPUImageFilter alloc] init];
+    contrastfilter = [[GPUImageSaturationFilter alloc] init];
     whiteBalancerFilter = [[GPUImageWhiteBalanceFilter alloc] init];
-    whiteBalancerFilter.temperature = 4940;
-    ((GPUImageSaturationFilter*)filter).saturation = 1.1;
+    whiteBalancerFilter.temperature = 4880;
+    contrastfilter.saturation = 1.2;
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         [self setUpCamera];
@@ -478,7 +489,9 @@
     //[faceBlurFilter addTarget:filter];
     [cropFilter addTarget:tongFilter];
     [tongFilter addTarget:whiteBalancerFilter];
-    [whiteBalancerFilter addTarget:filter];
+    [whiteBalancerFilter addTarget:contrastfilter];
+    [contrastfilter addTarget:filter];
+    //[filter addTarget:faceBlurFilter];
     
     //blur is terminal filter
     //if (hasBlur) {
@@ -497,7 +510,9 @@
     EZDEBUG(@"Prepare static image get called");
     [staticPicture addTarget:tongFilter];
     [tongFilter addTarget:whiteBalancerFilter];
-    [whiteBalancerFilter addTarget:filter];
+    [whiteBalancerFilter addTarget:contrastfilter];
+    [contrastfilter addTarget:faceBlurFilter];
+    [faceBlurFilter addTarget:filter];
     //[faceBlurFilter addTarget:filter];
 
     // blur is terminal filter
@@ -541,7 +556,9 @@
     [tongFilter removeAllTargets];
     //regular filter
     [filter removeAllTargets];
+    [contrastfilter removeAllTargets];
     [faceBlurFilter removeAllTargets];
+    [simpleFilter removeAllTargets];
     //blur
     [blurFilter removeAllTargets];
 }
@@ -683,8 +700,10 @@
         
         //GPUImageCropFilter *captureCrop = [[GPUImageCropFilter alloc] initWithCropRegion:cropFilter.cropRegion];
         //[stillCamera addTarget:faceBlurFilter];
-        [stillCamera addTarget:filter];
-        GPUImageFilter *finalFilter = filter;
+        [stillCamera addTarget:simpleFilter];
+        //[tongFilter addTarget:whiteBalancerFilter];
+        //[whiteBalancerFilter addTarget:filter];
+        GPUImageFilter *finalFilter = simpleFilter;
         
         /**
         if (!CGSizeEqualToSize(requestedImageSize, CGSizeZero)) {
@@ -727,13 +746,26 @@
         } else {
             processUpTo = filter;
         }
-        
+        EZDEBUG(@"Before call process image");
         [staticPicture processImage];
+        EZDEBUG(@"After call process image");
         
-        UIImage *currentFilteredVideoFrame = [processUpTo imageFromCurrentlyProcessedOutputWithOrientation:staticPictureOriginalOrientation];
+        //if(!stillCamera.isFrontFacing){
+        UIImage *currentFilteredVideoFrame = nil;
+        
+        if(stillCamera.isFrontFacing){
+           currentFilteredVideoFrame = [processUpTo imageFromCurrentlyProcessedOutputWithOrientation:staticPictureOriginalOrientation];
+        }else{
+            currentFilteredVideoFrame = [processUpTo imageFromCurrentlyProcessedOutputWithOrientation:staticPictureOriginalOrientation];
+            EZDEBUG(@"Before shink:%@", NSStringFromCGSize(currentFilteredVideoFrame.size));
+            currentFilteredVideoFrame = [currentFilteredVideoFrame resizedImageWithMaximumSize:CGSizeMake(currentFilteredVideoFrame.size.width, currentFilteredVideoFrame.size.height)];
+            EZDEBUG(@"After shrink:%@", NSStringFromCGSize(currentFilteredVideoFrame.size));
+        
+        }
+        //}
 
         NSDictionary *info = [[NSDictionary alloc] initWithObjectsAndKeys:
-                              UIImagePNGRepresentation(currentFilteredVideoFrame), @"data", currentFilteredVideoFrame, @"image", nil];
+                              currentFilteredVideoFrame, @"data", currentFilteredVideoFrame, @"image", nil];
         
         //[info setValue:currentFilteredVideoFrame forKey:@"image"];
         NSLog(@"image size:%f, %f", currentFilteredVideoFrame.size.width, currentFilteredVideoFrame.size.height);
