@@ -34,9 +34,8 @@ NSString *const kFaceBlurShaderString = SHADER_STRING
      highp float gapred =abs(sharpImageColor.r - avgcolor);
      highp float gapgreen =abs(sharpImageColor.g - avgcolor);
      highp float gapblue = abs(sharpImageColor.b - avgcolor);
-     
      highp float greenbar = (sharpImageColor.g - sharpImageColor.b) * 2.0;
-     if(sharpImageColor.b > bluelowbar &&  sharpImageColor.r > sharpImageColor.g && sharpImageColor.r > sharpImageColor.b && sharpImageColor.g > greenbar && avgcolor > avglow && avgcolor < avghighbegin && !(gapred > graygap || gapgreen > graygap|| gapblue > graygap)){
+     if(sharpImageColor.b > bluelowbar &&  sharpImageColor.r > sharpImageColor.g && sharpImageColor.r > sharpImageColor.b && sharpImageColor.g > greenbar && avgcolor > avglow && avgcolor < avghighbegin && !(gapred < graygap && gapgreen < graygap && gapblue < graygap)){
          if(avgcolor > avghighbegin){
              gl_FragColor = sharpImageColor;//mix(blurredImageColor, sharpImageColor, smoothstep(avghighbegin, avghigh, avgcolor));
              return;

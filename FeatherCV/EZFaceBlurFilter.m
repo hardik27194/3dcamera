@@ -38,21 +38,29 @@ NSString *const kFaceBlurFragmentShaderString = SHADER_STRING
      highp float avglowbegin = 80.0/255.0;
      highp float avghighbegin = 200.0/255.0;
      highp float bluelowbar = 40.0/255.0;
+     
      highp float avgcolor = (sharpImageColor.r + sharpImageColor.g + sharpImageColor.b)/3.0;
+     highp float graygap = 8.0/255.0;
+     
+     highp float gapred =abs(sharpImageColor.r - avgcolor);
+     highp float gapgreen =abs(sharpImageColor.g - avgcolor);
+     highp float gapblue = abs(sharpImageColor.b - avgcolor);
      highp float greenbar = (sharpImageColor.g - sharpImageColor.b) * 2.0;
-     if(sharpImageColor.b > bluelowbar &&  sharpImageColor.r > sharpImageColor.g && sharpImageColor.g > sharpImageColor.b && sharpImageColor.g > greenbar && avgcolor > avglow && avgcolor < avghighbegin){
+     if(sharpImageColor.b > bluelowbar &&  sharpImageColor.r > sharpImageColor.g && sharpImageColor.r > sharpImageColor.b && sharpImageColor.g > greenbar && avgcolor > avglow && avgcolor < avghighbegin && !(gapred < graygap && gapgreen < graygap && gapblue < graygap)){
+         /**
          if(avgcolor > avghighbegin){
-             gl_FragColor = sharpImageColor;//mix(blurredImageColor, sharpImageColor, smoothstep(avghighbegin, avghigh, avgcolor));
+             gl_FragColor = mix(blurredImageColor, sharpImageColor, smoothstep(avghighbegin, avghigh, avgcolor));
              return;
          }else if(avgcolor < avglowbegin){
-             gl_FragColor = sharpImageColor;//mix(sharpImageColor, blurredImageColor, smoothstep(avglow, avglowbegin, avgcolor));
+             gl_FragColor = mix(sharpImageColor, blurredImageColor, smoothstep(avglow, avglowbegin, avgcolor));
              return;
          }
-         gl_FragColor = sharpImageColor;
+          **/
+         gl_FragColor = blurredImageColor*0.3 + sharpImageColor*0.7;
          return;
      }
      
-     gl_FragColor = sharpImageColor*0.2;
+     gl_FragColor = sharpImageColor;
  }
  );
 #else
@@ -99,6 +107,8 @@ NSString *const kFaceBlurFragmentShaderString = SHADER_STRING
     
     // First pass: apply a variable Gaussian blur
     blurFilter = [[GPUImageGaussianBlurFilter alloc] init];
+    //blurFilter.blurSize = 2.0;
+    self.blurSize = 10.0;
     [self addFilter:blurFilter];
     
     // Second pass: combine the blurred image with the original sharp one
@@ -112,7 +122,7 @@ NSString *const kFaceBlurFragmentShaderString = SHADER_STRING
     self.initialFilters = [NSArray arrayWithObjects:blurFilter, selectiveFocusFilter, nil];
     self.terminalFilter = selectiveFocusFilter;
     
-    self.blurSize = 2.0;
+    
     
     self.excludeCircleRadius = 60.0/320.0;
     self.excludeCirclePoint = CGPointMake(0.5f, 0.5f);

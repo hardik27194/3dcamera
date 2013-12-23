@@ -29,11 +29,13 @@
 
 
 @implementation DLCImagePickerController {
-    GPUImageStillCamera *stillCamera;
+    GPUImageStillCamera * stillCamera;
+    GPUImageWhiteBalanceFilter* whiteBalancerFilter;
     GPUImageOutput<GPUImageInput> *filter;
+    
     GPUImageOutput<GPUImageInput> *blurFilter;
     GPUImageCropFilter *cropFilter;
-    EZFaceBlurFilter2* faceBlurFilter;
+    EZFaceBlurFilter* faceBlurFilter;
     GPUImagePicture *staticPicture;
     //NSMutableArray* _recordedMotions;
     CMAttitude* _prevMotion;
@@ -96,12 +98,24 @@
     [self captureImageInner:YES];
 }
 
+- (IBAction) slideChanged:(id)sender
+{
+    UISlider* slider = (UISlider*)sender;
+    //slider.value
+    EZDEBUG(@"Current slide value:%f", slider.value * 8);
+    faceBlurFilter.blurSize = slider.value * 8;
+    if(isStatic){
+        [staticPicture processImage];
+    }
+}
+
 -(void)viewDidLoad {
     
     [super viewDidLoad];
     _senseRotate = true;
     //_recordedMotions = [[NSMutableArray alloc] init];
     _storedMotionDelta = [[NSMutableArray alloc] init];
+    _slider.value = 0.25;
     self.wantsFullScreenLayout = YES;
     _pageTurn = [[EZSoundEffect alloc] initWithSoundNamed:@"page_turn.aiff"];
     _shotReady = [[EZSoundEffect alloc] initWithSoundNamed:@"shot_voice.aiff"];
@@ -137,11 +151,15 @@
     
     //we need a crop filter for the live video
     cropFilter = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.0f, 0.0f, 1.0f, 0.75f)];
-    faceBlurFilter = [[EZFaceBlurFilter2 alloc] init];
+    faceBlurFilter = [[EZFaceBlurFilter alloc] init];//[[EZFaceBlurFilter alloc] init];
+    //faceBlurFilter.blurSize = 2.0;
     //[faceBlurFilter setExcludeCircleRadius:80.0/320.0];
     //[faceBlurFilter setExcludeCirclePoint:CGPointMake(0.5f, 0.5f)];
     //[faceBlurFilter setAspectRatio:1.0f];
-    filter = [[GPUImageFilter alloc] init];
+    filter = [[GPUImageSaturationFilter alloc] init];
+    whiteBalancerFilter = [[GPUImageWhiteBalanceFilter alloc] init];
+    whiteBalancerFilter.temperature = 4940;
+    ((GPUImageSaturationFilter*)filter).saturation = 1.1;
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         [self setUpCamera];
@@ -198,14 +216,14 @@
             }
             CMAttitude* prevDelta = [_storedMotionDelta objectAtIndex:_storedMotionDelta.count - 2];
             if(deltaMotion.quaternion.y*prevDelta.quaternion.y >= 0){
-                EZDEBUG(@"quit for prev delta:%f, current delta:%f", prevDelta.quaternion.y, deltaMotion.quaternion.y);
+                //EZDEBUG(@"quit for prev delta:%f, current delta:%f", prevDelta.quaternion.y, deltaMotion.quaternion.y);
                 return;
             }
             CGFloat totalDelta = [self getAllDifferentSign:_storedMotionDelta current:deltaMotion.quaternion.y limit:50];
-            EZDEBUG(@"Total delta is:%f", totalDelta);
+            //EZDEBUG(@"Total delta is:%f", totalDelta);
             CGFloat absDelta = fabsf(totalDelta);
             if(_turnStatus == kCameraHalfTurn || _turnStatus == kSelfShotDormant){
-                EZDEBUG(@"switch to face shot:%i", _turnStatus);
+                //EZDEBUG(@"switch to face shot:%i", _turnStatus);
                 if(absDelta > 0.3){
                         EZDEBUG(@"Will turn the camera, is front:%i", stillCamera.isFrontFacing);
                         _turnStatus = kCameraNormal;
@@ -426,8 +444,11 @@
 -(void) prepareLiveFilter {
     
     [stillCamera addTarget:cropFilter];
-    [cropFilter addTarget:faceBlurFilter];
-    [faceBlurFilter addTarget:filter];
+    //[cropFilter addTarget:faceBlurFilter];
+    //[faceBlurFilter addTarget:filter];
+    [cropFilter addTarget:whiteBalancerFilter];
+    [whiteBalancerFilter addTarget:filter];
+    
     //blur is terminal filter
     //if (hasBlur) {
     //    [filter addTarget:blurFilter];
@@ -443,8 +464,9 @@
 
 -(void) prepareStaticFilter {
     EZDEBUG(@"Prepare static image get called");
-    [staticPicture addTarget:faceBlurFilter];
-    [faceBlurFilter addTarget:filter];
+    [staticPicture addTarget:whiteBalancerFilter];
+    [whiteBalancerFilter addTarget:filter];
+    //[faceBlurFilter addTarget:filter];
 
     // blur is terminal filter
     //if (hasBlur) {
@@ -482,6 +504,7 @@
 -(void) removeAllTargets {
     [stillCamera removeAllTargets];
     [staticPicture removeAllTargets];
+    [whiteBalancerFilter removeAllTargets];
     [cropFilter removeAllTargets];
     
     //regular filter
@@ -595,9 +618,9 @@
         [self removeAllTargets];
         
         UIImage* flipped = img;
-        if(flip){
-            flipped = [img flipImage];
-        }
+        //if(flip){
+        //    flipped = [img flipImage];
+        //}
         //flipped.imageOrientation = 4;
         staticPicture = [[GPUImagePicture alloc] initWithImage:flipped smoothlyScaleOutput:NO];
         staticPictureOriginalOrientation = flipped.imageOrientation;
@@ -627,8 +650,9 @@
         [self removeAllTargets];
         
         //GPUImageCropFilter *captureCrop = [[GPUImageCropFilter alloc] initWithCropRegion:cropFilter.cropRegion];
-        [stillCamera addTarget:faceBlurFilter];
-        GPUImageFilter *finalFilter = faceBlurFilter;
+        //[stillCamera addTarget:faceBlurFilter];
+        [stillCamera addTarget:filter];
+        GPUImageFilter *finalFilter = filter;
         
         /**
         if (!CGSizeEqualToSize(requestedImageSize, CGSizeZero)) {
@@ -716,7 +740,7 @@
     if ([self.filtersToggleButton isSelected]) {
         [self hideFilters];
     }
-    
+    EZDEBUG(@"The selectedFilter is:%i", selectedFilter);
     [self setFilter:selectedFilter];
     [self prepareFilter];
 }

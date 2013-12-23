@@ -141,6 +141,9 @@ typedef void  (^ IterateOperation)(id obj);
 
 + (void) flipTransition:(UIView*)src dest:(UIView*)dest container:(UIView*)container isLeft:(BOOL)isLeft duration:(float)duration complete:(EZEventBlock)complete;
 
+//The code which can rotate the view to a particlar angle.
+- (void) rotateAngle:(CGFloat)angle;
+
 - (void) enableRoundImage;
 
 - (UIImage*) contentAsImage;

@@ -82,11 +82,14 @@ typedef enum {
 //If current camera point forward
 @property (nonatomic, assign) BOOL isFrontCamera;
 
+@property (nonatomic, strong) IBOutlet UISlider* slider;
 
 //This method will change the turnStatus
 - (void) captureTurnedImage;
 
 -(void) becomeVisible;
 - (void) becomeInvisible;
+
+- (IBAction) slideChanged:(id)sender;
 
 @end

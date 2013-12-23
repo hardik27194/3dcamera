@@ -468,6 +468,15 @@ NSString* doubleString(NSString* str)
     }];
 }
 
+//Then we are in good shape now.
+- (void) rotateAngle:(CGFloat)angle
+{
+    EZDEBUG(@"Original center:%@", NSStringFromCGPoint(self.center));
+    self.center = CGPointMake(self.bounds.size.width/2, self.bounds.size.height/2);
+    
+    //rotate rect
+    self.transform = CGAffineTransformMakeRotation(angle);
+}
 
 + (void) sequenceAnimation:(NSArray*)animations completion:(EZOperationBlock)complete
 {
