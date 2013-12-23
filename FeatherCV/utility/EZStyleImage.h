@@ -11,7 +11,7 @@
 //I will have my own waiting effects in this method.
 //For the AFNetwork, in next iteration, I will find my own download ready and cache notification mechanism.
 //Cool
-#define pointValue(x,y) [NSValue valueWithCGPoint:CGPointMake(x, y)]
+
 
 @interface EZStyleImage : GPUImageView
 

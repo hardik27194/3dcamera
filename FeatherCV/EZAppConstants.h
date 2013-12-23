@@ -16,6 +16,8 @@
 
 #define functionalBarTitleColor RGBCOLOR(79,79,79)
 
+#define pointValue(x,y) [NSValue valueWithCGPoint:CGPointMake(x, y)]
+
 #define currentPerson [[EZDataUtil getInstance] getCurrentPerson] 
 //This is from show hair.
 //Who will manage the session.

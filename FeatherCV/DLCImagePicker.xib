@@ -19,7 +19,11 @@
                 <outlet property="photoBar" destination="31" id="73"/>
                 <outlet property="photoCaptureButton" destination="32" id="45"/>
                 <outlet property="retakeButton" destination="80" id="81"/>
-                <outlet property="slider" destination="W6v-rr-zGe" id="MP7-J1-Rwg"/>
+                <outlet property="slider1" destination="W6v-rr-zGe" id="V9W-e1-blU"/>
+                <outlet property="slider2" destination="B1C-1G-V32" id="ifS-qU-6a9"/>
+                <outlet property="slider3" destination="HnH-xx-oOW" id="Rhp-q1-a46"/>
+                <outlet property="slider4" destination="9bp-kc-nEM" id="p3a-WL-hhD"/>
+                <outlet property="slider5" destination="NFp-97-T39" id="r7P-V4-3sY"/>
                 <outlet property="topBar" destination="34" id="74"/>
                 <outlet property="view" destination="4" id="42"/>
             </connections>
@@ -34,35 +38,35 @@
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                     <subviews>
                         <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" id="W6v-rr-zGe" userLabel="slider1">
-                            <rect key="frame" x="-90" y="218" width="265" height="34"/>
+                            <rect key="frame" x="-54" y="98" width="177" height="34"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <connections>
                                 <action selector="slideChanged:" destination="-1" eventType="valueChanged" id="PkC-wY-cyn"/>
                             </connections>
                         </slider>
                         <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" id="B1C-1G-V32" userLabel="slider2">
-                            <rect key="frame" x="-34" y="218" width="265" height="34"/>
+                            <rect key="frame" x="9" y="98" width="172" height="34"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <connections>
                                 <action selector="slideChanged:" destination="-1" eventType="valueChanged" id="gWb-Br-toR"/>
                             </connections>
                         </slider>
                         <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" id="HnH-xx-oOW" userLabel="slider3">
-                            <rect key="frame" x="23" y="218" width="265" height="34"/>
+                            <rect key="frame" x="74" y="98" width="172" height="34"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <connections>
                                 <action selector="slideChanged:" destination="-1" eventType="valueChanged" id="yWM-a0-ZnG"/>
                             </connections>
                         </slider>
                         <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" id="9bp-kc-nEM" userLabel="slider4">
-                            <rect key="frame" x="90" y="218" width="265" height="34"/>
+                            <rect key="frame" x="132" y="98" width="178" height="34"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <connections>
                                 <action selector="slideChanged:" destination="-1" eventType="valueChanged" id="cN8-Nl-Fs7"/>
                             </connections>
                         </slider>
                         <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" id="NFp-97-T39" userLabel="slider5">
-                            <rect key="frame" x="155" y="218" width="265" height="34"/>
+                            <rect key="frame" x="195" y="98" width="176" height="34"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <connections>
                                 <action selector="slideChanged:" destination="-1" eventType="valueChanged" id="OHj-mg-9mq"/>

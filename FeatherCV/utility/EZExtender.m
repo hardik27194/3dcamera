@@ -472,7 +472,7 @@ NSString* doubleString(NSString* str)
 - (void) rotateAngle:(CGFloat)angle
 {
     EZDEBUG(@"Original center:%@", NSStringFromCGPoint(self.center));
-    self.center = CGPointMake(self.bounds.size.width/2, self.bounds.size.height/2);
+    //self.center = CGPointMake(self.bounds.size.width/2, self.bounds.size.height/2);
     
     //rotate rect
     self.transform = CGAffineTransformMakeRotation(angle);

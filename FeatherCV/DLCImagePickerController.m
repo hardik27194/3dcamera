@@ -12,6 +12,7 @@
 #import "EZFaceBlurFilter2.h"
 #import "EZMotionUtility.h"
 #import "EZSoundEffect.h"
+#import <GPUImageToneCurveFilter.h>
 
 #define kStaticBlurSize 2.0f
 @interface EZMotionRecord : NSObject 
@@ -32,11 +33,12 @@
     GPUImageStillCamera * stillCamera;
     GPUImageWhiteBalanceFilter* whiteBalancerFilter;
     GPUImageOutput<GPUImageInput> *filter;
-    
+    GPUImageToneCurveFilter* tongFilter;
     GPUImageOutput<GPUImageInput> *blurFilter;
     GPUImageCropFilter *cropFilter;
     EZFaceBlurFilter* faceBlurFilter;
     GPUImagePicture *staticPicture;
+    NSMutableArray* tongParameters;
     //NSMutableArray* _recordedMotions;
     CMAttitude* _prevMotion;
     UIImageOrientation staticPictureOriginalOrientation;
@@ -102,8 +104,23 @@
 {
     UISlider* slider = (UISlider*)sender;
     //slider.value
-    EZDEBUG(@"Current slide value:%f", slider.value * 8);
-    faceBlurFilter.blurSize = slider.value * 8;
+    EZDEBUG(@"Current slide value:%f", slider.value);
+    
+    if(slider == _slider1){
+        [tongParameters replaceObjectAtIndex:0 withObject:pointValue(0.0, _slider1.value)];
+    }else if(slider == _slider2){
+        [tongParameters replaceObjectAtIndex:1 withObject:pointValue(0.25, _slider2.value)];
+    }else if(slider == _slider3){
+        [tongParameters replaceObjectAtIndex:2 withObject:pointValue(0.5, _slider3.value)];
+    }else if(slider == _slider4){
+        [tongParameters replaceObjectAtIndex:3 withObject:pointValue(0.75, _slider4.value)];
+    }else if(slider == _slider5){
+        [tongParameters replaceObjectAtIndex:4 withObject:pointValue(1.0, _slider5.value)];
+    }
+    [tongFilter setRgbCompositeControlPoints:tongParameters];
+    
+    //faceBlurFilter.blurSize = slider.value * 8;
+    EZDEBUG(@"Replaced value is:%@", tongParameters);
     if(isStatic){
         [staticPicture processImage];
     }
@@ -115,7 +132,18 @@
     _senseRotate = true;
     //_recordedMotions = [[NSMutableArray alloc] init];
     _storedMotionDelta = [[NSMutableArray alloc] init];
-    _slider.value = 0.25;
+    _slider1.value = 0;
+    _slider2.value = 0.25;
+    _slider3.value = 0.5;
+    _slider4.value = 0.75;
+    _slider5.value = 1.0;
+    tongParameters = [[NSMutableArray alloc] init];
+    [_slider1 rotateAngle:-M_PI_2 ];
+    [_slider2 rotateAngle:-M_PI_2 ];
+    [_slider3 rotateAngle:-M_PI_2 ];
+    [_slider4 rotateAngle:-M_PI_2 ];
+    [_slider5 rotateAngle:-M_PI_2 ];
+
     self.wantsFullScreenLayout = YES;
     _pageTurn = [[EZSoundEffect alloc] initWithSoundNamed:@"page_turn.aiff"];
     _shotReady = [[EZSoundEffect alloc] initWithSoundNamed:@"shot_voice.aiff"];
@@ -152,6 +180,8 @@
     //we need a crop filter for the live video
     cropFilter = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.0f, 0.0f, 1.0f, 0.75f)];
     faceBlurFilter = [[EZFaceBlurFilter alloc] init];//[[EZFaceBlurFilter alloc] init];
+    tongFilter = [[GPUImageToneCurveFilter alloc] init];
+    [tongParameters addObjectsFromArray:@[pointValue(0.0, 0.0), pointValue(0.25, 0.3025), pointValue(0.5, 0.57558), pointValue(0.75, 0.8089), pointValue(1.0, 1.0)]];
     //faceBlurFilter.blurSize = 2.0;
     //[faceBlurFilter setExcludeCircleRadius:80.0/320.0];
     //[faceBlurFilter setExcludeCirclePoint:CGPointMake(0.5f, 0.5f)];
@@ -446,7 +476,8 @@
     [stillCamera addTarget:cropFilter];
     //[cropFilter addTarget:faceBlurFilter];
     //[faceBlurFilter addTarget:filter];
-    [cropFilter addTarget:whiteBalancerFilter];
+    [cropFilter addTarget:tongFilter];
+    [tongFilter addTarget:whiteBalancerFilter];
     [whiteBalancerFilter addTarget:filter];
     
     //blur is terminal filter
@@ -464,7 +495,8 @@
 
 -(void) prepareStaticFilter {
     EZDEBUG(@"Prepare static image get called");
-    [staticPicture addTarget:whiteBalancerFilter];
+    [staticPicture addTarget:tongFilter];
+    [tongFilter addTarget:whiteBalancerFilter];
     [whiteBalancerFilter addTarget:filter];
     //[faceBlurFilter addTarget:filter];
 
@@ -506,7 +538,7 @@
     [staticPicture removeAllTargets];
     [whiteBalancerFilter removeAllTargets];
     [cropFilter removeAllTargets];
-    
+    [tongFilter removeAllTargets];
     //regular filter
     [filter removeAllTargets];
     [faceBlurFilter removeAllTargets];
@@ -746,6 +778,15 @@
 }
 
 -(IBAction) cancel:(id)sender {
+    NSMutableString* str = [[NSMutableString alloc] init];
+    for(NSValue* val in tongParameters){
+        CGPoint pt = [val CGPointValue];
+        [str appendString:[NSString stringWithFormat:@"%@,", NSStringFromCGPoint(pt)]];
+    }
+    EZDEBUG(@"Showed value:%@", str);
+    UIAlertView* altert = [[UIAlertView alloc] initWithTitle:@"Current value" message:str delegate:nil cancelButtonTitle:@"退出" otherButtonTitles:nil];
+    
+    [altert show];
     [self.delegate imagePickerControllerDidCancel:self];
 }
 
