@@ -12,6 +12,25 @@
 		182A551018645374003D4A01 /* EZFaceBlurFilter2.m in Sources */ = {isa = PBXBuildFile; fileRef = 182A550F18645374003D4A01 /* EZFaceBlurFilter2.m */; };
 		18512A331861BE6300282264 /* shot_voice.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 18512A321861BE6300282264 /* shot_voice.aiff */; };
 		1874D9D71867F57E005743FC /* EZSaturationFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 1874D9D61867F57E005743FC /* EZSaturationFilter.m */; };
+		1874D9DD18699386005743FC /* header_2.png in Resources */ = {isa = PBXBuildFile; fileRef = 1874D9DB18699385005743FC /* header_2.png */; };
+		1874D9DE18699386005743FC /* header_1.png in Resources */ = {isa = PBXBuildFile; fileRef = 1874D9DC18699386005743FC /* header_1.png */; };
+		1874D9F0186996AE005743FC /* santa_16.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 1874D9E0186996AD005743FC /* santa_16.jpg */; };
+		1874D9F1186996AE005743FC /* santa_15.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 1874D9E1186996AD005743FC /* santa_15.jpg */; };
+		1874D9F2186996AE005743FC /* santa_14.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 1874D9E2186996AD005743FC /* santa_14.jpg */; };
+		1874D9F3186996AE005743FC /* santa_13.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 1874D9E3186996AD005743FC /* santa_13.jpg */; };
+		1874D9F4186996AE005743FC /* santa_12.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 1874D9E4186996AD005743FC /* santa_12.jpg */; };
+		1874D9F5186996AE005743FC /* santa_11.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 1874D9E5186996AD005743FC /* santa_11.jpg */; };
+		1874D9F6186996AE005743FC /* santa_10.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 1874D9E6186996AE005743FC /* santa_10.jpg */; };
+		1874D9F7186996AE005743FC /* santa_9.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 1874D9E7186996AE005743FC /* santa_9.jpg */; };
+		1874D9F8186996AE005743FC /* santa_8.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 1874D9E8186996AE005743FC /* santa_8.jpg */; };
+		1874D9F9186996AE005743FC /* santa_7.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 1874D9E9186996AE005743FC /* santa_7.jpg */; };
+		1874D9FA186996AE005743FC /* santa_6.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 1874D9EA186996AE005743FC /* santa_6.jpg */; };
+		1874D9FB186996AE005743FC /* santa_5.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 1874D9EB186996AE005743FC /* santa_5.jpg */; };
+		1874D9FC186996AE005743FC /* santa_4.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 1874D9EC186996AE005743FC /* santa_4.jpg */; };
+		1874D9FD186996AE005743FC /* santa_3.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 1874D9ED186996AE005743FC /* santa_3.jpg */; };
+		1874D9FE186996AE005743FC /* santa_2.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 1874D9EE186996AE005743FC /* santa_2.jpg */; };
+		1874D9FF186996AE005743FC /* santa_1.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 1874D9EF186996AE005743FC /* santa_1.jpg */; };
+		1874DA0118699728005743FC /* santa_17.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 1874DA0018699728005743FC /* santa_17.jpg */; };
 		18A36FD9184C7F820022F0A8 /* smile_face.png in Resources */ = {isa = PBXBuildFile; fileRef = 18A36FD8184C7F820022F0A8 /* smile_face.png */; };
 		18A36FEF1855C1DB0022F0A8 /* DLCImagePickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A36FEC1855C1DB0022F0A8 /* DLCImagePickerController.m */; };
 		18A36FF01855C1DB0022F0A8 /* DLCBlurOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A36FEE1855C1DB0022F0A8 /* DLCBlurOverlayView.m */; };
@@ -234,6 +253,25 @@
 		18512A321861BE6300282264 /* shot_voice.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = shot_voice.aiff; sourceTree = "<group>"; };
 		1874D9D51867F57E005743FC /* EZSaturationFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZSaturationFilter.h; sourceTree = "<group>"; };
 		1874D9D61867F57E005743FC /* EZSaturationFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZSaturationFilter.m; sourceTree = "<group>"; };
+		1874D9DB18699385005743FC /* header_2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = header_2.png; sourceTree = "<group>"; };
+		1874D9DC18699386005743FC /* header_1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = header_1.png; sourceTree = "<group>"; };
+		1874D9E0186996AD005743FC /* santa_16.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = santa_16.jpg; sourceTree = "<group>"; };
+		1874D9E1186996AD005743FC /* santa_15.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = santa_15.jpg; sourceTree = "<group>"; };
+		1874D9E2186996AD005743FC /* santa_14.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = santa_14.jpg; sourceTree = "<group>"; };
+		1874D9E3186996AD005743FC /* santa_13.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = santa_13.jpg; sourceTree = "<group>"; };
+		1874D9E4186996AD005743FC /* santa_12.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = santa_12.jpg; sourceTree = "<group>"; };
+		1874D9E5186996AD005743FC /* santa_11.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = santa_11.jpg; sourceTree = "<group>"; };
+		1874D9E6186996AE005743FC /* santa_10.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = santa_10.jpg; sourceTree = "<group>"; };
+		1874D9E7186996AE005743FC /* santa_9.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = santa_9.jpg; sourceTree = "<group>"; };
+		1874D9E8186996AE005743FC /* santa_8.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = santa_8.jpg; sourceTree = "<group>"; };
+		1874D9E9186996AE005743FC /* santa_7.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = santa_7.jpg; sourceTree = "<group>"; };
+		1874D9EA186996AE005743FC /* santa_6.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = santa_6.jpg; sourceTree = "<group>"; };
+		1874D9EB186996AE005743FC /* santa_5.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = santa_5.jpg; sourceTree = "<group>"; };
+		1874D9EC186996AE005743FC /* santa_4.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = santa_4.jpg; sourceTree = "<group>"; };
+		1874D9ED186996AE005743FC /* santa_3.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = santa_3.jpg; sourceTree = "<group>"; };
+		1874D9EE186996AE005743FC /* santa_2.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = santa_2.jpg; sourceTree = "<group>"; };
+		1874D9EF186996AE005743FC /* santa_1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = santa_1.jpg; sourceTree = "<group>"; };
+		1874DA0018699728005743FC /* santa_17.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = santa_17.jpg; sourceTree = "<group>"; };
 		18A36FD8184C7F820022F0A8 /* smile_face.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = smile_face.png; sourceTree = "<group>"; };
 		18A36FEB1855C1DB0022F0A8 /* DLCImagePickerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DLCImagePickerController.h; sourceTree = "<group>"; };
 		18A36FEC1855C1DB0022F0A8 /* DLCImagePickerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DLCImagePickerController.m; sourceTree = "<group>"; };
@@ -546,6 +584,30 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		1874D9DF1869969C005743FC /* santa */ = {
+			isa = PBXGroup;
+			children = (
+				1874DA0018699728005743FC /* santa_17.jpg */,
+				1874D9E0186996AD005743FC /* santa_16.jpg */,
+				1874D9E1186996AD005743FC /* santa_15.jpg */,
+				1874D9E2186996AD005743FC /* santa_14.jpg */,
+				1874D9E3186996AD005743FC /* santa_13.jpg */,
+				1874D9E4186996AD005743FC /* santa_12.jpg */,
+				1874D9E5186996AD005743FC /* santa_11.jpg */,
+				1874D9E6186996AE005743FC /* santa_10.jpg */,
+				1874D9E7186996AE005743FC /* santa_9.jpg */,
+				1874D9E8186996AE005743FC /* santa_8.jpg */,
+				1874D9E9186996AE005743FC /* santa_7.jpg */,
+				1874D9EA186996AE005743FC /* santa_6.jpg */,
+				1874D9EB186996AE005743FC /* santa_5.jpg */,
+				1874D9EC186996AE005743FC /* santa_4.jpg */,
+				1874D9ED186996AE005743FC /* santa_3.jpg */,
+				1874D9EE186996AE005743FC /* santa_2.jpg */,
+				1874D9EF186996AE005743FC /* santa_1.jpg */,
+			);
+			name = santa;
+			sourceTree = "<group>";
+		};
 		18A36FE91855C1470022F0A8 /* camera */ = {
 			isa = PBXGroup;
 			children = (
@@ -750,6 +812,9 @@
 		18E346D4183DF90600C9D89D /* images */ = {
 			isa = PBXGroup;
 			children = (
+				1874D9DF1869969C005743FC /* santa */,
+				1874D9DB18699385005743FC /* header_2.png */,
+				1874D9DC18699386005743FC /* header_1.png */,
 				18A36FD8184C7F820022F0A8 /* smile_face.png */,
 				18E34833183F05DD00C9D89D /* hou_1.JPG */,
 				18E34831183F052400C9D89D /* yue_1.JPG */,
@@ -1093,6 +1158,7 @@
 			files = (
 				18E3481E183F02D600C9D89D /* haarcascade_mcs_leftear.xml in Resources */,
 				18A3702A1855C2A40022F0A8 /* flash.png in Resources */,
+				1874D9FA186996AE005743FC /* santa_6.jpg in Resources */,
 				18A370211855C2A40022F0A8 /* close@2x.png in Resources */,
 				18A3702F1855C2A40022F0A8 /* camera-button@2x.png in Resources */,
 				18A3701D1855C2A40022F0A8 /* library.png in Resources */,
@@ -1107,6 +1173,7 @@
 				18E34820183F02D600C9D89D /* haarcascade_mcs_mouth.xml in Resources */,
 				18E346F9183DF9C400C9D89D /* share_btn@2x.png in Resources */,
 				18A3703B1855C2A40022F0A8 /* photo_bar@2x.png in Resources */,
+				1874D9FF186996AE005743FC /* santa_1.jpg in Resources */,
 				18E34826183F02D600C9D89D /* haarcascade_righteye_2splits.xml in Resources */,
 				18A370301855C2A40022F0A8 /* camera-icon.png in Resources */,
 				18E346FB183DF9C400C9D89D /* take_photo@2x.png in Resources */,
@@ -1114,23 +1181,36 @@
 				18E34813183F02D600C9D89D /* haarcascade_eye.xml in Resources */,
 				18E3481B183F02D600C9D89D /* haarcascade_lowerbody.xml in Resources */,
 				18A370371855C2A40022F0A8 /* dock_bg@2x.png in Resources */,
+				1874D9F0186996AE005743FC /* santa_16.jpg in Resources */,
 				18A370231855C2A40022F0A8 /* blur@2x.png in Resources */,
+				1874D9DE18699386005743FC /* header_1.png in Resources */,
+				1874DA0118699728005743FC /* santa_17.jpg in Resources */,
 				18A3701C1855C2A40022F0A8 /* library@2x.png in Resources */,
 				18A370321855C2A40022F0A8 /* filter-close.png in Resources */,
+				1874D9F4186996AE005743FC /* santa_12.jpg in Resources */,
+				1874D9F5186996AE005743FC /* santa_11.jpg in Resources */,
 				18E3481A183F02D600C9D89D /* haarcascade_lefteye_2splits.xml in Resources */,
 				18A370351855C2A40022F0A8 /* filter-open@2x.png in Resources */,
 				18E346E5183DF9B300C9D89D /* corner_right_bottom@2x.png in Resources */,
 				18E34834183F05DD00C9D89D /* hou_1.JPG in Resources */,
+				1874D9DD18699386005743FC /* header_2.png in Resources */,
 				18E34832183F052400C9D89D /* yue_1.JPG in Resources */,
+				1874D9FB186996AE005743FC /* santa_5.jpg in Resources */,
 				18A370311855C2A40022F0A8 /* camera-icon@2x.png in Resources */,
 				18E346FD183DF9C400C9D89D /* default-like-btn-pressed@2x.png in Resources */,
 				18E3482E183F044700C9D89D /* test.JPG in Resources */,
+				1874D9F3186996AE005743FC /* santa_13.jpg in Resources */,
 				18A370251855C2A40022F0A8 /* front-camera@2x.png in Resources */,
+				1874D9F7186996AE005743FC /* santa_9.jpg in Resources */,
 				18E3481D183F02D600C9D89D /* haarcascade_mcs_eyepair_small.xml in Resources */,
 				18E34827183F02D600C9D89D /* haarcascade_smile.xml in Resources */,
+				1874D9F2186996AE005743FC /* santa_14.jpg in Resources */,
 				18E346FE183DF9C400C9D89D /* default-like-btn@2x.png in Resources */,
+				1874D9FC186996AE005743FC /* santa_4.jpg in Resources */,
 				18E346FC183DF9C400C9D89D /* add_friend@2x.png in Resources */,
+				1874D9F9186996AE005743FC /* santa_7.jpg in Resources */,
 				18E34700183DF9C400C9D89D /* talk-btn@2x.png in Resources */,
+				1874D9F1186996AE005743FC /* santa_15.jpg in Resources */,
 				18A370391855C2A40022F0A8 /* micro_carbon@2x.png in Resources */,
 				18A370261855C2A40022F0A8 /* flash-auto.png in Resources */,
 				18A370331855C2A40022F0A8 /* filter-close@2x.png in Resources */,
@@ -1149,6 +1229,7 @@
 				18A3702E1855C2A40022F0A8 /* camera-button.png in Resources */,
 				18E34819183F02D600C9D89D /* haarcascade_fullbody.xml in Resources */,
 				18E346F6183DF9C400C9D89D /* whole_love@2x.png in Resources */,
+				1874D9FD186996AE005743FC /* santa_3.jpg in Resources */,
 				18A3702C1855C2A40022F0A8 /* filter.png in Resources */,
 				18E34706183DF9D700C9D89D /* user-icon-placeholder-60@2x.png in Resources */,
 				18E34830183F045900C9D89D /* tian_1.JPG in Resources */,
@@ -1156,7 +1237,9 @@
 				18C0E76B1861A08700D694CE /* page_turn.aiff in Resources */,
 				18E346F5183DF9C400C9D89D /* half_love_left@2x.png in Resources */,
 				18E346FF183DF9C400C9D89D /* talk-btn-pressed@2x.png in Resources */,
+				1874D9F6186996AE005743FC /* santa_10.jpg in Resources */,
 				18E3481F183F02D600C9D89D /* haarcascade_mcs_lefteye.xml in Resources */,
+				1874D9FE186996AE005743FC /* santa_2.jpg in Resources */,
 				18512A331861BE6300282264 /* shot_voice.aiff in Resources */,
 				18A370221855C2A40022F0A8 /* blur.png in Resources */,
 				18A370241855C2A40022F0A8 /* front-camera.png in Resources */,
@@ -1174,6 +1257,7 @@
 				18E34705183DF9D700C9D89D /* tian_2.jpg in Resources */,
 				18E34814183F02D600C9D89D /* haarcascade_eye_tree_eyeglasses.xml in Resources */,
 				18A370341855C2A40022F0A8 /* filter-open.png in Resources */,
+				1874D9F8186996AE005743FC /* santa_8.jpg in Resources */,
 				18E3481C183F02D600C9D89D /* haarcascade_mcs_eyepair_big.xml in Resources */,
 				18A3702D1855C2A40022F0A8 /* filter@2x.png in Resources */,
 				18E34824183F02D600C9D89D /* haarcascade_mcs_upperbody.xml in Resources */,

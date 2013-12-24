@@ -43,9 +43,11 @@
         [_pressedView setFrame:self.bounds];
     }
     //Then my code will be very strong.
-    [self bringSubviewToFront:_pressedView];
-    _pressedView.backgroundColor = randBack(_pressedColor);
-    _pressedView.hidden = false;
+    if(_enableTouchEffects){
+        [self bringSubviewToFront:_pressedView];
+        _pressedView.backgroundColor = randBack(_pressedColor);
+        _pressedView.hidden = false;
+    }
     /**
     [UIView animateWithDuration:0.2f animations:^{
         //[UIView setAnimationRepeatCount:1];

@@ -32,12 +32,19 @@
 //Once shot a photo will boardcast a message to change the cover
 #define EZCoverImageChange @"EZCoverImageChange"
 
+#define EZGetContacts @"EZGetContacts"
+
+//The contacts page will get update by the new message
+#define EZUpdateContacts @"EZUpdateContacts"
 //Will get called when the camera used and the image get selected.
 #define EZCameraCompleted @"EZCameraCompleted"
 
 #define EZCameraIsReady @"EZCameraIsReady"
 
 #define EZTakePicture @"EZTakePicture"
+
+//Just put it on the end of the Array.
+#define EZAlbumImageReaded @"EZAlbumImageReady"
 
 #define EZTriggerCamera @"EZTriggerCamera"
 

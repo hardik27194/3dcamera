@@ -30,11 +30,10 @@
     if (self) {
         // Initialization code
         _container = [[EZClickView alloc] initWithFrame:CGRectMake(0, 0, 320, 320)];
-        //_frontImage = [EZStyleImage createFilteredImage:CGRectMake(0, 0, 320, 320)];
-        //_frontImage.contentMode = UIViewContentModeScaleAspectFill;
-        
-        _frontNoEffects = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 320, 320)];
-        _frontNoEffects.contentMode = UIViewContentModeScaleAspectFill;
+        _frontImage = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 320, 320)];
+        _frontImage.contentMode = UIViewContentModeScaleAspectFill;
+        //_frontNoEffects = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 320, 320)];
+        //_frontNoEffects.contentMode = UIViewContentModeScaleAspectFill;
         
         
         _toolRegion = [[UIView alloc] initWithFrame:ToolRegionRect];
@@ -69,13 +68,12 @@
         _feedbackRegion.alpha = 0.5;
         //_frontImage.layer.cornerRadius = 5;
         _frontImage.clipsToBounds = true;
-        _backImage = [EZStyleImage createFilteredImage:CGRectMake(0, 0, 320, 320)];
-        _backImage.contentMode = UIViewContentModeScaleAspectFill;
+        //_backImage = [EZStyleImage createFilteredImage:CGRectMake(0, 0, 320, 320)];
+        //_backImage.contentMode = UIViewContentModeScaleAspectFill;
         //_backImage.layer.cornerRadius = 5;
-        _backImage.clipsToBounds = true;
+        //_backImage.clipsToBounds = true;
 
         //_imageClick = [[EZClickView alloc] initWithFrame:CGRectMake(0, 0, 320, 320)];
-        
         //_imageClick.backgroundColor = [UIColor clearColor];
         //[_imageClick addSubview:_frontImage];
         //[self addSubview:_frontImage];
@@ -84,7 +82,8 @@
         [self.contentView addSubview:_toolRegion];
         [self.contentView addSubview:_feedbackRegion];
         [_container addSubview:_frontImage];
-        [_container addSubview:_frontNoEffects];
+        //[_container addSubview:_frontNoEffects];
+        _container.enableTouchEffects = NO;
         //[self.contentView addSubview:_imageClick];
         //[self.contentView addSubview:_likeButton];
         //[self.contentView addSubview:_talkButton];
@@ -101,7 +100,8 @@
     CGFloat adjustedHeight = [self calHeight:size];
     //CGRect adjustedFrame = CGRectMake(0, 0, 320, adjustedHeight);
     [_container setSize:CGSizeMake(320, adjustedHeight)];
-    [_frontNoEffects setSize:CGSizeMake(320, adjustedHeight)];
+    //[_frontNoEffects setSize:CGSizeMake(320, adjustedHeight)];
+    [_frontImage setSize:CGSizeMake(320, adjustedHeight)];
     [_toolRegion setPosition:CGPointMake(0, adjustedHeight)];
     [_feedbackRegion setPosition:CGPointMake(0, adjustedHeight+_toolRegion.frame.size.height)];
     
@@ -113,7 +113,8 @@
     CGFloat adjustedHeight = [self calHeight:imgSize];
     CGRect adjustedFrame = CGRectMake(0, 0, 320, adjustedHeight);
     if(!_frontImage){
-        _frontImage = [EZStyleImage createFilteredImage:adjustedFrame];
+        //_frontImage = [EZStyleImage createFilteredImage:adjustedFrame];
+        _frontImage = [[UIImageView alloc] initWithFrame:adjustedFrame];
         //_frontImage.contentMode = UIViewContentModeScaleAspectFill;
         [_container setFrame:adjustedFrame];
         [_container addSubview:_frontImage];
@@ -128,7 +129,8 @@
 
 - (void) displayImage:(UIImage*)img
 {
-    [_frontImage removeFromSuperview];
+    [_frontImage setImage:img];
+    //[_frontImage removeFromSuperview];
     //CGSize imgSize = img.size;
     //CGFloat adjustedHeight = [self calHeight:imgSize];
     //CGFloat deltaHeight = adjustedHeight - 320;
@@ -137,14 +139,14 @@
     //[_container setSize:updatedSize];
     //[_frontImage setSize:updatedSize];
     //[_frontNoEffects setSize:updatedSize];
-    [_frontNoEffects setImage:img];
+    //[_frontNoEffects setImage:img];
 }
 
 //Why not get the size directly?
 //This is hard.
 - (CGFloat) calHeight:(CGSize)size
 {
-    return 320 * size.height/size.width;
+    return  (size.height/size.width) * 320.0;
 }
 
 - (void) backToOriginSize
@@ -166,6 +168,27 @@
     //[_frontImage setImageWithURL:str2url(url) placeholderImage:PlaceHolderLargest];
 }
 
+
+- (void) switchImage:(UIImage*)img complete:(EZEventBlock)blk
+{
+    _backImage = [[UIImageView alloc] initWithFrame:_frontImage.frame];
+    _backImage.contentMode = UIViewContentModeScaleAspectFit;
+    _backImage.image = img;
+    [_container addSubview:_backImage];
+    [UIView flipTransition:_frontImage dest:_backImage container:_container isLeft:YES duration:1.0 complete:^(id obj){
+        //UIImageView* tmp = _frontImage;
+        //_frontImage = _backImage;
+        //_backImage = tmp;
+        _frontImage = _backImage;
+        [UIView animateWithDuration:0.3 animations:^(){
+            [self adjustCellSize:img.size];
+        } completion:^(BOOL completed){
+            if(blk){
+                blk(nil);
+            }
+        }];
+    }];
+}
 
 //I am happy that define a good interface to handle the image switch action
 - (void) switchImageTo:(NSString*)url

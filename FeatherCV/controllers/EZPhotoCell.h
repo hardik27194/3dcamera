@@ -39,11 +39,11 @@
 @property (nonatomic, strong) UIView* feedbackRegion;
 
 //The UIImage which have no effects
-@property (nonatomic, strong) UIImageView* frontNoEffects;
+//@property (nonatomic, strong) UIImageView* frontNoEffects;
 
-@property (nonatomic, strong) EZStyleImage* frontImage;
+@property (nonatomic, strong) UIImageView* frontImage;
 
-@property (nonatomic, strong) EZStyleImage* backImage;
+@property (nonatomic, strong) UIImageView* backImage;
 
 
 
@@ -86,6 +86,9 @@
 
 //I am happy that define a good interface to handle the image switch action
 - (void) switchImageTo:(NSString*)url;
+
+//I will show the rotation animation;
+- (void) switchImage:(UIImage*)img complete:(EZEventBlock)blk;
 
 - (void) displayImage:(UIImage*)img;
 

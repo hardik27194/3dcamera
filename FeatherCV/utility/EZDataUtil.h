@@ -31,6 +31,8 @@
 //This queue are used to execute the task without blocking the front end
 @property (nonatomic, strong) dispatch_queue_t asyncQueue;
 
+//For test purpose only
+@property (nonatomic, assign) NSInteger photoCount;
 //@property (nonatomic, strong) NSMutable
 //Phone number will be the unique id?
 //Mean only one id for each phone right?
@@ -119,5 +121,11 @@
 - (void) saveImage:(UIImage*)shotImage success:(EZEventBlock)success failure:(EZEventBlock)failure;
 
 - (void) assetURLToAsset:(NSURL*)url success:(EZEventBlock)success;
+
+//Just a trigger.
+//We will return the album one at a time
+- (void) readAlbumInBackground:(int)start limit:(int)limit;
+
+- (void) loadPhotoBooks;
 
 @end

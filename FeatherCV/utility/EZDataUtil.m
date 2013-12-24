@@ -15,6 +15,7 @@
 #import "EZImageFileCache.h"
 #import "EZDisplayPhoto.h"
 #import "EZExtender.h"
+#import "EZMessageCenter.h"
 
 @implementation EZAlbumResult
 
@@ -36,6 +37,9 @@
 {
     self = [super init];
     _asyncQueue = dispatch_queue_create("album_fetch", DISPATCH_QUEUE_SERIAL);
+    if (_assetLibaray == nil) {
+        _assetLibaray = [[ALAssetsLibrary alloc] init];
+    }
     return self;
 }
 
@@ -58,6 +62,92 @@
         //success([self getAllContacts]);
         [self getAllContacts:success];
     });
+}
+
+
+- (void) loadPhotoBooks
+{
+    EZDEBUG(@"Will call the photo book");
+    //NSError *error = nil;
+    CFErrorRef error = nil;
+    ABAddressBookRef allPeople = ABAddressBookCreateWithOptions(NULL, &error);
+    //ABAddressBookRef allPeople = ABAddressBookCreate()
+    dispatch_async(_asyncQueue, ^(){
+    
+    ABAddressBookRequestAccessWithCompletion(allPeople,
+                                             ^(bool granted, CFErrorRef error) {
+                                                 CFArrayRef allContacts = ABAddressBookCopyArrayOfAllPeople(allPeople);
+                                                 CFIndex numberOfContacts  = ABAddressBookGetPersonCount(allPeople);
+                                                 
+                                                 NSMutableArray* res = [[NSMutableArray alloc] init];
+                                                 for(int i = 0; i < numberOfContacts; i++){
+                                                     NSString* name = @"";
+                                                     NSString* phone = @"";
+                                                     NSString* email = @"";
+                                                     
+                                                     ABRecordRef aPerson = CFArrayGetValueAtIndex(allContacts, i);
+                                                     ABMultiValueRef fnameProperty = ABRecordCopyValue(aPerson, kABPersonFirstNameProperty);
+                                                     ABMultiValueRef lnameProperty = ABRecordCopyValue(aPerson, kABPersonLastNameProperty);
+                                                     
+                                                     ABMultiValueRef phoneProperty = ABRecordCopyValue(aPerson, kABPersonPhoneProperty);
+                                                     ABMultiValueRef emailProperty = ABRecordCopyValue(aPerson, kABPersonEmailProperty);
+                                                     
+                                                     NSArray *emailArray = (__bridge NSArray *)ABMultiValueCopyArrayOfAllValues(emailProperty);
+                                                     NSArray *phoneArray = (__bridge NSArray *)ABMultiValueCopyArrayOfAllValues(phoneProperty);
+                                                     
+                                                     
+                                                     if (lnameProperty != nil) {
+                                                         name = [NSString stringWithFormat:@"%@", lnameProperty];
+                                                     }
+                                                     if (fnameProperty != nil) {
+                                                         name = [name stringByAppendingString:[NSString stringWithFormat:@" %@", fnameProperty]];
+                                                     }
+                                                     
+                                                     if ([phoneArray count] > 0) {
+                                                         if ([phoneArray count] > 1) {
+                                                             for (int i = 0; i < [phoneArray count]; i++) {
+                                                                 phone = [phone stringByAppendingString:[NSString stringWithFormat:@"%@\n", [phoneArray objectAtIndex:i]]];
+                                                             }
+                                                         }else {
+                                                             phone = [NSString stringWithFormat:@"%@", [phoneArray objectAtIndex:0]];
+                                                         }
+                                                     }
+                                                     
+                                                     if ([emailArray count] > 0) {
+                                                         if ([emailArray count] > 1) {
+                                                             for (int i = 0; i < [emailArray count]; i++) {
+                                                                 email = [email stringByAppendingString:[NSString stringWithFormat:@"%@\n", [emailArray objectAtIndex:i]]];
+                                                             }
+                                                         }else {
+                                                             email = [NSString stringWithFormat:@"%@", [emailArray objectAtIndex:0]];
+                                                         }
+                                                     }
+                                                     phone = phone.getIntegerStr;
+                                                     //NSLog(@"NAME : %@",name);
+                                                     //NSLog(@"PHONE: %@",phone);
+                                                     //NSLog(@"EMAIL: %@",email);
+                                                     //NSLog(@"\n");
+                                                     EZPerson* person = [[EZPerson alloc] init];
+                                                     person.name = name;
+                                                     person.mobile = phone;
+                                                     person.email = email;
+                                                     if(i % 2 == 0){
+                                                         person.joined = true;
+                                                         person.avatar = [EZFileUtil fileToURL:@"header_1.png"].absoluteString;
+                                                         
+                                                     }else{
+                                                         person.joined = false;
+                                                         person.avatar = [EZFileUtil fileToURL:@"header_2.png"].absoluteString;
+                                                         
+                                                     }
+                                                     [res addObject:person];
+                                                 }
+                                                 
+                                                 EZDEBUG(@"Completed photobook reading, will call back now");
+                                                 [[EZMessageCenter getInstance] postEvent:EZGetContacts attached:res];
+                                                });
+    });
+    //return res;
 }
 
 
@@ -122,10 +212,10 @@
             }
         }
         phone = phone.getIntegerStr;
-        NSLog(@"NAME : %@",name);
-        NSLog(@"PHONE: %@",phone);
-        NSLog(@"EMAIL: %@",email);
-        NSLog(@"\n");
+        //NSLog(@"NAME : %@",name);
+        //NSLog(@"PHONE: %@",phone);
+        //NSLog(@"EMAIL: %@",email);
+        //NSLog(@"\n");
         EZPerson* person = [[EZPerson alloc] init];
         person.name = name;
         person.mobile = phone;
@@ -340,7 +430,7 @@
              failure(error);
          }
          else {
-             NSLog(@"PHOTO SAVED - assetURL: %@", assetURL);
+             NSLog(@"PHOTO SAVED here - assetURL: %@", assetURL);
              [self assetURLToAsset:assetURL success:success];
          }
      }];
@@ -350,6 +440,7 @@
 {
     ALAssetsLibraryAssetForURLResultBlock resultblock = ^(ALAsset *myasset)
     {
+        EZDEBUG(@"fetch asset success");
         success(myasset);
     };
     
@@ -366,15 +457,101 @@
                    failureBlock:failureblock];
 }
 
+
+//Just a trigger.
+//We will return the album one at a time
+//This is reverse number?
+//Start mean how far away from the beginning
+- (void) readAlbumInBackground:(int)start limit:(int)limit;
+{
+    EZDEBUG(@"Start the background thread");
+    __block int count = 0;
+    
+    dispatch_async(_asyncQueue, ^(){
+        // setup our failure view controller in case enumerateGroupsWithTypes fails
+        ALAssetsLibraryAccessFailureBlock failureBlock = ^(NSError *error) {
+            
+            NSString *errorMessage = nil;
+            switch ([error code]) {
+                case ALAssetsLibraryAccessUserDeniedError:
+                case ALAssetsLibraryAccessGloballyDeniedError:
+                    errorMessage = @"The user has declined access to it.";
+                    break;
+                default:
+                    errorMessage = @"Reason unknown.";
+                    break;
+            }
+            EZDEBUG(@"Asset access error:%@", errorMessage);
+        };
+        
+        __block int groupCount = 1;
+        __block int groupPos = 0;
+        __block int photoCount = 0;
+        // emumerate through our groups and only add groups that contain photos
+        ALAssetsLibraryGroupsEnumerationResultsBlock listGroupBlock = ^(ALAssetsGroup *group, BOOL *stop) {
+            
+            ALAssetsFilter *onlyPhotosFilter = [ALAssetsFilter allPhotos];
+            [group setAssetsFilter:onlyPhotosFilter];
+            //if ([group numberOfAssets] > 0)
+            //{
+            //[self.groups addObject:group];
+            //}
+            int assetCount = [group numberOfAssets];
+            int begin = assetCount - start;
+            EZDEBUG(@"assetCount:%i, stop:%i", assetCount, *stop);
+            if(assetCount > 0){
+                [group enumerateAssetsUsingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop) {
+                    EZDEBUG(@"stopped:%i, index:%i, assertCount:%i", *stop, index, assetCount);
+                    ++count;
+                    if(index != NSNotFound){
+                        if(count >= begin){
+                            
+                        EZDisplayPhoto* ed = [[EZDisplayPhoto alloc] init];
+                        ed.isFront = true;
+                        EZPhoto* ep = [[EZPhoto alloc] init];
+                        ed.pid = ++photoCount;
+                        ep.asset = result;
+                        ep.isLocal = true;
+                        ed.photo = ep;
+                        ed.photo.owner = [[EZPerson alloc] init];
+                        ed.photo.owner.name = @"天哥";
+                        ed.photo.owner.avatar = [EZFileUtil fileToURL:@"tian_2.jpeg"].absoluteString;
+                        //EZDEBUG(@"Before size");
+                        ep.size = [result defaultRepresentation].dimensions;
+                        
+                        EZDEBUG(@"after size:%f, %f", ep.size.width, ep.size.height);
+                        //[res insertObject:ed atIndex:0];
+                        [[EZMessageCenter getInstance] postEvent:EZAlbumImageReaded attached:ed];
+                        }
+                        //[NSThread sleepForTimeInterval:0.5];
+                        if((count - begin) > limit){
+                            *stop = true;
+                        }
+                    }
+                    
+                }];
+            }else{
+                //++groupPos;
+                EZDEBUG(@"groupPos:%i, groupCount:%i", groupPos, groupCount);
+                //if(groupPos >= groupCount){
+                //success(res);
+                //}
+            }
+        };
+        
+        // enumerate only photos
+        //ALAssetsGroupAlbum | ALAssetsGroupEvent | ALAssetsGroupFaces |
+        NSUInteger groupTypes =  ALAssetsGroupSavedPhotos;
+        [_assetLibaray enumerateGroupsWithTypes:groupTypes usingBlock:listGroupBlock failureBlock:failureBlock];
+    });
+}
 //Now keep it simple and stupid, only change it at the second iteration
 - (void) loadAlbumPhoto:(int)start limit:(int)limit success:(EZEventBlock)success failure:(EZEventBlock)failure
 {
     EZDEBUG(@"Try to fetch %i, %i", start, limit);
     NSMutableArray* res = [[NSMutableArray alloc] init];
     //NSMutableDictionary* used = [[NSMutableDictionary alloc] init];
-    if (_assetLibaray == nil) {
-        _assetLibaray = [[ALAssetsLibrary alloc] init];
-    }
+    
     
     // setup our failure view controller in case enumerateGroupsWithTypes fails
     ALAssetsLibraryAccessFailureBlock failureBlock = ^(NSError *error) {

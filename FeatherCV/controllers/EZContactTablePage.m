@@ -11,6 +11,7 @@
 #import "EZContactTableCell.h"
 #import "EZClickView.h"
 #import "EZClickImage.h"
+#import "EZMessageCenter.h"
 
 @interface EZContactTablePage ()
 
@@ -33,8 +34,20 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    [self reloadPersons];
+    //[self reloadPersons];
+    [[EZMessageCenter getInstance] registerEvent:EZGetContacts block:^(NSArray* persons){
+        EZDEBUG(@"Get person, count:%i", persons.count);
+        [_contacts addObjectsFromArray:persons];
+        [self.tableView reloadData];
+    }];
+    
+    [[EZMessageCenter getInstance] registerEvent:EZUpdateContacts block:^(id sender){
+        EZDEBUG(@"Will update the contacts table");
+        //[self.tableView reloadData];
+    }];
 }
+
+
 
 - (void) reloadPersons
 {
@@ -76,6 +89,7 @@
     
     cell.clickRegion.releasedBlock = ^(id object){
         EZDEBUG(@"region clicked");
+        [[EZMessageCenter getInstance]postEvent:EZScreenSlide attached:@(1)];
     };
     cell.headIcon.releasedBlock = ^(id object){
         EZDEBUG(@"Header clicked");

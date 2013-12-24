@@ -118,6 +118,7 @@
 - (EZScrollContainer*) createScrollView
 {
     [self setupEvent];
+    
     EZScrollContainer* scrollContainer = [[EZScrollContainer alloc] initWithNibName:Nil bundle:nil];
     //UIViewController* v1 = [[UIViewController alloc] init];
     //v1.view.backgroundColor = [UIColor greenColor];
@@ -205,6 +206,8 @@
         }];
     }];
     
+    [[EZDataUtil getInstance] readAlbumInBackground:5 limit:5];
+    [[EZDataUtil getInstance] loadPhotoBooks];
     return scrollContainer;
     
 }

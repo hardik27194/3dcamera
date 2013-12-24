@@ -15,6 +15,11 @@
 #import "EZScrollContainer.h"
 #import "EZClickView.h"
 #import "EZUIUtility.h"
+#import "EZDataUtil.h"
+#import "EZDisplayPhoto.h"
+#import "EZPhoto.h"
+#import "EZFileUtil.h"
+#import "EZMessageCenter.h"
 
 //#import "PageViewController.h"
 //#import "DataSource.h"
@@ -161,6 +166,9 @@
 - (void) scrollEnded
 {
     EZDEBUG(@"scrollEnded get called, using backCamera:%i", _usingBackCamera);
+    if(_currentIndex == 0){
+        [[EZMessageCenter getInstance] postEvent:EZScreenSlide attached:@(0)];
+    }
     if(_currentIndex != 2){
         //[_picker viewDidDisappear:YES];
         [_dlcPicker becomeInvisible];
@@ -226,7 +234,24 @@
              EZDEBUG(@"ERROR: the image failed to be written");
          }
          else {
-             EZDEBUG(@"PHOTO SAVED - assetURL: %@", assetURL);
+             EZDEBUG(@"Stored image to album assetURL: %@", assetURL);
+             [[EZDataUtil getInstance] assetURLToAsset:assetURL success:^(ALAsset* result){
+                 EZDEBUG(@"Transfer the image to EZDisplayPhoto successfully");
+                 EZDisplayPhoto* ed = [[EZDisplayPhoto alloc] init];
+                 ed.isFront = true;
+                 EZPhoto* ep = [[EZPhoto alloc] init];
+                 ed.pid = ++[EZDataUtil getInstance].photoCount;
+                 ep.asset = result;
+                 ep.isLocal = true;
+                 ed.photo = ep;
+                 ed.photo.owner = [[EZPerson alloc] init];
+                 ed.photo.owner.name = @"天哥";
+                 ed.photo.owner.avatar = [EZFileUtil fileToURL:@"tian_2.jpeg"].absoluteString;
+                 //EZDEBUG(@"Before size");
+                 ep.size = [result defaultRepresentation].dimensions;
+                 [[EZMessageCenter getInstance]postEvent:EZTakePicture attached:ed];
+                 EZDEBUG(@"after size:%f, %f", ep.size.width, ep.size.height);
+             }];
          }
      }];
     

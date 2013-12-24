@@ -16,4 +16,6 @@
 //Will be called to load all the contacts from the directory.
 - (void) reloadPersons;
 
+- (void) displayContacts;
+
 @end

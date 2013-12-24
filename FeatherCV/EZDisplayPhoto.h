@@ -56,4 +56,6 @@ typedef enum {
 @property (nonatomic, assign) CGFloat turningDegree;
 
 
+@property (nonatomic, strong) NSString* randImage;
+
 @end

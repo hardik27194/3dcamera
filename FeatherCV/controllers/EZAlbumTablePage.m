@@ -50,6 +50,7 @@ static int photoCount = 1;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    _combinedPhotos = [[NSMutableArray alloc] init];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     __weak EZAlbumTablePage* weakSelf = self;
     EZDEBUG(@"Query block is:%i",(int)_queryBlock);
@@ -67,6 +68,14 @@ static int photoCount = 1;
     //I can use simple thing to do this.s
     [[EZMessageCenter getInstance] registerEvent:EZTakePicture block:^(EZDisplayPhoto* dp){
         EZDEBUG(@"A photo get generated");
+        [_combinedPhotos insertObject:dp atIndex:0];
+        [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
+    }];
+    
+    [[EZMessageCenter getInstance] registerEvent:EZAlbumImageReaded block:^(EZDisplayPhoto* dp){
+        EZDEBUG(@"Recieved a image from album");
+        [_combinedPhotos insertObject:dp atIndex:0];
+        [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
     }];
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
@@ -91,9 +100,18 @@ static int photoCount = 1;
 
 - (CGFloat) tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+   
     EZDisplayPhoto* cp = [_combinedPhotos objectAtIndex:indexPath.row];
-    CGFloat imageHeight = cp.photo.size.height/cp.photo.size.width * 320 + 120;
-    EZDEBUG(@"The row height is:%f, width:%f, %f", imageHeight, cp.photo.size.width, cp.photo.size.height);
+    EZDEBUG(@"calculate the height, is front:%i", cp.isFront);
+    CGFloat imageHeight;
+    if(cp.isFront){
+        imageHeight = (cp.photo.size.height/cp.photo.size.width) * 320.0 + 120;
+        EZDEBUG(@"The row height is:%f, width:%f, %f", imageHeight, cp.photo.size.width, cp.photo.size.height);
+    }else{
+        CGSize imgSize = [UIImage imageNamed:cp.randImage].size;
+        imageHeight = (imgSize.height/imgSize.width) * 320.0 + 120;
+        EZDEBUG(@"Column count is:%f, width:%f, %f", imageHeight, cp.photo.size.width, cp.photo.size.height);
+    }
     //EZDEBUG(@"image width:%f, height:%f, final height:%f", cp.myPhoto.size.width, cp.myPhoto.size.height, imageHeight);
     return imageHeight;
     //return 400;
@@ -111,27 +129,53 @@ static int photoCount = 1;
     //[cell backToOriginSize];
     cell.isLarge = false;
     EZDisplayPhoto* cp = [_combinedPhotos objectAtIndex:indexPath.row];
-    [cell adjustCellSize:cp.photo.size];
+    
     //This is for later update purpose. great, let's get whole thing up and run.
     cell.currentPos = indexPath.row;
     //EZCombinedPhoto* curPhoto = [cp.combinedPhotos objectAtIndex:cp.selectedCombinePhoto];
     EZPhoto* myPhoto = cp.photo;
     // Configure the cell...
     //[cell displayImage:[myPhoto getLocalImage]];
-    if(_isScrolling){
+    if(cp.isFront){
+        [cell adjustCellSize:myPhoto.size];
         [cell displayImage:[myPhoto getThumbnail]];
-    }else{
-        cell.isLarge = true;
-        //[cell displayImage:[myPhoto getLocalImage]];
-        //[cell displayEffectImage:[myPhoto getLocalImage]];
+        /**
+        if(_isScrolling){
+            [cell displayImage:[myPhoto getThumbnail]];
+        }else{
+            cell.isLarge = true;
+            //[cell displayImage:[myPhoto getLocalImage]];
+            //[cell displayEffectImage:[myPhoto getLocalImage]];
+            [cell displayImage:[myPhoto getLocalImage]];
+        }
+         **/
+    }else{//Display the back
+        UIImage* img = [UIImage imageNamed:cp.randImage];
+        [cell adjustCellSize:img.size];
+        [cell displayImage:img];
     }
     __weak EZPhotoCell* weakCell = cell;
     cell.container.releasedBlock = ^(id obj){
-        EZDEBUG(@"The container size:%f, %f", weakCell.container.frame.size.width, weakCell.container.frame.size.height);
+        cp.isFront = !cp.isFront;
+        EZEventBlock complete = ^(id sender){
+            EZDEBUG(@"Complete get called");
+            [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+        };
+        if(cp.isFront){
+            //[weakCell displayImage:[myPhoto getLocalImage]];
+            [weakCell switchImage:[myPhoto getLocalImage] complete:complete];
+        }else{
+            EZDEBUG(@"The container size:%f, %f", weakCell.container.frame.size.width, weakCell.container.frame.size.height);
+            if(!cp.randImage){
+            int imagePos = rand()%17;
+                ++imagePos;
+                NSString* randFile = [NSString stringWithFormat:@"santa_%i.jpg", imagePos];
+                EZDEBUG(@"Random File name:%@", randFile);
+                cp.randImage = randFile;
+            }
+            [weakCell switchImage:[UIImage imageNamed:cp.randImage] complete:complete];
+        }
     };
-    //self.tableView.isDecelerating
-    
-    
     return cell;
 }
 
@@ -160,17 +204,19 @@ static int photoCount = 1;
 {
     NSArray* cells = [self.tableView visibleCells];
     EZDEBUG(@"Scroll stopped:%i", cells.count);
-    /**
+    
     for(EZPhotoCell* pcell in cells){
-        if(!pcell.isLarge){
+        EZDisplayPhoto* cp = [_combinedPhotos objectAtIndex:pcell.currentPos];
+        
+        if(cp.isFront && !pcell.isLarge){
             pcell.isLarge = true;
-            [[EZThreadUtility getInstance] executeBlockInQueue:^(){
-                EZDisplayPhoto* cp = [_combinedPhotos objectAtIndex:pcell.currentPos];
-                [pcell displayEffectImage:[cp.photo getLocalImage]];
-            }];
+            //[[EZThreadUtility getInstance] executeBlockInQueue:^(){
+            //[pcell displayEffectImage:[cp.photo getLocalImage]];
+            [pcell displayImage:[cp.photo getLocalImage]];
+            //}];
         }
     }
-    **/
+    
 }
 
 /*
