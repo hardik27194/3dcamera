@@ -24,6 +24,7 @@
                 <outlet property="slider3" destination="HnH-xx-oOW" id="Rhp-q1-a46"/>
                 <outlet property="slider4" destination="9bp-kc-nEM" id="p3a-WL-hhD"/>
                 <outlet property="slider5" destination="NFp-97-T39" id="r7P-V4-3sY"/>
+                <outlet property="switchColor" destination="Kw6-MQ-hBC" id="odE-1Q-gJC"/>
                 <outlet property="topBar" destination="34" id="74"/>
                 <outlet property="view" destination="4" id="42"/>
             </connections>
@@ -72,6 +73,16 @@
                                 <action selector="slideChanged:" destination="-1" eventType="valueChanged" id="OHj-mg-9mq"/>
                             </connections>
                         </slider>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="Kw6-MQ-hBC">
+                            <rect key="frame" x="20" y="270" width="63" height="30"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <state key="normal" title="Button">
+                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                            </state>
+                            <connections>
+                                <action selector="changeColor:" destination="-1" eventType="touchUpInside" id="amS-Hk-0VG"/>
+                            </connections>
+                        </button>
                     </subviews>
                     <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                     <gestureRecognizers/>
@@ -248,11 +259,9 @@
         <image name="blur-on.png" width="15" height="22"/>
         <image name="blur.png" width="16" height="23"/>
         <image name="camera-button.png" width="101" height="41"/>
-        <image name="camera-button.png" width="101" height="41"/>
         <image name="camera-icon.png" width="26" height="21"/>
         <image name="close.png" width="22" height="21"/>
         <image name="dock_bg.png" width="320" height="75"/>
-        <image name="filter-close.png" width="29" height="28"/>
         <image name="filter-close.png" width="29" height="28"/>
         <image name="filter-open.png" width="28" height="28"/>
         <image name="flash-off.png" width="22" height="26"/>

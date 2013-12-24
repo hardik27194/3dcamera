@@ -58,6 +58,7 @@ typedef enum {
 @property (nonatomic, weak) IBOutlet UIButton *flashToggleButton;
 @property (nonatomic, weak) IBOutlet UIButton *retakeButton;
 
+
 @property (nonatomic, weak) IBOutlet UIScrollView *filterScrollView;
 @property (nonatomic, weak) IBOutlet UIImageView *filtersBackgroundImageView;
 @property (nonatomic, weak) IBOutlet UIView *photoBar;
@@ -87,7 +88,11 @@ typedef enum {
 @property (nonatomic, strong) IBOutlet UISlider* slider3;
 @property (nonatomic, strong) IBOutlet UISlider* slider4;
 @property (nonatomic, strong) IBOutlet UISlider* slider5;
-
+@property (nonatomic, weak) IBOutlet UIButton *switchColor;
+@property (nonatomic, assign) int colorType;
+@property (nonatomic, strong) NSMutableArray* redAdjustments;
+@property (nonatomic, strong) NSMutableArray* greenAdjustments;
+@property (nonatomic, strong) NSMutableArray* blueAdjustments;
 
 //This method will change the turnStatus
 - (void) captureTurnedImage;
@@ -96,5 +101,7 @@ typedef enum {
 - (void) becomeInvisible;
 
 - (IBAction) slideChanged:(id)sender;
+
+- (IBAction) changeColor:(id)sender;
 
 @end

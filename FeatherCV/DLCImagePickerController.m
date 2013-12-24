@@ -42,7 +42,7 @@
     GPUImageFilter* filter;
     GPUImagePicture *staticPicture;
     NSMutableArray* tongParameters;
-    NSMutableArray* redParameters;
+    //NSMutableArray* redParameters;
     //NSMutableArray* _recordedMotions;
     CMAttitude* _prevMotion;
     UIImageOrientation staticPictureOriginalOrientation;
@@ -109,24 +109,69 @@
     UISlider* slider = (UISlider*)sender;
     //slider.value
     EZDEBUG(@"Current slide value:%f", slider.value);
-    
-    if(slider == _slider1){
-        [tongParameters replaceObjectAtIndex:0 withObject:pointValue(0.0, _slider1.value)];
-    }else if(slider == _slider2){
-        [tongParameters replaceObjectAtIndex:1 withObject:pointValue(0.25, _slider2.value)];
-    }else if(slider == _slider3){
-        [tongParameters replaceObjectAtIndex:2 withObject:pointValue(0.5, _slider3.value)];
-    }else if(slider == _slider4){
-        [tongParameters replaceObjectAtIndex:3 withObject:pointValue(0.75, _slider4.value)];
-    }else if(slider == _slider5){
-        [tongParameters replaceObjectAtIndex:4 withObject:pointValue(1.0, _slider5.value)];
+    if(_colorType == 0){
+        [self assignValue:tongParameters];
+        [tongFilter setRgbCompositeControlPoints:tongParameters];
+    }else if(_colorType == 1){
+        [self assignValue:_redAdjustments];
+        [tongFilter setRedControlPoints:_redAdjustments];
+    }else if(_colorType == 2){
+        [self assignValue:_greenAdjustments];
+        [tongFilter setGreenControlPoints:_greenAdjustments];
+    }else if(_colorType == 3){
+        [self assignValue:_blueAdjustments];
+        [tongFilter setBlueControlPoints:_blueAdjustments];
     }
-    [tongFilter setRgbCompositeControlPoints:tongParameters];
     
-    //faceBlurFilter.blurSize = slider.value * 8;
-    EZDEBUG(@"Replaced value is:%@", tongParameters);
     if(isStatic){
         [staticPicture processImage];
+    }
+}
+
+- (void) assignValue:(NSMutableArray*)arr
+{
+    [arr removeAllObjects];
+    [arr addObjectsFromArray:@[pointValue(0.0, _slider1.value), pointValue(0.25, _slider2.value), pointValue(0.5, _slider3.value), pointValue(0.75, _slider4.value), pointValue(1.0, _slider5.value)]];
+}
+
+- (void) loadValue:(NSMutableArray*)arr
+{
+    CGPoint pt = [[arr objectAtIndex:0] CGPointValue];
+    _slider1.value = pt.y;
+    
+    pt = [[arr objectAtIndex:1] CGPointValue];
+    _slider2.value = pt.y;
+    
+    pt = [[arr objectAtIndex:2] CGPointValue];
+    _slider3.value = pt.y;
+    
+    pt = [[arr objectAtIndex:3] CGPointValue];
+    _slider4.value = pt.y;
+    
+    pt = [[arr objectAtIndex:4] CGPointValue];
+    _slider5.value = pt.y;
+    
+}
+
+- (IBAction) changeColor:(id)sender
+{
+    ++_colorType;
+    if(_colorType > 3){
+        _colorType = 0;
+    }
+    EZDEBUG(@"Change to:%i", _colorType);
+    if(_colorType == 0){
+        [_switchColor setTitle:@"综合" forState:UIControlStateNormal];
+        [self loadValue:tongParameters];
+    }else if(_colorType == 1){
+        [_switchColor setTitle:@"红" forState:UIControlStateNormal];
+        [self loadValue:_redAdjustments];
+    }else if(_colorType == 2){
+        [_switchColor setTitle:@"绿" forState:UIControlStateNormal];
+        [self loadValue:_greenAdjustments];
+    }else if(_colorType == 3){
+        [_switchColor setTitle:@"蓝" forState:UIControlStateNormal];
+        [self loadValue:_blueAdjustments];
     }
 }
 
@@ -142,13 +187,24 @@
     _slider4.value = 0.75;
     _slider5.value = 1.0;
     tongParameters = [[NSMutableArray alloc] init];
-    redParameters = [[NSMutableArray alloc] init];
+    _redAdjustments = [[NSMutableArray alloc] init];
+    _blueAdjustments = [[NSMutableArray alloc] init];
+    _greenAdjustments = [[NSMutableArray alloc] init];
+    [tongParameters addObjectsFromArray:@[pointValue(0.0, 0.0), pointValue(0.25, 0.273), pointValue(0.5, 0.524), pointValue(0.75, 0.774), pointValue(1.0, 1.0)]];
+    
+    //[_redAdjustments addObjectsFromArray:@[pointValue(0.0, 0.0), pointValue(0.25, 0.2615), pointValue(0.5, 0.512), pointValue(0.75, 0.762), pointValue(1.0, 1.0)]];
+     [_redAdjustments addObjectsFromArray:@[pointValue(0.0, 0.0), pointValue(0.25, 0.2615), pointValue(0.5, 0.512), pointValue(0.75, 0.762), pointValue(1.0, 1.0)]];
+     [_greenAdjustments addObjectsFromArray:@[pointValue(0.0, 0.0), pointValue(0.25, 0.25), pointValue(0.5, 0.5), pointValue(0.75, 0.75), pointValue(1.0, 1.0)]];
+     [_blueAdjustments addObjectsFromArray:@[pointValue(0.0, 0.0), pointValue(0.25, 0.25), pointValue(0.5, 0.5), pointValue(0.75, 0.75), pointValue(1.0, 1.0)]];
+    _colorType = 0;
     [_slider1 rotateAngle:-M_PI_2 ];
     [_slider2 rotateAngle:-M_PI_2 ];
     [_slider3 rotateAngle:-M_PI_2 ];
     [_slider4 rotateAngle:-M_PI_2 ];
     [_slider5 rotateAngle:-M_PI_2 ];
-
+    _colorType = 0;
+    [_switchColor setTitle:@"综合" forState:UIControlStateNormal];
+    [_switchColor setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     self.wantsFullScreenLayout = YES;
     _pageTurn = [[EZSoundEffect alloc] initWithSoundNamed:@"page_turn.aiff"];
     _shotReady = [[EZSoundEffect alloc] initWithSoundNamed:@"shot_voice.aiff"];
@@ -187,15 +243,14 @@
     faceBlurFilter = [[EZFaceBlurFilter alloc] init];//[[EZFaceBlurFilter alloc] init];
     filter = [[GPUImageFilter alloc] init];
     tongFilter = [[GPUImageToneCurveFilter alloc] init];
-    [tongParameters addObjectsFromArray:@[pointValue(0.0, 0.0), pointValue(0.25, 0.273), pointValue(0.5, 0.524), pointValue(0.75, 0.774), pointValue(1.0, 1.0)]];
-    
-    [redParameters addObjectsFromArray:@[pointValue(0.0, 0.0), pointValue(0.25, 0.2615), pointValue(0.5, 0.512), pointValue(0.75, 0.762), pointValue(1.0, 1.0)]];
-    //faceBlurFilter.blurSize = 2.0;
+        //faceBlurFilter.blurSize = 2.0;
     //[faceBlurFilter setExcludeCircleRadius:80.0/320.0];
     //[faceBlurFilter setExcludeCirclePoint:CGPointMake(0.5f, 0.5f)];
     //[faceBlurFilter setAspectRatio:1.0f];
     [tongFilter setRgbCompositeControlPoints:tongParameters];
-    [tongFilter setRedControlPoints:redParameters];
+    [tongFilter setRedControlPoints:_redAdjustments];
+    [tongFilter setGreenControlPoints:_greenAdjustments];
+    [tongFilter setBlueControlPoints:_blueAdjustments];
     simpleFilter = [[GPUImageFilter alloc] init];
     contrastfilter = [[GPUImageSaturationFilter alloc] init];
     whiteBalancerFilter = [[GPUImageWhiteBalanceFilter alloc] init];
@@ -488,9 +543,9 @@
     //[cropFilter addTarget:faceBlurFilter];
     //[faceBlurFilter addTarget:filter];
     [cropFilter addTarget:tongFilter];
-    [tongFilter addTarget:whiteBalancerFilter];
+    //[tongFilter addTarget:whiteBalancerFilter];
     //[whiteBalancerFilter addTarget:contrastfilter];
-    [whiteBalancerFilter addTarget:filter];
+    [tongFilter addTarget:filter];
     //[filter addTarget:faceBlurFilter];
     
     //blur is terminal filter
@@ -509,8 +564,8 @@
 -(void) prepareStaticFilter {
     EZDEBUG(@"Prepare static image get called");
     [staticPicture addTarget:tongFilter];
-    [tongFilter addTarget:whiteBalancerFilter];
-    [whiteBalancerFilter addTarget:filter];
+    [tongFilter addTarget:filter];
+    //[whiteBalancerFilter addTarget:filter];
     //[contrastfilter addTarget:filter];
     //[faceBlurFilter addTarget:filter];
     //[faceBlurFilter addTarget:filter];
@@ -815,6 +870,25 @@
         CGPoint pt = [val CGPointValue];
         [str appendString:[NSString stringWithFormat:@"%@,", NSStringFromCGPoint(pt)]];
     }
+    
+    [str appendString:@" Red\n"];
+    for(NSValue* val in _redAdjustments){
+        CGPoint pt = [val CGPointValue];
+        [str appendString:[NSString stringWithFormat:@"%@,", NSStringFromCGPoint(pt)]];
+    }
+    
+    [str appendString:@" Green\n"];
+    for(NSValue* val in _greenAdjustments){
+        CGPoint pt = [val CGPointValue];
+        [str appendString:[NSString stringWithFormat:@"%@,", NSStringFromCGPoint(pt)]];
+    }
+    
+    [str appendString:@" Blue\n"];
+    for(NSValue* val in _blueAdjustments){
+        CGPoint pt = [val CGPointValue];
+        [str appendString:[NSString stringWithFormat:@"%@,", NSStringFromCGPoint(pt)]];
+    }
+
     EZDEBUG(@"Showed value:%@", str);
     UIAlertView* altert = [[UIAlertView alloc] initWithTitle:@"Current value" message:str delegate:nil cancelButtonTitle:@"退出" otherButtonTitles:nil];
     
