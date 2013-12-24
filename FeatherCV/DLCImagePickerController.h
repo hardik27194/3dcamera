@@ -83,16 +83,6 @@ typedef enum {
 //If current camera point forward
 @property (nonatomic, assign) BOOL isFrontCamera;
 
-@property (nonatomic, strong) IBOutlet UISlider* slider1;
-@property (nonatomic, strong) IBOutlet UISlider* slider2;
-@property (nonatomic, strong) IBOutlet UISlider* slider3;
-@property (nonatomic, strong) IBOutlet UISlider* slider4;
-@property (nonatomic, strong) IBOutlet UISlider* slider5;
-@property (nonatomic, weak) IBOutlet UIButton *switchColor;
-@property (nonatomic, assign) int colorType;
-@property (nonatomic, strong) NSMutableArray* redAdjustments;
-@property (nonatomic, strong) NSMutableArray* greenAdjustments;
-@property (nonatomic, strong) NSMutableArray* blueAdjustments;
 
 //This method will change the turnStatus
 - (void) captureTurnedImage;
