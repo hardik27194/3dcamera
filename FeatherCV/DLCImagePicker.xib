@@ -248,9 +248,11 @@
         <image name="blur-on.png" width="15" height="22"/>
         <image name="blur.png" width="16" height="23"/>
         <image name="camera-button.png" width="101" height="41"/>
+        <image name="camera-button.png" width="101" height="41"/>
         <image name="camera-icon.png" width="26" height="21"/>
         <image name="close.png" width="22" height="21"/>
         <image name="dock_bg.png" width="320" height="75"/>
+        <image name="filter-close.png" width="29" height="28"/>
         <image name="filter-close.png" width="29" height="28"/>
         <image name="filter-open.png" width="28" height="28"/>
         <image name="flash-off.png" width="22" height="26"/>

@@ -489,8 +489,8 @@
     //[faceBlurFilter addTarget:filter];
     [cropFilter addTarget:tongFilter];
     [tongFilter addTarget:whiteBalancerFilter];
-    [whiteBalancerFilter addTarget:contrastfilter];
-    [contrastfilter addTarget:filter];
+    //[whiteBalancerFilter addTarget:contrastfilter];
+    [whiteBalancerFilter addTarget:filter];
     //[filter addTarget:faceBlurFilter];
     
     //blur is terminal filter
@@ -510,9 +510,9 @@
     EZDEBUG(@"Prepare static image get called");
     [staticPicture addTarget:tongFilter];
     [tongFilter addTarget:whiteBalancerFilter];
-    [whiteBalancerFilter addTarget:contrastfilter];
-    [contrastfilter addTarget:faceBlurFilter];
-    [faceBlurFilter addTarget:filter];
+    [whiteBalancerFilter addTarget:filter];
+    //[contrastfilter addTarget:filter];
+    //[faceBlurFilter addTarget:filter];
     //[faceBlurFilter addTarget:filter];
 
     // blur is terminal filter
