@@ -210,10 +210,11 @@
 }
 
 //I will obey this rule, only when I visible, it make sense to register the handle.
--(void) becomeVisible
+-(void) becomeVisible:(BOOL)isFront
 {
-    EZDEBUG(@"BecomeVisible get called");
-    [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
+    
+    [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
+    _isVisible = true;
     if(_senseRotate){
         [[EZMotionUtility getInstance] registerHandler:^(EZMotionData* md){
             //EZDEBUG(@"motion turn is main:%i", [NSThread currentThread].isMainThread);
@@ -258,8 +259,8 @@
                          **/
                         //[md.storedMotion removeAllObjects];
                         //if(!stillCamera.isFrontFacing){
-                        [_pageTurn play];
-                        [self switchCameraInner];
+                        //[_pageTurn play];
+                        //[self switchCameraInner];
                         return;
                 }
             }
@@ -271,7 +272,7 @@
                 //[self clearMotionEffects:md attr:md.currentMotion];
                 //So we will just ignore the capturing?
                 //User expecting have another action
-                if(_turnStatus == kCameraNormal){
+                if(_turnStatus == kCameraNormal && stillCamera.isFrontFacing){
                     EZDEBUG(@"I am in half turn now");
                     //if(stillCamera.isFrontFacing){
                     EZDEBUG(@"Will start capture now, isFront:%i", stillCamera.isFrontFacing);
@@ -296,18 +297,33 @@
                         }
                     });
                 }
-            }else if(absDelta > 0.7){
+            }
+            /**
+            else if(absDelta > 0.7){
                 EZDEBUG(@"Half turn get triggered for absDelta:%f", absDelta);
                 if(_turnStatus == kCameraNormal){
                     _turnStatus = kCameraHalfTurn;
                 }
             }
+             **/
             
         } key:@"CameraMotion" type:kEZRotation];
     }
-
+    EZDEBUG(@"BecomeVisible get called, isFront:%i, current:%i", isFront, stillCamera.isFrontFacing);
+    if(isFront && !stillCamera.isFrontFacing){
+        [self switchCamera];
+    }else if(!isFront && stillCamera.isFrontFacing){
+        [self switchCamera];
+    }
+    EZDEBUG(@"After call capture:%i",stillCamera.isFrontFacing);
     [stillCamera startCameraCapture];
-    //[super viewWillAppear:animated];
+    
+    //double delayInSeconds = 0.2;
+    //dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+    //dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+    
+    //});
+    
     
 }
 
@@ -317,7 +333,7 @@
     //[super viewDidDisappear:animated];
     [stillCamera stopCameraCapture];
     [[EZMotionUtility getInstance] unregisterHandler:@"CameraMotion"];
-    
+    _isVisible = false;
 }
 
 
@@ -665,6 +681,7 @@
         [self.photoCaptureButton setTitle:@"Done" forState:UIControlStateNormal];
         [self.photoCaptureButton setImage:nil forState:UIControlStateNormal];
         [self.photoCaptureButton setEnabled:YES];
+        isStatic = true;
         //if(![self.filtersToggleButton isSelected]){
         //    [self showFilters];
         //}
@@ -701,6 +718,7 @@
     } else {
         // A workaround inside capturePhotoProcessedUpToFilter:withImageOnGPUHandler: would cause the above method to fail,
         // so we just grap the current crop filter output as an aproximation (the size won't match trough)
+        EZDEBUG(@"Will try to get from crop");
         UIImage *img = [cropFilter imageFromCurrentlyProcessedOutput];
         EZDEBUG(@"Capture with crop");
         completion(img, nil);
@@ -710,6 +728,7 @@
 -(IBAction) takePhoto:(id)sender{
     [self.photoCaptureButton setEnabled:NO];
     
+    EZDEBUG(@"Take photo get called, is static:%i", isStatic);
     if (!isStatic) {
         isStatic = YES;
         

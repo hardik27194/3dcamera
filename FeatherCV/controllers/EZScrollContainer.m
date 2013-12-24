@@ -112,13 +112,27 @@
     _scrollView.contentSize = CGSizeMake(bound.size.width*_children.count, bound.size.height);
 }
 
+- (void)orientationChanged:(NSNotification *)notification
+{
+    EZDEBUG(@"Orientation changed:%i, currentIndex is:%i", [UIDevice currentDevice].orientation, _currentIndex);
+    //[self adjustViewsForOrientation:[[UIApplication sharedApplication] statusBarOrientation]];
+    if(([UIDevice currentDevice].orientation ==  UIDeviceOrientationLandscapeLeft || [UIDevice currentDevice].orientation == UIDeviceOrientationLandscapeRight)){
+        if(_currentIndex != 2){
+            //EZDEBUG(@"")
+            _usingBackCamera = true;
+            [self setIndex:2 animated:TRUE slide:FALSE];
+            
+        }
+    }
+}
+
 - (void)viewDidLoad
 {
 	//currentPage = [[PageViewController alloc] initWithNibName:@"PageView" bundle:nil];
 	//nextPage = [[PageViewController alloc] initWithNibName:@"PageView" bundle:nil];
 	//[scrollView addSubview:currentPage.view];
 	//[scrollView addSubview:nextPage.view];
-
+    [[NSNotificationCenter defaultCenter] addObserver:self  selector:@selector(orientationChanged:)  name:UIDeviceOrientationDidChangeNotification  object:[UIDevice currentDevice]];
     EZDEBUG(@"Current childSize:%i", _children.count);
     _scrollView.contentSize =
 		CGSizeMake(
@@ -146,12 +160,18 @@
 
 - (void) scrollEnded
 {
-    EZDEBUG(@"scrollEnded get called");
+    EZDEBUG(@"scrollEnded get called, using backCamera:%i", _usingBackCamera);
     if(_currentIndex != 2){
         //[_picker viewDidDisappear:YES];
         [_dlcPicker becomeInvisible];
     }else{
-        [_dlcPicker becomeVisible];
+        //I will show the from.
+        if(_usingBackCamera){
+            [_dlcPicker becomeVisible:FALSE];
+            _usingBackCamera = false;
+        }else{
+            [_dlcPicker becomeVisible:TRUE];
+        }
     }
 
 }
@@ -190,7 +210,7 @@
 //I will put this image to another place.
 - (void)takePicture:(DLCImagePickerController*)picker imageInfo:(NSDictionary*)info
 {
-    
+
 }
 
 

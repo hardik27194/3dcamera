@@ -39,6 +39,9 @@
 //This mean which index are displayed in the middle
 @property (nonatomic, assign) NSInteger currentIndex;
 
+//Use to differentiate the front.
+@property (nonatomic, assign) BOOL usingBackCamera;
+
 - (void) addChildren:(NSArray *)children;
 
 - (void) setIndex:(int)idx animated:(BOOL)animated slide:(BOOL)slide;

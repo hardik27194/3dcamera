@@ -225,7 +225,7 @@
     EZDEBUG(@"before get scrollView");
     self.window.rootViewController = [self createScrollView];
     EZDEBUG(@"After get scrollView");
-    [[NSNotificationCenter defaultCenter] addObserver:self  selector:@selector(orientationChanged:)  name:UIDeviceOrientationDidChangeNotification  object:[UIDevice currentDevice]];
+   
     EZDEBUG(@"Register orientation change");
     [self.window makeKeyAndVisible];
     EZDEBUG(@"Visible enabled");

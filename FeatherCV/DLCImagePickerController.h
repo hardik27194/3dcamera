@@ -83,11 +83,13 @@ typedef enum {
 //If current camera point forward
 @property (nonatomic, assign) BOOL isFrontCamera;
 
+@property (nonatomic, assign) BOOL isVisible;
+
 
 //This method will change the turnStatus
 - (void) captureTurnedImage;
 
--(void) becomeVisible;
+-(void) becomeVisible:(BOOL)isFront;
 - (void) becomeInvisible;
 
 - (IBAction) slideChanged:(id)sender;
