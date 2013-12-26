@@ -11,11 +11,8 @@
                 <outlet property="cameraToggleButton" destination="37" id="48"/>
                 <outlet property="cancelButton" destination="36" id="44"/>
                 <outlet property="filterScrollView" destination="16" id="69"/>
-                <outlet property="filtersBackgroundImageView" destination="71" id="72"/>
-                <outlet property="filtersToggleButton" destination="35" id="64"/>
                 <outlet property="flashToggleButton" destination="77" id="78"/>
                 <outlet property="imageView" destination="7" id="43"/>
-                <outlet property="libraryToggleButton" destination="83" id="88"/>
                 <outlet property="photoBar" destination="31" id="73"/>
                 <outlet property="photoCaptureButton" destination="32" id="45"/>
                 <outlet property="retakeButton" destination="80" id="81"/>
@@ -29,7 +26,7 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <view contentMode="scaleAspectFill" id="7" customClass="GPUImageView">
-                    <rect key="frame" x="0.0" y="78" width="320" height="320"/>
+                    <rect key="frame" x="0.0" y="0.0" width="320" height="481"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                     <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                     <gestureRecognizers/>
@@ -39,10 +36,6 @@
                         <outletCollection property="gestureRecognizers" destination="89" appends="YES" id="90"/>
                     </connections>
                 </view>
-                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="dock_bg.png" id="71">
-                    <rect key="frame" x="-12" y="435" width="344" height="75"/>
-                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                </imageView>
                 <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" bounces="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" id="16">
                     <rect key="frame" x="0.0" y="437" width="320" height="75"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
@@ -64,38 +57,6 @@
                             </state>
                             <connections>
                                 <action selector="takePhoto:" destination="-1" eventType="touchUpInside" id="46"/>
-                            </connections>
-                        </button>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" id="35">
-                            <rect key="frame" x="263" y="3" width="65" height="37"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
-                            <state key="normal" image="filter-open.png">
-                                <color key="titleColor" red="0.19607843459999999" green="0.30980393290000002" blue="0.52156865600000002" alpha="1" colorSpace="calibratedRGB"/>
-                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                            </state>
-                            <state key="selected" image="filter-close.png"/>
-                            <state key="highlighted">
-                                <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                            </state>
-                            <connections>
-                                <action selector="toggleFilters:" destination="-1" eventType="touchUpInside" id="68"/>
-                            </connections>
-                        </button>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" id="83">
-                            <rect key="frame" x="-8" y="3" width="65" height="37"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
-                            <state key="normal" image="library.png">
-                                <color key="titleColor" red="0.19607843459999999" green="0.30980393290000002" blue="0.52156865600000002" alpha="1" colorSpace="calibratedRGB"/>
-                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                            </state>
-                            <state key="selected" image="filter-close.png"/>
-                            <state key="highlighted">
-                                <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                            </state>
-                            <connections>
-                                <action selector="switchToLibrary:" destination="-1" eventType="touchUpInside" id="87"/>
                             </connections>
                         </button>
                         <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="80">
@@ -184,7 +145,7 @@
                     </connections>
                 </button>
             </subviews>
-            <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
         </view>
         <pinchGestureRecognizer id="51">
             <connections>
@@ -208,12 +169,8 @@
         <image name="camera-button.png" width="101" height="41"/>
         <image name="camera-icon.png" width="26" height="21"/>
         <image name="close.png" width="22" height="21"/>
-        <image name="dock_bg.png" width="320" height="75"/>
-        <image name="filter-close.png" width="29" height="28"/>
-        <image name="filter-open.png" width="28" height="28"/>
         <image name="flash-off.png" width="22" height="26"/>
         <image name="flash.png" width="22" height="26"/>
         <image name="front-camera.png" width="48" height="24"/>
-        <image name="library.png" width="28" height="28"/>
     </resources>
 </document>

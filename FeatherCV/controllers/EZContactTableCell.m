@@ -18,9 +18,9 @@
     CGFloat cellHeight = 60;
     if (self) {
         // Initialization code
-        _name = [[UILabel alloc] initWithFrame:CGRectMake(15, (cellHeight - 17)/2, 220, 17)];
-        _name.font = [UIFont systemFontOfSize:16];
-        _name.textColor = [UIColor blackColor];//RGBCOLOR(128, 128, 128);
+        _name = [[UILabel alloc] initWithFrame:CGRectMake(20, (cellHeight - 20)/2, 220, 17)];
+        _name.font = [UIFont systemFontOfSize:20];
+        _name.textColor = RGBCOLOR(128, 128, 128);//RGBCOLOR(128, 128, 128);
         [self.contentView addSubview:_name];
         
         _clickRegion = [[EZClickView alloc] initWithFrame:CGRectMake(0, 0, 320, cellHeight)];

@@ -37,24 +37,24 @@
         
         
         _toolRegion = [[UIView alloc] initWithFrame:ToolRegionRect];
-        _toolRegion.backgroundColor = RGBCOLOR(128, 128, 255);
+        _toolRegion.backgroundColor = [UIColor whiteColor];//RGBCOLOR(128, 128, 255);
         //My feedback will grow gradually.
         _headIcon = [[EZClickImage alloc] initWithFrame:CGRectMake(15, (ToolRegionHeight-40)/2, 40, 40)];
         [_headIcon enableRoundImage];
-        _headIcon.backgroundColor = [UIColor grayColor];
+        _headIcon.backgroundColor = randBack(nil);
         
         _linkIcon = [[EZClickImage alloc] initWithFrame:CGRectMake(15+40+10, (ToolRegionHeight - 40)/2, 40, 40)];
         [_linkIcon enableRoundImage];
-        _linkIcon.backgroundColor = [UIColor grayColor];
+        _linkIcon.backgroundColor = randBack(nil);
         
         _backIcon = [[EZClickImage alloc] initWithFrame:CGRectMake(15+80+20, (ToolRegionHeight - 40)/2, 40, 40)];
         [_backIcon enableRoundImage];
-        _backIcon.backgroundColor = [UIColor grayColor];
+        _backIcon.backgroundColor = randBack(nil);
         
         _countIcon = [[UILabel alloc] initWithFrame:CGRectMake(15+120+30, (ToolRegionHeight - 40)/2, 40, 40)];
         _countIcon.font = [UIFont systemFontOfSize:16];
         _countIcon.textAlignment = NSTextAlignmentCenter;
-        _countIcon.backgroundColor = [UIColor grayColor];
+        _countIcon.backgroundColor = randBack(nil);
         [_countIcon enableRoundImage];
         
         [_toolRegion addSubview:_headIcon];
@@ -64,7 +64,7 @@
         _toolRegion.alpha = 0.5;
         
         _feedbackRegion = [[UIView alloc] initWithFrame:FeedbackRegionRect];
-        _feedbackRegion.backgroundColor = RGBCOLOR(255, 128, 128);
+        _feedbackRegion.backgroundColor = [UIColor whiteColor];//RGBCOLOR(255, 128, 128);
         _feedbackRegion.alpha = 0.5;
         //_frontImage.layer.cornerRadius = 5;
         _frontImage.clipsToBounds = true;

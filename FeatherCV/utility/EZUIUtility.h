@@ -11,7 +11,7 @@
 //#import "DLCImagePickerController.h"
 
 
-#define randBack(color)  [[EZUIUtility sharedEZUIUtility] getBackgroundColor:color]
+
 //Put UI related functionality here
 @interface EZUIUtility : NSObject<UIImagePickerControllerDelegate, UINavigationControllerDelegate>
 

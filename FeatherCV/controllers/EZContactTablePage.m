@@ -24,7 +24,7 @@
     self = [super initWithStyle:style];
     if (self) {
         // Custom initialization
-        self.title = @"朋友";
+        self.title = @"小朋友";
         [self.tableView registerClass:[EZContactTableCell class] forCellReuseIdentifier:@"Cell"];
         _contacts = [[NSMutableArray alloc] init];
     }
@@ -85,8 +85,8 @@
     
     EZPerson* person = [_contacts objectAtIndex:indexPath.row];
     cell.name.text = person.name;
-    [(UIImageView*)cell.headIcon setImageWithURL:str2url(person.avatar)];
-    
+    //[(UIImageView*)cell.headIcon setImageWithURL:str2url(person.avatar)];
+    cell.headIcon.backgroundColor = randBack(nil);
     cell.clickRegion.releasedBlock = ^(id object){
         EZDEBUG(@"region clicked");
         [[EZMessageCenter getInstance]postEvent:EZScreenSlide attached:@(1)];

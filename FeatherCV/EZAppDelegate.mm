@@ -216,7 +216,7 @@
 {
     _cameraRaised = false;
     [EZTestSuites testAll];
-    
+    [[UINavigationBar appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName : [UIColor redColor], NSFontAttributeName:[UIFont boldSystemFontOfSize:14]}];
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     
     //self.window.backgroundColor = [UIColor greenColor];

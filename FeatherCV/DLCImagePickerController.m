@@ -13,6 +13,7 @@
 #import "EZMotionUtility.h"
 #import "EZSoundEffect.h"
 #import "EZCycleDiminish.h"
+#import "GPUImageHueFilter.h"
 #import <GPUImageToneCurveFilter.h>
 
 #define kStaticBlurSize 2.0f
@@ -35,6 +36,7 @@
     GPUImageWhiteBalanceFilter* whiteBalancerFilter;
     GPUImageSaturationFilter *contrastfilter;
     GPUImageToneCurveFilter* tongFilter;
+    GPUImageHueFilter* hueFilter;
     GPUImageOutput<GPUImageInput> *blurFilter;
     GPUImageCropFilter *cropFilter;
     GPUImageFilter* simpleFilter;
@@ -112,6 +114,7 @@
 -(void)viewDidLoad {
     
     [super viewDidLoad];
+    self.view.backgroundColor = [UIColor whiteColor];
     _senseRotate = true;
     //_recordedMotions = [[NSMutableArray alloc] init];
     _storedMotionDelta = [[NSMutableArray alloc] init];
@@ -121,18 +124,19 @@
     blueAdjustments = [[NSMutableArray alloc] init];
     greenAdjustments = [[NSMutableArray alloc] init];
     [tongParameters addObjectsFromArray:@[pointValue(0.0, 0.0), pointValue(0.25, 0.2616), pointValue(0.5, 0.5668), pointValue(0.75, 0.7949), pointValue(1.0, 1.0)]];
-    
+    hueFilter = [[GPUImageHueFilter alloc] init];
+    hueFilter.hue = 355;
+    EZDEBUG(@"adjust:%f", hueFilter.hue);
     //[_redAdjustments addObjectsFromArray:@[pointValue(0.0, 0.0), pointValue(0.25, 0.2615), pointValue(0.5, 0.512), pointValue(0.75, 0.762), pointValue(1.0, 1.0)]];
     [redAdjustments addObjectsFromArray:@[pointValue(0.0, 0.0), pointValue(0.25, 0.2615), pointValue(0.5, 0.512), pointValue(0.75, 0.762), pointValue(1.0, 1.0)]];
     [greenAdjustments addObjectsFromArray:@[pointValue(0.0, 0.0), pointValue(0.25, 0.25), pointValue(0.5, 0.5), pointValue(0.75, 0.75), pointValue(1.0, 1.0)]];
     [blueAdjustments addObjectsFromArray:@[pointValue(0.0, 0.0), pointValue(0.25, 0.25), pointValue(0.5, 0.5), pointValue(0.75, 0.75), pointValue(1.0, 1.0)]];
-   
+
     self.wantsFullScreenLayout = YES;
     _pageTurn = [[EZSoundEffect alloc] initWithSoundNamed:@"page_turn.aiff"];
     _shotReady = [[EZSoundEffect alloc] initWithSoundNamed:@"shot_voice.aiff"];
     //set background color
-    self.view.backgroundColor = [UIColor colorWithPatternImage:
-                                 [UIImage imageNamed:@"micro_carbon"]];
+    //self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"micro_carbon"]];
     
     self.photoBar.backgroundColor = [UIColor colorWithPatternImage:
                                      [UIImage imageNamed:@"photo_bar"]];
@@ -481,11 +485,13 @@
     [stillCamera addTarget:cropFilter];
     //[cropFilter addTarget:faceBlurFilter];
     //[faceBlurFilter addTarget:filter];
-    [cropFilter addTarget:tongFilter];
+    [cropFilter addTarget:hueFilter];
+    [hueFilter addTarget:tongFilter];
+    
     //[tongFilter addTarget:whiteBalancerFilter];
     //[whiteBalancerFilter addTarget:contrastfilter];
-    [tongFilter addTarget:cycleDarken];
-    [cycleDarken addTarget:filter];
+    [tongFilter addTarget:filter];
+    //[cycleDarken addTarget:filter];
     //[filter addTarget:faceBlurFilter];
     
     //blur is terminal filter
@@ -503,9 +509,9 @@
 
 -(void) prepareStaticFilter {
     EZDEBUG(@"Prepare static image get called");
-    [staticPicture addTarget:tongFilter];
-    [tongFilter addTarget:cycleDarken];
-    [cycleDarken addTarget:filter];
+    [staticPicture addTarget:hueFilter];
+    [hueFilter addTarget:tongFilter];
+    [tongFilter addTarget:filter];
     //[whiteBalancerFilter addTarget:filter];
     //[contrastfilter addTarget:filter];
     //[faceBlurFilter addTarget:filter];
@@ -558,6 +564,7 @@
     [simpleFilter removeAllTargets];
     //blur
     [blurFilter removeAllTargets];
+    [hueFilter removeAllTargets];
 }
 
 -(IBAction)switchToLibrary:(id)sender {
@@ -717,7 +724,7 @@
         EZDEBUG(@"Capture without crop");
     } else {
         // A workaround inside capturePhotoProcessedUpToFilter:withImageOnGPUHandler: would cause the above method to fail,
-        // so we just grap the current crop filter output as an aproximation (the size won't match trough)
+        // so we just grap the current crop filter output as an aproximation (the size won't match trough)  
         EZDEBUG(@"Will try to get from crop");
         UIImage *img = [cropFilter imageFromCurrentlyProcessedOutput];
         EZDEBUG(@"Capture with crop");

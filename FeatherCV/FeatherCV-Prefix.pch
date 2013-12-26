@@ -23,5 +23,6 @@
     #import "UIImage+ResizeMagick.h"
     #import "AFNetworking.h"
     #import "EZExtender.h"
-#import "UIImage+ResizeMagick.h"
+    #import "EZUIUtility.h"
+    #import "UIImage+ResizeMagick.h"
 #endif
