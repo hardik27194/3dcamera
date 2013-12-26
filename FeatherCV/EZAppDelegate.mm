@@ -140,6 +140,7 @@
     
     //albumPage.queryBlock = qb;
     UINavigationController* mainNav = [[UINavigationController alloc] initWithRootViewController:albumPage];
+    mainNav.navigationBar.barTintColor = [UIColor blueColor];
     
     UIViewController* v3 = [[UIViewController alloc] init];
     //v3.view.backgroundColor = [UIColor redColor];

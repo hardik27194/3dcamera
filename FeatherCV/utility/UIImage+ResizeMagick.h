@@ -16,6 +16,10 @@
 - (UIImage *) resizedImageWithMaximumSize: (CGSize) size;
 - (UIImage *) resizedImageWithMinimumSize: (CGSize) size;
 
+//- (UIImage *) rotateToRightDirection;
+
+- (UIImage *) rotate:(UIImageOrientation)orient;
+
 - (UIImage *) flipImage;
 
 @end

@@ -43,6 +43,8 @@
     EZCycleDiminish* cycleDarken;
     EZFaceBlurFilter* faceBlurFilter;
     
+    //Used as the beginning of the filter
+    GPUImageFilter* orgFiler;
     GPUImageFilter* filter;
     GPUImagePicture *staticPicture;
     NSMutableArray* tongParameters;
@@ -118,15 +120,16 @@
     _senseRotate = true;
     //_recordedMotions = [[NSMutableArray alloc] init];
     _storedMotionDelta = [[NSMutableArray alloc] init];
-    
+
     tongParameters = [[NSMutableArray alloc] init];
     redAdjustments = [[NSMutableArray alloc] init];
     blueAdjustments = [[NSMutableArray alloc] init];
     greenAdjustments = [[NSMutableArray alloc] init];
-    [tongParameters addObjectsFromArray:@[pointValue(0.0, 0.0), pointValue(0.25, 0.2616), pointValue(0.5, 0.5668), pointValue(0.75, 0.7949), pointValue(1.0, 1.0)]];
+    [tongParameters addObjectsFromArray:@[pointValue(0.0, 0.0), pointValue(0.25, 0.2616), pointValue(0.5, 0.5768), pointValue(0.75, 0.7949), pointValue(1.0, 1.0)]];
     hueFilter = [[GPUImageHueFilter alloc] init];
     hueFilter.hue = 355;
     EZDEBUG(@"adjust:%f", hueFilter.hue);
+    orgFiler = [[GPUImageFilter alloc] init];
     //[_redAdjustments addObjectsFromArray:@[pointValue(0.0, 0.0), pointValue(0.25, 0.2615), pointValue(0.5, 0.512), pointValue(0.75, 0.762), pointValue(1.0, 1.0)]];
     [redAdjustments addObjectsFromArray:@[pointValue(0.0, 0.0), pointValue(0.25, 0.2615), pointValue(0.5, 0.512), pointValue(0.75, 0.762), pointValue(1.0, 1.0)]];
     [greenAdjustments addObjectsFromArray:@[pointValue(0.0, 0.0), pointValue(0.25, 0.25), pointValue(0.5, 0.5), pointValue(0.75, 0.75), pointValue(1.0, 1.0)]];
@@ -165,7 +168,9 @@
     [self loadFilters];
     
     //we need a crop filter for the live video
-    cropFilter = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.0f, 0.0f, 1.0f, 0.75f)];
+    float widthAspect = [UIScreen mainScreen].bounds.size.width/[UIScreen mainScreen].bounds.size.height;
+    EZDEBUG(@"The width aspect ratio is:%f", widthAspect);
+    cropFilter = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.0f, 0.0f, 1.0, 0.75)];
     faceBlurFilter = [[EZFaceBlurFilter alloc] init];//[[EZFaceBlurFilter alloc] init];
     filter = [[GPUImageFilter alloc] init];
     tongFilter = [[GPUImageToneCurveFilter alloc] init];
@@ -481,16 +486,21 @@
 }
 
 -(void) prepareLiveFilter {
-    
-    [stillCamera addTarget:cropFilter];
+    [stillCamera addTarget:orgFiler];
+    [orgFiler addTarget:hueFilter];
+    //[cropFilter addTarget:hueFilter];
+    //[stillCamera addTarget:hueFilter];
     //[cropFilter addTarget:faceBlurFilter];
     //[faceBlurFilter addTarget:filter];
-    [cropFilter addTarget:hueFilter];
+    //[cropFilter addTarget:hueFilter];
     [hueFilter addTarget:tongFilter];
+    [tongFilter addTarget:filter];
     
     //[tongFilter addTarget:whiteBalancerFilter];
     //[whiteBalancerFilter addTarget:contrastfilter];
-    [tongFilter addTarget:filter];
+    
+    //[tongFilter addTarget:cropFilter];
+    //[cropFilter addTarget:filter];
     //[cycleDarken addTarget:filter];
     //[filter addTarget:faceBlurFilter];
     
@@ -510,6 +520,7 @@
 -(void) prepareStaticFilter {
     EZDEBUG(@"Prepare static image get called");
     [staticPicture addTarget:hueFilter];
+    //[cropFilter addTarget:hueFilter];
     [hueFilter addTarget:tongFilter];
     [tongFilter addTarget:filter];
     //[whiteBalancerFilter addTarget:filter];
@@ -670,19 +681,31 @@
         [stillCamera stopCameraCapture];
         [self removeAllTargets];
         
-        UIImage* flipped = img;
+        //UIImage* flipped = img;
+        if(!stillCamera.isFrontFacing){
+            img = [img resizedImageWithMaximumSize:CGSizeMake(img.size.width/2.0, img.size.height/2.0)];
+            EZDEBUG(@"After shrink:%@", NSStringFromCGSize(img.size));
+        }else{
+            EZDEBUG(@"Rotate before static:%i, static orientation:%i", img.imageOrientation, staticPictureOriginalOrientation);
+            //img = [img rotate:staticPictureOriginalOrientation];
+            
+        }
         //if(flip){
         //    flipped = [img flipImage];
         //}
         //flipped.imageOrientation = 4;
-        staticPicture = [[GPUImagePicture alloc] initWithImage:flipped smoothlyScaleOutput:NO];
-        staticPictureOriginalOrientation = flipped.imageOrientation;
+        staticPicture = [[GPUImagePicture alloc] initWithImage:img smoothlyScaleOutput:NO];
+        staticPictureOriginalOrientation = img.imageOrientation;
         
         //UIImageView* iview = [[UIImageView alloc] initWithFrame:CGRectMake(0, 400, 100, 100)];
         //iview.image = flipped;
-        EZDEBUG(@"Capture the flip is:%i, flipped orientation:%i, orginal:%i", flip, flipped.imageOrientation, img.imageOrientation);
+        EZDEBUG(@"Capture the flip is:%i, flipped orientation:%i, orginal:%i", flip, img.imageOrientation, img.imageOrientation);
         //[self.view addSubview:iview];
-        
+        //For the testing purpose only
+        if(stillCamera.isFrontFacing){
+            UIImage* rotated = [img rotate:img.imageOrientation];
+            [self.delegate imagePickerController:self didFinishPickingMediaWithInfo:@{@"image":rotated}];
+        }
         [self prepareStaticFilter];
         [self.retakeButton setHidden:NO];
         [self.photoCaptureButton setTitle:@"Done" forState:UIControlStateNormal];
@@ -726,16 +749,17 @@
         // A workaround inside capturePhotoProcessedUpToFilter:withImageOnGPUHandler: would cause the above method to fail,
         // so we just grap the current crop filter output as an aproximation (the size won't match trough)  
         EZDEBUG(@"Will try to get from crop");
-        UIImage *img = [cropFilter imageFromCurrentlyProcessedOutput];
-        EZDEBUG(@"Capture with crop");
+        UIImage *img = [orgFiler imageFromCurrentlyProcessedOutput];
+        EZDEBUG(@"Capture with crop, image size:%@", NSStringFromCGSize(img.size));
         completion(img, nil);
     }
 }
 
 -(IBAction) takePhoto:(id)sender{
     [self.photoCaptureButton setEnabled:NO];
-    
-    EZDEBUG(@"Take photo get called, is static:%i", isStatic);
+    EZDEBUG(@"Take photo get called, is static:%i, before adjust:%f", isStatic, [UIScreen mainScreen].brightness);
+    //[[UIScreen mainScreen]setBrightness:1.0];
+    //EZDEBUG(@"After adjust:%f", [UIScreen mainScreen].brightness);
     if (!isStatic) {
         isStatic = YES;
         
@@ -765,8 +789,6 @@
         }else{
             currentFilteredVideoFrame = [processUpTo imageFromCurrentlyProcessedOutputWithOrientation:staticPictureOriginalOrientation];
             EZDEBUG(@"Before shink:%@", NSStringFromCGSize(currentFilteredVideoFrame.size));
-            currentFilteredVideoFrame = [currentFilteredVideoFrame resizedImageWithMaximumSize:CGSizeMake(currentFilteredVideoFrame.size.width, currentFilteredVideoFrame.size.height)];
-            EZDEBUG(@"After shrink:%@", NSStringFromCGSize(currentFilteredVideoFrame.size));
         
         }
         //}
@@ -850,6 +872,7 @@
     }
 }
 
+
 - (IBAction) handleTapToFocus:(UITapGestureRecognizer *)tgr{
 	if (!isStatic && tgr.state == UIGestureRecognizerStateRecognized) {
 		CGPoint location = [tgr locationInView:self.imageView];
@@ -886,6 +909,8 @@
 		}
 	}
 }
+ 
+
 
 -(IBAction) handlePinch:(UIPinchGestureRecognizer *) sender {
     if (hasBlur) {
@@ -1020,7 +1045,7 @@
     blurFilter = nil;
     staticPicture = nil;
     self.blurOverlayView = nil;
-    self.focusView = nil;
+    //self.focusView = nil;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {

@@ -26,13 +26,12 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <view contentMode="scaleAspectFill" id="7" customClass="GPUImageView">
-                    <rect key="frame" x="0.0" y="0.0" width="320" height="481"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                    <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                     <gestureRecognizers/>
                     <connections>
                         <outletCollection property="gestureRecognizers" destination="51" appends="YES" id="52"/>
-                        <outletCollection property="gestureRecognizers" destination="65" appends="YES" id="66"/>
                         <outletCollection property="gestureRecognizers" destination="89" appends="YES" id="90"/>
                     </connections>
                 </view>
@@ -152,11 +151,6 @@
                 <action selector="handlePinch:" destination="-1" id="63"/>
             </connections>
         </pinchGestureRecognizer>
-        <panGestureRecognizer minimumNumberOfTouches="1" id="65">
-            <connections>
-                <action selector="handlePan:" destination="-1" id="67"/>
-            </connections>
-        </panGestureRecognizer>
         <tapGestureRecognizer id="89">
             <connections>
                 <action selector="handleTapToFocus:" destination="-1" id="91"/>

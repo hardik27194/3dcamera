@@ -135,6 +135,7 @@ static inline CGSize swapWidthAndHeight(CGSize size)
     return [self drawImageInBounds: CGRectMake(0, 0, round(original_width * ratio), height)];
 }
 
+
 - (UIImage *) resizedImageWithMinimumSize: (CGSize) size
 {
     CGImageRef imgRef = [self CGImageWithCorrectOrientation];
