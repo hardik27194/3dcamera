@@ -106,11 +106,11 @@ static int photoCount = 1;
     EZDEBUG(@"calculate the height, is front:%i", cp.isFront);
     CGFloat imageHeight;
     if(cp.isFront){
-        imageHeight = (cp.photo.size.height/cp.photo.size.width) * 320.0 + 120;
+        imageHeight = (cp.photo.size.height/cp.photo.size.width) * 320.0;
         EZDEBUG(@"The row height is:%f, width:%f, %f", imageHeight, cp.photo.size.width, cp.photo.size.height);
     }else{
         CGSize imgSize = [UIImage imageNamed:cp.randImage].size;
-        imageHeight = (imgSize.height/imgSize.width) * 320.0 + 120;
+        imageHeight = (imgSize.height/imgSize.width) * 320.0;
         EZDEBUG(@"Column count is:%f, width:%f, %f", imageHeight, cp.photo.size.width, cp.photo.size.height);
     }
     //EZDEBUG(@"image width:%f, height:%f, final height:%f", cp.myPhoto.size.width, cp.myPhoto.size.height, imageHeight);

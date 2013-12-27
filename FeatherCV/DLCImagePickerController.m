@@ -662,7 +662,8 @@
         [stillCamera.inputCamera setTorchMode:AVCaptureTorchModeOn];
         [self performSelector:@selector(captureImage)
                    withObject:nil
-                   afterDelay:0.25];
+                   afterDelay:0.8];
+        
     }else{
         [self captureImage];
     }

@@ -79,8 +79,8 @@
         //[self addSubview:_frontImage];
         //[self.contentView addSubview:_backImage];
         [self.contentView addSubview:_container];
-        [self.contentView addSubview:_toolRegion];
-        [self.contentView addSubview:_feedbackRegion];
+        //[self.contentView addSubview:_toolRegion];
+        //[self.contentView addSubview:_feedbackRegion];
         [_container addSubview:_frontImage];
         //[_container addSubview:_frontNoEffects];
         _container.enableTouchEffects = NO;
@@ -146,7 +146,7 @@
 //This is hard.
 - (CGFloat) calHeight:(CGSize)size
 {
-    return  (size.height/size.width) * 320.0;
+    return  ceilf((size.height/size.width) * 320.0);
 }
 
 - (void) backToOriginSize
