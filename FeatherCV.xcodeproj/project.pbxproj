@@ -211,6 +211,7 @@
 		18E34837183F064200C9D89D /* EZFaceUtil.mm in Sources */ = {isa = PBXBuildFile; fileRef = 18E34835183F064200C9D89D /* EZFaceUtil.mm */; };
 		18E3483A1843086200C9D89D /* EZFaceResult.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 18E348381843086100C9D89D /* EZFaceResult.cpp */; };
 		18E3483D18433FC000C9D89D /* UIImage+ResizeMagick.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E3483C18433FBF00C9D89D /* UIImage+ResizeMagick.m */; };
+		18F58B49186D5F9C006CB966 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18F58B48186D5F9C006CB966 /* ImageIO.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -536,6 +537,7 @@
 		18E348391843086200C9D89D /* EZFaceResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZFaceResult.h; sourceTree = "<group>"; };
 		18E3483B18433FBF00C9D89D /* UIImage+ResizeMagick.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+ResizeMagick.h"; sourceTree = "<group>"; };
 		18E3483C18433FBF00C9D89D /* UIImage+ResizeMagick.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+ResizeMagick.m"; sourceTree = "<group>"; };
+		18F58B48186D5F9C006CB966 /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -543,6 +545,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				18F58B49186D5F9C006CB966 /* ImageIO.framework in Frameworks */,
 				182A55091862C735003D4A01 /* libGPUImage.a in Frameworks */,
 				18E346D1183DF6FD00C9D89D /* QuartzCore.framework in Frameworks */,
 				18E346CF183DF6EB00C9D89D /* OpenGLES.framework in Frameworks */,
@@ -701,6 +704,7 @@
 		18E3467C183DF54400C9D89D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				18F58B48186D5F9C006CB966 /* ImageIO.framework */,
 				182A54FD1862C717003D4A01 /* GPUImage.xcodeproj */,
 				18E346D0183DF6FD00C9D89D /* QuartzCore.framework */,
 				18E346CE183DF6EB00C9D89D /* OpenGLES.framework */,

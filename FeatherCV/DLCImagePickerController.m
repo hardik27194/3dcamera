@@ -54,6 +54,8 @@
     NSMutableArray* blueAdjustments;
     //NSMutableArray* _recordedMotions;
     CMAttitude* _prevMotion;
+    //The meta data for the photo
+    NSDictionary* photoMeta;
     UIImageOrientation staticPictureOriginalOrientation;
     BOOL isStatic;
     BOOL hasBlur;
@@ -715,7 +717,8 @@
 -(void)captureImageInner:(BOOL)flip {
     
     void (^completion)(UIImage *, NSError *) = ^(UIImage *img, NSError *error) {
-        
+        photoMeta = stillCamera.currentCaptureMetadata;
+        EZDEBUG(@"Captured meta data:%@", photoMeta);
         [stillCamera.inputCamera unlockForConfiguration];
         [stillCamera stopCameraCapture];
         [self removeAllTargets];
@@ -744,10 +747,12 @@
         EZDEBUG(@"Capture the flip is:%i, flipped orientation:%i, orginal:%i", flip, img.imageOrientation, img.imageOrientation);
         //[self.view addSubview:iview];
         //For the testing purpose only
+        /**
         if(stillCamera.isFrontFacing){
             UIImage* rotated = [img rotate:img.imageOrientation];
             [self.delegate imagePickerController:self didFinishPickingMediaWithInfo:@{@"image":rotated}];
         }
+         **/
         [self prepareStaticFilter];
         [self.retakeButton setHidden:NO];
         [self.photoCaptureButton setTitle:@"Done" forState:UIControlStateNormal];
@@ -835,9 +840,10 @@
         }
         //}
 
-        NSDictionary *info = [[NSDictionary alloc] initWithObjectsAndKeys:
-                              currentFilteredVideoFrame, @"data", currentFilteredVideoFrame, @"image", nil];
-        
+        NSDictionary *info = @{@"image":currentFilteredVideoFrame};
+        if(photoMeta){
+            info = @{@"image":currentFilteredVideoFrame, @"metadata":photoMeta};
+        }
         //[info setValue:currentFilteredVideoFrame forKey:@"image"];
         NSLog(@"image size:%f, %f", currentFilteredVideoFrame.size.width, currentFilteredVideoFrame.size.height);
         [self.delegate imagePickerController:self didFinishPickingMediaWithInfo:info];

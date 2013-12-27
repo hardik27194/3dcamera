@@ -227,7 +227,14 @@
     EZDEBUG(@"Store image get called");
     ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
     UIImage* img = [info objectForKey:@"image"];
-    [library writeImageToSavedPhotosAlbum:img.CGImage metadata:nil completionBlock:^(NSURL *assetURL, NSError *error2)
+    NSDictionary* orgdata = [info objectForKey:@"metadata"];
+    NSMutableDictionary* metadata =[[NSMutableDictionary alloc] init];
+    if(metadata){
+        [metadata setDictionary:orgdata];
+    }
+    EZDEBUG(@"Recived metadata:%@, actual orientation:%i", metadata, img.imageOrientation);
+    [metadata setValue:@(img.imageOrientation) forKey:@"Orientation"];
+    [library writeImageToSavedPhotosAlbum:img.CGImage metadata:metadata completionBlock:^(NSURL *assetURL, NSError *error2)
      {
          //             report_memory(@"After writing to library");
          if (error2) {
