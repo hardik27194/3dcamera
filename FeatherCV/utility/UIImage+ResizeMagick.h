@@ -19,6 +19,7 @@
 //- (UIImage *) rotateToRightDirection;
 
 - (UIImage *) rotate:(UIImageOrientation)orient;
+- (UIImage *) rotateByOrientation:(UIImageOrientation)orientation;
 
 - (UIImage *) flipImage;
 

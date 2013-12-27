@@ -689,19 +689,30 @@
         
     }else if(stillCamera.isFrontFacing){ //Later I will have the flashMode check, now just light up the screen
         EZDEBUG(@"I will add _flashView");
-        _flashView.alpha = 1;
-        [self.view addSubview:_flashView];
+        
+        _flashView.alpha = 0;
         CGFloat oldBright = [UIScreen mainScreen].brightness;
         [UIScreen mainScreen].brightness = 1;
-        [self performSelector:@selector(captureImage) withObject:nil afterDelay:0.8];
+        [self.view addSubview:_flashView];
+        [UIView animateWithDuration:0.3 animations:^(){
+            weakSelf.flashView.alpha = 1;
+        } completion:^(BOOL completed){
+            //[self captureImage];
+        }];
+        [self performSelector:@selector(captureImage) withObject:nil afterDelay:0.3];
+        //[self performSelector:@selector(captureImage) withObject:nil afterDelay:0.8];
         _frontCameraCompleted = ^(id obj){
             EZDEBUG(@"Front camera completed");
+            [weakSelf.flashView removeFromSuperview];
+            [UIScreen mainScreen].brightness = oldBright;
+            /**
             [UIView animateWithDuration:0.3 animations:^(){
                 weakSelf.flashView.alpha = 0;
             } completion:^(BOOL finished) {
                 [weakSelf.flashView removeFromSuperview];
                 [UIScreen mainScreen].brightness = oldBright;
             }];
+             **/
         };
         
     }else{
@@ -747,12 +758,17 @@
         EZDEBUG(@"Capture the flip is:%i, flipped orientation:%i, orginal:%i", flip, img.imageOrientation, img.imageOrientation);
         //[self.view addSubview:iview];
         //For the testing purpose only
-        /**
+        
         if(stillCamera.isFrontFacing){
-            UIImage* rotated = [img rotate:img.imageOrientation];
+            UIImage* rotated = [img rotateByOrientation:img.imageOrientation];
+            /**
+            UIImage * rotated = [[UIImage alloc] initWithCGImage: img.CGImage
+                                                               scale: 1.0
+                                                         orientation: UIImageOrientationUp];
+            **/
+            EZDEBUG(@"Rotated:%i, original:%i", rotated.imageOrientation, img.imageOrientation);
             [self.delegate imagePickerController:self didFinishPickingMediaWithInfo:@{@"image":rotated}];
         }
-         **/
         [self prepareStaticFilter];
         [self.retakeButton setHidden:NO];
         [self.photoCaptureButton setTitle:@"Done" forState:UIControlStateNormal];
@@ -835,8 +851,9 @@
            currentFilteredVideoFrame = [processUpTo imageFromCurrentlyProcessedOutputWithOrientation:staticPictureOriginalOrientation];
         }else{
             currentFilteredVideoFrame = [processUpTo imageFromCurrentlyProcessedOutputWithOrientation:staticPictureOriginalOrientation];
+            //currentFilteredVideoFrame = staticPicture
             EZDEBUG(@"Before shink:%@", NSStringFromCGSize(currentFilteredVideoFrame.size));
-        
+            
         }
         //}
 
