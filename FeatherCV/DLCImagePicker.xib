@@ -55,7 +55,7 @@
                                 <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
                             <connections>
-                                <action selector="takePhoto:" destination="-1" eventType="touchUpInside" id="46"/>
+                                <action selector="takePhoto:" destination="-1" eventType="touchDown" id="Bid-7U-LBF"/>
                             </connections>
                         </button>
                         <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="80">

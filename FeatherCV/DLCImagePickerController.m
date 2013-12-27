@@ -36,6 +36,7 @@
     GPUImageWhiteBalanceFilter* whiteBalancerFilter;
     GPUImageSaturationFilter *contrastfilter;
     GPUImageToneCurveFilter* tongFilter;
+    GPUImageToneCurveFilter* flashFilter;
     GPUImageHueFilter* hueFilter;
     GPUImageOutput<GPUImageInput> *blurFilter;
     GPUImageCropFilter *cropFilter;
@@ -113,12 +114,25 @@
 }
 
 
+//The flash filter will get setup here.
+- (void) setupFlashFilter
+{
+    flashFilter = [[GPUImageToneCurveFilter alloc] init];
+    [flashFilter setRgbCompositeControlPoints:@[pointValue(0.0, 0.0), pointValue(0.25, 0.273), pointValue(0.5, 0.524), pointValue(0.75, 0.774), pointValue(1.0, 1.0)]];
+    [flashFilter setRedControlPoints:@[pointValue(0.0, 0.0), pointValue(0.25, 0.2615), pointValue(0.5, 0.512), pointValue(0.75, 0.762), pointValue(1, 1)]];
+    [flashFilter setGreenControlPoints:@[pointValue(0.0, 0.0), pointValue(0.25, 0.186), pointValue(0.5, 0.436), pointValue(0.75, 0.654), pointValue(1, 1)]];
+    [flashFilter setBlueControlPoints:@[pointValue(0.0, 0.0), pointValue(0.25, 0.253), pointValue(0.5, 0.5), pointValue(0.75, 0.8), pointValue(1, 1)]];
+}
+
 -(void)viewDidLoad {
     
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor whiteColor];
     _senseRotate = true;
     //_recordedMotions = [[NSMutableArray alloc] init];
+    _flashView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    _flashView.backgroundColor = [UIColor whiteColor];
+    [self setupFlashFilter];
     _storedMotionDelta = [[NSMutableArray alloc] init];
 
     tongParameters = [[NSMutableArray alloc] init];
@@ -518,11 +532,16 @@
 }
 
 -(void) prepareStaticFilter {
-    EZDEBUG(@"Prepare static image get called");
-    [staticPicture addTarget:hueFilter];
-    //[cropFilter addTarget:hueFilter];
-    [hueFilter addTarget:tongFilter];
-    [tongFilter addTarget:filter];
+    EZDEBUG(@"Prepare static image get called, flash image:%i", _isImageWithFlash);
+    if(_isImageWithFlash){
+        [staticPicture addTarget:flashFilter];
+        [flashFilter addTarget:filter];
+    }else{
+        [staticPicture addTarget:hueFilter];
+        //[cropFilter addTarget:hueFilter];
+        [hueFilter addTarget:tongFilter];
+        [tongFilter addTarget:filter];
+    }
     //[whiteBalancerFilter addTarget:filter];
     //[contrastfilter addTarget:filter];
     //[faceBlurFilter addTarget:filter];
@@ -656,13 +675,32 @@
 
 }
 -(void) prepareForCapture {
+    __weak DLCImagePickerController* weakSelf = self;
     [stillCamera.inputCamera lockForConfiguration:nil];
     if(self.flashToggleButton.selected &&
        [stillCamera.inputCamera hasTorch]){
+        _isImageWithFlash = true;
         [stillCamera.inputCamera setTorchMode:AVCaptureTorchModeOn];
         [self performSelector:@selector(captureImage)
                    withObject:nil
                    afterDelay:0.8];
+        
+    }else if(stillCamera.isFrontFacing){ //Later I will have the flashMode check, now just light up the screen
+        EZDEBUG(@"I will add _flashView");
+        _flashView.alpha = 1;
+        [self.view addSubview:_flashView];
+        CGFloat oldBright = [UIScreen mainScreen].brightness;
+        [UIScreen mainScreen].brightness = 1;
+        [self performSelector:@selector(captureImage) withObject:nil afterDelay:0.8];
+        _frontCameraCompleted = ^(id obj){
+            EZDEBUG(@"Front camera completed");
+            [UIView animateWithDuration:0.3 animations:^(){
+                weakSelf.flashView.alpha = 0;
+            } completion:^(BOOL finished) {
+                [weakSelf.flashView removeFromSuperview];
+                [UIScreen mainScreen].brightness = oldBright;
+            }];
+        };
         
     }else{
         [self captureImage];
@@ -689,7 +727,10 @@
         }else{
             EZDEBUG(@"Rotate before static:%i, static orientation:%i", img.imageOrientation, staticPictureOriginalOrientation);
             //img = [img rotate:staticPictureOriginalOrientation];
-            
+            if(_frontCameraCompleted){
+                _frontCameraCompleted(nil);
+            }
+            _frontCameraCompleted = nil;
         }
         //if(flip){
         //    flipped = [img flipImage];
@@ -763,7 +804,7 @@
     //EZDEBUG(@"After adjust:%f", [UIScreen mainScreen].brightness);
     if (!isStatic) {
         isStatic = YES;
-        
+        _isImageWithFlash = NO;
         [self.libraryToggleButton setHidden:YES];
         [self.cameraToggleButton setEnabled:NO];
         [self.flashToggleButton setEnabled:NO];

@@ -45,6 +45,9 @@ typedef enum {
 @interface DLCImagePickerController : UIViewController <UINavigationControllerDelegate,UIImagePickerControllerDelegate> 
 
 
+//The job front camera will have to do. 
+@property (nonatomic, strong) EZEventBlock frontCameraCompleted;
+
 @property (nonatomic, assign) EZCameraTurnStatus turnStatus;
 @property (nonatomic, weak) IBOutlet GPUImageView *imageView;
 @property (nonatomic, weak) id <DLCImagePickerDelegate> delegate;
@@ -63,6 +66,9 @@ typedef enum {
 @property (nonatomic, weak) IBOutlet UIImageView *filtersBackgroundImageView;
 @property (nonatomic, weak) IBOutlet UIView *photoBar;
 @property (nonatomic, weak) IBOutlet UIView *topBar;
+//This view act as a flash for the self shot camera.
+@property (nonatomic, strong) UIView* flashView;
+
 @property (nonatomic, strong) DLCBlurOverlayView *blurOverlayView;
 @property (nonatomic, strong) UIImageView *focusView;
 
@@ -84,6 +90,9 @@ typedef enum {
 @property (nonatomic, assign) BOOL isFrontCamera;
 
 @property (nonatomic, assign) BOOL isVisible;
+
+//This is the image which shot with torch, I will render it with torch filter
+@property (nonatomic, assign) BOOL isImageWithFlash;
 
 
 //This method will change the turnStatus
