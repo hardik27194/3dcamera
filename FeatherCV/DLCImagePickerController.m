@@ -154,6 +154,8 @@
     self.wantsFullScreenLayout = YES;
     _pageTurn = [[EZSoundEffect alloc] initWithSoundNamed:@"page_turn.aiff"];
     _shotReady = [[EZSoundEffect alloc] initWithSoundNamed:@"shot_voice.aiff"];
+    _shotVoice = [[EZSoundEffect alloc] initWithSoundNamed:@"shot.wav"];
+    
     //set background color
     //self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"micro_carbon"]];
     
@@ -689,7 +691,7 @@
         
     }else if(stillCamera.isFrontFacing){ //Later I will have the flashMode check, now just light up the screen
         EZDEBUG(@"I will add _flashView");
-        
+        [_shotVoice play];
         _flashView.alpha = 0;
         CGFloat oldBright = [UIScreen mainScreen].brightness;
         [UIScreen mainScreen].brightness = 1;

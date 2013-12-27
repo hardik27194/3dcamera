@@ -212,6 +212,7 @@
 		18E3483A1843086200C9D89D /* EZFaceResult.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 18E348381843086100C9D89D /* EZFaceResult.cpp */; };
 		18E3483D18433FC000C9D89D /* UIImage+ResizeMagick.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E3483C18433FBF00C9D89D /* UIImage+ResizeMagick.m */; };
 		18F58B49186D5F9C006CB966 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18F58B48186D5F9C006CB966 /* ImageIO.framework */; };
+		18F58B4D186D8824006CB966 /* shot.wav in Resources */ = {isa = PBXBuildFile; fileRef = 18F58B4C186D8824006CB966 /* shot.wav */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -538,6 +539,7 @@
 		18E3483B18433FBF00C9D89D /* UIImage+ResizeMagick.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+ResizeMagick.h"; sourceTree = "<group>"; };
 		18E3483C18433FBF00C9D89D /* UIImage+ResizeMagick.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+ResizeMagick.m"; sourceTree = "<group>"; };
 		18F58B48186D5F9C006CB966 /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
+		18F58B4C186D8824006CB966 /* shot.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = shot.wav; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -676,6 +678,7 @@
 		18C0E7691861A07200D694CE /* sound_effects */ = {
 			isa = PBXGroup;
 			children = (
+				18F58B4C186D8824006CB966 /* shot.wav */,
 				18512A321861BE6300282264 /* shot_voice.aiff */,
 				18C0E76A1861A08700D694CE /* page_turn.aiff */,
 			);
@@ -1162,6 +1165,7 @@
 			files = (
 				18E3481E183F02D600C9D89D /* haarcascade_mcs_leftear.xml in Resources */,
 				18A3702A1855C2A40022F0A8 /* flash.png in Resources */,
+				18F58B4D186D8824006CB966 /* shot.wav in Resources */,
 				1874D9FA186996AE005743FC /* santa_6.jpg in Resources */,
 				18A370211855C2A40022F0A8 /* close@2x.png in Resources */,
 				18A3702F1855C2A40022F0A8 /* camera-button@2x.png in Resources */,

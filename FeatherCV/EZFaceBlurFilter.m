@@ -56,11 +56,12 @@ NSString *const kFaceBlurFragmentShaderString = SHADER_STRING
              return;
          }
           **/
-         gl_FragColor = blurredImageColor*0.3 + sharpImageColor*0.7;
+        
          return;
      }
-     
-     gl_FragColor = sharpImageColor;
+ 
+      gl_FragColor = blurredImageColor*0.3 + sharpImageColor*0.7;
+     //gl_FragColor = sharpImageColor;
  }
  );
 #else
