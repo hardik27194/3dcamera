@@ -21,7 +21,7 @@ NSString *const kFaceBlurFragmentShaderString = SHADER_STRING
  uniform lowp vec2 excludeCirclePoint;
  uniform lowp float excludeBlurSize;
  uniform highp float aspectRatio;
- 
+ uniform lowp float realRatio;
  
  
  void main()
@@ -29,7 +29,7 @@ NSString *const kFaceBlurFragmentShaderString = SHADER_STRING
      
      lowp vec4 sharpImageColor = texture2D(inputImageTexture, textureCoordinate);
      lowp vec4 blurredImageColor = texture2D(inputImageTexture2, textureCoordinate2);
-     
+     /**
      highp vec2 textureCoordinateToUse = vec2(textureCoordinate2.x, (textureCoordinate2.y * aspectRatio + 0.5 - 0.5 * aspectRatio));
      
      highp float redhighbar = 255.0/255.0;
@@ -47,20 +47,12 @@ NSString *const kFaceBlurFragmentShaderString = SHADER_STRING
      highp float gapblue = abs(sharpImageColor.b - avgcolor);
      highp float greenbar = (sharpImageColor.g - sharpImageColor.b) * 2.0;
      if(sharpImageColor.b > bluelowbar &&  sharpImageColor.r > sharpImageColor.g && sharpImageColor.r > sharpImageColor.b && sharpImageColor.g > greenbar && avgcolor > avglow && avgcolor < avghighbegin && !(gapred < graygap && gapgreen < graygap && gapblue < graygap)){
-         /**
-         if(avgcolor > avghighbegin){
-             gl_FragColor = mix(blurredImageColor, sharpImageColor, smoothstep(avghighbegin, avghigh, avgcolor));
-             return;
-         }else if(avgcolor < avglowbegin){
-             gl_FragColor = mix(sharpImageColor, blurredImageColor, smoothstep(avglow, avglowbegin, avgcolor));
-             return;
-         }
-          **/
-        
+         
          return;
      }
+      **/
  
-      gl_FragColor = blurredImageColor*0.3 + sharpImageColor*0.7;
+      gl_FragColor = blurredImageColor*(1.0 - realRatio) + sharpImageColor*realRatio;
      //gl_FragColor = sharpImageColor;
  }
  );
@@ -111,11 +103,10 @@ NSString *const kFaceBlurFragmentShaderString = SHADER_STRING
     //blurFilter.blurSize = 2.0;
     self.blurSize = 5.0;
     [self addFilter:blurFilter];
-    
     // Second pass: combine the blurred image with the original sharp one
     selectiveFocusFilter = [[GPUImageTwoInputFilter alloc] initWithFragmentShaderFromString:kFaceBlurFragmentShaderString];
     [self addFilter:selectiveFocusFilter];
-    
+    self.realRatio = 0.8;
     // Texture location 0 needs to be the sharp image for both the blur and the second stage processing
     [blurFilter addTarget:selectiveFocusFilter atTextureLocation:1];
     
@@ -168,6 +159,12 @@ NSString *const kFaceBlurFragmentShaderString = SHADER_STRING
 {
     _excludeCircleRadius = newValue;
     [selectiveFocusFilter setFloat:newValue forUniformName:@"excludeCircleRadius"];
+}
+
+- (void) setRealRatio:(CGFloat)realRatio
+{
+    _realRatio = realRatio;
+    [selectiveFocusFilter setFloat:_realRatio forUniformName:@"realRatio"];
 }
 
 - (void)setExcludeBlurSize:(CGFloat)newValue;

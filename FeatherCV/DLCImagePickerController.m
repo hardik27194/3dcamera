@@ -539,12 +539,33 @@
     EZDEBUG(@"Prepare static image get called, flash image:%i", _isImageWithFlash);
     if(_isImageWithFlash){
         [staticPicture addTarget:flashFilter];
-        [flashFilter addTarget:filter];
+        if(_selfShot || stillCamera.isFrontFacing){
+            EZDEBUG(@"Will add faceBlurFilter");
+            faceBlurFilter.blurSize = 6;
+            [flashFilter addTarget:faceBlurFilter];
+            [faceBlurFilter addTarget:filter];
+        }else{
+            EZDEBUG(@"Not add faceBlurFilter");
+            [flashFilter addTarget:filter];
+        }
+        
     }else{
         [staticPicture addTarget:hueFilter];
         //[cropFilter addTarget:hueFilter];
         [hueFilter addTarget:tongFilter];
-        [tongFilter addTarget:filter];
+        if(_selfShot || stillCamera.isFrontFacing){
+            EZDEBUG(@"Will add faceBlurFilter");
+            if(stillCamera.isFrontFacing){
+                faceBlurFilter.blurSize = 2;
+            }else{
+                faceBlurFilter.blurSize = 6;
+            }
+            [tongFilter addTarget:faceBlurFilter];
+            [faceBlurFilter addTarget:filter];
+        }else{
+            EZDEBUG(@"Not add faceBlurFilter");
+            [tongFilter addTarget:filter];
+        }
     }
     //[whiteBalancerFilter addTarget:filter];
     //[contrastfilter addTarget:filter];
