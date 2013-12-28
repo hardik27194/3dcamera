@@ -14,10 +14,10 @@
 #import "EZExtender.h"
 
 
-#define ToolRegionHeight 60
+#define ToolRegionHeight 20
 #define InitialFeedbackRegion 60
 
-#define ToolRegionRect CGRectMake(0, 320, 320, 60)
+#define ToolRegionRect CGRectMake(0, 320-ToolRegionHeight, 320, ToolRegionHeight)
 
 #define FeedbackRegionRect CGRectMake(0,380, 320, 40)
 
@@ -34,10 +34,13 @@
         _frontImage.contentMode = UIViewContentModeScaleAspectFill;
         //_frontNoEffects = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 320, 320)];
         //_frontNoEffects.contentMode = UIViewContentModeScaleAspectFill;
-        
+        //_toolHolder = [[ILTranslucentView alloc] initWithFrame:CGRectMake(0, 320 - 40, 320, 40)];
+        //_toolHolder.constraints
         
         _toolRegion = [[UIView alloc] initWithFrame:ToolRegionRect];
-        _toolRegion.backgroundColor = [UIColor whiteColor];//RGBCOLOR(128, 128, 255);
+        _toolRegion.backgroundColor = RGBA(0, 0, 0, 100);
+        _toolRegion.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin;
+        //_toolRegion.backgroundColor = [UIColor clearColor];//RGBCOLOR(128, 128, 255);
         //My feedback will grow gradually.
         _headIcon = [[EZClickImage alloc] initWithFrame:CGRectMake(15, (ToolRegionHeight-40)/2, 40, 40)];
         [_headIcon enableRoundImage];
@@ -52,17 +55,24 @@
         _backIcon.backgroundColor = randBack(nil);
         
         _countIcon = [[UILabel alloc] initWithFrame:CGRectMake(15+120+30, (ToolRegionHeight - 40)/2, 40, 40)];
-        _countIcon.font = [UIFont systemFontOfSize:16];
+        _countIcon.font = [UIFont systemFontOfSize:14];
         _countIcon.textAlignment = NSTextAlignmentCenter;
         _countIcon.backgroundColor = randBack(nil);
         [_countIcon enableRoundImage];
         
-        [_toolRegion addSubview:_headIcon];
-        [_toolRegion addSubview:_linkIcon];
-        [_toolRegion addSubview:_backIcon];
-        [_toolRegion addSubview:_countIcon];
-        _toolRegion.alpha = 0.5;
+        _photoTalk = [[UILabel alloc] initWithFrame:CGRectMake(15, (ToolRegionHeight - 20)/2.0, 290, 20)];
+        _photoTalk.font = [UIFont systemFontOfSize:12];
+        _photoTalk.textAlignment = NSTextAlignmentLeft;
+        _photoTalk.textColor = [UIColor whiteColor];
+        _photoTalk.text = @"我爱大萝卜";
         
+        //[_toolRegion addSubview:_headIcon];
+        //[_toolRegion addSubview:_linkIcon];
+        //[_toolRegion addSubview:_backIcon];
+        //[_toolRegion addSubview:_countIcon];
+        [_toolRegion addSubview:_photoTalk];
+        //_toolRegion.alpha = 0.5;
+        //[_toolHolder addSubview:_toolRegion];
         _feedbackRegion = [[UIView alloc] initWithFrame:FeedbackRegionRect];
         _feedbackRegion.backgroundColor = [UIColor whiteColor];//RGBCOLOR(255, 128, 128);
         _feedbackRegion.alpha = 0.5;
@@ -82,6 +92,7 @@
         //[self.contentView addSubview:_toolRegion];
         //[self.contentView addSubview:_feedbackRegion];
         [_container addSubview:_frontImage];
+        [_container addSubview:_toolRegion];
         //[_container addSubview:_frontNoEffects];
         _container.enableTouchEffects = NO;
         //[self.contentView addSubview:_imageClick];
@@ -102,7 +113,7 @@
     [_container setSize:CGSizeMake(320, adjustedHeight)];
     //[_frontNoEffects setSize:CGSizeMake(320, adjustedHeight)];
     [_frontImage setSize:CGSizeMake(320, adjustedHeight)];
-    [_toolRegion setPosition:CGPointMake(0, adjustedHeight)];
+    [_toolRegion setPosition:CGPointMake(0, adjustedHeight-ToolRegionHeight)];
     [_feedbackRegion setPosition:CGPointMake(0, adjustedHeight+_toolRegion.frame.size.height)];
     
 }
@@ -175,6 +186,7 @@
     _backImage.contentMode = UIViewContentModeScaleAspectFit;
     _backImage.image = img;
     [_container addSubview:_backImage];
+    [_container bringSubviewToFront:_toolRegion];
     [UIView flipTransition:_frontImage dest:_backImage container:_container isLeft:YES duration:1.0 complete:^(id obj){
         //UIImageView* tmp = _frontImage;
         //_frontImage = _backImage;
@@ -186,6 +198,7 @@
             if(blk){
                 blk(nil);
             }
+            [_container bringSubviewToFront:_toolRegion];
         }];
     }];
 }

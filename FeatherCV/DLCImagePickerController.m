@@ -826,16 +826,13 @@
         //[self.view addSubview:iview];
         //For the testing purpose only
         
+        /**
         if(stillCamera.isFrontFacing){
             UIImage* rotated = [img rotateByOrientation:img.imageOrientation];
-            /**
-            UIImage * rotated = [[UIImage alloc] initWithCGImage: img.CGImage
-                                                               scale: 1.0
-                                                         orientation: UIImageOrientationUp];
-            **/
             EZDEBUG(@"Rotated:%i, original:%i", rotated.imageOrientation, img.imageOrientation);
             [self.delegate imagePickerController:self didFinishPickingMediaWithInfo:@{@"image":rotated}];
         }
+         **/
         [self prepareStaticFilter];
         [self.retakeButton setHidden:NO];
         [self.photoCaptureButton setTitle:@"Done" forState:UIControlStateNormal];
@@ -916,6 +913,8 @@
         
         if(stillCamera.isFrontFacing){
            currentFilteredVideoFrame = [processUpTo imageFromCurrentlyProcessedOutputWithOrientation:staticPictureOriginalOrientation];
+            EZDEBUG(@"The current orienation:%i, static orientatin:%i", currentFilteredVideoFrame.imageOrientation, staticPictureOriginalOrientation);
+            currentFilteredVideoFrame = [currentFilteredVideoFrame rotateByOrientation:staticPictureOriginalOrientation];
         }else{
             currentFilteredVideoFrame = [processUpTo imageFromCurrentlyProcessedOutputWithOrientation:staticPictureOriginalOrientation];
             //currentFilteredVideoFrame = staticPicture
@@ -929,7 +928,7 @@
             info = @{@"image":currentFilteredVideoFrame, @"metadata":photoMeta};
         }
         //[info setValue:currentFilteredVideoFrame forKey:@"image"];
-        NSLog(@"image size:%f, %f", currentFilteredVideoFrame.size.width, currentFilteredVideoFrame.size.height);
+        EZDEBUG(@"image size:%f, %f", currentFilteredVideoFrame.size.width, currentFilteredVideoFrame.size.height);
         [self.delegate imagePickerController:self didFinishPickingMediaWithInfo:info];
         [self retakePhoto:retakeButton];
         [self.photoCaptureButton setEnabled:YES];

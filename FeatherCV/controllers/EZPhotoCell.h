@@ -11,6 +11,7 @@
 #import "EZPhoto.h"
 #import "EZCombinedPhoto.h"
 #import "EZStyleImage.h"
+#import "ILTranslucentView.h"
 /**
  What's the purpose of this class?
  I will display a cell on the screen. 
@@ -45,7 +46,7 @@
 
 @property (nonatomic, strong) UIImageView* backImage;
 
-
+@property (nonatomic, strong) UILabel* photoTalk;
 
 @property (nonatomic, strong) EZClickImage* headIcon;
 
