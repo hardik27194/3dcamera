@@ -141,15 +141,15 @@
     //albumPage.queryBlock = qb;
     UINavigationController* mainNav = [[UINavigationController alloc] initWithRootViewController:albumPage];
     //mainNav.navigationBar.translucent = true;
-    EZDEBUG(@"Translucent is:%i", mainNav.navigationBar.translucent);
-    mainNav.navigationBar.barTintColor = RGBA(255, 255, 255, 0);
+    EZDEBUG(@"Translucent is:%i, bar style default:%i", mainNav.navigationBar.translucent, mainNav.navigationBar.barStyle);
+    //mainNav.navigationBar.barTintColor = RGBA(255, 255, 255, 0);
     
     UIViewController* v3 = [[UIViewController alloc] init];
     //v3.view.backgroundColor = [UIColor redColor];
     
     EZStyleImage* coverImage = [EZStyleImage createBlurredImage:CGRectMake(0, 69, 320, 428)];
     //Will use the white image as cover
-    [coverImage setImage:[UIImage imageNamed:@"img01.jpg"]];
+    //[coverImage setImage:[UIImage imageNamed:@"img01.jpg"]];
     //cv::Mat mat = [EZImageConverter cvMatFromUIImage:[UIImage imageNamed:@"img01.jpg"]];
     //EZDEBUG(@"The image row:%i, col:%i", mat.rows, mat.cols);
     [v3.view addSubview:coverImage];
@@ -203,7 +203,7 @@
     
     EZDEBUG(@"main thead:%i",(int)[NSThread currentThread]);
     [[EZMessageCenter getInstance] registerEvent:EZCameraIsReady block:^(id sender){
-        EZDEBUG(@"I will hide the cover view, %i",(int)[NSThread currentThread]);
+        EZDEBUG(@"I will hide the cover view, %i",[NSThread currentThread].isMainThread);
         [UIView animateWithDuration:0.3 animations:^(){
             v3.view.alpha = 0;
         }];
