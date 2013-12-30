@@ -10,26 +10,50 @@
 #import "EZGradientLayerView.h"
 
 #define kShadowViewTag 2132
+
+
+
 #define kValidDirections [NSArray arrayWithObjects: @"top", @"bottom", @"left", @"right",nil]
 
 @implementation UIView (Shadow)
 
+- (UIImageView*) loadBorder:(NSString*)imageFile tag:(NSInteger)tag;
+{
+    UIImageView* bottomImage = [[UIImageView alloc] initWithFrame:self.bounds];
+    bottomImage.contentMode = UIViewContentModeScaleToFill;
+    bottomImage.tag = tag;
+    bottomImage.image = [[UIImage imageNamed:imageFile] stretchableImageWithLeftCapWidth:25 topCapHeight:25];
+    bottomImage.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight|UIViewAutoresizingFlexibleBottomMargin|UIViewAutoresizingFlexibleTopMargin;
+    [self addSubview:bottomImage];
+    [self bringSubviewToFront:bottomImage];
+    return bottomImage;
+}
+
 - (void) makeImageShadow
 {
-    UIImageView* shadowImage = [[UIImageView alloc] initWithFrame:self.bounds];
-    shadowImage.contentMode = UIViewContentModeScaleToFill;
-    shadowImage.image = [[UIImage imageNamed:@"gradient_border"] stretchableImageWithLeftCapWidth:25 topCapHeight:25];
-    
-    self.autoresizesSubviews = true;
-    shadowImage.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight|UIViewAutoresizingFlexibleBottomMargin|UIViewAutoresizingFlexibleTopMargin;
-    shadowImage.tag = kShadowViewTag;
-    [self addSubview:shadowImage];
-    [self bringSubviewToFront:shadowImage];
+    [self loadBorder:@"border_bottom" tag:kBorderBottom];
+    [self loadBorder:@"border_ceil" tag:kBorderCeil];
+    [self loadBorder:@"border_left" tag:kBorderLeft];
+    [self loadBorder:@"border_right" tag:kBorderRight];
 }
 
 - (void) removeImageShadow
 {
-    [[self viewWithTag:kShadowViewTag] removeFromSuperview];
+    //[[self viewWithTag:kShadowViewTag] removeFromSuperview];
+    [self removeImageBorder:kBorderAll];
+}
+
+- (void) removeImageBorder:(EZBorderType)borderType
+{
+    if(borderType == kBorderAll){
+        [[self viewWithTag:kBorderBottom] removeFromSuperview];
+        [[self viewWithTag:kBorderCeil] removeFromSuperview];
+        [[self viewWithTag:kBorderLeft] removeFromSuperview];
+        [[self viewWithTag:kBorderRight] removeFromSuperview];
+    }else{
+        [[self viewWithTag:borderType] removeFromSuperview];
+    }
+    
 }
 
 - (void) adjustImageShadowSize:(CGSize)size

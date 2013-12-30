@@ -142,6 +142,11 @@ static int photoCount = 1;
     EZPhoto* myPhoto = cp.photo;
     // Configure the cell...
     //[cell displayImage:[myPhoto getLocalImage]];
+    if(cp.removeShadow){
+        EZEventBlock removeBlock = cp.removeShadow;
+        removeBlock(cell);
+        cp.removeShadow = nil;
+    }
     if(cp.turningAnimation){
         EZDEBUG(@"Turning animation get called");
         [cell adjustCellSize:cp.oldTurnedImage.size];
@@ -172,7 +177,7 @@ static int photoCount = 1;
     __weak EZPhotoCell* weakCell = cell;
     cell.container.releasedBlock = ^(id obj){
         cp.isFront = !cp.isFront;
-        
+        /**
         UIImageView* testAnimation = [[UIImageView alloc] initWithFrame:CGRectMake(50, 200, 200, 200)];
         testAnimation.image = [UIImage imageNamed:@"smile_face"];
         [testAnimation makeImageShadow];
@@ -183,6 +188,7 @@ static int photoCount = 1;
             [testAnimation removeFromSuperview];
         }];
         return;
+         **/
         EZEventBlock complete = ^(id sender){
             EZDEBUG(@"Complete get called");
             [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];

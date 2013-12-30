@@ -50,6 +50,9 @@ typedef enum {
 //Some animation will need to be used.
 @property (nonatomic, strong) EZEventBlock turningAnimation;
 
+//The previous remove should happen at the cell closed.
+@property (nonatomic, strong) EZEventBlock removeShadow;
+
 @property (nonatomic, assign) CGFloat turningImageHeight;
 
 @property (nonatomic, strong) UIImage* oldTurnedImage;

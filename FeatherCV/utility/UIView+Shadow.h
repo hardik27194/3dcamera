@@ -9,6 +9,14 @@
 #import <UIKit/UIKit.h>
 #import <QuartzCore/QuartzCore.h>
 
+typedef enum {
+    kBorderCeil = 1977,
+    kBorderBottom,
+    kBorderLeft,
+    kBorderRight,
+    kBorderAll
+} EZBorderType;
+
 @interface UIView (Shadow)
 
 - (void) makeInsetShadow;
@@ -18,6 +26,8 @@
 - (void) makeImageShadow;
 
 - (void) removeImageShadow;
+
+- (void) removeImageBorder:(EZBorderType)borderType;
 
 - (void) adjustImageShadowSize:(CGSize)size;
 

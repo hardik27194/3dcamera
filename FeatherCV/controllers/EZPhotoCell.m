@@ -207,8 +207,20 @@
         
         [UIView flipTransition:tmpView dest:_frontImage container:_container isLeft:YES duration:0.9 complete:^(id obj){
              [tmpView removeFromSuperview];
-             [_frontImage removeImageShadow];
+             //[_frontImage removeImageShadow];
             if(blk){
+                dp.removeShadow = ^(EZPhotoCell* phcell){
+                    if(phcell.frontImage != _frontImage){
+                        [phcell.frontImage makeImageShadow];
+                    }
+                    double delayInSeconds = 0.2;
+                    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+                    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+                        [_frontImage removeImageShadow];
+                        [phcell.frontImage removeImageShadow];
+                    });
+                    
+                };
                 blk(nil);
             }
         }];
@@ -217,7 +229,8 @@
         dp.turningImageHeight = height;
         dp.oldTurnedImage = _frontImage.image;
         dp.turningAnimation = ^(EZPhotoCell* photoCell){
-            [photoCell.frontImage makeInsetShadowWithRadius:20 Color:RGBA(255, 255, 255, 128)];
+            //[photoCell.frontImage makeInsetShadowWithRadius:20 Color:RGBA(255, 255, 255, 128)];
+            [photoCell.frontImage makeImageShadow];
             UIView* tmpView = [photoCell.frontImage snapshotViewAfterScreenUpdates:NO];
             //[photoCell.frontImage removeInsetShadow];
             [photoCell.container addSubview:tmpView];
