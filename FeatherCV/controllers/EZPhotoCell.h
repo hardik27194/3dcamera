@@ -90,7 +90,7 @@
 - (void) switchImageTo:(NSString*)url;
 
 //I will show the rotation animation;
-- (void) switchImage:(UIImage*)img photo:(EZDisplayPhoto*)dp complete:(EZEventBlock)blk;
+- (void) switchImage:(UIImage*)img photo:(EZDisplayPhoto*)dp complete:(EZEventBlock)blk tableView:(UITableView*)tableView index:(NSIndexPath*)path;
 
 - (void) displayImage:(UIImage*)img;
 

@@ -23,7 +23,11 @@ typedef enum {
 - (void) makeInsetShadowWithRadius:(float)radius Color:(UIColor *)color;
 - (void) makeInsetShadowWithRadius:(float)radius Color:(UIColor *)color Directions:(NSArray *)directions;
 
+
+- (UIImageView*) loadBorder:(NSString*)imageFile tag:(NSInteger)tag;
 - (void) makeImageShadow;
+
+- (void) makeImageShadow:(EZBorderType)borderType;
 
 - (void) removeImageShadow;
 

@@ -195,7 +195,7 @@ static int photoCount = 1;
         };
         if(cp.isFront){
             //[weakCell displayImage:[myPhoto getLocalImage]];
-            [weakCell switchImage:[myPhoto getLocalImage] photo:cp complete:complete];
+            [weakCell switchImage:[myPhoto getLocalImage] photo:cp complete:complete tableView:tableView index:indexPath];
         }else{
             EZDEBUG(@"The container size:%f, %f", weakCell.container.frame.size.width, weakCell.container.frame.size.height);
             if(!cp.randImage){
@@ -205,7 +205,7 @@ static int photoCount = 1;
                 EZDEBUG(@"Random File name:%@", randFile);
                 cp.randImage = randFile;
             }
-            [weakCell switchImage:[UIImage imageNamed:cp.randImage] photo:cp complete:complete];
+            [weakCell switchImage:[UIImage imageNamed:cp.randImage] photo:cp complete:complete tableView:tableView index:indexPath];
         }
     };
     return cell;

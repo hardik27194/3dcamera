@@ -29,6 +29,19 @@
     return bottomImage;
 }
 
+- (void) makeImageShadow:(EZBorderType)borderType
+{
+    if(borderType == kBorderBottom){
+        [self loadBorder:@"border_bottom" tag:kBorderBottom];
+    }else if(borderType == kBorderCeil){
+        [self loadBorder:@"border_ceil" tag:kBorderCeil];
+    }else if(borderType == kBorderLeft){
+        [self loadBorder:@"border_left" tag:kBorderLeft];
+    }else if(borderType == kBorderRight){
+        [self loadBorder:@"border_right" tag:kBorderRight];
+    }
+}
+
 - (void) makeImageShadow
 {
     [self loadBorder:@"border_bottom" tag:kBorderBottom];

@@ -40,7 +40,7 @@
         //_toolHolder.constraints
         
         _toolRegion = [[UIView alloc] initWithFrame:ToolRegionRect];
-        _toolRegion.backgroundColor = randBack(nil);
+        _toolRegion.backgroundColor = RGBA(0, 0, 0, 128);//randBack(nil);
         _toolRegion.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin;
         //_toolRegion.backgroundColor = [UIColor clearColor];//RGBCOLOR(128, 128, 255);
         //My feedback will grow gradually.
@@ -184,7 +184,7 @@
     //[_frontImage setImageWithURL:str2url(url) placeholderImage:PlaceHolderLargest];
 }
 
-- (void) switchImage:(UIImage*)img photo:(EZDisplayPhoto*)dp complete:(EZEventBlock)blk
+- (void) switchImage:(UIImage*)img photo:(EZDisplayPhoto*)dp complete:(EZEventBlock)blk tableView:(UITableView*)tableView index:(NSIndexPath*)path
 {
     //_backImage = [[UIImageView alloc] initWithFrame:_frontImage.frame];
     //_backImage.contentMode = UIViewContentModeScaleAspectFit;
@@ -192,7 +192,20 @@
     //Mean I will need to shrink the size.
     //What should I do?
     //Go the old way.
+    
+    
     EZDEBUG(@"current frame:%f, %f", _frontImage.frame.size.height, height);
+    int prevPos = path.row - 1;
+    int nextPos = path.row + 1;
+    EZPhotoCell* prevCell = nil;
+    EZPhotoCell* nextCell = nil;
+    if(prevPos >= 0){
+        prevCell = (EZPhotoCell*)[tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:prevPos inSection:0]];
+    }
+    nextCell = (EZPhotoCell*)[tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:nextPos inSection:0]];
+    [prevCell.frontImage makeImageShadow:kBorderBottom];
+    [nextCell.frontImage makeImageShadow:kBorderCeil];
+    
     if(_frontImage.frame.size.height >= height){
         EZDEBUG(@"Will come up with the old animation.");
         //[_frontImage makeInsetShadowWithRadius:20 Color:RGBA(255, 255, 255, 128)];
@@ -202,21 +215,27 @@
         [_container addSubview:tmpView];
         [_container bringSubviewToFront:tmpView];
         _frontImage.image = img;
-        [self adjustCellSize:img.size];
-        //[_frontImage makeInsetShadowWithRadius:20 Color:RGBA(255, 255, 255, 128)];
         
-        [UIView flipTransition:tmpView dest:_frontImage container:_container isLeft:YES duration:0.9 complete:^(id obj){
+        //[_frontImage makeInsetShadowWithRadius:20 Color:RGBA(255, 255, 255, 128)];
+        [self adjustCellSize:img.size];
+        [UIView flipTransition:tmpView dest:_frontImage container:_container isLeft:YES duration:1 complete:^(id obj){
              [tmpView removeFromSuperview];
              //[_frontImage removeImageShadow];
+            [_frontImage removeImageBorder:kBorderCeil];
+            [_frontImage removeImageBorder:kBorderLeft];
+            [_frontImage removeImageBorder:kBorderRight];
+            [prevCell removeImageBorder:kBorderBottom];
             if(blk){
                 dp.removeShadow = ^(EZPhotoCell* phcell){
                     if(phcell.frontImage != _frontImage){
-                        [phcell.frontImage makeImageShadow];
+                        [phcell.frontImage makeImageShadow:kBorderBottom];
                     }
                     double delayInSeconds = 0.2;
                     dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
                     dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
                         [_frontImage removeImageShadow];
+                        //[nextCell.frontImage removeImageBorder:kBorderCeil];
+                        [nextCell.frontImage removeImageBorder:kBorderCeil];
                         [phcell.frontImage removeImageShadow];
                     });
                     
@@ -236,12 +255,17 @@
             [photoCell.container addSubview:tmpView];
             [photoCell.container bringSubviewToFront:tmpView];
             photoCell.frontImage.image = img;
-            [UIView flipTransition:tmpView dest:photoCell.frontImage container:photoCell.container isLeft:YES duration:0.6 complete:^(id obj){
+            [UIView flipTransition:tmpView dest:photoCell.frontImage container:photoCell.container isLeft:YES duration:1 complete:^(id obj){
                 [tmpView removeFromSuperview];
+                [photoCell.frontImage removeImageBorder:kBorderCeil];
+                [photoCell.frontImage removeImageBorder:kBorderLeft];
+                [photoCell.frontImage removeImageBorder:kBorderRight];
+                [prevCell.frontImage removeImageBorder:kBorderBottom];
                 [UIView animateWithDuration:0.3 animations:^(){
                     [photoCell adjustCellSize:img.size];
                 } completion:^(BOOL complete){
                     [photoCell.frontImage removeImageShadow];
+                    [nextCell.frontImage removeImageBorder:kBorderCeil];
                 }];
             }];
             
