@@ -10,6 +10,7 @@
 #import <MobileCoreServices/UTCoreTypes.h>
 #import "EZMessageCenter.h"
 
+#define ColorTransparent 80
 @implementation EZUIUtility
 
 SINGLETON_FOR_CLASS(EZUIUtility)
@@ -18,7 +19,7 @@ SINGLETON_FOR_CLASS(EZUIUtility)
 {
     self = [super init];
     _cameraRaised = false;
-    _colors = @[RGBA(255, 0, 0, 127), RGBA(127, 127, 0, 127), RGBA(127, 0, 127, 127), RGBA(0, 255, 0, 127), RGBA(0, 0, 255, 127)];
+    _colors = @[RGBA(255, 0, 0, ColorTransparent), RGBA(127, 127, 0, ColorTransparent), RGBA(127, 0, 127, ColorTransparent), RGBA(0, 255, 0, ColorTransparent), RGBA(0, 0, 255, ColorTransparent)];
     return self;
 }
 

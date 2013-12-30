@@ -53,6 +53,7 @@ static int photoCount = 1;
     [super viewDidLoad];
     _combinedPhotos = [[NSMutableArray alloc] init];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
     __weak EZAlbumTablePage* weakSelf = self;
     EZDEBUG(@"Query block is:%i",(int)_queryBlock);
     /**
@@ -106,11 +107,11 @@ static int photoCount = 1;
     EZDEBUG(@"calculate the height, is front:%i", cp.isFront);
     CGFloat imageHeight;
     if(cp.isFront){
-        imageHeight = (cp.photo.size.height/cp.photo.size.width) * 320.0;
+        imageHeight = floorf((cp.photo.size.height/cp.photo.size.width) * 320.0);
         EZDEBUG(@"The row height is:%f, width:%f, %f", imageHeight, cp.photo.size.width, cp.photo.size.height);
     }else{
         CGSize imgSize = [UIImage imageNamed:cp.randImage].size;
-        imageHeight = (imgSize.height/imgSize.width) * 320.0;
+        imageHeight =  floorf((imgSize.height/imgSize.width) * 320.0);
         EZDEBUG(@"Column count is:%f, width:%f, %f", imageHeight, cp.photo.size.width, cp.photo.size.height);
     }
     //EZDEBUG(@"image width:%f, height:%f, final height:%f", cp.myPhoto.size.width, cp.myPhoto.size.height, imageHeight);
@@ -160,7 +161,7 @@ static int photoCount = 1;
         cp.isFront = !cp.isFront;
         EZEventBlock complete = ^(id sender){
             EZDEBUG(@"Complete get called");
-            [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+            [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
         };
         if(cp.isFront){
             //[weakCell displayImage:[myPhoto getLocalImage]];

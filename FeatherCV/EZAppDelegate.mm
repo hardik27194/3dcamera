@@ -28,7 +28,7 @@
 #import "EZMainPage.h"
 #import "DLCImagePickerController.h"
 #import "EZContactTablePage.h"
-
+#import "ILTranslucentView.h"
 
 @implementation EZAppDelegate
 
@@ -125,6 +125,8 @@
     EZContactTablePage* contactPage = [[EZContactTablePage alloc] initWithStyle:UITableViewStylePlain];
     //[contactPage reloadPersons];
     UINavigationController* contactNav = [[UINavigationController alloc] initWithRootViewController:contactPage];
+    
+    
     //UIViewController* v2 = [[UIViewController alloc] init];
     //v2.view.backgroundColor = [UIColor yellowColor];
     //EZFaceDetector* fd = [[EZFaceDetector alloc] init];
@@ -140,9 +142,24 @@
     
     //albumPage.queryBlock = qb;
     UINavigationController* mainNav = [[UINavigationController alloc] initWithRootViewController:albumPage];
+    EZDEBUG(@"original status bar style:%i, navigationBar style:%i, %@", [UIApplication sharedApplication].statusBarStyle, mainNav.navigationBar.barStyle, mainNav.navigationBar.barTintColor);
+    //mainNav.navigationBar.barTintColor = [UIColor whiteColor];
+    
+    //[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleBlackTranslucent];
+    
     // = true;
     //mainNav.navigationBar.alpha = 0.5;
+    //mainNav.navigationBar.barStyle = UIBarStyleBlack;
     EZDEBUG(@"Translucent is:%i, bar style default:%i", mainNav.navigationBar.translucent, mainNav.navigationBar.barStyle);
+    UIImage *gradientImage44 = [UIImage imageWithColor:RGBA(0, 0, 0, 128)]; //replace "nil" with your method to programmatically create a UIImage object with transparent colors for portrait orientation
+    UIImage *gradientImage32 = [UIImage imageWithColor:RGBA(0, 0, 0, 128)]; //replace "nil" with your method to programmatically create a UIImage object with transparent colors for landscape orientation
+    mainNav.navigationBar.hidden = true;
+    
+    //customize the appearance of UINavigationBar
+    //[[UINavigationBar appearance] setBackgroundImage:gradientImage44 forBarMetrics:UIBarMetricsDefault];
+    //[[UINavigationBar appearance] setBackgroundImage:gradientImage32 forBarMetrics:UIBarMetricsLandscapePhone];
+    //[[UINavigationBar appearance] setBarStyle:UIBarStyleBlack];
+
     ///mainNav.navigationBar.barTintColor = [UIColor clearColor];
     
     UIViewController* v3 = [[UIViewController alloc] init];
@@ -221,6 +238,9 @@
     _cameraRaised = false;
     [EZTestSuites testAll];
     [[UINavigationBar appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName : [UIColor redColor], NSFontAttributeName:[UIFont boldSystemFontOfSize:14]}];
+    
+    ILTranslucentView* barView = [[ILTranslucentView alloc] initWithFrame:CGRectMake(0, 64, 320, 44)];
+    barView.translucentAlpha = 1.0;
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     
     //self.window.backgroundColor = [UIColor greenColor];
@@ -234,6 +254,15 @@
     EZDEBUG(@"After get scrollView");
    
     EZDEBUG(@"Register orientation change");
+    //[self.window addSubview:barView];
+    /**
+    double delayInSeconds = 2.0;
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        EZDEBUG(@"I would like to bring barView to front");
+        [self.window bringSubviewToFront:barView];
+    });
+     **/
     [self.window makeKeyAndVisible];
     EZDEBUG(@"Visible enabled");
     return YES;

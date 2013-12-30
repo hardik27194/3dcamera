@@ -38,7 +38,7 @@
         //_toolHolder.constraints
         
         _toolRegion = [[UIView alloc] initWithFrame:ToolRegionRect];
-        _toolRegion.backgroundColor = RGBA(0, 0, 0, 100);
+        _toolRegion.backgroundColor = randBack(nil);
         _toolRegion.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin;
         //_toolRegion.backgroundColor = [UIColor clearColor];//RGBCOLOR(128, 128, 255);
         //My feedback will grow gradually.
@@ -61,10 +61,10 @@
         [_countIcon enableRoundImage];
         
         _photoTalk = [[UILabel alloc] initWithFrame:CGRectMake(15, (ToolRegionHeight - 20)/2.0, 290, 20)];
-        _photoTalk.font = [UIFont systemFontOfSize:12];
+        _photoTalk.font = [UIFont systemFontOfSize:10];
         _photoTalk.textAlignment = NSTextAlignmentLeft;
         _photoTalk.textColor = [UIColor whiteColor];
-        _photoTalk.text = @"我爱大萝卜";
+        _photoTalk.text = @"I love you 我爱大萝卜 哈哈 1234";
         
         //[_toolRegion addSubview:_headIcon];
         //[_toolRegion addSubview:_linkIcon];
@@ -92,7 +92,8 @@
         //[self.contentView addSubview:_toolRegion];
         //[self.contentView addSubview:_feedbackRegion];
         [_container addSubview:_frontImage];
-        [_container addSubview:_toolRegion];
+        [_frontImage addSubview:_toolRegion];
+        //[_container addSubview:_toolRegion];
         //[_container addSubview:_frontNoEffects];
         _container.enableTouchEffects = NO;
         //[self.contentView addSubview:_imageClick];
@@ -182,25 +183,63 @@
 
 - (void) switchImage:(UIImage*)img complete:(EZEventBlock)blk
 {
-    _backImage = [[UIImageView alloc] initWithFrame:_frontImage.frame];
-    _backImage.contentMode = UIViewContentModeScaleAspectFit;
-    _backImage.image = img;
-    [_container addSubview:_backImage];
-    [_container bringSubviewToFront:_toolRegion];
-    [UIView flipTransition:_frontImage dest:_backImage container:_container isLeft:YES duration:1.0 complete:^(id obj){
-        //UIImageView* tmp = _frontImage;
-        //_frontImage = _backImage;
-        //_backImage = tmp;
-        _frontImage = _backImage;
-        [UIView animateWithDuration:0.3 animations:^(){
-            [self adjustCellSize:img.size];
-        } completion:^(BOOL completed){
-            if(blk){
-                blk(nil);
-            }
-            [_container bringSubviewToFront:_toolRegion];
+    //_backImage = [[UIImageView alloc] initWithFrame:_frontImage.frame];
+    //_backImage.contentMode = UIViewContentModeScaleAspectFit;
+    UIView* tmpView = [_frontImage snapshotViewAfterScreenUpdates:NO];
+    
+    
+    
+    //[_container addSubview:tmpView];
+    //_frontImage.image = img;
+    //[_container bringSubviewToFront:_toolRegion];
+    
+    UIWindow* mWindow = [[UIApplication sharedApplication] keyWindow];
+    CGRect curFrame = [mWindow convertRect:_frontImage.frame fromView:_container];
+    UIView* tmpContainer = [[UIView alloc] initWithFrame:curFrame];
+    tmpContainer.backgroundColor = [UIColor clearColor];
+    tmpView.frame = CGRectMake(0, 0, _container.frame.size.width, _container.frame.size.height);
+    UIImageView* destView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, img.size.width, img.size.height)];
+    destView.contentMode = UIViewContentModeScaleAspectFill;
+    destView.image = img;
+    //[tmpContainer addSubview:destView];
+    [tmpContainer addSubview:tmpView];
+    [mWindow addSubview:tmpContainer];
+    if(blk){
+        double delayInSeconds = 0.2;
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+            blk(nil);
+        });
+        //blk(nil);
+    }
+    double delayInSeconds = 0.1;
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        [tmpContainer addSubview:destView];
+        [UIView flipTransition:tmpView dest:destView container:tmpContainer isLeft:YES duration:0.6 complete:^(id obj){
+            //[tmpView removeFromSuperview];
+            //[destView removeFromSuperview];
+            [tmpContainer removeFromSuperview];
+            //UIImageView* tmp = _frontImage;
+            //_frontImage = _backImage;
+            //_backImage = tmp;
+            //_frontImage = _backImage;
+            //[UIView animateWithDuration:0.3 animations:^(){
+            //    [self adjustCellSize:img.size];
+            //} completion:^(BOOL completed){
+            /**
+             if(blk){
+             blk(nil);
+             }
+             [tmpView removeFromSuperview];
+             **/
+            
+            //[_container bringSubviewToFront:_toolRegion];
+            //[_frontImage addSubview:_toolRegion];
+            //}];
         }];
-    }];
+    });
+    
 }
 
 //I am happy that define a good interface to handle the image switch action

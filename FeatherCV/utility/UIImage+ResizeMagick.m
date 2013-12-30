@@ -135,6 +135,20 @@ static inline CGSize swapWidthAndHeight(CGSize size)
     return [self drawImageInBounds: CGRectMake(0, 0, round(original_width * ratio), height)];
 }
 
++ (UIImage *)imageWithColor:(UIColor *)color
+{
+    CGRect rect = CGRectMake(0, 0, 1, 1);
+    
+    // create a 1 by 1 pixel context
+    UIGraphicsBeginImageContextWithOptions(rect.size, NO, 0);
+    [color setFill];
+    UIRectFill(rect);
+    
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    return image;
+}
 
 - (UIImage *) resizedImageWithMinimumSize: (CGSize) size
 {

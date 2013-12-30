@@ -23,4 +23,6 @@
 
 - (UIImage *) flipImage;
 
++ (UIImage *)imageWithColor:(UIColor *)color;
+
 @end

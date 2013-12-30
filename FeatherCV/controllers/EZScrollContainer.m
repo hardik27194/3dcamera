@@ -131,12 +131,17 @@
     }
 }
 
+-(UIStatusBarStyle)preferredStatusBarStyle{
+    return UIStatusBarStyleLightContent;
+}
+
 - (void)viewDidLoad
 {
 	//currentPage = [[PageViewController alloc] initWithNibName:@"PageView" bundle:nil];
 	//nextPage = [[PageViewController alloc] initWithNibName:@"PageView" bundle:nil];
 	//[scrollView addSubview:currentPage.view];
 	//[scrollView addSubview:nextPage.view];
+    [self setNeedsStatusBarAppearanceUpdate];
     [[NSNotificationCenter defaultCenter] addObserver:self  selector:@selector(orientationChanged:)  name:UIDeviceOrientationDidChangeNotification  object:[UIDevice currentDevice]];
     EZDEBUG(@"Current childSize:%i", _children.count);
     _scrollView.contentSize =
