@@ -172,8 +172,9 @@ static int photoCount = 1;
     __weak EZPhotoCell* weakCell = cell;
     cell.container.releasedBlock = ^(id obj){
         cp.isFront = !cp.isFront;
-        /**
-        UIView* testAnimation = [[UIView alloc] initWithFrame:CGRectMake(50, 200, 200, 400)];
+        
+        UIImageView* testAnimation = [[UIImageView alloc] initWithFrame:CGRectMake(50, 200, 200, 200)];
+        testAnimation.image = [UIImage imageNamed:@"smile_face"];
         [testAnimation makeImageShadow];
         [self.view addSubview:testAnimation];
         [UIView animateWithDuration:0.6 animations:^(){
@@ -181,7 +182,7 @@ static int photoCount = 1;
         } completion:^(BOOL finished){
             [testAnimation removeFromSuperview];
         }];
-         **/
+        return;
         EZEventBlock complete = ^(id sender){
             EZDEBUG(@"Complete get called");
             [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
