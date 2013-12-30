@@ -106,6 +106,9 @@ static int photoCount = 1;
     EZDisplayPhoto* cp = [_combinedPhotos objectAtIndex:indexPath.row];
     EZDEBUG(@"calculate the height, is front:%i", cp.isFront);
     CGFloat imageHeight;
+    if(cp.turningAnimation){
+        imageHeight = cp.turningImageHeight;
+    }else{
     if(cp.isFront){
         imageHeight = floorf((cp.photo.size.height/cp.photo.size.width) * 320.0);
         EZDEBUG(@"The row height is:%f, width:%f, %f", imageHeight, cp.photo.size.width, cp.photo.size.height);
@@ -113,6 +116,7 @@ static int photoCount = 1;
         CGSize imgSize = [UIImage imageNamed:cp.randImage].size;
         imageHeight =  floorf((imgSize.height/imgSize.width) * 320.0);
         EZDEBUG(@"Column count is:%f, width:%f, %f", imageHeight, cp.photo.size.width, cp.photo.size.height);
+    }
     }
     //EZDEBUG(@"image width:%f, height:%f, final height:%f", cp.myPhoto.size.width, cp.myPhoto.size.height, imageHeight);
     return imageHeight;
@@ -138,6 +142,14 @@ static int photoCount = 1;
     EZPhoto* myPhoto = cp.photo;
     // Configure the cell...
     //[cell displayImage:[myPhoto getLocalImage]];
+    if(cp.turningAnimation){
+        EZDEBUG(@"Turning animation get called");
+        [cell adjustCellSize:cp.oldTurnedImage.size];
+        [cell displayImage:cp.oldTurnedImage];
+        EZEventBlock animBlock = cp.turningAnimation;
+        animBlock(cell);
+        cp.turningAnimation = nil;
+    }else{
     if(cp.isFront){
         [cell adjustCellSize:myPhoto.size];
         [cell displayImage:[myPhoto getThumbnail]];
@@ -156,16 +168,17 @@ static int photoCount = 1;
         [cell adjustCellSize:img.size];
         [cell displayImage:img];
     }
+    }
     __weak EZPhotoCell* weakCell = cell;
     cell.container.releasedBlock = ^(id obj){
         cp.isFront = !cp.isFront;
         EZEventBlock complete = ^(id sender){
             EZDEBUG(@"Complete get called");
-            [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+            [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
         };
         if(cp.isFront){
             //[weakCell displayImage:[myPhoto getLocalImage]];
-            [weakCell switchImage:[myPhoto getLocalImage] complete:complete];
+            [weakCell switchImage:[myPhoto getLocalImage] photo:cp complete:complete];
         }else{
             EZDEBUG(@"The container size:%f, %f", weakCell.container.frame.size.width, weakCell.container.frame.size.height);
             if(!cp.randImage){
@@ -175,7 +188,7 @@ static int photoCount = 1;
                 EZDEBUG(@"Random File name:%@", randFile);
                 cp.randImage = randFile;
             }
-            [weakCell switchImage:[UIImage imageNamed:cp.randImage] complete:complete];
+            [weakCell switchImage:[UIImage imageNamed:cp.randImage] photo:cp complete:complete];
         }
     };
     return cell;

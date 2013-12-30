@@ -30,8 +30,10 @@
     if (self) {
         // Initialization code
         _container = [[EZClickView alloc] initWithFrame:CGRectMake(0, 0, 320, 320)];
+        //[_container makeInsetShadowWithRadius:20 Color:RGBA(255, 255, 255, 128)];
         _frontImage = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 320, 320)];
         _frontImage.contentMode = UIViewContentModeScaleAspectFill;
+        //[_frontImage makeInsetShadowWithRadius:20 Color:RGBA(255, 255, 255, 128)];
         //_frontNoEffects = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 320, 320)];
         //_frontNoEffects.contentMode = UIViewContentModeScaleAspectFill;
         //_toolHolder = [[ILTranslucentView alloc] initWithFrame:CGRectMake(0, 320 - 40, 320, 40)];
@@ -114,6 +116,7 @@
     [_container setSize:CGSizeMake(320, adjustedHeight)];
     //[_frontNoEffects setSize:CGSizeMake(320, adjustedHeight)];
     [_frontImage setSize:CGSizeMake(320, adjustedHeight)];
+    [_frontImage adjustShadowSize:CGSizeMake(320, adjustedHeight)];
     [_toolRegion setPosition:CGPointMake(0, adjustedHeight-ToolRegionHeight)];
     [_feedbackRegion setPosition:CGPointMake(0, adjustedHeight+_toolRegion.frame.size.height)];
     
@@ -180,66 +183,58 @@
     //[_frontImage setImageWithURL:str2url(url) placeholderImage:PlaceHolderLargest];
 }
 
-
-- (void) switchImage:(UIImage*)img complete:(EZEventBlock)blk
+- (void) switchImage:(UIImage*)img photo:(EZDisplayPhoto*)dp complete:(EZEventBlock)blk
 {
     //_backImage = [[UIImageView alloc] initWithFrame:_frontImage.frame];
     //_backImage.contentMode = UIViewContentModeScaleAspectFit;
-    UIView* tmpView = [_frontImage snapshotViewAfterScreenUpdates:NO];
-    
-    
-    
-    //[_container addSubview:tmpView];
-    //_frontImage.image = img;
-    //[_container bringSubviewToFront:_toolRegion];
-    
-    UIWindow* mWindow = [[UIApplication sharedApplication] keyWindow];
-    CGRect curFrame = [mWindow convertRect:_frontImage.frame fromView:_container];
-    UIView* tmpContainer = [[UIView alloc] initWithFrame:curFrame];
-    tmpContainer.backgroundColor = [UIColor clearColor];
-    tmpView.frame = CGRectMake(0, 0, _container.frame.size.width, _container.frame.size.height);
-    UIImageView* destView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, img.size.width, img.size.height)];
-    destView.contentMode = UIViewContentModeScaleAspectFill;
-    destView.image = img;
-    //[tmpContainer addSubview:destView];
-    [tmpContainer addSubview:tmpView];
-    [mWindow addSubview:tmpContainer];
-    if(blk){
-        double delayInSeconds = 0.2;
-        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
-        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-            blk(nil);
-        });
-        //blk(nil);
-    }
-    double delayInSeconds = 0.1;
-    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
-    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-        [tmpContainer addSubview:destView];
-        [UIView flipTransition:tmpView dest:destView container:tmpContainer isLeft:YES duration:0.6 complete:^(id obj){
-            //[tmpView removeFromSuperview];
-            //[destView removeFromSuperview];
-            [tmpContainer removeFromSuperview];
-            //UIImageView* tmp = _frontImage;
-            //_frontImage = _backImage;
-            //_backImage = tmp;
-            //_frontImage = _backImage;
-            //[UIView animateWithDuration:0.3 animations:^(){
-            //    [self adjustCellSize:img.size];
-            //} completion:^(BOOL completed){
-            /**
-             if(blk){
-             blk(nil);
-             }
+    CGFloat height = [self calHeight:img.size];
+    //Mean I will need to shrink the size.
+    //What should I do?
+    //Go the old way.
+    EZDEBUG(@"current frame:%f, %f", _frontImage.frame.size.height, height);
+    if(_frontImage.frame.size.height >= height){
+        EZDEBUG(@"Will come up with the old animation.");
+        [_frontImage makeInsetShadowWithRadius:20 Color:RGBA(255, 255, 255, 128)];
+        UIView* tmpView = [_frontImage snapshotViewAfterScreenUpdates:NO];
+        //[_frontImage removeInsetShadow];
+        [_container addSubview:tmpView];
+        [_container bringSubviewToFront:tmpView];
+        _frontImage.image = img;
+        [self adjustCellSize:img.size];
+        //[_frontImage makeInsetShadowWithRadius:20 Color:RGBA(255, 255, 255, 128)];
+        
+        [UIView flipTransition:tmpView dest:_frontImage container:_container isLeft:YES duration:0.6 complete:^(id obj){
              [tmpView removeFromSuperview];
-             **/
-            
-            //[_container bringSubviewToFront:_toolRegion];
-            //[_frontImage addSubview:_toolRegion];
-            //}];
+             [_frontImage removeInsetShadow];
+            if(blk){
+                blk(nil);
+            }
         }];
-    });
-    
+    }else{
+        EZDEBUG(@"Will start the new animation");
+        dp.turningImageHeight = height;
+        dp.oldTurnedImage = _frontImage.image;
+        dp.turningAnimation = ^(EZPhotoCell* photoCell){
+            [photoCell.frontImage makeInsetShadowWithRadius:20 Color:RGBA(255, 255, 255, 128)];
+            UIView* tmpView = [photoCell.frontImage snapshotViewAfterScreenUpdates:NO];
+            [photoCell.frontImage removeInsetShadow];
+            [photoCell.container addSubview:tmpView];
+            [photoCell.container bringSubviewToFront:tmpView];
+            photoCell.frontImage.image = img;
+            
+            
+            [UIView flipTransition:tmpView dest:photoCell.frontImage container:photoCell.container isLeft:YES duration:0.6 complete:^(id obj){
+                [tmpView removeFromSuperview];
+                [photoCell.frontImage removeInsetShadow];
+            }];
+            [UIView animateWithDuration:0.6 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^(){
+                [photoCell adjustCellSize:img.size];
+            } completion:^(BOOL completed){
+                
+            }];
+        };
+        blk(nil);
+    }
 }
 
 //I am happy that define a good interface to handle the image switch action

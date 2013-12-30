@@ -12,6 +12,7 @@
 #import "EZCombinedPhoto.h"
 #import "EZStyleImage.h"
 #import "ILTranslucentView.h"
+#import "EZDisplayPhoto.h"
 /**
  What's the purpose of this class?
  I will display a cell on the screen. 
@@ -89,7 +90,7 @@
 - (void) switchImageTo:(NSString*)url;
 
 //I will show the rotation animation;
-- (void) switchImage:(UIImage*)img complete:(EZEventBlock)blk;
+- (void) switchImage:(UIImage*)img photo:(EZDisplayPhoto*)dp complete:(EZEventBlock)blk;
 
 - (void) displayImage:(UIImage*)img;
 

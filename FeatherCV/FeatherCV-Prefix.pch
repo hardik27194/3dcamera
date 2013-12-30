@@ -25,4 +25,5 @@
     #import "EZExtender.h"
     #import "EZUIUtility.h"
     #import "UIImage+ResizeMagick.h"
+    #import "UIView+Shadow.h"
 #endif

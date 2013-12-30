@@ -214,6 +214,7 @@
 		18F58B49186D5F9C006CB966 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18F58B48186D5F9C006CB966 /* ImageIO.framework */; };
 		18F58B4D186D8824006CB966 /* shot.wav in Resources */ = {isa = PBXBuildFile; fileRef = 18F58B4C186D8824006CB966 /* shot.wav */; };
 		18F58B52186EC0D1006CB966 /* ILTranslucentView.m in Sources */ = {isa = PBXBuildFile; fileRef = 18F58B51186EC0D1006CB966 /* ILTranslucentView.m */; };
+		18F58B57187130E0006CB966 /* UIView+Shadow.m in Sources */ = {isa = PBXBuildFile; fileRef = 18F58B56187130E0006CB966 /* UIView+Shadow.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -543,6 +544,8 @@
 		18F58B4C186D8824006CB966 /* shot.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = shot.wav; sourceTree = "<group>"; };
 		18F58B50186EC0D1006CB966 /* ILTranslucentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ILTranslucentView.h; sourceTree = "<group>"; };
 		18F58B51186EC0D1006CB966 /* ILTranslucentView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ILTranslucentView.m; sourceTree = "<group>"; };
+		18F58B55187130E0006CB966 /* UIView+Shadow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+Shadow.h"; sourceTree = "<group>"; };
+		18F58B56187130E0006CB966 /* UIView+Shadow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+Shadow.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -842,6 +845,8 @@
 		18E346D5183DF91500C9D89D /* utility */ = {
 			isa = PBXGroup;
 			children = (
+				18F58B55187130E0006CB966 /* UIView+Shadow.h */,
+				18F58B56187130E0006CB966 /* UIView+Shadow.m */,
 				18F58B50186EC0D1006CB966 /* ILTranslucentView.h */,
 				18F58B51186EC0D1006CB966 /* ILTranslucentView.m */,
 				18E3483B18433FBF00C9D89D /* UIImage+ResizeMagick.h */,
@@ -1344,6 +1349,7 @@
 				18E347DC183E050B00C9D89D /* ASIDataDecompressor.m in Sources */,
 				18E34785183DFAA400C9D89D /* EZKeyboadUtility.m in Sources */,
 				18E34786183DFAA400C9D89D /* EZUIUtility.m in Sources */,
+				18F58B57187130E0006CB966 /* UIView+Shadow.m in Sources */,
 				18E34725183DFA3300C9D89D /* EZPhotoCell.m in Sources */,
 				18E34748183DFA7300C9D89D /* EZCombinedPhoto.m in Sources */,
 				18E34737183DFA5800C9D89D /* EZTransitionLayout.m in Sources */,

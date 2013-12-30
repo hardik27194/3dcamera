@@ -47,6 +47,13 @@ typedef enum {
 //Whether I am turning the image or not
 @property (nonatomic, assign) BOOL isTurning;
 
+//Some animation will need to be used.
+@property (nonatomic, strong) EZEventBlock turningAnimation;
+
+@property (nonatomic, assign) CGFloat turningImageHeight;
+
+@property (nonatomic, strong) UIImage* oldTurnedImage;
+
 //What's the status of the turning angle.
 //To visualize the whole process, is that, we will uploading the image
 //In the meanwhile, we will try to download the image.
