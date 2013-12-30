@@ -7,11 +7,36 @@
 //
 
 #import "UIView+Shadow.h"
+#import "EZGradientLayerView.h"
 
 #define kShadowViewTag 2132
 #define kValidDirections [NSArray arrayWithObjects: @"top", @"bottom", @"left", @"right",nil]
 
 @implementation UIView (Shadow)
+
+- (void) makeImageShadow
+{
+    UIImageView* shadowImage = [[UIImageView alloc] initWithFrame:self.bounds];
+    shadowImage.contentMode = UIViewContentModeScaleToFill;
+    shadowImage.image = [[UIImage imageNamed:@"gradient_border"] stretchableImageWithLeftCapWidth:25 topCapHeight:25];
+    
+    self.autoresizesSubviews = true;
+    shadowImage.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight|UIViewAutoresizingFlexibleBottomMargin|UIViewAutoresizingFlexibleTopMargin;
+    shadowImage.tag = kShadowViewTag;
+    [self addSubview:shadowImage];
+    [self bringSubviewToFront:shadowImage];
+}
+
+- (void) removeImageShadow
+{
+    [[self viewWithTag:kShadowViewTag] removeFromSuperview];
+}
+
+- (void) adjustImageShadowSize:(CGSize)size
+{
+    [[self viewWithTag:kShadowViewTag] setSize:size];
+}
+
 
 - (void) makeInsetShadow
 {
@@ -61,7 +86,8 @@
 
 - (UIView *) createShadowViewWithRadius:(float)radius Color:(UIColor *)color Directions:(NSArray *)directions
 {
-    UIView *shadowView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height)];
+    EZGradientLayerView *shadowView = [[EZGradientLayerView alloc] initWithFrame:CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height)];
+    
     shadowView.backgroundColor = [UIColor clearColor];
     
     // Ignore duplicate direction
@@ -72,7 +98,7 @@
         // Ignore invalid direction
         if ([kValidDirections containsObject:direction])
         {
-            CAGradientLayer *shadow = [CAGradientLayer layer];
+            CAGradientLayer *shadow = (CAGradientLayer*)[CAGradientLayer layer];
             
             if ([direction isEqualToString:@"top"]) {
                 [shadow setStartPoint:CGPointMake(0.5, 0.0)];

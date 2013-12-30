@@ -15,6 +15,11 @@
 - (void) makeInsetShadowWithRadius:(float)radius Color:(UIColor *)color;
 - (void) makeInsetShadowWithRadius:(float)radius Color:(UIColor *)color Directions:(NSArray *)directions;
 
+- (void) makeImageShadow;
+
+- (void) removeImageShadow;
+
+- (void) adjustImageShadowSize:(CGSize)size;
 
 - (void) removeInsetShadow;
 

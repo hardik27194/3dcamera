@@ -215,6 +215,8 @@
 		18F58B4D186D8824006CB966 /* shot.wav in Resources */ = {isa = PBXBuildFile; fileRef = 18F58B4C186D8824006CB966 /* shot.wav */; };
 		18F58B52186EC0D1006CB966 /* ILTranslucentView.m in Sources */ = {isa = PBXBuildFile; fileRef = 18F58B51186EC0D1006CB966 /* ILTranslucentView.m */; };
 		18F58B57187130E0006CB966 /* UIView+Shadow.m in Sources */ = {isa = PBXBuildFile; fileRef = 18F58B56187130E0006CB966 /* UIView+Shadow.m */; };
+		18F58B5A18716C19006CB966 /* EZGradientLayerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 18F58B5918716C19006CB966 /* EZGradientLayerView.m */; };
+		18F58B5F1871750F006CB966 /* gradient_border@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 18F58B5E1871750F006CB966 /* gradient_border@2x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -546,6 +548,9 @@
 		18F58B51186EC0D1006CB966 /* ILTranslucentView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ILTranslucentView.m; sourceTree = "<group>"; };
 		18F58B55187130E0006CB966 /* UIView+Shadow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+Shadow.h"; sourceTree = "<group>"; };
 		18F58B56187130E0006CB966 /* UIView+Shadow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+Shadow.m"; sourceTree = "<group>"; };
+		18F58B5818716C19006CB966 /* EZGradientLayerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZGradientLayerView.h; sourceTree = "<group>"; };
+		18F58B5918716C19006CB966 /* EZGradientLayerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZGradientLayerView.m; sourceTree = "<group>"; };
+		18F58B5E1871750F006CB966 /* gradient_border@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "gradient_border@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -895,6 +900,8 @@
 				18E346DB183DF96D00C9D89D /* UIImage2OpenCV.mm */,
 				18C0E76C1861A0FF00D694CE /* EZSoundEffect.h */,
 				18C0E76D1861A0FF00D694CE /* EZSoundEffect.m */,
+				18F58B5818716C19006CB966 /* EZGradientLayerView.h */,
+				18F58B5918716C19006CB966 /* EZGradientLayerView.m */,
 			);
 			path = utility;
 			sourceTree = "<group>";
@@ -931,6 +938,7 @@
 		18E346DD183DF99300C9D89D /* overlays */ = {
 			isa = PBXGroup;
 			children = (
+				18F58B5E1871750F006CB966 /* gradient_border@2x.png */,
 				18E346E7183DF9C400C9D89D /* half_love_right@2x.png */,
 				18E346E8183DF9C400C9D89D /* half_love_left@2x.png */,
 				18E346E9183DF9C400C9D89D /* whole_love@2x.png */,
@@ -1219,6 +1227,7 @@
 				18E3482E183F044700C9D89D /* test.JPG in Resources */,
 				1874D9F3186996AE005743FC /* santa_13.jpg in Resources */,
 				18A370251855C2A40022F0A8 /* front-camera@2x.png in Resources */,
+				18F58B5F1871750F006CB966 /* gradient_border@2x.png in Resources */,
 				1874D9F7186996AE005743FC /* santa_9.jpg in Resources */,
 				18E3481D183F02D600C9D89D /* haarcascade_mcs_eyepair_small.xml in Resources */,
 				18E34827183F02D600C9D89D /* haarcascade_smile.xml in Resources */,
@@ -1304,6 +1313,7 @@
 				18E347D7183E050B00C9D89D /* ASIInputStream.m in Sources */,
 				18E34747183DFA7300C9D89D /* EZPhoto.m in Sources */,
 				18E3474B183DFA7300C9D89D /* EZLikeSatus.m in Sources */,
+				18F58B5A18716C19006CB966 /* EZGradientLayerView.m in Sources */,
 				18E347F5183E081D00C9D89D /* AFDownloadRequestOperation.m in Sources */,
 				18E34780183DFAA400C9D89D /* EZUploadHandler.m in Sources */,
 				18A3703E1859AE850022F0A8 /* EZContactTablePage.m in Sources */,

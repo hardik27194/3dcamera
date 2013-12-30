@@ -203,7 +203,7 @@
         [self adjustCellSize:img.size];
         //[_frontImage makeInsetShadowWithRadius:20 Color:RGBA(255, 255, 255, 128)];
         
-        [UIView flipTransition:tmpView dest:_frontImage container:_container isLeft:YES duration:0.6 complete:^(id obj){
+        [UIView flipTransition:tmpView dest:_frontImage container:_container isLeft:YES duration:0.9 complete:^(id obj){
              [tmpView removeFromSuperview];
              [_frontImage removeInsetShadow];
             if(blk){
@@ -217,21 +217,20 @@
         dp.turningAnimation = ^(EZPhotoCell* photoCell){
             [photoCell.frontImage makeInsetShadowWithRadius:20 Color:RGBA(255, 255, 255, 128)];
             UIView* tmpView = [photoCell.frontImage snapshotViewAfterScreenUpdates:NO];
-            [photoCell.frontImage removeInsetShadow];
+            //[photoCell.frontImage removeInsetShadow];
             [photoCell.container addSubview:tmpView];
             [photoCell.container bringSubviewToFront:tmpView];
             photoCell.frontImage.image = img;
-            
-            
             [UIView flipTransition:tmpView dest:photoCell.frontImage container:photoCell.container isLeft:YES duration:0.6 complete:^(id obj){
                 [tmpView removeFromSuperview];
-                [photoCell.frontImage removeInsetShadow];
+                [UIView animateWithDuration:0.3 animations:^(){
+                    [photoCell adjustCellSize:img.size];
+                } completion:^(BOOL complete){
+                    //[photoCell.frontImage removeInsetShadow];
+                }];
             }];
-            [UIView animateWithDuration:0.6 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^(){
-                [photoCell adjustCellSize:img.size];
-            } completion:^(BOOL completed){
-                
-            }];
+            
+            
         };
         blk(nil);
     }
