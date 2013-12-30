@@ -116,7 +116,8 @@
     [_container setSize:CGSizeMake(320, adjustedHeight)];
     //[_frontNoEffects setSize:CGSizeMake(320, adjustedHeight)];
     [_frontImage setSize:CGSizeMake(320, adjustedHeight)];
-    [_frontImage adjustShadowSize:CGSizeMake(320, adjustedHeight)];
+    //[_frontImage adjustShadowSize:CGSizeMake(320, adjustedHeight)];
+    //[_frontImage adjustImageShadowSize:CGSizeMake(320, adjustedHeight)];
     [_toolRegion setPosition:CGPointMake(0, adjustedHeight-ToolRegionHeight)];
     [_feedbackRegion setPosition:CGPointMake(0, adjustedHeight+_toolRegion.frame.size.height)];
     
@@ -194,7 +195,8 @@
     EZDEBUG(@"current frame:%f, %f", _frontImage.frame.size.height, height);
     if(_frontImage.frame.size.height >= height){
         EZDEBUG(@"Will come up with the old animation.");
-        [_frontImage makeInsetShadowWithRadius:20 Color:RGBA(255, 255, 255, 128)];
+        //[_frontImage makeInsetShadowWithRadius:20 Color:RGBA(255, 255, 255, 128)];
+        [_frontImage makeImageShadow];
         UIView* tmpView = [_frontImage snapshotViewAfterScreenUpdates:NO];
         //[_frontImage removeInsetShadow];
         [_container addSubview:tmpView];
@@ -205,7 +207,7 @@
         
         [UIView flipTransition:tmpView dest:_frontImage container:_container isLeft:YES duration:0.9 complete:^(id obj){
              [tmpView removeFromSuperview];
-             [_frontImage removeInsetShadow];
+             [_frontImage removeImageShadow];
             if(blk){
                 blk(nil);
             }
@@ -226,7 +228,7 @@
                 [UIView animateWithDuration:0.3 animations:^(){
                     [photoCell adjustCellSize:img.size];
                 } completion:^(BOOL complete){
-                    //[photoCell.frontImage removeInsetShadow];
+                    [photoCell.frontImage removeImageShadow];
                 }];
             }];
             

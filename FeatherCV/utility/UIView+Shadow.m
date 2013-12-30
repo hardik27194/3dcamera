@@ -34,6 +34,7 @@
 
 - (void) adjustImageShadowSize:(CGSize)size
 {
+    EZDEBUG(@"Final size is:%@", NSStringFromCGSize(size));
     [[self viewWithTag:kShadowViewTag] setSize:size];
 }
 
