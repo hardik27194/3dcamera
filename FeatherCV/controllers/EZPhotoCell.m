@@ -217,7 +217,9 @@
         _frontImage.image = img;
         
         //[_frontImage makeInsetShadowWithRadius:20 Color:RGBA(255, 255, 255, 128)];
-        [self adjustCellSize:img.size];
+        [UIView animateWithDuration:0.9 animations:^(){
+            [self adjustCellSize:img.size];
+        }];
         [UIView flipTransition:tmpView dest:_frontImage container:_container isLeft:YES duration:1 complete:^(id obj){
              [tmpView removeFromSuperview];
              //[_frontImage removeImageShadow];
