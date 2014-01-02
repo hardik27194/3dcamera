@@ -12,6 +12,8 @@
 //#include <opencv2/opencv.hpp>
 //Will hold the Application related constants.
 
+#define VinesGray RGBCOLOR(230, 231, 226);
+
 #define normalBarTitleColor RGBCOLOR(144,126,117)
 
 #define functionalBarTitleColor RGBCOLOR(79,79,79)

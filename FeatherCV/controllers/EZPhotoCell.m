@@ -14,12 +14,14 @@
 #import "EZExtender.h"
 
 
-#define ToolRegionHeight 20
+#define ToolRegionHeight 40
 #define InitialFeedbackRegion 60
 
-#define ToolRegionRect CGRectMake(0, 320-ToolRegionHeight, 320, ToolRegionHeight)
+#define ContainerWidth 300.0
 
-#define FeedbackRegionRect CGRectMake(0,380, 320, 40)
+#define ToolRegionRect CGRectMake(0, 300, 300, ToolRegionHeight)
+
+#define FeedbackRegionRect CGRectMake(0,380, 300, 40)
 
 @implementation EZPhotoCell
 
@@ -28,11 +30,17 @@
     EZDEBUG(@"InitStyle get called:%i, id:%@", style, reuseIdentifier);
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
+        self.contentView.backgroundColor = VinesGray;
         // Initialization code
-        _container = [[EZClickView alloc] initWithFrame:CGRectMake(0, 0, 320, 320)];
+        _container = [[EZClickView alloc] initWithFrame:CGRectMake(10, 10, 300, 300 + ToolRegionHeight)];
+        _container.layer.cornerRadius = 5;
+        _container.clipsToBounds = true;
+        _container.backgroundColor = [UIColor clearColor];
+        
         //[_container makeInsetShadowWithRadius:20 Color:RGBA(255, 255, 255, 128)];
-        _frontImage = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 320, 320)];
-        _frontImage.contentMode = UIViewContentModeScaleAspectFill;
+        _frontImage = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 300, 300)];
+        _frontImage.contentMode = UIViewContentModeScaleAspectFit;
+        
         //[_frontImage makeInsetShadowWithRadius:20 Color:RGBA(255, 255, 255, 128)];
         //_frontNoEffects = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 320, 320)];
         //_frontNoEffects.contentMode = UIViewContentModeScaleAspectFill;
@@ -40,8 +48,8 @@
         //_toolHolder.constraints
         
         _toolRegion = [[UIView alloc] initWithFrame:ToolRegionRect];
-        _toolRegion.backgroundColor = RGBA(0, 0, 0, 128);//randBack(nil);
-        _toolRegion.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin;
+        _toolRegion.backgroundColor = [UIColor whiteColor];//randBack(nil);
+        //_toolRegion.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin;
         //_toolRegion.backgroundColor = [UIColor clearColor];//RGBCOLOR(128, 128, 255);
         //My feedback will grow gradually.
         _headIcon = [[EZClickImage alloc] initWithFrame:CGRectMake(15, (ToolRegionHeight-40)/2, 40, 40)];
@@ -65,7 +73,8 @@
         _photoTalk = [[UILabel alloc] initWithFrame:CGRectMake(15, (ToolRegionHeight - 20)/2.0, 290, 20)];
         _photoTalk.font = [UIFont systemFontOfSize:10];
         _photoTalk.textAlignment = NSTextAlignmentLeft;
-        _photoTalk.textColor = [UIColor whiteColor];
+        _photoTalk.textColor = [UIColor blackColor];
+        _photoTalk.backgroundColor = [UIColor clearColor];
         _photoTalk.text = @"I love you 我爱大萝卜 哈哈 1234";
         
         //[_toolRegion addSubview:_headIcon];
@@ -94,7 +103,8 @@
         //[self.contentView addSubview:_toolRegion];
         //[self.contentView addSubview:_feedbackRegion];
         [_container addSubview:_frontImage];
-        [_frontImage addSubview:_toolRegion];
+        //[_frontImage addSubview:_toolRegion];
+        [_container addSubview:_toolRegion];
         //[_container addSubview:_toolRegion];
         //[_container addSubview:_frontNoEffects];
         _container.enableTouchEffects = NO;
@@ -113,12 +123,12 @@
 {
     CGFloat adjustedHeight = [self calHeight:size];
     //CGRect adjustedFrame = CGRectMake(0, 0, 320, adjustedHeight);
-    [_container setSize:CGSizeMake(320, adjustedHeight)];
+    [_container setSize:CGSizeMake(ContainerWidth, adjustedHeight+ToolRegionHeight)];
     //[_frontNoEffects setSize:CGSizeMake(320, adjustedHeight)];
-    [_frontImage setSize:CGSizeMake(320, adjustedHeight)];
+    [_frontImage setSize:CGSizeMake(ContainerWidth, adjustedHeight)];
     //[_frontImage adjustShadowSize:CGSizeMake(320, adjustedHeight)];
     //[_frontImage adjustImageShadowSize:CGSizeMake(320, adjustedHeight)];
-    [_toolRegion setPosition:CGPointMake(0, adjustedHeight-ToolRegionHeight)];
+    [_toolRegion setPosition:CGPointMake(0, adjustedHeight)];
     [_feedbackRegion setPosition:CGPointMake(0, adjustedHeight+_toolRegion.frame.size.height)];
     
 }
@@ -160,15 +170,17 @@
 
 //Why not get the size directly?
 //This is hard.
+//The name is just misleading.
+//Mean I only the size for the image.
 - (CGFloat) calHeight:(CGSize)size
 {
-    return  ceilf((size.height/size.width) * 320.0);
+    return  ceilf((size.height/size.width) * ContainerWidth);
 }
 
 - (void) backToOriginSize
 {
-    [_container setSize:CGSizeMake(320, 320)];
-    [_frontImage setSize:CGSizeMake(320, 320)];
+    [_container setSize:CGSizeMake(ContainerWidth, ContainerWidth+ToolRegionHeight)];
+    [_frontImage setSize:CGSizeMake(ContainerWidth, ContainerWidth)];
     [_toolRegion setFrame:ToolRegionRect];
     [_feedbackRegion setFrame:FeedbackRegionRect];
 }
@@ -193,23 +205,10 @@
     //What should I do?
     //Go the old way.
     
-    
-    EZDEBUG(@"current frame:%f, %f", _frontImage.frame.size.height, height);
-    int prevPos = path.row - 1;
-    int nextPos = path.row + 1;
-    EZPhotoCell* prevCell = nil;
-    EZPhotoCell* nextCell = nil;
-    if(prevPos >= 0){
-        prevCell = (EZPhotoCell*)[tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:prevPos inSection:0]];
-    }
-    nextCell = (EZPhotoCell*)[tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:nextPos inSection:0]];
-    [prevCell.frontImage makeImageShadow:kBorderBottom];
-    [nextCell.frontImage makeImageShadow:kBorderCeil];
-    
+    EZDEBUG(@"_frontImage height:%f, calculated height:%f", _frontImage.frame.size.height, height);
     if(_frontImage.frame.size.height >= height){
         EZDEBUG(@"Will come up with the old animation.");
         //[_frontImage makeInsetShadowWithRadius:20 Color:RGBA(255, 255, 255, 128)];
-        [_frontImage makeImageShadow];
         UIView* tmpView = [_frontImage snapshotViewAfterScreenUpdates:NO];
         //[_frontImage removeInsetShadow];
         [_container addSubview:tmpView];
@@ -222,26 +221,8 @@
         }];
         [UIView flipTransition:tmpView dest:_frontImage container:_container isLeft:YES duration:1 complete:^(id obj){
              [tmpView removeFromSuperview];
-             //[_frontImage removeImageShadow];
-            [_frontImage removeImageBorder:kBorderCeil];
-            [_frontImage removeImageBorder:kBorderLeft];
-            [_frontImage removeImageBorder:kBorderRight];
-            [prevCell removeImageBorder:kBorderBottom];
+
             if(blk){
-                dp.removeShadow = ^(EZPhotoCell* phcell){
-                    if(phcell.frontImage != _frontImage){
-                        [phcell.frontImage makeImageShadow:kBorderBottom];
-                    }
-                    double delayInSeconds = 0.2;
-                    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
-                    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-                        [_frontImage removeImageShadow];
-                        //[nextCell.frontImage removeImageBorder:kBorderCeil];
-                        [nextCell.frontImage removeImageBorder:kBorderCeil];
-                        [phcell.frontImage removeImageShadow];
-                    });
-                    
-                };
                 blk(nil);
             }
         }];
@@ -251,23 +232,16 @@
         dp.oldTurnedImage = _frontImage.image;
         dp.turningAnimation = ^(EZPhotoCell* photoCell){
             //[photoCell.frontImage makeInsetShadowWithRadius:20 Color:RGBA(255, 255, 255, 128)];
-            [photoCell.frontImage makeImageShadow];
-            UIView* tmpView = [photoCell.frontImage snapshotViewAfterScreenUpdates:NO];
+            UIView* tmpView = [photoCell.frontImage snapshotViewAfterScreenUpdates:YES];
             //[photoCell.frontImage removeInsetShadow];
             [photoCell.container addSubview:tmpView];
             [photoCell.container bringSubviewToFront:tmpView];
             photoCell.frontImage.image = img;
             [UIView flipTransition:tmpView dest:photoCell.frontImage container:photoCell.container isLeft:YES duration:1 complete:^(id obj){
                 [tmpView removeFromSuperview];
-                [photoCell.frontImage removeImageBorder:kBorderCeil];
-                [photoCell.frontImage removeImageBorder:kBorderLeft];
-                [photoCell.frontImage removeImageBorder:kBorderRight];
-                [prevCell.frontImage removeImageBorder:kBorderBottom];
                 [UIView animateWithDuration:0.3 animations:^(){
                     [photoCell adjustCellSize:img.size];
                 } completion:^(BOOL complete){
-                    [photoCell.frontImage removeImageShadow];
-                    [nextCell.frontImage removeImageBorder:kBorderCeil];
                 }];
             }];
             

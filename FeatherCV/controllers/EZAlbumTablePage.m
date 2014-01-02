@@ -53,6 +53,8 @@ static int photoCount = 1;
     [super viewDidLoad];
     _combinedPhotos = [[NSMutableArray alloc] init];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    //self.tableView.backgroundColor = RGBCOLOR(230, 231, 226);
+    self.tableView.backgroundColor = VinesGray;
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
     __weak EZAlbumTablePage* weakSelf = self;
     EZDEBUG(@"Query block is:%i",(int)_queryBlock);
@@ -104,7 +106,7 @@ static int photoCount = 1;
 {
    
     EZDisplayPhoto* cp = [_combinedPhotos objectAtIndex:indexPath.row];
-    EZDEBUG(@"calculate the height, is front:%i", cp.isFront);
+   
     CGFloat imageHeight;
     if(cp.turningAnimation){
         imageHeight = cp.turningImageHeight;
@@ -118,9 +120,13 @@ static int photoCount = 1;
         EZDEBUG(@"Column count is:%f, width:%f, %f", imageHeight, cp.photo.size.width, cp.photo.size.height);
     }
     }
+    if(cp.turningAnimation){
+        EZDEBUG(@"calculate the height, is front:%i, turning height:%f", cp.isFront, imageHeight);
+    }
     //EZDEBUG(@"image width:%f, height:%f, final height:%f", cp.myPhoto.size.width, cp.myPhoto.size.height, imageHeight);
-    return imageHeight;
-    //return 400;
+    //Tool bar height is 20, added it back.
+    return imageHeight + 10 + 40;
+    // 400;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
