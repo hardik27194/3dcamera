@@ -29,6 +29,15 @@ NSString *const kFaceBlurFragmentShaderString = SHADER_STRING
      
      lowp vec4 sharpImageColor = texture2D(inputImageTexture, textureCoordinate);
      lowp vec4 blurredImageColor = texture2D(inputImageTexture2, textureCoordinate2);
+     lowp vec4 distanceVec = sharpImageColor - blurredImageColor;
+     highp float distance = dot(distanceVec, distanceVec);
+     
+     if(distance > 1.0){
+         gl_FragColor = vec4((sharpImageColor + distanceVec*1.4).xyz, sharpImageColor.w);
+     }else{
+         gl_FragColor = blurredImageColor*(1.0 - realRatio) + sharpImageColor*realRatio;
+     }
+     
      /**
      highp vec2 textureCoordinateToUse = vec2(textureCoordinate2.x, (textureCoordinate2.y * aspectRatio + 0.5 - 0.5 * aspectRatio));
      
@@ -52,7 +61,7 @@ NSString *const kFaceBlurFragmentShaderString = SHADER_STRING
      }
       **/
  
-      gl_FragColor = blurredImageColor*(1.0 - realRatio) + sharpImageColor*realRatio;
+     // gl_FragColor = blurredImageColor*(1.0 - realRatio) + sharpImageColor*realRatio;
      //gl_FragColor = sharpImageColor;
  }
  );

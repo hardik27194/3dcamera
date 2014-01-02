@@ -209,6 +209,8 @@
     EZDEBUG(@"The width aspect ratio is:%f", widthAspect);
     cropFilter = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.0f, 0.0f, 1.0, 0.75)];
     faceBlurFilter = [[EZFaceBlurFilter alloc] init];//[[EZFaceBlurFilter alloc] init];
+    faceBlurFilter.blurSize = 5.0;
+    faceBlurFilter.realRatio = 0.80;
     filter = [[GPUImageFilter alloc] init];
     tongFilter = [[GPUImageToneCurveFilter alloc] init];
     cycleDarken = [[EZCycleDiminish alloc] init];
@@ -543,7 +545,8 @@
     //[faceBlurFilter addTarget:filter];
     //[cropFilter addTarget:hueFilter];
     [hueFilter addTarget:tongFilter];
-    [tongFilter addTarget:filter];
+    [tongFilter addTarget:faceBlurFilter];
+    [faceBlurFilter addTarget:filter];
     
     //[tongFilter addTarget:whiteBalancerFilter];
     //[whiteBalancerFilter addTarget:contrastfilter];
@@ -572,12 +575,14 @@
         [staticPicture addTarget:flashFilter];
         if(_selfShot || stillCamera.isFrontFacing){
             EZDEBUG(@"Will add faceBlurFilter");
-            faceBlurFilter.blurSize = 6;
+            //faceBlurFilter.blurSize = 6;
             [flashFilter addTarget:faceBlurFilter];
             [faceBlurFilter addTarget:filter];
         }else{
             EZDEBUG(@"Not add faceBlurFilter");
-            [flashFilter addTarget:filter];
+            
+            [flashFilter addTarget:faceBlurFilter];
+            [faceBlurFilter addTarget:filter];
         }
         
     }else{
@@ -592,20 +597,24 @@
         [hueFilter addTarget:colorFilter];
         if(_selfShot || stillCamera.isFrontFacing){
             EZDEBUG(@"Will add faceBlurFilter");
+            /**
             if(stillCamera.isFrontFacing){
                 faceBlurFilter.blurSize = 2;
             }else{
                 faceBlurFilter.blurSize = 6;
             }
+             **/
             [colorFilter addTarget:faceBlurFilter];
             [faceBlurFilter addTarget:filter];
         }else{
             EZDEBUG(@"Not add faceBlurFilter");
             if(isoNumber > 600){
                 [colorFilter addTarget:darkBlurFilter];
-                [darkBlurFilter addTarget:filter];
+                [darkBlurFilter addTarget:faceBlurFilter];
+                [faceBlurFilter addTarget:filter];
             }else{
-                [colorFilter addTarget:filter];
+                [colorFilter addTarget:faceBlurFilter];
+                [faceBlurFilter addTarget:filter];
             }
         }
     }
