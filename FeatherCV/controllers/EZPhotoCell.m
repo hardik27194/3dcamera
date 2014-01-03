@@ -67,6 +67,7 @@
         [_container addSubview:_rotateContainer];
         //[_container makeInsetShadowWithRadius:20 Color:RGBA(255, 255, 255, 128)];
         _frontImage = [self createFrontImage];
+        _frontImage.backgroundColor = RGBCOLOR(255, 128, 69);
         _toolRegion = [self createToolRegion:ToolRegionRect];
         _photoTalk = (UILabel*)[_toolRegion viewWithTag:MainLabelTag];
         [self.contentView addSubview:_container];
@@ -235,7 +236,7 @@
             //UIView* destView = [_rotateContainer snapshotViewAfterScreenUpdates:NO];
             [_container addSubview:destView];
             //_rotateContainer.hidden = TRUE;
-        [UIView flipTransition:_rotateContainer dest:destView container:_container isLeft:YES duration:1 complete:^(id obj){
+        [UIView flipTransition:_rotateContainer dest:destView container:_container isLeft:YES duration:2 complete:^(id obj){
             //[tmpView removeFromSuperview];
             //[destView removeFromSuperview];
             //_frontImage.image = img;
@@ -252,9 +253,15 @@
         EZDEBUG(@"Will start the new animation");
         dp.turningImageSize = CGSizeMake(ContainerWidth, height);
         
-        UIView* oldView = [_rotateContainer snapshotViewAfterScreenUpdates:NO];
+        UIView* oldView = [_rotateContainer snapshotViewAfterScreenUpdates:YES];
+        //UIView* secondView = [_rotateContainer snapshotViewAfterScreenUpdates:YES];
         dp.oldTurnedImage = oldView;
-        UIView* destView = [self createDupContainer:img];
+        
+        //secondView.backgroundColor = RGBCOLOR(0, 255, 128);
+        //[secondView setPosition:CGPointMake(0,500)];
+        //[tableView addSubview:secondView];
+        //UIView* destView = [self createDupContainer:img];
+        //destView.tag = animateCoverViewTag;
         dp.turningAnimation = ^(EZPhotoCell* photoCell){
             //[photoCell.frontImage makeInsetShadowWithRadius:20 Color:RGBA(255, 255, 255, 128)];
             //double delayInSeconds = 0.1;
@@ -272,17 +279,23 @@
                 //[photoCell.frontImage removeInsetShadow];
                 //[photoCell.container addSubview:tmpView];
                 //[photoCell.container bringSubviewToFront:tmpView];
-                [photoCell.container addSubview:destView];
-                [photoCell.container bringSubviewToFront:destView];
-                [UIView flipTransition:oldView dest:destView container:photoCell.container isLeft:YES duration:1 complete:^(id obj){
+                //[photoCell.container addSubview:destView];
+                //[photoCell.container bringSubviewToFront:destView];
+                photoCell.frontImage.image = img;
+                [photoCell adjustCellSize:img.size];
+            //dispatch_later(0.1, ^(){
+            [UIView flipTransition:oldView dest:photoCell.rotateContainer container:photoCell.container isLeft:YES duration:2 complete:^(id obj){
                     //photoCell.rotateContainer.hidden = NO;
                     //photoCell.frontImage.hidden = NO;
                     //[photoCell.container addSubview:_rotateContainer];
-                    [destView removeFromSuperview];
+                    
+                    //[destView removeFromSuperview];
                     [oldView removeFromSuperview];
-                    photoCell.frontImage.image = img;
-                    [photoCell adjustCellSize:img.size];
-                }];
+                    //photoCell.frontImage.image = img;
+                    //[photoCell adjustCellSize:img.size];
+                    EZDEBUG(@"The final assign image size is:%@, frontImage size:%@, parent pointer:%i", NSStringFromCGSize(img.size), NSStringFromCGRect(photoCell.frontImage.frame), (int)photoCell.frontImage.superview);
+                            
+            }];//});
             //});
 
         };

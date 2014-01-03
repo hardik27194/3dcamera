@@ -154,11 +154,6 @@ static int photoCount = 1;
     // Configure the cell...
     //[cell displayImage:[myPhoto getLocalImage]];
     [[cell viewWithTag:animateCoverViewTag] removeFromSuperview];
-    if(cp.removeShadow){
-        EZEventBlock removeBlock = cp.removeShadow;
-        removeBlock(cell);
-        cp.removeShadow = nil;
-    }
     if(cp.turningAnimation){
         EZDEBUG(@"Turning animation get called");
         [cell adjustCellSize:cp.turningImageSize];
@@ -250,7 +245,7 @@ static int photoCount = 1;
 {
     NSArray* cells = [self.tableView visibleCells];
     EZDEBUG(@"Scroll stopped:%i", cells.count);
-    
+    /**
     for(EZPhotoCell* pcell in cells){
         EZDisplayPhoto* cp = [_combinedPhotos objectAtIndex:pcell.currentPos];
         
@@ -262,7 +257,7 @@ static int photoCount = 1;
             //}];
         }
     }
-    
+    **/
 }
 
 /*
