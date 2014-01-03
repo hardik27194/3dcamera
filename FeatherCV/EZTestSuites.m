@@ -12,6 +12,7 @@
 #import "EZDataUtil.h"
 #import "EZExtender.h"
 #import "EZSoundEffect.h"
+#import "EZClickView.h"
 
 @implementation EZTestSuites
 
@@ -23,7 +24,38 @@
     //[EZTestSuites testAssetFetch];
     //[EZTestSuites testAddressBook];
     //[EZTestSuites testGetNumberFromString];
-    [EZTestSuites testSoundEffects];
+    //[EZTestSuites testSoundEffects];
+}
+
++ (UIView*) testResizeMasks
+{
+    EZClickView* parentView = [[EZClickView alloc] initWithFrame:CGRectMake(100, 200, 200, 200)];
+    parentView.backgroundColor = RGBCOLOR(255, 128, 0);
+    
+    
+    EZClickView* childView = [[EZClickView alloc] initWithFrame:CGRectMake(50, 60, 100, 100)];
+    ;
+    childView.backgroundColor = RGBCOLOR(0, 255, 128);
+    childView.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin|UIViewAutoresizingFlexibleTopMargin;
+    [parentView addSubview:childView];
+    //[self.tableView addSubview:parentView];
+    __weak UIView* obj = parentView;
+    childView.releasedBlock = ^(id inside){
+        
+        EZDEBUG(@"The release block get called, child size:%@, parent auto resize:%i", NSStringFromCGRect(childView.frame), parentView.autoresizesSubviews);
+        [UIView animateWithDuration:1 animations:
+         ^(){
+             
+             if(obj.frame.size.height == 200){
+                 [obj setSize:CGSizeMake(200, 350)];
+             }else{
+                 [obj setSize:CGSizeMake(200, 200)];
+             }
+         }
+         ];
+    };
+    return parentView;
+
 }
 
 + (void) testSoundEffects

@@ -36,6 +36,9 @@
 //Otherwise the whole thing rotate together, this is not what I expected.
 @property (nonatomic, strong) EZClickView* container;
 
+//This view will in charge of the whole rotate, because I need to rotate the whole thing.
+@property (nonatomic, strong) UIView* rotateContainer;
+
 @property (nonatomic, strong) UIView* toolRegion;
 
 @property (nonatomic, strong) UIView* feedbackRegion;

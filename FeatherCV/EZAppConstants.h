@@ -11,6 +11,10 @@
 #include "EZConstants.h"
 //#include <opencv2/opencv.hpp>
 //Will hold the Application related constants.
+#define ContainerWidth 300.0
+
+//Interesting.
+#define turningMockPageTag 20070424
 
 #define VinesGray RGBCOLOR(230, 231, 226);
 
@@ -55,5 +59,6 @@
 #define EZZoomoutAlbum @"EZZoomoutAlbum"
 #define EZZoominAlbum @"EZZoominAlbum"
 
+#define AllResizeMask UIViewAutoresizingFlexibleBottomMargin|UIViewAutoresizingFlexibleTopMargin|UIViewAutoresizingFlexibleLeftMargin|UIViewAutoresizingFlexibleRightMargin|UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight
 
 #endif

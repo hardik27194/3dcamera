@@ -17,13 +17,38 @@
 #define ToolRegionHeight 40
 #define InitialFeedbackRegion 60
 
-#define ContainerWidth 300.0
 
 #define ToolRegionRect CGRectMake(0, 300, 300, ToolRegionHeight)
 
 #define FeedbackRegionRect CGRectMake(0,380, 300, 40)
 
 @implementation EZPhotoCell
+
+- (void) setupIcon
+{
+    _headIcon = [[EZClickImage alloc] initWithFrame:CGRectMake(15, (ToolRegionHeight-40)/2, 40, 40)];
+    [_headIcon enableRoundImage];
+    _headIcon.backgroundColor = randBack(nil);
+    
+    _linkIcon = [[EZClickImage alloc] initWithFrame:CGRectMake(15+40+10, (ToolRegionHeight - 40)/2, 40, 40)];
+    [_linkIcon enableRoundImage];
+    _linkIcon.backgroundColor = randBack(nil);
+    
+    _backIcon = [[EZClickImage alloc] initWithFrame:CGRectMake(15+80+20, (ToolRegionHeight - 40)/2, 40, 40)];
+    [_backIcon enableRoundImage];
+    _backIcon.backgroundColor = randBack(nil);
+    
+    _countIcon = [[UILabel alloc] initWithFrame:CGRectMake(15+120+30, (ToolRegionHeight - 40)/2, 40, 40)];
+    _countIcon.font = [UIFont systemFontOfSize:14];
+    _countIcon.textAlignment = NSTextAlignmentCenter;
+    _countIcon.backgroundColor = randBack(nil);
+    [_countIcon enableRoundImage];
+    
+    //[_toolRegion addSubview:_headIcon];
+    //[_toolRegion addSubview:_linkIcon];
+    //[_toolRegion addSubview:_backIcon];
+    //[_toolRegion addSubview:_countIcon];
+}
 
 - (id) initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
@@ -33,43 +58,27 @@
         self.contentView.backgroundColor = VinesGray;
         // Initialization code
         _container = [[EZClickView alloc] initWithFrame:CGRectMake(10, 10, 300, 300 + ToolRegionHeight)];
-        _container.layer.cornerRadius = 5;
+        //_container.layer.cornerRadius = 5;
         _container.clipsToBounds = true;
         _container.backgroundColor = [UIColor clearColor];
         
+        _rotateContainer = [[UIView alloc] initWithFrame:_container.bounds];
+        _rotateContainer.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
+        _rotateContainer.clipsToBounds = true;
+        _rotateContainer.layer.cornerRadius = true;
+        
+        [_container addSubview:_rotateContainer];
         //[_container makeInsetShadowWithRadius:20 Color:RGBA(255, 255, 255, 128)];
         _frontImage = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 300, 300)];
         _frontImage.contentMode = UIViewContentModeScaleAspectFit;
-        
-        //[_frontImage makeInsetShadowWithRadius:20 Color:RGBA(255, 255, 255, 128)];
-        //_frontNoEffects = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 320, 320)];
-        //_frontNoEffects.contentMode = UIViewContentModeScaleAspectFill;
-        //_toolHolder = [[ILTranslucentView alloc] initWithFrame:CGRectMake(0, 320 - 40, 320, 40)];
-        //_toolHolder.constraints
+        _frontImage.clipsToBounds = true;
         
         _toolRegion = [[UIView alloc] initWithFrame:ToolRegionRect];
+        _toolRegion.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin|UIViewAutoresizingFlexibleTopMargin;
         _toolRegion.backgroundColor = [UIColor whiteColor];//randBack(nil);
         //_toolRegion.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin;
         //_toolRegion.backgroundColor = [UIColor clearColor];//RGBCOLOR(128, 128, 255);
         //My feedback will grow gradually.
-        _headIcon = [[EZClickImage alloc] initWithFrame:CGRectMake(15, (ToolRegionHeight-40)/2, 40, 40)];
-        [_headIcon enableRoundImage];
-        _headIcon.backgroundColor = randBack(nil);
-        
-        _linkIcon = [[EZClickImage alloc] initWithFrame:CGRectMake(15+40+10, (ToolRegionHeight - 40)/2, 40, 40)];
-        [_linkIcon enableRoundImage];
-        _linkIcon.backgroundColor = randBack(nil);
-        
-        _backIcon = [[EZClickImage alloc] initWithFrame:CGRectMake(15+80+20, (ToolRegionHeight - 40)/2, 40, 40)];
-        [_backIcon enableRoundImage];
-        _backIcon.backgroundColor = randBack(nil);
-        
-        _countIcon = [[UILabel alloc] initWithFrame:CGRectMake(15+120+30, (ToolRegionHeight - 40)/2, 40, 40)];
-        _countIcon.font = [UIFont systemFontOfSize:14];
-        _countIcon.textAlignment = NSTextAlignmentCenter;
-        _countIcon.backgroundColor = randBack(nil);
-        [_countIcon enableRoundImage];
-        
         _photoTalk = [[UILabel alloc] initWithFrame:CGRectMake(15, (ToolRegionHeight - 20)/2.0, 290, 20)];
         _photoTalk.font = [UIFont systemFontOfSize:10];
         _photoTalk.textAlignment = NSTextAlignmentLeft;
@@ -77,41 +86,17 @@
         _photoTalk.backgroundColor = [UIColor clearColor];
         _photoTalk.text = @"I love you 我爱大萝卜 哈哈 1234";
         
-        //[_toolRegion addSubview:_headIcon];
-        //[_toolRegion addSubview:_linkIcon];
-        //[_toolRegion addSubview:_backIcon];
-        //[_toolRegion addSubview:_countIcon];
         [_toolRegion addSubview:_photoTalk];
-        //_toolRegion.alpha = 0.5;
-        //[_toolHolder addSubview:_toolRegion];
-        _feedbackRegion = [[UIView alloc] initWithFrame:FeedbackRegionRect];
-        _feedbackRegion.backgroundColor = [UIColor whiteColor];//RGBCOLOR(255, 128, 128);
-        _feedbackRegion.alpha = 0.5;
-        //_frontImage.layer.cornerRadius = 5;
-        _frontImage.clipsToBounds = true;
-        //_backImage = [EZStyleImage createFilteredImage:CGRectMake(0, 0, 320, 320)];
-        //_backImage.contentMode = UIViewContentModeScaleAspectFill;
-        //_backImage.layer.cornerRadius = 5;
-        //_backImage.clipsToBounds = true;
 
-        //_imageClick = [[EZClickView alloc] initWithFrame:CGRectMake(0, 0, 320, 320)];
-        //_imageClick.backgroundColor = [UIColor clearColor];
-        //[_imageClick addSubview:_frontImage];
-        //[self addSubview:_frontImage];
-        //[self.contentView addSubview:_backImage];
+
         [self.contentView addSubview:_container];
         //[self.contentView addSubview:_toolRegion];
         //[self.contentView addSubview:_feedbackRegion];
-        [_container addSubview:_frontImage];
+        [_rotateContainer addSubview:_frontImage];
         //[_frontImage addSubview:_toolRegion];
-        [_container addSubview:_toolRegion];
-        //[_container addSubview:_toolRegion];
-        //[_container addSubview:_frontNoEffects];
+        [_rotateContainer addSubview:_toolRegion];
         _container.enableTouchEffects = NO;
-        //[self.contentView addSubview:_imageClick];
-        //[self.contentView addSubview:_likeButton];
-        //[self.contentView addSubview:_talkButton];
-        //[self.contentView addSubview:_name];
+        [self setupIcon];
         
     }
     return self;
@@ -128,8 +113,8 @@
     [_frontImage setSize:CGSizeMake(ContainerWidth, adjustedHeight)];
     //[_frontImage adjustShadowSize:CGSizeMake(320, adjustedHeight)];
     //[_frontImage adjustImageShadowSize:CGSizeMake(320, adjustedHeight)];
-    [_toolRegion setPosition:CGPointMake(0, adjustedHeight)];
-    [_feedbackRegion setPosition:CGPointMake(0, adjustedHeight+_toolRegion.frame.size.height)];
+    //[_toolRegion setPosition:CGPointMake(0, adjustedHeight)];
+    //[_feedbackRegion setPosition:CGPointMake(0, adjustedHeight+_toolRegion.frame.size.height)];
     
 }
 
@@ -181,8 +166,8 @@
 {
     [_container setSize:CGSizeMake(ContainerWidth, ContainerWidth+ToolRegionHeight)];
     [_frontImage setSize:CGSizeMake(ContainerWidth, ContainerWidth)];
-    [_toolRegion setFrame:ToolRegionRect];
-    [_feedbackRegion setFrame:FeedbackRegionRect];
+    //[_toolRegion setFrame:ToolRegionRect];
+    //[_feedbackRegion setFrame:FeedbackRegionRect];
 }
 
 //What's the purpose of this method?
@@ -209,7 +194,7 @@
     if(_frontImage.frame.size.height >= height){
         EZDEBUG(@"Will come up with the old animation.");
         //[_frontImage makeInsetShadowWithRadius:20 Color:RGBA(255, 255, 255, 128)];
-        UIView* tmpView = [_frontImage snapshotViewAfterScreenUpdates:NO];
+        UIView* tmpView = [_rotateContainer snapshotViewAfterScreenUpdates:NO];
         //[_frontImage removeInsetShadow];
         [_container addSubview:tmpView];
         [_container bringSubviewToFront:tmpView];
@@ -219,33 +204,37 @@
         [UIView animateWithDuration:0.9 animations:^(){
             [self adjustCellSize:img.size];
         }];
-        [UIView flipTransition:tmpView dest:_frontImage container:_container isLeft:YES duration:1 complete:^(id obj){
+        [UIView flipTransition:tmpView dest:_rotateContainer container:_container isLeft:YES duration:1 complete:^(id obj){
              [tmpView removeFromSuperview];
-
             if(blk){
                 blk(nil);
             }
         }];
     }else{
         EZDEBUG(@"Will start the new animation");
-        dp.turningImageHeight = height;
-        dp.oldTurnedImage = _frontImage.image;
+        dp.turningImageSize = CGSizeMake(ContainerWidth, height);
+        
+        UIView* oldView = [_rotateContainer snapshotViewAfterScreenUpdates:NO];
+        dp.oldTurnedImage = oldView;
         dp.turningAnimation = ^(EZPhotoCell* photoCell){
             //[photoCell.frontImage makeInsetShadowWithRadius:20 Color:RGBA(255, 255, 255, 128)];
-            UIView* tmpView = [photoCell.frontImage snapshotViewAfterScreenUpdates:YES];
-            //[photoCell.frontImage removeInsetShadow];
-            [photoCell.container addSubview:tmpView];
-            [photoCell.container bringSubviewToFront:tmpView];
+            //double delayInSeconds = 0.1;
+            //dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
             photoCell.frontImage.image = img;
-            [UIView flipTransition:tmpView dest:photoCell.frontImage container:photoCell.container isLeft:YES duration:1 complete:^(id obj){
-                [tmpView removeFromSuperview];
-                [UIView animateWithDuration:0.3 animations:^(){
-                    [photoCell adjustCellSize:img.size];
-                } completion:^(BOOL complete){
+            [photoCell adjustCellSize:img.size];
+            dispatch_later(0.1, ^(void){
+                //UIView* tmpView = [photoCell.rotateContainer snapshotViewAfterScreenUpdates:NO];
+                UIView* destView = [photoCell.rotateContainer snapshotViewAfterScreenUpdates:NO];
+                //[photoCell.frontImage removeInsetShadow];
+                //[photoCell.container addSubview:tmpView];
+                //[photoCell.container bringSubviewToFront:tmpView];
+                [photoCell.container addSubview:destView];
+                [UIView flipTransition:oldView dest:destView container:photoCell.container isLeft:YES duration:1 complete:^(id obj){
+                    [destView removeFromSuperview];
+                    [oldView removeFromSuperview];
                 }];
-            }];
-            
-            
+            });
+
         };
         blk(nil);
     }

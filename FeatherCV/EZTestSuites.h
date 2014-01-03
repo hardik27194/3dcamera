@@ -12,4 +12,6 @@
 
 + (void) testAll;
 
++ (UIView*) testResizeMasks;
+
 @end

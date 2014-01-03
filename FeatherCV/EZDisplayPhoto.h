@@ -53,9 +53,9 @@ typedef enum {
 //The previous remove should happen at the cell closed.
 @property (nonatomic, strong) EZEventBlock removeShadow;
 
-@property (nonatomic, assign) CGFloat turningImageHeight;
+@property (nonatomic, assign) CGSize turningImageSize;
 
-@property (nonatomic, strong) UIImage* oldTurnedImage;
+@property (nonatomic, strong) UIView* oldTurnedImage;
 
 //What's the status of the turning angle.
 //To visualize the whole process, is that, we will uploading the image

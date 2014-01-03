@@ -13,6 +13,7 @@
 #import "EZMessageCenter.h"
 #import "EZFileUtil.h"
 #import "EZClickView.h"
+#import "EZTestSuites.h"
 
 
 static int photoCount = 1;
@@ -48,6 +49,8 @@ static int photoCount = 1;
     return self;
 }
 
+
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -57,6 +60,8 @@ static int photoCount = 1;
     self.tableView.backgroundColor = VinesGray;
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
     __weak EZAlbumTablePage* weakSelf = self;
+    //[self.tableView addSubview:[EZTestSuites testResizeMasks]];
+    
     EZDEBUG(@"Query block is:%i",(int)_queryBlock);
     /**
     _queryBlock(0, 100, ^(NSArray* arr){
@@ -109,14 +114,14 @@ static int photoCount = 1;
    
     CGFloat imageHeight;
     if(cp.turningAnimation){
-        imageHeight = cp.turningImageHeight;
+        imageHeight = cp.turningImageSize.height;
     }else{
     if(cp.isFront){
-        imageHeight = floorf((cp.photo.size.height/cp.photo.size.width) * 320.0);
+        imageHeight = floorf((cp.photo.size.height/cp.photo.size.width) * ContainerWidth);
         EZDEBUG(@"The row height is:%f, width:%f, %f", imageHeight, cp.photo.size.width, cp.photo.size.height);
     }else{
         CGSize imgSize = [UIImage imageNamed:cp.randImage].size;
-        imageHeight =  floorf((imgSize.height/imgSize.width) * 320.0);
+        imageHeight =  floorf((imgSize.height/imgSize.width) * ContainerWidth);
         EZDEBUG(@"Column count is:%f, width:%f, %f", imageHeight, cp.photo.size.width, cp.photo.size.height);
     }
     }
@@ -125,7 +130,7 @@ static int photoCount = 1;
     }
     //EZDEBUG(@"image width:%f, height:%f, final height:%f", cp.myPhoto.size.width, cp.myPhoto.size.height, imageHeight);
     //Tool bar height is 20, added it back.
-    return imageHeight + 10 + 40;
+    return imageHeight + 20 + 40;
     // 400;
 }
 
@@ -155,11 +160,13 @@ static int photoCount = 1;
     }
     if(cp.turningAnimation){
         EZDEBUG(@"Turning animation get called");
-        [cell adjustCellSize:cp.oldTurnedImage.size];
-        [cell displayImage:cp.oldTurnedImage];
+        [cell adjustCellSize:cp.turningImageSize];
+        //[cell displayImage:cp.oldTurnedImage];
+        [cell.container addSubview:cp.oldTurnedImage];
         EZEventBlock animBlock = cp.turningAnimation;
         animBlock(cell);
         cp.turningAnimation = nil;
+        cp.oldTurnedImage = nil;
     }else{
     if(cp.isFront){
         [cell adjustCellSize:myPhoto.size];
