@@ -16,6 +16,8 @@
 //Interesting.
 #define turningMockPageTag 20070424
 
+#define animateCoverViewTag 20000120
+
 #define VinesGray RGBCOLOR(230, 231, 226);
 
 #define normalBarTitleColor RGBCOLOR(144,126,117)

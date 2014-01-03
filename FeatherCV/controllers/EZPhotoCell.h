@@ -106,6 +106,7 @@
 
 - (void) adjustCellSize:(CGSize)size;
 
+- (UIView*) createDupContainer:(UIImage*)img;
 
 - (id) init;
 

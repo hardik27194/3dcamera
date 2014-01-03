@@ -153,6 +153,7 @@ static int photoCount = 1;
     EZPhoto* myPhoto = cp.photo;
     // Configure the cell...
     //[cell displayImage:[myPhoto getLocalImage]];
+    [[cell viewWithTag:animateCoverViewTag] removeFromSuperview];
     if(cp.removeShadow){
         EZEventBlock removeBlock = cp.removeShadow;
         removeBlock(cell);
@@ -166,7 +167,7 @@ static int photoCount = 1;
         EZEventBlock animBlock = cp.turningAnimation;
         animBlock(cell);
         cp.turningAnimation = nil;
-        cp.oldTurnedImage = nil;
+        //cp.oldTurnedImage = nil;
     }else{
     if(cp.isFront){
         [cell adjustCellSize:myPhoto.size];

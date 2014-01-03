@@ -14,9 +14,10 @@
 #import "EZExtender.h"
 
 
+#define MainLabelTag 20140103
+
 #define ToolRegionHeight 40
 #define InitialFeedbackRegion 60
-
 
 #define ToolRegionRect CGRectMake(0, 300, 300, ToolRegionHeight)
 
@@ -62,33 +63,12 @@
         _container.clipsToBounds = true;
         _container.backgroundColor = [UIColor clearColor];
         
-        _rotateContainer = [[UIView alloc] initWithFrame:_container.bounds];
-        _rotateContainer.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
-        _rotateContainer.clipsToBounds = true;
-        _rotateContainer.layer.cornerRadius = true;
-        
+        _rotateContainer = [self createRotateContainer:_container.bounds];
         [_container addSubview:_rotateContainer];
         //[_container makeInsetShadowWithRadius:20 Color:RGBA(255, 255, 255, 128)];
-        _frontImage = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 300, 300)];
-        _frontImage.contentMode = UIViewContentModeScaleAspectFit;
-        _frontImage.clipsToBounds = true;
-        
-        _toolRegion = [[UIView alloc] initWithFrame:ToolRegionRect];
-        _toolRegion.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin|UIViewAutoresizingFlexibleTopMargin;
-        _toolRegion.backgroundColor = [UIColor whiteColor];//randBack(nil);
-        //_toolRegion.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin;
-        //_toolRegion.backgroundColor = [UIColor clearColor];//RGBCOLOR(128, 128, 255);
-        //My feedback will grow gradually.
-        _photoTalk = [[UILabel alloc] initWithFrame:CGRectMake(15, (ToolRegionHeight - 20)/2.0, 290, 20)];
-        _photoTalk.font = [UIFont systemFontOfSize:10];
-        _photoTalk.textAlignment = NSTextAlignmentLeft;
-        _photoTalk.textColor = [UIColor blackColor];
-        _photoTalk.backgroundColor = [UIColor clearColor];
-        _photoTalk.text = @"I love you 我爱大萝卜 哈哈 1234";
-        
-        [_toolRegion addSubview:_photoTalk];
-
-
+        _frontImage = [self createFrontImage];
+        _toolRegion = [self createToolRegion:ToolRegionRect];
+        _photoTalk = (UILabel*)[_toolRegion viewWithTag:MainLabelTag];
         [self.contentView addSubview:_container];
         //[self.contentView addSubview:_toolRegion];
         //[self.contentView addSubview:_feedbackRegion];
@@ -102,6 +82,56 @@
     return self;
 }
 
+- (UIView*) createRotateContainer:(CGRect)rect
+{
+    UIView* rotateContainer = [[UIView alloc] initWithFrame:rect];
+    rotateContainer.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
+    rotateContainer.clipsToBounds = true;
+    rotateContainer.layer.cornerRadius = 5;
+    return rotateContainer;
+}
+
+- (UIImageView*) createFrontImage
+{
+    UIImageView* frontImage = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 300, 300)];
+    frontImage.contentMode = UIViewContentModeScaleAspectFit;
+    frontImage.clipsToBounds = true;
+    return frontImage;
+}
+
+- (UIView*) createToolRegion:(CGRect)rect
+{
+    UIView* toolRegion = [[UIView alloc] initWithFrame:rect];
+    toolRegion.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin|UIViewAutoresizingFlexibleTopMargin;
+    toolRegion.backgroundColor = [UIColor whiteColor];//randBack(nil);
+    //_toolRegion.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin;
+    //_toolRegion.backgroundColor = [UIColor clearColor];//RGBCOLOR(128, 128, 255);
+    //My feedback will grow gradually.
+    UILabel* photoTalk = [[UILabel alloc] initWithFrame:CGRectMake(15, (ToolRegionHeight - 20)/2.0, 290, 20)];
+    photoTalk.font = [UIFont systemFontOfSize:10];
+    photoTalk.tag = MainLabelTag;
+    photoTalk.textAlignment = NSTextAlignmentLeft;
+    photoTalk.textColor = [UIColor blackColor];
+    photoTalk.backgroundColor = [UIColor clearColor];
+    photoTalk.text = @"I love you 我爱大萝卜 哈哈 1234";
+    [toolRegion addSubview:photoTalk];
+    return toolRegion;
+}
+
+
+- (UIView*) createDupContainer:(UIImage*)img
+{
+    CGFloat adjustedHeight = [self calHeight:img.size];
+    UIView* rotateContainer = [self createRotateContainer:CGRectMake(0, 0, ContainerWidth, adjustedHeight + ToolRegionHeight)];
+    UIImageView* frontImage = [self createFrontImage];
+    frontImage.image = img;
+    //[frontImage setSize:CGSizeMake(ContainerWidth, adjustedHeight)];
+    [rotateContainer addSubview:frontImage];
+    UIView* toolRegion = [self createToolRegion:CGRectMake(0, adjustedHeight, ContainerWidth, ToolRegionHeight)];
+    [rotateContainer addSubview:toolRegion];
+    [frontImage setSize:CGSizeMake(ContainerWidth, adjustedHeight)];
+    return rotateContainer;
+}
 //Newly added method.
 //I will adjust the image size and layout accordingly.
 - (void) adjustCellSize:(CGSize)size
@@ -141,16 +171,7 @@
 - (void) displayImage:(UIImage*)img
 {
     [_frontImage setImage:img];
-    //[_frontImage removeFromSuperview];
-    //CGSize imgSize = img.size;
-    //CGFloat adjustedHeight = [self calHeight:imgSize];
-    //CGFloat deltaHeight = adjustedHeight - 320;
-    //EZDEBUG(@"imageSize:%f,%f, adjustedHeight:%f", imgSize.width, imgSize.height, adjustedHeight);
-    //CGSize updatedSize = CGSizeMake(320, adjustedHeight);
-    //[_container setSize:updatedSize];
-    //[_frontImage setSize:updatedSize];
-    //[_frontNoEffects setSize:updatedSize];
-    //[_frontNoEffects setImage:img];
+
 }
 
 //Why not get the size directly?
@@ -170,6 +191,8 @@
     //[_feedbackRegion setFrame:FeedbackRegionRect];
 }
 
+
+
 //What's the purpose of this method?
 //Is to display an image on the cell, right?
 //Cool, I will be clicked and display again.
@@ -180,6 +203,7 @@
     //[self addSubview:_frontImage];
     //[_frontImage setImageWithURL:str2url(url) placeholderImage:PlaceHolderLargest];
 }
+
 
 - (void) switchImage:(UIImage*)img photo:(EZDisplayPhoto*)dp complete:(EZEventBlock)blk tableView:(UITableView*)tableView index:(NSIndexPath*)path
 {
@@ -194,46 +218,72 @@
     if(_frontImage.frame.size.height >= height){
         EZDEBUG(@"Will come up with the old animation.");
         //[_frontImage makeInsetShadowWithRadius:20 Color:RGBA(255, 255, 255, 128)];
-        UIView* tmpView = [_rotateContainer snapshotViewAfterScreenUpdates:NO];
+        //UIView* tmpView = [_rotateContainer snapshotViewAfterScreenUpdates:YES];
         //[_frontImage removeInsetShadow];
-        [_container addSubview:tmpView];
-        [_container bringSubviewToFront:tmpView];
-        _frontImage.image = img;
-        
+        //[_container addSubview:tmpView];
+        //[_container bringSubviewToFront:tmpView];
         //[_frontImage makeInsetShadowWithRadius:20 Color:RGBA(255, 255, 255, 128)];
-        [UIView animateWithDuration:0.9 animations:^(){
-            [self adjustCellSize:img.size];
-        }];
-        [UIView flipTransition:tmpView dest:_rotateContainer container:_container isLeft:YES duration:1 complete:^(id obj){
-             [tmpView removeFromSuperview];
+        UIView* destView = [self createDupContainer:img];
+        destView.tag = animateCoverViewTag;
+        //_rotateContainer.hidden = YES;
+        //dispatch_later(0.1,^(){
+        //[UIView animateWithDuration:1.0 animations:^(){
+        //}];
+            //_frontImage.image = img;
+            //[self adjustCellSize:img.size];
+            //dispatch_later(0.1, ^(){
+            //UIView* destView = [_rotateContainer snapshotViewAfterScreenUpdates:NO];
+            [_container addSubview:destView];
+            //_rotateContainer.hidden = TRUE;
+        [UIView flipTransition:_rotateContainer dest:destView container:_container isLeft:YES duration:1 complete:^(id obj){
+            //[tmpView removeFromSuperview];
+            //[destView removeFromSuperview];
+            //_frontImage.image = img;
+            //[self adjustCellSize:img.size];
+            //_container.hidden = NO;
+            //_rotateContainer.hidden = NO;
             if(blk){
                 blk(nil);
             }
         }];
+         //   });
+        //});
     }else{
         EZDEBUG(@"Will start the new animation");
         dp.turningImageSize = CGSizeMake(ContainerWidth, height);
         
         UIView* oldView = [_rotateContainer snapshotViewAfterScreenUpdates:NO];
         dp.oldTurnedImage = oldView;
+        UIView* destView = [self createDupContainer:img];
         dp.turningAnimation = ^(EZPhotoCell* photoCell){
             //[photoCell.frontImage makeInsetShadowWithRadius:20 Color:RGBA(255, 255, 255, 128)];
             //double delayInSeconds = 0.1;
             //dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
-            photoCell.frontImage.image = img;
-            [photoCell adjustCellSize:img.size];
-            dispatch_later(0.1, ^(void){
+            //photoCell.frontImage.hidden = YES;
+            //[_rotateContainer removeFromSuperview];
+            
+            //photoCell.frontImage.image = img;
+            //[photoCell adjustCellSize:img.size];
+            //[photoCell.rotateContainer removeFromSuperview];
+            //dispatch_later(0.1, ^(void){
                 //UIView* tmpView = [photoCell.rotateContainer snapshotViewAfterScreenUpdates:NO];
-                UIView* destView = [photoCell.rotateContainer snapshotViewAfterScreenUpdates:NO];
+                //UIView* destView = [photoCell.rotateContainer snapshotViewAfterScreenUpdates:NO];
+                //photoCell.rotateContainer.hidden = YES;
                 //[photoCell.frontImage removeInsetShadow];
                 //[photoCell.container addSubview:tmpView];
                 //[photoCell.container bringSubviewToFront:tmpView];
                 [photoCell.container addSubview:destView];
+                [photoCell.container bringSubviewToFront:destView];
                 [UIView flipTransition:oldView dest:destView container:photoCell.container isLeft:YES duration:1 complete:^(id obj){
+                    //photoCell.rotateContainer.hidden = NO;
+                    //photoCell.frontImage.hidden = NO;
+                    //[photoCell.container addSubview:_rotateContainer];
                     [destView removeFromSuperview];
                     [oldView removeFromSuperview];
+                    photoCell.frontImage.image = img;
+                    [photoCell adjustCellSize:img.size];
                 }];
-            });
+            //});
 
         };
         blk(nil);
