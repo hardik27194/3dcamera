@@ -115,21 +115,15 @@
     return nil;
 }
 
-- (EZScrollContainer*) createScrollView
+- (UIViewController*) createScrollView
 {
     [self setupEvent];
     
+    
     EZScrollContainer* scrollContainer = [[EZScrollContainer alloc] initWithNibName:Nil bundle:nil];
-    //UIViewController* v1 = [[UIViewController alloc] init];
-    //v1.view.backgroundColor = [UIColor greenColor];
+    //UINavigationController* homeNavigationBar = [[UINavigationController alloc] initWithRootViewController:scrollContainer];
+    
     EZContactTablePage* contactPage = [[EZContactTablePage alloc] initWithStyle:UITableViewStylePlain];
-    //[contactPage reloadPersons];
-    UINavigationController* contactNav = [[UINavigationController alloc] initWithRootViewController:contactPage];
-    
-    
-    //UIViewController* v2 = [[UIViewController alloc] init];
-    //v2.view.backgroundColor = [UIColor yellowColor];
-    //EZFaceDetector* fd = [[EZFaceDetector alloc] init];
     
     int currentPersonID = [[EZDataUtil getInstance] getCurrentPersonID];
     EZDEBUG(@"Current personID:%i", currentPersonID);
@@ -189,7 +183,7 @@
     //[scrollContainer addViewController:v2];
     //[scrollContainer addViewController:v3];
     //EZDEBUG(@"view pointer:%i", (int)scrollContainer.view);
-    [scrollContainer addChildren:@[contactNav, mainNav, v3]];
+    [scrollContainer addChildren:@[contactPage, mainNav, v3]];
     scrollContainer.currentIndex = 1;
     
     [[EZMessageCenter getInstance] registerEvent:EZCameraCompleted block:^(UIImage* img){
@@ -230,6 +224,7 @@
     [[EZDataUtil getInstance] readAlbumInBackground:5 limit:5];
     [[EZDataUtil getInstance] loadPhotoBooks];
     return scrollContainer;
+    //return homeNavigationBar;
     
 }
 

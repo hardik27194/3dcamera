@@ -592,7 +592,7 @@
         CGFloat isoNumber = [self getISOSpeedRating];
         EZDEBUG(@"IsoNumber is:%f", isoNumber);
         if(isoNumber > 600){
-            colorFilter = darkFilter;
+            //colorFilter = darkFilter;
         }
         [hueFilter addTarget:colorFilter];
         if(_selfShot || stillCamera.isFrontFacing){

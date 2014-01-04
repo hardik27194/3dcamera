@@ -17,6 +17,15 @@
 #import "DLCImagePickerController.h"
 //@class PageViewController;
 
+//Each page will be write here.
+//Let's leave the page here.
+typedef enum {
+    kFaceVerifyPage,
+    kContactsPage,
+    kTimelinePage,
+    kCameraPage
+}EZSlideType;
+
 @interface EZScrollContainer : UIViewController<UIScrollViewDelegate, DLCImagePickerDelegate>
 {
 	//IBOutlet UIScrollView *scrollView;
