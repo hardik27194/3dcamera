@@ -118,15 +118,15 @@ static int photoCount = 1;
     }else{
     if(cp.isFront){
         imageHeight = floorf((cp.photo.size.height/cp.photo.size.width) * ContainerWidth);
-        EZDEBUG(@"The row height is:%f, width:%f, %f", imageHeight, cp.photo.size.width, cp.photo.size.height);
+        //EZDEBUG(@"The row height is:%f, width:%f, %f", imageHeight, cp.photo.size.width, cp.photo.size.height);
     }else{
         CGSize imgSize = [UIImage imageNamed:cp.randImage].size;
         imageHeight =  floorf((imgSize.height/imgSize.width) * ContainerWidth);
-        EZDEBUG(@"Column count is:%f, width:%f, %f", imageHeight, cp.photo.size.width, cp.photo.size.height);
+        //EZDEBUG(@"Column count is:%f, width:%f, %f", imageHeight, cp.photo.size.width, cp.photo.size.height);
     }
     }
     if(cp.turningAnimation){
-        EZDEBUG(@"calculate the height, is front:%i, turning height:%f", cp.isFront, imageHeight);
+        //EZDEBUG(@"calculate the height, is front:%i, turning height:%f", cp.isFront, imageHeight);
     }
     //EZDEBUG(@"image width:%f, height:%f, final height:%f", cp.myPhoto.size.width, cp.myPhoto.size.height, imageHeight);
     //Tool bar height is 20, added it back.
@@ -144,6 +144,7 @@ static int photoCount = 1;
     static NSString *CellIdentifier = @"PhotoCell";
     EZPhotoCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
     //[cell backToOriginSize];
+    
     cell.isLarge = false;
     EZDisplayPhoto* cp = [_combinedPhotos objectAtIndex:indexPath.row];
     
@@ -156,7 +157,7 @@ static int photoCount = 1;
     [[cell viewWithTag:animateCoverViewTag] removeFromSuperview];
     if(cp.turningAnimation){
         EZDEBUG(@"Turning animation get called");
-        [cell adjustCellSize:cp.turningImageSize];
+        //[cell adjustCellSize:cp.turningImageSize];
         //[cell displayImage:cp.oldTurnedImage];
         [cell.container addSubview:cp.oldTurnedImage];
         EZEventBlock animBlock = cp.turningAnimation;
@@ -165,8 +166,8 @@ static int photoCount = 1;
         //cp.oldTurnedImage = nil;
     }else{
     if(cp.isFront){
-        [cell adjustCellSize:myPhoto.size];
         [cell displayImage:[myPhoto getThumbnail]];
+        [cell adjustCellSize:myPhoto.size];
         /**
         if(_isScrolling){
             [cell displayImage:[myPhoto getThumbnail]];
@@ -179,25 +180,23 @@ static int photoCount = 1;
          **/
     }else{//Display the back
         UIImage* img = [UIImage imageNamed:cp.randImage];
-        [cell adjustCellSize:img.size];
+        
         [cell displayImage:img];
+        [cell adjustCellSize:img.size];
+        EZDEBUG(@"Will display random image:%@, front image:%@, rotateContainer:%@, container:%@", NSStringFromCGSize(img.size), NSStringFromCGSize(cell.frontImage.frame.size),NSStringFromCGRect(cell.rotateContainer.frame), NSStringFromCGRect(cell.container.frame));
     }
     }
     __weak EZPhotoCell* weakCell = cell;
     cell.container.releasedBlock = ^(id obj){
+        if(cp.isTurning){
+            EZDEBUG(@"Return while turning");
+            return;
+        }
+        if(weakCell.currentPos != indexPath.row){
+            EZDEBUG(@"Turn while cell no more this row:%i, %i", weakCell.currentPos, indexPath.row);
+        }
+        cp.isTurning = true;
         cp.isFront = !cp.isFront;
-        /**
-        UIImageView* testAnimation = [[UIImageView alloc] initWithFrame:CGRectMake(50, 200, 200, 200)];
-        testAnimation.image = [UIImage imageNamed:@"smile_face"];
-        [testAnimation makeImageShadow];
-        [self.view addSubview:testAnimation];
-        [UIView animateWithDuration:0.6 animations:^(){
-            [testAnimation setSize:CGSizeMake(320, 500)];
-        } completion:^(BOOL finished){
-            [testAnimation removeFromSuperview];
-        }];
-        return;
-         **/
         EZEventBlock complete = ^(id sender){
             EZDEBUG(@"Complete get called");
             [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
@@ -208,7 +207,7 @@ static int photoCount = 1;
         }else{
             EZDEBUG(@"The container size:%f, %f", weakCell.container.frame.size.width, weakCell.container.frame.size.height);
             if(!cp.randImage){
-            int imagePos = rand()%17;
+                int imagePos = rand()%17;
                 ++imagePos;
                 NSString* randFile = [NSString stringWithFormat:@"santa_%i.jpg", imagePos];
                 EZDEBUG(@"Random File name:%@", randFile);
@@ -217,6 +216,7 @@ static int photoCount = 1;
             [weakCell switchImage:[UIImage imageNamed:cp.randImage] photo:cp complete:complete tableView:tableView index:indexPath];
         }
     };
+
     return cell;
 }
 
@@ -243,9 +243,10 @@ static int photoCount = 1;
 
 - (void) replaceLargeImage
 {
+    /**
     NSArray* cells = [self.tableView visibleCells];
     EZDEBUG(@"Scroll stopped:%i", cells.count);
-    /**
+    
     for(EZPhotoCell* pcell in cells){
         EZDisplayPhoto* cp = [_combinedPhotos objectAtIndex:pcell.currentPos];
         
