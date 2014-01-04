@@ -15,10 +15,21 @@
 
 @property (nonatomic, strong) EZEventBlock releasedBlock;
 
+@property (nonatomic, strong) EZEventBlock longPressBlock;
+
+@property (nonatomic, assign) CGFloat longPressTime;
+
+//Which is a cooperation of different event.
+@property (nonatomic, assign) BOOL longPressedCalled;
+
+@property (nonatomic, assign) BOOL fingerPressed;
+
 @property (nonatomic, assign) BOOL enableTouchEffects;
 
 @property (nonatomic, strong) UIColor* pressedColor;
 
 @property (nonatomic, strong) UIView* pressedView;
+
+- (void) recieveLongPress:(CGFloat)time callback:(EZEventBlock)block;
 
 @end

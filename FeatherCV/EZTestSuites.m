@@ -27,6 +27,36 @@
     //[EZTestSuites testSoundEffects];
 }
 
++ (void) testClickView:(UIView *)parentView
+{
+    EZClickView* longPress = [[EZClickView alloc] initWithFrame:CGRectMake(0, 100, 100, 100)];
+    longPress.backgroundColor = RGBCOLOR(255, 128, 70);
+    [longPress recieveLongPress:1.0 callback:^(EZClickView* view){
+        EZDEBUG(@"Long pressed get called");
+        view.backgroundColor = randBack(nil);
+    }];
+    
+    longPress.releasedBlock = ^(id obj){
+        EZDEBUG(@"Long press click get called");
+    };
+    
+    [parentView addSubview:longPress];
+}
+
++ (void) testAlphaSetting:(UIView*)view
+{
+    UIView* alphaFull = [[UIView alloc] initWithFrame:CGRectMake(0, 100, 100, 100)];
+    alphaFull.backgroundColor = [UIColor redColor];
+    alphaFull.alpha = 1.0;
+    
+    UIView* alphaZero = [[UIView alloc] initWithFrame:CGRectMake(100, 100, 100, 100)];
+    alphaZero.backgroundColor= [UIColor greenColor];
+    alphaZero.alpha = 0.0;
+    
+    [view addSubview:alphaFull];
+    [view addSubview:alphaZero];
+}
+
 + (UIView*) testResizeMasks
 {
     EZClickView* parentView = [[EZClickView alloc] initWithFrame:CGRectMake(100, 200, 200, 200)];

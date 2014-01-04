@@ -14,4 +14,8 @@
 
 + (UIView*) testResizeMasks;
 
++ (void) testAlphaSetting;
+
++ (void) testClickView:(UIView*)parentView;
+
 @end

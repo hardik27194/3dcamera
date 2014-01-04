@@ -33,6 +33,12 @@
     _enableTouchEffects = true;
 }
 
+- (void) recieveLongPress:(CGFloat)time callback:(EZEventBlock)block
+{
+    _longPressBlock = block;
+    _longPressTime = time;
+}
+
 - (void) pressed
 {
     EZDEBUG(@"Pressed clicked");
@@ -60,7 +66,15 @@
 //Mean the touch ended, doesn't mean a effective click
 - (void) unpressed
 {
-    _pressedView.hidden = true;
+    //_pressedView.hidden = true;
+    if(_enableTouchEffects){
+        [UIView animateWithDuration:0.3 animations:^(){
+            _pressedView.alpha = 0;
+        } completion:^(BOOL completed){
+            _pressedView.hidden = true;
+            _pressedView.alpha = 1.0;
+        }];
+    }
     /**
     [UIView animateWithDuration:0.2 animations:^(){
         //view.layer.shadowOpacity = 0.0f;
@@ -69,42 +83,64 @@
      **/
 }
 
-
+//Any finger pressed will trigger this event.
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
     UITouch* touch = [touches anyObject];
+    _fingerPressed = true;
+    _longPressedCalled = false;
+    if(_longPressBlock){
+    dispatch_later(_longPressTime, ^(){
+        if(_fingerPressed){
+            EZDEBUG(@"long press triggered");
+            _longPressedCalled = YES;
+            _longPressBlock(self);
+        }else{
+            EZDEBUG(@"long press ignore for released");
+        }
+    });
+    }
     [self pressed];
     if(_pressedBlock){
         _pressedBlock(touch);
     }
     
 }
+
+- (void) touchFadeEffects:(UITouch*) touch
+{
+    UIImageView* imgView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"flash-light"]];
+    CGPoint touchPT = [touch locationInView:self];
+    //EZDEBUG(@"touched ended at:%@", NSStringFromCGPoint(touchPT));
+    [imgView setCenter:touchPT];
+    [self addSubview:imgView];
+    
+    [UIView animateWithDuration:0.4 animations:^(){
+        imgView.transform = CGAffineTransformMakeScale(2, 2);
+        imgView.alpha = 0;
+    } completion:^(BOOL completed){
+        [imgView removeFromSuperview];
+    }];
+}
 //- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event;
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
     UITouch* touch = [touches anyObject];
+    _fingerPressed = false;
     if(_enableTouchEffects){
-        UIImageView* imgView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"flash-light"]];
-        CGPoint touchPT = [touch locationInView:self];
-        //EZDEBUG(@"touched ended at:%@", NSStringFromCGPoint(touchPT));
-        [imgView setCenter:touchPT];
-        [self addSubview:imgView];
-        
-        [UIView animateWithDuration:0.4 animations:^(){
-            imgView.transform = CGAffineTransformMakeScale(2, 2);
-            imgView.alpha = 0;
-        } completion:^(BOOL completed){
-            [imgView removeFromSuperview];
-        }];
+        //[self touchFadeEffects:touch];
     }
     [self unpressed];
-    if(_releasedBlock){
-        _releasedBlock(touch);
+    if(!_longPressedCalled){
+        if(_releasedBlock){
+            _releasedBlock(touch);
+        }
     }
 }
 
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
 {
+    _fingerPressed = false;
     [self unpressed];
 }
 

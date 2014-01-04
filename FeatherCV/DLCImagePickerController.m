@@ -160,13 +160,13 @@
     redAdjustments = [[NSMutableArray alloc] init];
     blueAdjustments = [[NSMutableArray alloc] init];
     greenAdjustments = [[NSMutableArray alloc] init];
-    [tongParameters addObjectsFromArray:@[pointValue(0.0, 0.0), pointValue(0.25, 0.2616), pointValue(0.5, 0.5768), pointValue(0.75, 0.7949), pointValue(1.0, 1.0)]];
+    [tongParameters addObjectsFromArray:@[pointValue(0.0, 0.0), pointValue(0.25, 0.2716), pointValue(0.5, 0.5868), pointValue(0.75, 0.7949), pointValue(1.0, 1.0)]];
     hueFilter = [[GPUImageHueFilter alloc] init];
-    hueFilter.hue = 355;
+    hueFilter.hue = 350;
     EZDEBUG(@"adjust:%f", hueFilter.hue);
     orgFiler = [[GPUImageFilter alloc] init];
     //[_redAdjustments addObjectsFromArray:@[pointValue(0.0, 0.0), pointValue(0.25, 0.2615), pointValue(0.5, 0.512), pointValue(0.75, 0.762), pointValue(1.0, 1.0)]];
-    [redAdjustments addObjectsFromArray:@[pointValue(0.0, 0.0), pointValue(0.25, 0.2615), pointValue(0.5, 0.512), pointValue(0.75, 0.762), pointValue(1.0, 1.0)]];
+    [redAdjustments addObjectsFromArray:@[pointValue(0.0, 0.0), pointValue(0.25, 0.25), pointValue(0.5, 0.5), pointValue(0.75, 0.75), pointValue(1.0, 1.0)]];
     [greenAdjustments addObjectsFromArray:@[pointValue(0.0, 0.0), pointValue(0.25, 0.25), pointValue(0.5, 0.5), pointValue(0.75, 0.75), pointValue(1.0, 1.0)]];
     [blueAdjustments addObjectsFromArray:@[pointValue(0.0, 0.0), pointValue(0.25, 0.25), pointValue(0.5, 0.5), pointValue(0.75, 0.75), pointValue(1.0, 1.0)]];
 
@@ -545,8 +545,8 @@
     //[faceBlurFilter addTarget:filter];
     //[cropFilter addTarget:hueFilter];
     [hueFilter addTarget:tongFilter];
-    [tongFilter addTarget:faceBlurFilter];
-    [faceBlurFilter addTarget:filter];
+    [tongFilter addTarget:filter];
+    //[faceBlurFilter addTarget:filter];
     
     //[tongFilter addTarget:whiteBalancerFilter];
     //[whiteBalancerFilter addTarget:contrastfilter];
@@ -576,13 +576,13 @@
         if(_selfShot || stillCamera.isFrontFacing){
             EZDEBUG(@"Will add faceBlurFilter");
             //faceBlurFilter.blurSize = 6;
-            [flashFilter addTarget:faceBlurFilter];
-            [faceBlurFilter addTarget:filter];
+            [flashFilter addTarget:filter];
+            //[faceBlurFilter addTarget:filter];
         }else{
             EZDEBUG(@"Not add faceBlurFilter");
             
-            [flashFilter addTarget:faceBlurFilter];
-            [faceBlurFilter addTarget:filter];
+            [flashFilter addTarget:filter];
+            //[faceBlurFilter addTarget:filter];
         }
         
     }else{
@@ -604,17 +604,17 @@
                 faceBlurFilter.blurSize = 6;
             }
              **/
-            [colorFilter addTarget:faceBlurFilter];
-            [faceBlurFilter addTarget:filter];
+            [colorFilter addTarget:filter];
+            //[faceBlurFilter addTarget:filter];
         }else{
             EZDEBUG(@"Not add faceBlurFilter");
             if(isoNumber > 600){
                 [colorFilter addTarget:darkBlurFilter];
-                [darkBlurFilter addTarget:faceBlurFilter];
-                [faceBlurFilter addTarget:filter];
+                [darkBlurFilter addTarget:filter];
+                //[faceBlurFilter addTarget:filter];
             }else{
-                [colorFilter addTarget:faceBlurFilter];
-                [faceBlurFilter addTarget:filter];
+                [colorFilter addTarget:filter];
+                //[faceBlurFilter addTarget:filter];
             }
         }
     }
