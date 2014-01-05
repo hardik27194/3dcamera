@@ -85,6 +85,9 @@
 //I will use small image initially, then switch to the large image.
 @property (nonatomic, assign) BOOL isLargeImage;
 
+//Don't use the cell which is turning.
+@property (nonatomic, assign) BOOL isTurning;
+
 //- (void) adjust
 
 - (void) displayPhoto:(NSString*)photo;

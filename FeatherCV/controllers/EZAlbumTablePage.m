@@ -27,7 +27,7 @@ static int photoCount = 1;
 -(id)initWithQueryBlock:(EZQueryBlock)queryBlock
 {
     self = [super initWithStyle:UITableViewStylePlain];
-    self.title = @"嘻嘻的圣诞节";
+    self.title = @"羽毛";
     _queryBlock = queryBlock;
     [self.tableView registerClass:[EZPhotoCell class] forCellReuseIdentifier:@"PhotoCell"];
     return self;
@@ -86,11 +86,7 @@ static int photoCount = 1;
         [_combinedPhotos insertObject:dp atIndex:0];
         [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
     }];
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
- 
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+
 }
 
 - (void)didReceiveMemoryWarning
@@ -137,12 +133,17 @@ static int photoCount = 1;
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     return _combinedPhotos.count;
+    //return 0;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *CellIdentifier = @"PhotoCell";
     EZPhotoCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
+    if(cell.isTurning){
+        EZDEBUG(@"Recieved a rotating cell.");
+        cell = [[EZPhotoCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+    }
     //[cell backToOriginSize];
     
     cell.isLarge = false;
@@ -166,18 +167,9 @@ static int photoCount = 1;
         //cp.oldTurnedImage = nil;
     }else{
     if(cp.isFront){
+        EZDEBUG(@"Will display front image");
         [cell displayImage:[myPhoto getThumbnail]];
         [cell adjustCellSize:myPhoto.size];
-        /**
-        if(_isScrolling){
-            [cell displayImage:[myPhoto getThumbnail]];
-        }else{
-            cell.isLarge = true;
-            //[cell displayImage:[myPhoto getLocalImage]];
-            //[cell displayEffectImage:[myPhoto getLocalImage]];
-            [cell displayImage:[myPhoto getLocalImage]];
-        }
-         **/
     }else{//Display the back
         UIImage* img = [UIImage imageNamed:cp.randImage];
         

@@ -61,10 +61,11 @@
         _container = [[EZClickView alloc] initWithFrame:CGRectMake(10, 10, 300, 300 + ToolRegionHeight)];
         //_container.layer.cornerRadius = 5;
         _container.clipsToBounds = true;
-        _container.backgroundColor = [UIColor clearColor];
+        _container.backgroundColor = [UIColor greenColor];
         
         _rotateContainer = [self createRotateContainer:_container.bounds];
         [_container addSubview:_rotateContainer];
+        _rotateContainer.backgroundColor = [UIColor blueColor];
         //[_container makeInsetShadowWithRadius:20 Color:RGBA(255, 255, 255, 128)];
         _frontImage = [self createFrontImage];
         _frontImage.backgroundColor = RGBCOLOR(255, 128, 69);
@@ -119,8 +120,16 @@
     return toolRegion;
 }
 
+- (UIView*) createDupContainer:(UIImage *)img
+{
+    CGFloat adjustedHeight = [self calHeight:img.size];
+    UIView* rt = [[UIView alloc] initWithFrame:CGRectMake(0, 0, ContainerWidth, adjustedHeight + ToolRegionHeight)];
+    rt.backgroundColor = RGBCOLOR(0, 255, 128);
+    return rt;
+}
 
-- (UIView*) createDupContainer:(UIImage*)img
+
+- (UIView*) createDupContainerOld:(UIImage*)img
 {
     CGFloat adjustedHeight = [self calHeight:img.size];
     UIView* rotateContainer = [self createRotateContainer:CGRectMake(0, 0, ContainerWidth, adjustedHeight + ToolRegionHeight)];
@@ -209,7 +218,7 @@
 
 - (void) switchImage:(UIImage*)img photo:(EZDisplayPhoto*)dp complete:(EZEventBlock)blk tableView:(UITableView*)tableView index:(NSIndexPath*)path
 {
- 
+    
     CGFloat height = [self calHeight:img.size];
     
     EZDEBUG(@"_frontImage height:%f, calculated height:%f, isTurnning:%i", _frontImage.frame.size.height, height, dp.isTurning);
@@ -219,6 +228,7 @@
     //dp.isTurning = true;
     if(_frontImage.frame.size.height >= height){
         EZDEBUG(@"Will come up with the old animation.");
+        _isTurning = true;
         UIView* destView = [self createDupContainer:img];
         destView.tag = animateCoverViewTag;
         [_container addSubview:destView];
@@ -228,21 +238,25 @@
                 blk(nil);
             }
             dp.isTurning = false;
+            _isTurning = false;
         }];
       
     }else{
-        EZDEBUG(@"Will start the new animation");
         dp.turningImageSize = CGSizeMake(ContainerWidth, height);
         __weak EZDisplayPhoto* weakPhoto = dp;
         UIView* oldView = [_rotateContainer snapshotViewAfterScreenUpdates:YES];
+         EZDEBUG(@"Will start the new animation, oldView:%i", ((int)oldView == (int)_rotateContainer));
         dp.oldTurnedImage = oldView;
         dp.turningAnimation = ^(EZPhotoCell* photoCell){
+            photoCell.isTurning = true;
             photoCell.frontImage.image = img;
             [photoCell adjustCellSize:img.size];
             [UIView flipTransition:oldView dest:photoCell.rotateContainer container:photoCell.container isLeft:YES duration:2 complete:^(id obj){
                     [oldView removeFromSuperview];
                     EZDEBUG(@"The final assign image size is:%@, frontImage size:%@, parent pointer:%i", NSStringFromCGSize(img.size), NSStringFromCGRect(photoCell.frontImage.frame), (int)photoCell.frontImage.superview);
                     weakPhoto.isTurning = false;
+                    //_isTurning = false;
+                    photoCell.isTurning = false;
             }];
         };
         blk(nil);

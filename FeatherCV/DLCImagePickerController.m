@@ -47,7 +47,7 @@
     EZFaceBlurFilter* faceBlurFilter;
     EZFaceBlurFilter* darkBlurFilter;
     
-    
+    EZFaceBlurFilter2* dynamicBlurFilter;
     //Used as the beginning of the filter
     GPUImageFilter* orgFiler;
     GPUImageFilter* filter;
@@ -160,7 +160,7 @@
     redAdjustments = [[NSMutableArray alloc] init];
     blueAdjustments = [[NSMutableArray alloc] init];
     greenAdjustments = [[NSMutableArray alloc] init];
-    [tongParameters addObjectsFromArray:@[pointValue(0.0, 0.0), pointValue(0.25, 0.2716), pointValue(0.5, 0.5868), pointValue(0.75, 0.7949), pointValue(1.0, 1.0)]];
+    [tongParameters addObjectsFromArray:@[pointValue(0.0, 0.0), pointValue(0.25, 0.2816), pointValue(0.5, 0.5868), pointValue(0.75, 0.7949), pointValue(1.0, 1.0)]];
     hueFilter = [[GPUImageHueFilter alloc] init];
     hueFilter.hue = 350;
     EZDEBUG(@"adjust:%f", hueFilter.hue);
@@ -211,6 +211,10 @@
     faceBlurFilter = [[EZFaceBlurFilter alloc] init];//[[EZFaceBlurFilter alloc] init];
     faceBlurFilter.blurSize = 5.0;
     faceBlurFilter.realRatio = 0.80;
+    
+    dynamicBlurFilter = [[EZFaceBlurFilter2 alloc] init];
+    dynamicBlurFilter.blurSize = 2.0;
+    dynamicBlurFilter.realRatio = 0.1;
     filter = [[GPUImageFilter alloc] init];
     tongFilter = [[GPUImageToneCurveFilter alloc] init];
     cycleDarken = [[EZCycleDiminish alloc] init];
@@ -604,16 +608,19 @@
                 faceBlurFilter.blurSize = 6;
             }
              **/
-            [colorFilter addTarget:filter];
+            [colorFilter addTarget:dynamicBlurFilter];
+            [dynamicBlurFilter addTarget:filter];
             //[faceBlurFilter addTarget:filter];
         }else{
             EZDEBUG(@"Not add faceBlurFilter");
             if(isoNumber > 600){
                 [colorFilter addTarget:darkBlurFilter];
-                [darkBlurFilter addTarget:filter];
+                [darkBlurFilter addTarget:dynamicBlurFilter];
+                [dynamicBlurFilter addTarget:filter];
                 //[faceBlurFilter addTarget:filter];
             }else{
-                [colorFilter addTarget:filter];
+                [colorFilter addTarget:dynamicBlurFilter];
+                [dynamicBlurFilter addTarget:filter];
                 //[faceBlurFilter addTarget:filter];
             }
         }
@@ -663,6 +670,7 @@
     [cropFilter removeAllTargets];
     [tongFilter removeAllTargets];
     [cycleDarken removeAllTargets];
+    [dynamicBlurFilter removeAllTargets];
     //regular filter
     [filter removeAllTargets];
     [darkBlurFilter removeAllTargets];
