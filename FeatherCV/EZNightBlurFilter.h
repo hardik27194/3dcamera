@@ -1,19 +1,20 @@
 //
-//  EZ.h
+//  EZNightBlurFilter.h
 //  FeatherCV
 //
-//  Created by xietian on 13-12-20.
-//  Copyright (c) 2013年 tiange. All rights reserved.
+//  Created by xietian on 14-1-5.
+//  Copyright (c) 2014年 tiange. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 #import <GPUImage.h>
+#import "EZColorGaussianFilter.h"
 
-//@class GPUImageGaussianBlurFilter;
-@class EZColorGaussianFilter;
+@class GPUImageGaussianBlurFilter;
+
 /** A Gaussian blur that preserves focus within a circular region
  */
-@interface EZFaceBlurFilter : GPUImageFilterGroup
+@interface EZNightBlurFilter : GPUImageFilterGroup
 {
     EZColorGaussianFilter *blurFilter;
     GPUImageFilter *selectiveFocusFilter;
@@ -39,4 +40,3 @@
 @property (readwrite, nonatomic) CGFloat aspectRatio;
 
 @end
-

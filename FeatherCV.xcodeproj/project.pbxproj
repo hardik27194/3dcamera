@@ -222,6 +222,7 @@
 		18F58B6E18719071006CB966 /* border_ceil.png in Resources */ = {isa = PBXBuildFile; fileRef = 18F58B6A18719071006CB966 /* border_ceil.png */; };
 		18F58B6F18719071006CB966 /* border_left.png in Resources */ = {isa = PBXBuildFile; fileRef = 18F58B6B18719071006CB966 /* border_left.png */; };
 		18F58B72187916F2006CB966 /* EZColorGaussianFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 18F58B71187916F1006CB966 /* EZColorGaussianFilter.m */; };
+		18F58B7518796CE9006CB966 /* EZNightBlurFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 18F58B7418796CE9006CB966 /* EZNightBlurFilter.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -562,6 +563,8 @@
 		18F58B6B18719071006CB966 /* border_left.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = border_left.png; sourceTree = "<group>"; };
 		18F58B70187916F1006CB966 /* EZColorGaussianFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZColorGaussianFilter.h; sourceTree = "<group>"; };
 		18F58B71187916F1006CB966 /* EZColorGaussianFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZColorGaussianFilter.m; sourceTree = "<group>"; };
+		18F58B7318796CE9006CB966 /* EZNightBlurFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZNightBlurFilter.h; sourceTree = "<group>"; };
+		18F58B7418796CE9006CB966 /* EZNightBlurFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZNightBlurFilter.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -654,6 +657,8 @@
 				1874D9D61867F57E005743FC /* EZSaturationFilter.m */,
 				18F58B70187916F1006CB966 /* EZColorGaussianFilter.h */,
 				18F58B71187916F1006CB966 /* EZColorGaussianFilter.m */,
+				18F58B7318796CE9006CB966 /* EZNightBlurFilter.h */,
+				18F58B7418796CE9006CB966 /* EZNightBlurFilter.m */,
 			);
 			name = camera;
 			sourceTree = "<group>";
@@ -1377,6 +1382,7 @@
 				18E347D8183E050B00C9D89D /* ASIFormDataRequest.m in Sources */,
 				18E3474A183DFA7300C9D89D /* EZPerson.m in Sources */,
 				18E347D6183E050B00C9D89D /* ASIAuthenticationDialog.m in Sources */,
+				18F58B7518796CE9006CB966 /* EZNightBlurFilter.m in Sources */,
 				18F58B72187916F2006CB966 /* EZColorGaussianFilter.m in Sources */,
 				18E347DC183E050B00C9D89D /* ASIDataDecompressor.m in Sources */,
 				18E34785183DFAA400C9D89D /* EZKeyboadUtility.m in Sources */,

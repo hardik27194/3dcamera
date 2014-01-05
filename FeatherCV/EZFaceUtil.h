@@ -47,6 +47,10 @@ public:
     void filterFaces(cv::Mat& inputFrame, std::vector<EZFaceResult*>& inputFaces, std::vector<EZFaceResult*>& outputFaces);
     
     void detectSmile(cv::Mat& inputFrame, EZFaceResult* faceResult);
+    
+    //Get the face out.
+    BOOL detectFace(UIImage* image, CGFloat faceRatio);
+
     //What's the purpose of this method, is to get mat gray out
     static void getGray(cv::Mat& inputFrame, cv::Mat& outputFrame);
 

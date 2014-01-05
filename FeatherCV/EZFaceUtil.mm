@@ -235,8 +235,7 @@ void EZFaceUtil::detectFace(cv::Mat& inputFrame, std::vector<EZFaceResult*>& fac
         fres->destRect = cv::Rect(0, 0, cropSize.width, cropSize.height);
         fres->face = retMat;
         if(hasSmile){
-            //detectSmile(monoResize, fres);
-            //containsSmiles(<#UIImage *image#>, <#^(id sender)callback#>)
+            
         }
         //fres->resizedImage = new cv::Mat(singleChannel);
         faces.push_back(fres);

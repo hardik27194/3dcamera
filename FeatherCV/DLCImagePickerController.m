@@ -14,6 +14,7 @@
 #import "EZSoundEffect.h"
 #import "EZCycleDiminish.h"
 #import "GPUImageHueFilter.h"
+#import "EZNightBlurFilter.h"
 #import <GPUImageToneCurveFilter.h>
 
 #define kStaticBlurSize 2.0f
@@ -45,7 +46,7 @@
     GPUImageFilter* simpleFilter;
     EZCycleDiminish* cycleDarken;
     EZFaceBlurFilter* faceBlurFilter;
-    EZFaceBlurFilter* darkBlurFilter;
+    EZNightBlurFilter* darkBlurFilter;
     
     EZFaceBlurFilter2* dynamicBlurFilter;
     //Used as the beginning of the filter
@@ -129,9 +130,9 @@
     [darkFilter setGreenControlPoints:@[pointValue(0.0, 0.0126), pointValue(0.25, 0.25), pointValue(0.5, 0.5), pointValue(0.75, 0.75), pointValue(1, 1)]];
     [darkFilter setBlueControlPoints:@[pointValue(0.0, 0.0), pointValue(0.25, 0.25), pointValue(0.5, 0.5), pointValue(0.75, 0.75), pointValue(1, 1)]];
     
-    darkBlurFilter = [[EZFaceBlurFilter alloc] init];
-    darkBlurFilter.blurSize = 1.5;
-    darkBlurFilter.realRatio = 0.9;
+    darkBlurFilter = [[EZNightBlurFilter alloc] init];
+    darkBlurFilter.blurSize = 1.0;
+    darkBlurFilter.realRatio = 0.8;
     
 }
 
@@ -212,9 +213,10 @@
     faceBlurFilter.blurSize = 5.0;
     faceBlurFilter.realRatio = 0.80;
     
+    
     dynamicBlurFilter = [[EZFaceBlurFilter2 alloc] init];
-    dynamicBlurFilter.blurSize = 2.5;
-    dynamicBlurFilter.realRatio = 0.15;
+    dynamicBlurFilter.blurSize = 2;
+    dynamicBlurFilter.realRatio = 0.1;
     filter = [[GPUImageFilter alloc] init];
     tongFilter = [[GPUImageToneCurveFilter alloc] init];
     cycleDarken = [[EZCycleDiminish alloc] init];
@@ -540,6 +542,19 @@
     return res;
 }
 
+
+- (CGFloat) getFacalLength
+{
+    NSDictionary* exif = [stillCamera.currentCaptureMetadata objectForKey:@"{Exif}"];
+    NSNumber* isoRating = [exif objectForKey:@"FocalLength"];
+    CGFloat res = 500.0;
+    if(isoRating){
+        res = [isoRating floatValue];
+    }
+    
+    return res;
+}
+
 -(void) prepareLiveFilter {
     [stillCamera addTarget:orgFiler];
     [orgFiler addTarget:hueFilter];
@@ -592,37 +607,27 @@
     }else{
         [staticPicture addTarget:hueFilter];
         //[cropFilter addTarget:hueFilter];
+        [hueFilter addTarget:tongFilter];
         GPUImageFilter* colorFilter = tongFilter;
         CGFloat isoNumber = [self getISOSpeedRating];
-        EZDEBUG(@"IsoNumber is:%f", isoNumber);
+        CGFloat focalLength = [self getFacalLength];
+        EZDEBUG(@"IsoNumber is:%f, focalLength:%f", isoNumber, focalLength);
         if(isoNumber > 600){
-            //colorFilter = darkFilter;
+            [tongFilter addTarget:darkBlurFilter];
+            colorFilter = (GPUImageFilter*)darkBlurFilter;
         }
-        [hueFilter addTarget:colorFilter];
-        if(_selfShot || stillCamera.isFrontFacing){
+        
+        if(focalLength < 1.5){
             EZDEBUG(@"Will add faceBlurFilter");
-            /**
-            if(stillCamera.isFrontFacing){
-                faceBlurFilter.blurSize = 2;
-            }else{
-                faceBlurFilter.blurSize = 6;
-            }
-             **/
             [colorFilter addTarget:dynamicBlurFilter];
             [dynamicBlurFilter addTarget:filter];
             //[faceBlurFilter addTarget:filter];
         }else{
             EZDEBUG(@"Not add faceBlurFilter");
-            if(isoNumber > 600){
-                [colorFilter addTarget:darkBlurFilter];
-                [darkBlurFilter addTarget:dynamicBlurFilter];
-                [dynamicBlurFilter addTarget:filter];
-                //[faceBlurFilter addTarget:filter];
-            }else{
-                [colorFilter addTarget:dynamicBlurFilter];
-                [dynamicBlurFilter addTarget:filter];
-                //[faceBlurFilter addTarget:filter];
-            }
+            //[colorFilter addTarget:dynamicBlurFilter];
+            //[dynamicBlurFilter addTarget:filter];
+            [colorFilter addTarget:dynamicBlurFilter];
+            [dynamicBlurFilter addTarget:filter];
         }
     }
     //[whiteBalancerFilter addTarget:filter];

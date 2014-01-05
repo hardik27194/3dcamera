@@ -7,6 +7,7 @@
 //
 
 #import "EZFaceBlurFilter.h"
+#import "EZColorGaussianFilter.h"
 
 #if TARGET_IPHONE_SIMULATOR || TARGET_OS_IPHONE
 NSString *const kFaceBlurFragmentShaderString = SHADER_STRING
@@ -108,7 +109,7 @@ NSString *const kFaceBlurFragmentShaderString = SHADER_STRING
     hasOverriddenAspectRatio = NO;
     
     // First pass: apply a variable Gaussian blur
-    blurFilter = [[GPUImageGaussianBlurFilter alloc] init];
+    blurFilter = [[EZColorGaussianFilter alloc] init];
     //blurFilter.blurSize = 2.0;
     self.blurSize = 5.0;
     [self addFilter:blurFilter];

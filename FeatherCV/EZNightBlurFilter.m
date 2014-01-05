@@ -1,15 +1,14 @@
 //
-//  EZ.m
+//  EZNightBlurFilter.m
 //  FeatherCV
 //
-//  Created by xietian on 13-12-20.
-//  Copyright (c) 2013年 tiange. All rights reserved.
+//  Created by xietian on 14-1-5.
+//  Copyright (c) 2014年 tiange. All rights reserved.
 //
 
-#import "EZFaceBlurFilter2.h"
-
+#import "EZNightBlurFilter.h"
 #if TARGET_IPHONE_SIMULATOR || TARGET_OS_IPHONE
-NSString *const kFaceBlurFragmentShaderString2 = SHADER_STRING
+NSString *const kFaceBlurFragmentShaderString3 = SHADER_STRING
 (
  varying highp vec2 textureCoordinate;
  varying highp vec2 textureCoordinate2;
@@ -22,14 +21,15 @@ NSString *const kFaceBlurFragmentShaderString2 = SHADER_STRING
  uniform lowp float excludeBlurSize;
  uniform highp float aspectRatio;
  uniform lowp float realRatio;
- const lowp vec3 skinColor = vec3(0.78, 0.5254, 0.372);
+ const lowp vec3 skinColor = vec3(0.247, 0.122, 0.094);
+ //const lowp vec3 skinColor = vec3(0.78, 0.5254, 0.372);
  
  lowp float colorDistance(lowp vec4 src)
 {
     highp vec3 delta = src.rgb - skinColor;
     lowp float lowdelta = dot(delta, delta);
-    lowp float skindelta = dot(skinColor, skinColor);
-    return max(lowdelta/skindelta, 1.0);
+    lowp float skindelta = dot(src, src);
+    return max(lowdelta/0.75, 1.0);
 }
  
  void main()
@@ -44,23 +44,23 @@ NSString *const kFaceBlurFragmentShaderString2 = SHADER_STRING
      
      lowp vec4 sharpImageColor = texture2D(inputImageTexture, textureCoordinate);
      lowp vec4 blurredImageColor = texture2D(inputImageTexture2, textureCoordinate2);
-    
-      highp vec2 textureCoordinateToUse = vec2(textureCoordinate2.x, (textureCoordinate2.y * aspectRatio + 0.5 - 0.5 * aspectRatio));
-      
-      highp float redhighbar = 255.0/255.0;
-      highp float avghigh = 235.0/255.0;
-      highp float avglow = 50.0/255.0;
-      highp float avglowbegin = 80.0/255.0;
-      highp float avghighbegin = 200.0/255.0;
-      highp float bluelowbar = 40.0/255.0;
-      
-      //highp float avgcolor = (sharpImageColor.r + sharpImageColor.g + sharpImageColor.b)/3.0;
-      //highp float graygap = 8.0/255.0;
-      
-      //highp float gapred =abs(sharpImageColor.r - avgcolor);
-      //highp float gapgreen =abs(sharpImageColor.g - avgcolor);
-      //highp float gapblue = abs(sharpImageColor.b - avgcolor);
-      //highp float greenbar = (sharpImageColor.g - sharpImageColor.b) * 2.0;
+     
+     highp vec2 textureCoordinateToUse = vec2(textureCoordinate2.x, (textureCoordinate2.y * aspectRatio + 0.5 - 0.5 * aspectRatio));
+     
+     highp float redhighbar = 255.0/255.0;
+     highp float avghigh = 235.0/255.0;
+     highp float avglow = 50.0/255.0;
+     highp float avglowbegin = 80.0/255.0;
+     highp float avghighbegin = 200.0/255.0;
+     highp float bluelowbar = 40.0/255.0;
+     
+     //highp float avgcolor = (sharpImageColor.r + sharpImageColor.g + sharpImageColor.b)/3.0;
+     //highp float graygap = 8.0/255.0;
+     
+     //highp float gapred =abs(sharpImageColor.r - avgcolor);
+     //highp float gapgreen =abs(sharpImageColor.g - avgcolor);
+     //highp float gapblue = abs(sharpImageColor.b - avgcolor);
+     //highp float greenbar = (sharpImageColor.g - sharpImageColor.b) * 2.0;
      
      /**
       if(sharpImageColor.b > bluelowbar &&  sharpImageColor.r > sharpImageColor.g && sharpImageColor.r > sharpImageColor.b && sharpImageColor.g > greenbar && avgcolor > avglow && avgcolor < avghighbegin && !(gapred < graygap && gapgreen < graygap && gapblue < graygap))
@@ -78,44 +78,45 @@ NSString *const kFaceBlurFragmentShaderString2 = SHADER_STRING
      highp float comp2 = sharpImageColor.b - bluelowbar;
      highp float comp3 = sharpImageColor.r - sharpImageColor.b;
      //highp float comp4 = sharpImageColor.r - sharpImageColor.b;
-     lowp vec4 distanceVec = sharpImageColor - blurredImageColor;
-     highp float distance = dot(distanceVec, distanceVec);
-     
+     //lowp vec4 distanceVec = sharpImageColor - blurredImageColor;
+     //highp float distance = dot(distanceVec, distanceVec);
+    
          //highp float delta = 1.0 - (abs(hue - orangeHue)/(2.0 * 3.1415926535));
          lowp float disRatio = 1.0 - colorDistance(sharpImageColor);
          lowp float finalRatio = disRatio;
-         if(disRatio < 0.6){
-             finalRatio = disRatio * disRatio;
-         }
+         //if(disRatio < 0.6){
+         //    finalRatio = disRatio * disRatio;
+         //}
          highp float blurFactor = (1.0 - realRatio) * finalRatio;
          gl_FragColor = blurredImageColor * blurFactor + sharpImageColor * (1.0 - blurFactor);
+     
      /**
       if(comp3 > 0.0){
-          lowp vec4 distanceVec = sharpImageColor - blurredImageColor;
-          highp float distance = dot(distanceVec, distanceVec);
-          if(distance > 0.8){
-              gl_FragColor = vec4((sharpImageColor + distanceVec*1.2).xyz, sharpImageColor.w);
-          }else{
-              gl_FragColor = blurredImageColor*(1.0 - realRatio) + sharpImageColor*realRatio;
-          }
-          //gl_FragColor = blurredImageColor*(1.0 - realRatio) + sharpImageColor*realRatio;
-          return;
+      lowp vec4 distanceVec = sharpImageColor - blurredImageColor;
+      highp float distance = dot(distanceVec, distanceVec);
+      if(distance > 0.8){
+      gl_FragColor = vec4((sharpImageColor + distanceVec*1.2).xyz, sharpImageColor.w);
       }else{
-          //highp vec3 colorDist = vec3(min(0.0, comp1), min(0.0, comp2), min(0.0, comp3));
-          //highp float colorMag = max(dot(colorDist, colorDist), 1.0)/1.0;
-          highp float colorMag = sqrt(sqrt(comp3 * comp3)/1.0;
-          highp float blurFactor = (1.0 - realRatio)*(1.0 - colorMag);
-          gl_FragColor = blurredImageColor * blurFactor + sharpImageColor*(1.0 - blurFactor);
-          //gl_FragColor = sharpImageColor * 0.2;
-          //gl_FragColor = blurredImageColor*(1.0 - realRatio) + sharpImageColor*realRatio;
-          return;
+      gl_FragColor = blurredImageColor*(1.0 - realRatio) + sharpImageColor*realRatio;
       }
-     **/
+      //gl_FragColor = blurredImageColor*(1.0 - realRatio) + sharpImageColor*realRatio;
+      return;
+      }else{
+      //highp vec3 colorDist = vec3(min(0.0, comp1), min(0.0, comp2), min(0.0, comp3));
+      //highp float colorMag = max(dot(colorDist, colorDist), 1.0)/1.0;
+      highp float colorMag = sqrt(sqrt(comp3 * comp3)/1.0;
+      highp float blurFactor = (1.0 - realRatio)*(1.0 - colorMag);
+      gl_FragColor = blurredImageColor * blurFactor + sharpImageColor*(1.0 - blurFactor);
+      //gl_FragColor = sharpImageColor * 0.2;
+      //gl_FragColor = blurredImageColor*(1.0 - realRatio) + sharpImageColor*realRatio;
+      return;
+      }
+      **/
      //gl_FragColor = sharpImageColor;
  }
  );
 #else
-NSString *const kFaceBlurFragmentShaderString2 = SHADER_STRING
+NSString *const kFaceBlurFragmentShaderString3 = SHADER_STRING
 (
  varying vec2 textureCoordinate;
  varying vec2 textureCoordinate2;
@@ -141,7 +142,7 @@ NSString *const kFaceBlurFragmentShaderString2 = SHADER_STRING
  );
 #endif
 
-@implementation EZFaceBlurFilter2
+@implementation EZNightBlurFilter
 
 @synthesize excludeCirclePoint = _excludeCirclePoint, excludeCircleRadius = _excludeCircleRadius, excludeBlurSize = _excludeBlurSize;
 @synthesize blurSize = _blurSize;
@@ -162,7 +163,7 @@ NSString *const kFaceBlurFragmentShaderString2 = SHADER_STRING
     self.blurSize = 5.0;
     [self addFilter:blurFilter];
     // Second pass: combine the blurred image with the original sharp one
-    selectiveFocusFilter = [[GPUImageTwoInputFilter alloc] initWithFragmentShaderFromString:kFaceBlurFragmentShaderString2];
+    selectiveFocusFilter = [[GPUImageTwoInputFilter alloc] initWithFragmentShaderFromString:kFaceBlurFragmentShaderString3];
     [self addFilter:selectiveFocusFilter];
     self.realRatio = 0.8;
     // Texture location 0 needs to be the sharp image for both the blur and the second stage processing
