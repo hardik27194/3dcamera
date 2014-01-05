@@ -22,7 +22,15 @@ NSString *const kFaceBlurFragmentShaderString2 = SHADER_STRING
  uniform lowp float excludeBlurSize;
  uniform highp float aspectRatio;
  uniform lowp float realRatio;
-
+ const lowp vec3 skinColor = vec3(0.78, 0.5254, 0.372);
+ 
+ lowp float colorDistance(lowp vec4 src)
+{
+    highp vec3 delta = src.rgb - skinColor;
+    lowp float lowdelta = dot(delta, delta);
+    lowp float skindelta = dot(skinColor, skinColor);
+    return lowdelta/skindelta;
+}
  
  void main()
  {
@@ -57,14 +65,14 @@ NSString *const kFaceBlurFragmentShaderString2 = SHADER_STRING
      /**
       if(sharpImageColor.b > bluelowbar &&  sharpImageColor.r > sharpImageColor.g && sharpImageColor.r > sharpImageColor.b && sharpImageColor.g > greenbar && avgcolor > avglow && avgcolor < avghighbegin && !(gapred < graygap && gapgreen < graygap && gapblue < graygap))
       **/
-     highp float   YPrime  = dot (sharpImageColor, kRGBToYPrime);
-     highp float   I      = dot (sharpImageColor, kRGBToI);
-     highp float   Q      = dot (sharpImageColor, kRGBToQ);
+     //highp float   YPrime  = dot (sharpImageColor, kRGBToYPrime);
+     //highp float   I      = dot (sharpImageColor, kRGBToI);
+     //highp float   Q      = dot (sharpImageColor, kRGBToQ);
      
      // Calculate the hue and chroma
-     highp float   hue     = atan (Q, I);
+     //highp float   hue     = atan (Q, I);
      
-     highp float   orangeHue = (-138.0/180.0) * 3.1415926535;
+     //highp float   orangeHue = (-138.0/180.0) * 3.1415926535;
      
      highp float comp1 = 2.0 * sharpImageColor.b - sharpImageColor.g;
      highp float comp2 = sharpImageColor.b - bluelowbar;
@@ -75,8 +83,10 @@ NSString *const kFaceBlurFragmentShaderString2 = SHADER_STRING
      if(distance > 0.8){
          gl_FragColor = vec4((sharpImageColor + distanceVec*1.2).xyz, sharpImageColor.w);
      }else{
-         highp float delta = 1.0 - (abs(hue - orangeHue)/(2.0 * 3.1415926535));
-         highp float blurFactor = (1.0 - realRatio)*delta;
+         //highp float delta = 1.0 - (abs(hue - orangeHue)/(2.0 * 3.1415926535));
+         lowp float disRatio = 1.0 - colorDistance(sharpImageColor);
+         lowp float finalRatio = disRatio * disRatio * disRatio;
+         highp float blurFactor = (1.0 - realRatio) * finalRatio;
          gl_FragColor = blurredImageColor * blurFactor + sharpImageColor * (1.0 - blurFactor);
      }
      /**
