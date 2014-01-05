@@ -15,4 +15,5 @@
  */
 @property (readwrite, nonatomic) CGFloat blurSize;
 
+
 @end

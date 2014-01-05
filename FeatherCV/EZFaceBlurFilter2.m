@@ -85,7 +85,10 @@ NSString *const kFaceBlurFragmentShaderString2 = SHADER_STRING
      }else{
          //highp float delta = 1.0 - (abs(hue - orangeHue)/(2.0 * 3.1415926535));
          lowp float disRatio = 1.0 - colorDistance(sharpImageColor);
-         lowp float finalRatio = disRatio * disRatio * disRatio;
+         lowp float finalRatio = disRatio;
+         if(disRatio < 0.6){
+             finalRatio = disRatio * disRatio;
+         }
          highp float blurFactor = (1.0 - realRatio) * finalRatio;
          gl_FragColor = blurredImageColor * blurFactor + sharpImageColor * (1.0 - blurFactor);
      }
