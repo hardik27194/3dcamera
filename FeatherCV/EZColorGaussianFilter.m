@@ -73,24 +73,11 @@ NSString *const kGPUImageGaussianBlurFragmentShaderString0 = SHADER_STRING
  void main()
  {
      lowp vec4 sum = vec4(0.0);
-     const lowp vec4  kRGBToYPrime = vec4 (0.299, 0.587, 0.114, 0.0);
-     const lowp vec4  kRGBToI     = vec4 (0.595716, -0.274453, -0.321263, 0.0);
-     const lowp vec4  kRGBToQ     = vec4 (0.211456, -0.522591, 0.31135, 0.0);
-     
-     const lowp vec4  kYIQToR   = vec4 (1.0, 0.9563, 0.6210, 0.0);
-     const lowp vec4  kYIQToG   = vec4 (1.0, -0.2721, -0.6474, 0.0);
-     const lowp vec4  kYIQToB   = vec4 (1.0, -1.1070, 1.7046, 0.0);
+
      
      lowp vec4 sharpImageColor = texture2D(inputImageTexture, textureCoordinate);
      
-     highp float   YPrime  = dot (sharpImageColor, kRGBToYPrime);
-     highp float   I      = dot (sharpImageColor, kRGBToI);
-     highp float   Q      = dot (sharpImageColor, kRGBToQ);
-     
-     // Calculate the hue and chroma
-     highp float   orgHue     = atan (Q, I);
-     //highp float   orangeHue = (-138.0/180.0) * 3.1415926535;
-     //highp float   delta = abs(hue - orangeHue)/(2.0 * 3.1415926535));
+
      lowp vec4 color0 = texture2D(inputImageTexture, blurCoordinates[0]);
      lowp vec4 color1 = texture2D(inputImageTexture, blurCoordinates[1]);
      lowp vec4 color2 = texture2D(inputImageTexture, blurCoordinates[2]);
