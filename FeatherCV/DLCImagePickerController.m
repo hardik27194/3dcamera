@@ -558,34 +558,10 @@
 -(void) prepareLiveFilter {
     [stillCamera addTarget:orgFiler];
     [orgFiler addTarget:hueFilter];
-    //[cropFilter addTarget:hueFilter];
-    //[stillCamera addTarget:hueFilter];
-    //[cropFilter addTarget:faceBlurFilter];
-    //[faceBlurFilter addTarget:filter];
-    //[cropFilter addTarget:hueFilter];
     [hueFilter addTarget:tongFilter];
     [tongFilter addTarget:filter];
-    //[faceBlurFilter addTarget:filter];
-    
-    //[tongFilter addTarget:whiteBalancerFilter];
-    //[whiteBalancerFilter addTarget:contrastfilter];
-    
-    //[tongFilter addTarget:cropFilter];
-    //[cropFilter addTarget:filter];
-    //[cycleDarken addTarget:filter];
-    //[filter addTarget:faceBlurFilter];
-    
-    //blur is terminal filter
-    //if (hasBlur) {
-    //    [filter addTarget:blurFilter];
-    //    [blurFilter addTarget:self.imageView];
-    //regular filter is terminal
-    //} else {
     [filter addTarget:self.imageView];
-    //}
-    
     [filter prepareForImageCapture];
-    
 }
 
 -(void) prepareStaticFilter {
