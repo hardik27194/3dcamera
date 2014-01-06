@@ -49,7 +49,11 @@ public:
     void detectSmile(cv::Mat& inputFrame, EZFaceResult* faceResult);
     
     //Get the face out.
-    BOOL detectFace(UIImage* image, CGFloat faceRatio);
+    //In this method I will
+    //1. Shrink the image to the specified image
+    //2. calculate the size which match the ratio
+    //3. return the result
+    NSArray* detectFace(UIImage* image, CGFloat miniRatio);
 
     //What's the purpose of this method, is to get mat gray out
     static void getGray(cv::Mat& inputFrame, cv::Mat& outputFrame);

@@ -25,14 +25,14 @@ NSString *const kFaceBlurFragmentShaderString2 = SHADER_STRING
  uniform lowp float excludeBlurSize;
  uniform highp float aspectRatio;
  uniform lowp float realRatio;
- const lowp vec3 skinColor2 = vec3(0.78, 0.5254, 0.372);
+ //const lowp vec3 skinColor2 = vec3(0.78, 0.5254, 0.372);
  
  lowp float colorDistance(lowp vec4 src)
 {
-    highp vec3 delta = src.rgb - skinColor2;
+    highp vec3 delta = src.rgb - skinColor;
     lowp float lowdelta = dot(delta, delta);
-    lowp float skindelta = dot(skinColor2, skinColor2);
-    return max(lowdelta/skindelta, 1.0);
+    //lowp float skindelta = dot(skinColor, skinColor);
+    return min(lowdelta/0.75, 1.0);
 }
  
  void main()
@@ -44,7 +44,7 @@ NSString *const kFaceBlurFragmentShaderString2 = SHADER_STRING
     
      lowp float disRatio = 1.0 - colorDistance(sharpImageColor);
      lowp float finalRatio = disRatio;
-     if(disRatio < 0.6){
+     if(disRatio < exponentChange){
         finalRatio = disRatio * disRatio;
      }
      highp float blurFactor = (1.0 - realRatio) * finalRatio;

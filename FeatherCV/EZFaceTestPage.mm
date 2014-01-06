@@ -91,13 +91,15 @@
     std::vector<EZFaceResult*> filteredFaces;
     UIImage* srcImage = [UIImage imageNamed:imageName];
     UIImage* testImage = [srcImage resizedImageWithMaximumSize:CGSizeMake(720, 720)];
-    cv::Mat target = testImage.toMat;
+    cv::Mat target;
+    [testImage toMat:target];
     EZDEBUG(@"The test image name:%@ row:%d, col:%d",imageName, target.rows, target.cols);
     faceUtil.detectFace(target, faces, true);
     
     faceUtil.filterFaces(target, faces, filteredFaces);
     EZDEBUG(@"Final face is:%lu, filtered faces:%lu", faces.size(), filteredFaces.size());
     for(int i = 0; i < filteredFaces.size(); i++){
+        /**
         EZDEBUG(@"Found face at:%d, %d,%d,%d resized to %d, %d",filteredFaces[i]->orgRect.x, filteredFaces[i]->orgRect.y,filteredFaces[i]->orgRect.width, filteredFaces[i]->orgRect.height, filteredFaces[i]->destRect.width, filteredFaces[i]->destRect.height);
         faceUtil.drawRegion(target, filteredFaces[i]->orgRect);
         cropped.image = [UIImage imageWithMat:*(filteredFaces[i]->face) andImageOrientation:testImage.imageOrientation];
@@ -106,6 +108,7 @@
                 EZDEBUG(@"detected smile for:%i, %i, %i,%i", filteredFaces[i]->orgRect.x, filteredFaces[i]->orgRect.y, filteredFaces[i]->orgRect.width, filteredFaces[i]->orgRect.height);
             }
         });
+         **/
         //original.image = [UIImage imageWithMat:*(faces[i]->resizedImage) andImageOrientation:testImage.imageOrientation];
     }
     //EZDEBUG(@"Test image orientation:%i", testImage.imageOrientation);

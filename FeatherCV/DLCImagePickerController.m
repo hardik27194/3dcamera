@@ -15,7 +15,12 @@
 #import "EZCycleDiminish.h"
 #import "GPUImageHueFilter.h"
 #import "EZNightBlurFilter.h"
+#import "EZFaceUtilWrapper.h"
+#import "EZFaceResultObj.h"
+//#import "EZFaceUtil.h"
+//#import "EZFaceResultObj.h"
 #import <GPUImageToneCurveFilter.h>
+//#include <vector>
 
 #define kStaticBlurSize 2.0f
 @interface EZMotionRecord : NSObject 
@@ -564,6 +569,89 @@
     [filter prepareForImageCapture];
 }
 
+-(void) prepareStaticFilter:(EZFaceResultObj*)fobj image:(UIImage*)img{
+    EZDEBUG(@"Prepare static image get called, flash image:%i, image size:%@", _isImageWithFlash, NSStringFromCGSize(img.size));
+    if(_isImageWithFlash){
+        [staticPicture addTarget:flashFilter];
+        if(_selfShot || stillCamera.isFrontFacing){
+            EZDEBUG(@"Will add faceBlurFilter");
+            //faceBlurFilter.blurSize = 6;
+            [flashFilter addTarget:filter];
+            //[faceBlurFilter addTarget:filter];
+        }else{
+            EZDEBUG(@"Not add faceBlurFilter");
+            
+            [flashFilter addTarget:filter];
+            //[faceBlurFilter addTarget:filter];
+        }
+        
+    }else{
+        [staticPicture addTarget:hueFilter];
+        //[cropFilter addTarget:hueFilter];
+        [hueFilter addTarget:tongFilter];
+        GPUImageFilter* colorFilter = tongFilter;
+        CGFloat isoNumber = [self getISOSpeedRating];
+        CGFloat focalLength = [self getFacalLength];
+        EZDEBUG(@"IsoNumber is:%f, focalLength:%f", isoNumber, focalLength);
+        if(isoNumber > 600){
+            [tongFilter addTarget:darkBlurFilter];
+            colorFilter = (GPUImageFilter*)darkBlurFilter;
+        }
+        
+        if(fobj){
+            CGFloat maxLen = MAX(img.size.width, img.size.height);
+            if(maxLen > 1295.0){
+                dynamicBlurFilter.blurSize = 1.8;
+            }else if(maxLen > 1279.0){
+                dynamicBlurFilter.blurSize = 1.5;
+            }
+            [colorFilter addTarget:dynamicBlurFilter];
+            [dynamicBlurFilter addTarget:filter];
+            //[faceBlurFilter addTarget:filter];
+        }else{
+            EZDEBUG(@"Not add faceBlurFilter");
+            [colorFilter addTarget:filter];
+        }
+    }
+    //[whiteBalancerFilter addTarget:filter];
+    //[contrastfilter addTarget:filter];
+    //[faceBlurFilter addTarget:filter];
+    //[faceBlurFilter addTarget:filter];
+    
+    // blur is terminal filter
+    //if (hasBlur) {
+    //    [filter addTarget:blurFilter];
+    //    [blurFilter addTarget:self.imageView];
+    //regular filter is terminal
+    //} else {
+    
+    [filter addTarget:self.imageView];
+    //}
+    
+    GPUImageRotationMode imageViewRotationMode = kGPUImageNoRotation;
+    switch (staticPictureOriginalOrientation) {
+        case UIImageOrientationLeft:
+            imageViewRotationMode = kGPUImageRotateLeft;
+            break;
+        case UIImageOrientationRight:
+            imageViewRotationMode = kGPUImageRotateRight;
+            break;
+        case UIImageOrientationDown:
+            imageViewRotationMode = kGPUImageRotate180;
+            break;
+        default:
+            imageViewRotationMode = kGPUImageNoRotation;
+            break;
+    }
+    
+    // seems like atIndex is ignored by GPUImageView...
+    [self.imageView setInputRotation:imageViewRotationMode atIndex:0];
+    
+    
+    [staticPicture processImage];
+}
+
+
 -(void) prepareStaticFilter {
     EZDEBUG(@"Prepare static image get called, flash image:%i", _isImageWithFlash);
     if(_isImageWithFlash){
@@ -811,6 +899,8 @@
             }
             _frontCameraCompleted = nil;
         }
+       
+    
         //if(flip){
         //    flipped = [img flipImage];
         //}
@@ -820,7 +910,12 @@
         
         //UIImageView* iview = [[UIImageView alloc] initWithFrame:CGRectMake(0, 400, 100, 100)];
         //iview.image = flipped;
-        EZDEBUG(@"Capture the flip is:%i, flipped orientation:%i, orginal:%i", flip, img.imageOrientation, img.imageOrientation);
+         NSArray* faces = [EZFaceUtilWrapper detectFace:img ratio:0.25];
+        EZDEBUG(@"Capture the flip is:%i, flipped orientation:%i, orginal:%i, faces:%i", flip, img.imageOrientation, img.imageOrientation, faces.count);
+        EZFaceResultObj* firstObj = nil;
+        if(faces.count > 0){
+            firstObj = [faces objectAtIndex:0];
+        }
         //[self.view addSubview:iview];
         //For the testing purpose only
         
@@ -831,7 +926,7 @@
             [self.delegate imagePickerController:self didFinishPickingMediaWithInfo:@{@"image":rotated}];
         }
          **/
-        [self prepareStaticFilter];
+        [self prepareStaticFilter:firstObj image:img];
         [self.retakeButton setHidden:NO];
         [self.photoCaptureButton setTitle:@"Done" forState:UIControlStateNormal];
         [self.photoCaptureButton setImage:nil forState:UIControlStateNormal];
@@ -897,11 +992,10 @@
         
         GPUImageOutput<GPUImageInput> *processUpTo;
         
-        if (hasBlur) {
-            processUpTo = blurFilter;
-        } else {
-            processUpTo = filter;
-        }
+        
+        processUpTo = filter;
+        
+       
         EZDEBUG(@"Before call process image");
         [staticPicture processImage];
         EZDEBUG(@"After call process image");
@@ -920,7 +1014,11 @@
             
         }
         //}
-
+        
+        //std::vector<EZFaceResult*> faces;
+        //EZFaceUtil faceUtil = singleton<EZFaceUtil>();
+        //NSArray* faces = [EZFaceUtilWrapper detectFace:currentFilteredVideoFrame ratio:0.25];
+        //EZDEBUG(@"detected face:%i", faces.count);
         NSDictionary *info = @{@"image":currentFilteredVideoFrame};
         if(photoMeta){
             info = @{@"image":currentFilteredVideoFrame, @"metadata":photoMeta};
@@ -1180,7 +1278,7 @@
 - (void)viewWillDisappear:(BOOL)animated {
     [stillCamera stopCameraCapture];
     [super viewWillDisappear:animated];
-    [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:NO];
+    [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationSlide];
 }
 
 #pragma mark - UIImagePickerDelegate

@@ -26,7 +26,7 @@
     return scaledImage;
 }
 
--(cv::Mat) toMat
+-(void) toMat:(cv::Mat&) mat;
 {
   CGImageRef imageRef = self.CGImage;
   
@@ -56,18 +56,10 @@
   CGContextDrawImage(context, CGRectMake(0, 0, srcWidth, srcHeight), imageRef);
   CGContextRelease(context);
   CGColorSpaceRelease(colorSpace);
-      
   CFRelease(rawData);
-  
-  cv::Mat t;
-  cv::cvtColor(rgbaContainer, t, CV_RGBA2BGRA);
-
-  //cv::Vec4b a = rgbaContainer.at<cv::Vec4b>(0,0);
-  //cv::Vec4b b = t.at<cv::Vec4b>(0,0);
-  //std::cout << std::hex << (int)a[0] << " "<< (int)a[1] << " " << (int)a[2] << " "  << (int)a[3] << std::endl; 
-  //std::cout << std::hex << (int)b[0] << " "<< (int)b[1] << " " << (int)b[2] << " "  << (int)b[3] << std::endl; 
-
-  return t;
+  //cv::Mat t;
+  cv::cvtColor(rgbaContainer, mat, CV_RGBA2BGRA);
+  return;
 }
 
 +(UIImage*) imageWithMat:(const cv::Mat&) image andDeviceOrientation: (UIDeviceOrientation) orientation

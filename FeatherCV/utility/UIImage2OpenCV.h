@@ -11,7 +11,7 @@
 // vice versa using full data copy in both directions.
 @interface UIImage (OpenCV)
 
--(cv::Mat) toMat;
+- (void) toMat:(cv::Mat&) mat;
 
 +(UIImage*) imageWithMat:(const cv::Mat&) image andImageOrientation: (UIImageOrientation) orientation;
 +(UIImage*) imageWithMat:(const cv::Mat&) image andDeviceOrientation: (UIDeviceOrientation) orientation;

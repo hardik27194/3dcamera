@@ -29,7 +29,7 @@ NSString *const kFaceBlurFragmentShaderString3 = SHADER_STRING
     highp vec3 delta = src.rgb - skinColor;
     lowp float lowdelta = dot(delta, delta);
     lowp float skindelta = dot(src, src);
-    return max(lowdelta/0.75, 1.0);
+    return min(lowdelta/0.75, 1.0);
 }
  
  void main()

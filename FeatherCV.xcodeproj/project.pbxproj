@@ -223,6 +223,8 @@
 		18F58B6F18719071006CB966 /* border_left.png in Resources */ = {isa = PBXBuildFile; fileRef = 18F58B6B18719071006CB966 /* border_left.png */; };
 		18F58B72187916F2006CB966 /* EZColorGaussianFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 18F58B71187916F1006CB966 /* EZColorGaussianFilter.m */; };
 		18F58B7518796CE9006CB966 /* EZNightBlurFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 18F58B7418796CE9006CB966 /* EZNightBlurFilter.m */; };
+		18F58B7C187AF205006CB966 /* EZFaceResultObj.m in Sources */ = {isa = PBXBuildFile; fileRef = 18F58B7B187AF205006CB966 /* EZFaceResultObj.m */; };
+		18F58B7F187AF540006CB966 /* EZFaceUtilWrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = 18F58B7E187AF540006CB966 /* EZFaceUtilWrapper.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -565,6 +567,10 @@
 		18F58B71187916F1006CB966 /* EZColorGaussianFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZColorGaussianFilter.m; sourceTree = "<group>"; };
 		18F58B7318796CE9006CB966 /* EZNightBlurFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZNightBlurFilter.h; sourceTree = "<group>"; };
 		18F58B7418796CE9006CB966 /* EZNightBlurFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZNightBlurFilter.m; sourceTree = "<group>"; };
+		18F58B7A187AF205006CB966 /* EZFaceResultObj.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZFaceResultObj.h; sourceTree = "<group>"; };
+		18F58B7B187AF205006CB966 /* EZFaceResultObj.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZFaceResultObj.m; sourceTree = "<group>"; };
+		18F58B7D187AF540006CB966 /* EZFaceUtilWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZFaceUtilWrapper.h; sourceTree = "<group>"; };
+		18F58B7E187AF540006CB966 /* EZFaceUtilWrapper.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = EZFaceUtilWrapper.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1098,6 +1104,10 @@
 				18E34836183F064200C9D89D /* EZFaceUtil.h */,
 				18E348381843086100C9D89D /* EZFaceResult.cpp */,
 				18E348391843086200C9D89D /* EZFaceResult.h */,
+				18F58B7A187AF205006CB966 /* EZFaceResultObj.h */,
+				18F58B7B187AF205006CB966 /* EZFaceResultObj.m */,
+				18F58B7D187AF540006CB966 /* EZFaceUtilWrapper.h */,
+				18F58B7E187AF540006CB966 /* EZFaceUtilWrapper.mm */,
 			);
 			name = facehandle;
 			sourceTree = "<group>";
@@ -1352,8 +1362,10 @@
 				18F58B52186EC0D1006CB966 /* ILTranslucentView.m in Sources */,
 				18E34693183DF54400C9D89D /* FeatherCV.xcdatamodeld in Sources */,
 				18A36FF31855C1F50022F0A8 /* DLCGrayscaleContrastFilter.m in Sources */,
+				18F58B7C187AF205006CB966 /* EZFaceResultObj.m in Sources */,
 				18E34738183DFA5800C9D89D /* EZCollectionPhotoCell.m in Sources */,
 				18E347DB183E050B00C9D89D /* ASIDownloadCache.m in Sources */,
+				18F58B7F187AF540006CB966 /* EZFaceUtilWrapper.mm in Sources */,
 				18E347F7183E081D00C9D89D /* AFXMLRequestOperation.m in Sources */,
 				18A370411859B7C20022F0A8 /* EZContactTableCell.m in Sources */,
 				1874D9D71867F57E005743FC /* EZSaturationFilter.m in Sources */,

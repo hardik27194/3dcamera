@@ -7,7 +7,8 @@
 //
 
 #include "EZFaceUtil.h"
-
+#include "UIImage2OpenCV.h"
+#include "EZFaceResultObj.h"
 
 
 EZFaceUtil::EZFaceUtil()
@@ -196,6 +197,50 @@ void EZFaceUtil::filterFaces(cv::Mat& inputFrame, std::vector<EZFaceResult*>& in
     }
 }
 
+
+
+NSArray* EZFaceUtil::detectFace(UIImage* image, CGFloat miniRatio)
+{
+    CGFloat maxLen = 320;
+    CGSize imageRatio = image.size;
+    if(image.size.width > image.size.height && image.size.width > maxLen){
+        imageRatio.width = maxLen;
+        imageRatio.height = (image.size.height/image.size.width) * maxLen;
+        image = [image resizedImageWithMaximumSize:imageRatio];
+    }else if(image.size.width < image.size.height && image.size.height > maxLen){
+        imageRatio.height = maxLen;
+        imageRatio.width = (image.size.width/image.size.height) * maxLen;
+        image = [image resizedImageWithMaximumSize:imageRatio];
+    }
+    EZDEBUG(@"change image:%@", NSStringFromCGSize(imageRatio));
+    
+    std::vector<EZFaceResult*> faces;
+    cv::Mat imageFrame;
+    [image toMat:imageFrame];
+    detectFace(imageFrame, faces);
+    NSMutableArray* res = nil;
+    if(faces.size() > 0){
+        EZDEBUG(@"Found face:%lu", faces.size());
+        res = [[NSMutableArray alloc] init];
+        for(int i = 0; i < faces.size(); i++){
+            EZFaceResult* fres = faces[i];
+            CGFloat widthRatio = fres->orgRect.width/imageRatio.width;
+            CGFloat heightRatio = fres->orgRect.height/imageRatio.height;
+             EZDEBUG(@"Find a face: %f, %f, %f, ratio: %f,%f", fres->orgRect.width, fres->orgRect.height, miniRatio, widthRatio, heightRatio);
+            
+            if(widthRatio*heightRatio > miniRatio){
+                EZDEBUG(@"Find a face now");
+                EZFaceResultObj* fobj = [[EZFaceResultObj alloc] init];
+                fobj.orgRegion = CGRectMake(fres->orgRect.x/imageRatio.width, fres->orgRect.y/imageRatio.height, widthRatio, heightRatio);
+                [res addObject:fobj];
+            }
+        }
+    }else{
+        EZDEBUG(@"Found no face");
+    }
+    
+    return res;
+}
 //EZFaceResult* fr
 
 void EZFaceUtil::detectFace(cv::Mat& inputFrame, std::vector<EZFaceResult*>& faces,bool hasSmile, cv::Size cropSize)
@@ -213,31 +258,20 @@ void EZFaceUtil::detectFace(cv::Mat& inputFrame, std::vector<EZFaceResult*>& fac
     //-- Detect faces
     std::vector<cv::Rect> faceRects;
     
-    faceCascader.detectMultiScale( singleChannel, faceRects, 1.1, 3, CV_HAAR_SCALE_IMAGE|0, cv::Size(40, 40), cv::Size(singleChannel.rows, singleChannel.cols));
+    faceCascader.detectMultiScale( singleChannel, faceRects, 1.1, 3, CV_HAAR_SCALE_IMAGE|0, cv::Size(30, 30), cv::Size(singleChannel.rows, singleChannel.cols));
     
-    NSLog(@"frame rows:%d, cols:%d, original size:%d, %d", singleChannel.rows, singleChannel.cols, inputFrame.rows, inputFrame.cols);
+    EZDEBUG(@"frame rows:%d, cols:%d, original size:%d, %d", singleChannel.rows, singleChannel.cols, inputFrame.rows, inputFrame.cols);
     //cv::resize(src, dst, Size(1024, 768), 0, 0, INTER_CUBIC)
+    //CGFloat iwidth = inputFrame.cols;
+    //CGFloat iheight = inputFrame.rows;
     
     for( int i = 0; i < faceRects.size(); i++ )
     {
         NSLog(@"face:%i, x:%d, y:%d, width:%d, height:%d", i, faceRects[i].x, faceRects[i].y, faceRects[i].width, faceRects[i].height);
-        //cv::Rect adjustedRect =  cv::Rect(ceilf((float)faceRects[i].x/ratio),ceilf((float)faceRects[i].y/ratio),ceilf((float)faceRects[i].width/ratio),ceilf((float)faceRects[i].height/ratio));
-        cv::Mat faceReg(inputFrame, faceRects[i]);
-        cv::Mat monoFace(singleChannel, faceRects[i]);
-        cv::Mat* retMat = new cv::Mat(cropSize.width, cropSize.height, CV_8UC1);
-        cv::resize(faceReg, *retMat, cropSize, 0, 0, cv::INTER_LINEAR);
-        //cv::Mat monoFace(singleChannel, faceRects[i]);
-        cv::Mat monoResize;
-        cv::resize(monoFace, monoResize, cropSize, 0, 0, cv::INTER_LINEAR);
         EZFaceResult* fres = new EZFaceResult();
         fres->orgRect = faceRects[i];
-         NSLog(@"x:%d, y:%d, width:%d, height:%d", fres->orgRect.x, fres->orgRect.y, fres->orgRect.width, fres->orgRect.height);
+         NSLog(@"x:%f, y:%f, width:%f, height:%f", fres->orgRect.x, fres->orgRect.y, fres->orgRect.width, fres->orgRect.height);
         fres->destRect = cv::Rect(0, 0, cropSize.width, cropSize.height);
-        fres->face = retMat;
-        if(hasSmile){
-            
-        }
-        //fres->resizedImage = new cv::Mat(singleChannel);
         faces.push_back(fres);
     }
 }
