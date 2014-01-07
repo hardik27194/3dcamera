@@ -45,7 +45,7 @@ NSString *const kFaceBlurFragmentShaderString2 = SHADER_STRING
      lowp float disRatio = 1.0 - colorDistance(sharpImageColor);
      lowp float finalRatio = disRatio;
      if(disRatio < exponentChange){
-        finalRatio = disRatio * disRatio;
+        //finalRatio = disRatio * disRatio;
      }
      highp float blurFactor = (1.0 - realRatio) * finalRatio;
      gl_FragColor = blurredImageColor * blurFactor + sharpImageColor * (1.0 - blurFactor);
@@ -102,7 +102,7 @@ NSString *const kFaceBlurFragmentShaderString2 = SHADER_STRING
     // Texture location 0 needs to be the sharp image for both the blur and the second stage processing
     [blurFilter addTarget:selectiveFocusFilter atTextureLocation:1];
     //0.78, 0.5254, 0.372
-    self.skinColors = @[@(0.78),@(0.5254),@(0.372)];
+    self.skinColors = @[@(0.703),@(0.473),@(0.332)];
     self.exponentChange = 0.6;
     // To prevent double updating of this filter, disable updates from the sharp image side
     self.initialFilters = [NSArray arrayWithObjects:blurFilter, selectiveFocusFilter, nil];

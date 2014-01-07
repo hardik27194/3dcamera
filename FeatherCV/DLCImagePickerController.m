@@ -220,8 +220,8 @@
     
     
     dynamicBlurFilter = [[EZFaceBlurFilter2 alloc] init];
-    dynamicBlurFilter.blurSize = 2;
-    dynamicBlurFilter.realRatio = 0.1;
+    dynamicBlurFilter.blurSize = 4;
+    dynamicBlurFilter.realRatio = 0.3;
     filter = [[GPUImageFilter alloc] init];
     tongFilter = [[GPUImageToneCurveFilter alloc] init];
     cycleDarken = [[EZCycleDiminish alloc] init];
@@ -598,20 +598,20 @@
             colorFilter = (GPUImageFilter*)darkBlurFilter;
         }
         
-        if(fobj){
+        //if(fobj){
             CGFloat maxLen = MAX(img.size.width, img.size.height);
             if(maxLen > 1295.0){
-                dynamicBlurFilter.blurSize = 1.8;
+                //dynamicBlurFilter.blurSize = 1.8;
             }else if(maxLen > 1279.0){
-                dynamicBlurFilter.blurSize = 1.5;
+                //dynamicBlurFilter.blurSize = 1.5;
             }
             [colorFilter addTarget:dynamicBlurFilter];
             [dynamicBlurFilter addTarget:filter];
             //[faceBlurFilter addTarget:filter];
-        }else{
-            EZDEBUG(@"Not add faceBlurFilter");
-            [colorFilter addTarget:filter];
-        }
+        //}else{
+            //EZDEBUG(@"Not add faceBlurFilter");
+            //[colorFilter addTarget:filter];
+        //}
     }
     //[whiteBalancerFilter addTarget:filter];
     //[contrastfilter addTarget:filter];

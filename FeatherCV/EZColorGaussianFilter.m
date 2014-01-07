@@ -47,6 +47,7 @@ NSString *const kGPUImageGaussianBlurFragmentShaderString0 = SHADER_STRING
  
  const lowp int GAUSSIAN_SAMPLES = 9;
  const lowp float gapVal = 0.15;
+ const lowp float revGapVal = 0.85;
  
  varying highp vec2 textureCoordinate;
  varying highp vec2 blurCoordinates[GAUSSIAN_SAMPLES];
@@ -57,6 +58,15 @@ NSString *const kGPUImageGaussianBlurFragmentShaderString0 = SHADER_STRING
     highp vec4 delta = src - dest;
     return sqrt(dot(delta, delta)/dot(src, src));
 }
+ 
+ 
+ lowp vec4 colorMix(lowp vec4 src, lowp vec4 dest, lowp float mixVal){
+     lowp float finalMix = 1.0 - mixVal;
+     //if(finalMix < revGapVal){
+     finalMix = ;
+     //}
+     return src * (1.0 - finalMix) + dest * finalMix;
+ }
  /**
  lowp float calcHue(highp vec4 rawcolor, highp float orghue)
  {
@@ -99,59 +109,59 @@ NSString *const kGPUImageGaussianBlurFragmentShaderString0 = SHADER_STRING
      lowp float hue8 = colorDistance(color8, sharpImageColor);
      
      
-     if(hue0 > gapVal){
-         sum += sharpImageColor * 0.05;
-     }else{
-         sum += color0 * 0.05;
-     }
+     //if(hue0 > gapVal){
+     //    sum += sharpImageColor * 0.05;
+     //}else{
+         sum += colorMix(sharpImageColor,color0, hue0) * 0.05;
+     //}
      
-     if(hue1 > gapVal){
-         sum += sharpImageColor * 0.09;
-     }else{
-         sum += color1 * 0.09;
-     }
+     //if(hue1 > gapVal){
+     //    sum += sharpImageColor * 0.09;
+     //}else{
+         sum += colorMix(sharpImageColor,color1, hue1) * 0.09;
+     //}
      
-     if(hue2 > gapVal){
-         sum += sharpImageColor * 0.12;
-     }else{
-         sum += color2 * 0.12;
-     }
+     //if(hue2 > gapVal){
+     //    sum += sharpImageColor * 0.12;
+     //}else{
+         sum += colorMix(sharpImageColor,color2, hue2) * 0.12;
+     //}
      
-     if(hue3 > gapVal){
-         sum += sharpImageColor * 0.15;
-     }else{
-         sum += color3 * 0.15;
-     }
+     //if(hue3 > gapVal){
+     //    sum += sharpImageColor * 0.15;
+     //}else{
+         sum += colorMix(sharpImageColor,color3, hue3) * 0.15;
+     //}
 
-     if(hue4 > gapVal){
-         sum += sharpImageColor * 0.18;
-     }else{
-         sum += color4 * 0.18;
-     }
+     //if(hue4 > gapVal){
+     //    sum += sharpImageColor * 0.18;
+     //}else{
+         sum += colorMix(sharpImageColor,color4, hue4) * 0.18;
+     //}
      
-     if(hue5 > gapVal){
-         sum += sharpImageColor * 0.15;
-     }else{
-         sum += color5 * 0.15;
-     }
+     //if(hue5 > gapVal){
+     //    sum += sharpImageColor * 0.15;
+     //}else{
+         sum += colorMix(sharpImageColor,color5, hue5) * 0.15;
+     //}
      
-     if(hue6 > gapVal){
-         sum += sharpImageColor * 0.12;
-     }else{
-         sum += color6 * 0.12;
-     }
+     //if(hue6 > gapVal){
+     //    sum += sharpImageColor * 0.12;
+     //}else{
+         sum += colorMix(sharpImageColor,color6, hue6) * 0.12;
+     //}
 
-     if(hue7 > gapVal){
-         sum += sharpImageColor * 0.09;
-     }else{
-         sum += color7 * 0.09;
-     }
+     //if(hue7 > gapVal){
+     //    sum += sharpImageColor * 0.09;
+     //}else{
+         sum += colorMix(sharpImageColor,color7, hue7) * 0.09;
+     //}
      
-     if(hue8 > gapVal){
-         sum += sharpImageColor * 0.05;
-     }else{
-         sum += color8 * 0.05;
-     }
+     //if(hue8 > gapVal){
+     //    sum += sharpImageColor * 0.05;
+     //}else{
+         sum += colorMix(sharpImageColor,color8, hue8) * 0.05;
+     //}
      gl_FragColor = sum;
  }
  );
