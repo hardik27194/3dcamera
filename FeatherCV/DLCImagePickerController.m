@@ -220,8 +220,8 @@
     
     
     dynamicBlurFilter = [[EZFaceBlurFilter2 alloc] init];
-    dynamicBlurFilter.blurSize = 4;
-    dynamicBlurFilter.realRatio = 0.3;
+    dynamicBlurFilter.blurSize = 1.5;
+    dynamicBlurFilter.realRatio = 0.15;
     filter = [[GPUImageFilter alloc] init];
     tongFilter = [[GPUImageToneCurveFilter alloc] init];
     cycleDarken = [[EZCycleDiminish alloc] init];

@@ -53,17 +53,21 @@ NSString *const kGPUImageGaussianBlurFragmentShaderString0 = SHADER_STRING
  varying highp vec2 blurCoordinates[GAUSSIAN_SAMPLES];
  
 
- lowp float colorDistance(lowp vec4 dest, lowp vec4 src)
+ highp float colorDistance(lowp vec4 dest, lowp vec4 src)
 {
-    highp vec4 delta = src - dest;
-    return sqrt(dot(delta, delta)/dot(src, src));
+    lowp vec3 delta = src.rgb - dest.rgb;
+    return sqrt(dot(delta, delta)/dot(src.rgb, src.rgb));
 }
  
  
- lowp vec4 colorMix(lowp vec4 src, lowp vec4 dest, lowp float mixVal){
-     lowp float finalMix = 1.0 - mixVal;
+ lowp vec4 colorMix(lowp vec4 src, lowp vec4 dest, highp float mixVal)
+{
+     highp float mixedVal = -(mixVal * 10.0 - 5.0);
+     mixedVal = 1.0/(exp(mixedVal) + 1.0);
+
+     highp float finalMix = 1.0 - mixedVal;
      //if(finalMix < revGapVal){
-     finalMix = ;
+     //finalMix = finalMix * finalMix * finalMix;
      //}
      return src * (1.0 - finalMix) + dest * finalMix;
  }
@@ -98,15 +102,15 @@ NSString *const kGPUImageGaussianBlurFragmentShaderString0 = SHADER_STRING
      lowp vec4 color7 = texture2D(inputImageTexture, blurCoordinates[7]);
      lowp vec4 color8 = texture2D(inputImageTexture, blurCoordinates[8]);
      
-     lowp float hue0 = colorDistance(color0, sharpImageColor);
-     lowp float hue1 = colorDistance(color1, sharpImageColor);
-     lowp float hue2 = colorDistance(color2, sharpImageColor);
-     lowp float hue3 = colorDistance(color3, sharpImageColor);
-     lowp float hue4 = colorDistance(color4, sharpImageColor);
-     lowp float hue5 = colorDistance(color5, sharpImageColor);
-     lowp float hue6 = colorDistance(color6, sharpImageColor);
-     lowp float hue7 = colorDistance(color7, sharpImageColor);
-     lowp float hue8 = colorDistance(color8, sharpImageColor);
+     highp float hue0 = colorDistance(color0, sharpImageColor);
+     highp float hue1 = colorDistance(color1, sharpImageColor);
+     highp float hue2 = colorDistance(color2, sharpImageColor);
+     highp float hue3 = colorDistance(color3, sharpImageColor);
+     highp float hue4 = colorDistance(color4, sharpImageColor);
+     highp float hue5 = colorDistance(color5, sharpImageColor);
+     highp float hue6 = colorDistance(color6, sharpImageColor);
+     highp float hue7 = colorDistance(color7, sharpImageColor);
+     highp float hue8 = colorDistance(color8, sharpImageColor);
      
      
      //if(hue0 > gapVal){
