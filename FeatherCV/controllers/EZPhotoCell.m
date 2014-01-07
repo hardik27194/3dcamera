@@ -60,15 +60,15 @@
         // Initialization code
         _container = [[EZClickView alloc] initWithFrame:CGRectMake(10, 10, 300, 300 + ToolRegionHeight)];
         //_container.layer.cornerRadius = 5;
-        _container.clipsToBounds = true;
+        //_container.clipsToBounds = true;
         _container.backgroundColor = [UIColor greenColor];
         
         _rotateContainer = [self createRotateContainer:_container.bounds];
         [_container addSubview:_rotateContainer];
-        _rotateContainer.backgroundColor = [UIColor blueColor];
+        _rotateContainer.backgroundColor = [UIColor redColor];
         //[_container makeInsetShadowWithRadius:20 Color:RGBA(255, 255, 255, 128)];
         _frontImage = [self createFrontImage];
-        _frontImage.backgroundColor = RGBCOLOR(255, 128, 69);
+        _frontImage.backgroundColor = RGBCOLOR(255, 255, 0);
         _toolRegion = [self createToolRegion:ToolRegionRect];
         _photoTalk = (UILabel*)[_toolRegion viewWithTag:MainLabelTag];
         [self.contentView addSubview:_container];
@@ -124,7 +124,7 @@
 {
     CGFloat adjustedHeight = [self calHeight:img.size];
     UIView* rt = [[UIView alloc] initWithFrame:CGRectMake(0, 0, ContainerWidth, adjustedHeight + ToolRegionHeight)];
-    rt.backgroundColor = RGBCOLOR(0, 255, 128);
+    rt.backgroundColor = RGBCOLOR(128, 128, 128);
     return rt;
 }
 

@@ -607,7 +607,27 @@
         }
         
     }else{
-        [staticPicture addTarget:hueFilter];
+        
+        //if(fobj){
+        CGFloat maxLen = MAX(img.size.width, img.size.height);
+        if(maxLen > 1295.0){
+            //dynamicBlurFilter.blurSize = 1.8;
+        }else if(maxLen > 1279.0){
+            //dynamicBlurFilter.blurSize = 1.5;
+        }
+        if(fobj){
+        [staticPicture addTarget:dynamicBlurFilter];
+        [dynamicBlurFilter addTarget:hueFilter];
+        }else{
+            [staticPicture addTarget:hueFilter];
+        }
+        //[faceBlurFilter addTarget:filter];
+        //}else{
+        //EZDEBUG(@"Not add faceBlurFilter");
+        //[colorFilter addTarget:filter];
+        //}
+        
+        //[staticPicture addTarget:hueFilter];
         //[cropFilter addTarget:hueFilter];
         [hueFilter addTarget:tongFilter];
         GPUImageFilter* colorFilter = tongFilter;
@@ -618,21 +638,8 @@
             [tongFilter addTarget:darkBlurFilter];
             colorFilter = (GPUImageFilter*)darkBlurFilter;
         }
-        
-        //if(fobj){
-            CGFloat maxLen = MAX(img.size.width, img.size.height);
-            if(maxLen > 1295.0){
-                //dynamicBlurFilter.blurSize = 1.8;
-            }else if(maxLen > 1279.0){
-                //dynamicBlurFilter.blurSize = 1.5;
-            }
-            [colorFilter addTarget:dynamicBlurFilter];
-            [dynamicBlurFilter addTarget:filter];
-            //[faceBlurFilter addTarget:filter];
-        //}else{
-            //EZDEBUG(@"Not add faceBlurFilter");
-            //[colorFilter addTarget:filter];
-        //}
+        [colorFilter addTarget:filter];
+       
     }
     //[whiteBalancerFilter addTarget:filter];
     //[contrastfilter addTarget:filter];

@@ -139,8 +139,8 @@ static int photoCount = 1;
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *CellIdentifier = @"PhotoCell";
-    EZPhotoCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
-    if(cell.isTurning){
+    EZPhotoCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    if(!cell || cell.isTurning){
         EZDEBUG(@"Recieved a rotating cell.");
         cell = [[EZPhotoCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
@@ -156,14 +156,18 @@ static int photoCount = 1;
     // Configure the cell...
     //[cell displayImage:[myPhoto getLocalImage]];
     [[cell viewWithTag:animateCoverViewTag] removeFromSuperview];
+    if(cell.rotateContainer.superview == nil){
+        EZDEBUG(@"encounter nil rotateContainer");
+        [cell.container addSubview:cell.rotateContainer];
+    }
     if(cp.turningAnimation){
         EZDEBUG(@"Turning animation get called");
         //[cell adjustCellSize:cp.turningImageSize];
         //[cell displayImage:cp.oldTurnedImage];
         [cell.container addSubview:cp.oldTurnedImage];
         EZEventBlock animBlock = cp.turningAnimation;
-        animBlock(cell);
         cp.turningAnimation = nil;
+        animBlock(cell);
         //cp.oldTurnedImage = nil;
     }else{
     if(cp.isFront){
@@ -186,7 +190,9 @@ static int photoCount = 1;
         }
         if(weakCell.currentPos != indexPath.row){
             EZDEBUG(@"Turn while cell no more this row:%i, %i", weakCell.currentPos, indexPath.row);
+            return;
         }
+        EZDEBUG(@"rotateContainer,FrontImage rect:%@, %@, rotatateContainer parent:%i, %i",NSStringFromCGRect(weakCell.rotateContainer.frame), NSStringFromCGRect(weakCell.frontImage.frame), (int)weakCell.rotateContainer.superview, (int)weakCell.container);
         cp.isTurning = true;
         cp.isFront = !cp.isFront;
         EZEventBlock complete = ^(id sender){
