@@ -125,6 +125,19 @@
     [self captureImageInner:YES];
 }
 
+//Will adjust the blur level
+- (IBAction) slideChanged:(id)sender
+{
+    if(sender == _blurRate){
+        dynamicBlurFilter.realRatio = _blurRate.value;
+    }else{
+        dynamicBlurFilter.blurSize = 1.0 + _blurSize.value;
+    }
+    
+    _blurSizeText.text = [NSString stringWithFormat:@"%f", _blurSize.value];
+    _blurRateText.text = [NSString stringWithFormat:@"%f", _blurRate.value];
+    [staticPicture processImage];
+}
 
 //The flash filter will get setup here.
 - (void) setupDarkFilter
@@ -175,7 +188,8 @@
     [redAdjustments addObjectsFromArray:@[pointValue(0.0, 0.0), pointValue(0.25, 0.25), pointValue(0.5, 0.5), pointValue(0.75, 0.75), pointValue(1.0, 1.0)]];
     [greenAdjustments addObjectsFromArray:@[pointValue(0.0, 0.0), pointValue(0.25, 0.25), pointValue(0.5, 0.5), pointValue(0.75, 0.75), pointValue(1.0, 1.0)]];
     [blueAdjustments addObjectsFromArray:@[pointValue(0.0, 0.0), pointValue(0.25, 0.25), pointValue(0.5, 0.5), pointValue(0.75, 0.75), pointValue(1.0, 1.0)]];
-
+    [_blurSize rotateAngle:-M_PI_2];
+    [_blurRate rotateAngle:-M_PI_2];
     self.wantsFullScreenLayout = YES;
     _pageTurn = [[EZSoundEffect alloc] initWithSoundNamed:@"page_turn.aiff"];
     _shotReady = [[EZSoundEffect alloc] initWithSoundNamed:@"shot_voice.aiff"];
@@ -222,6 +236,13 @@
     dynamicBlurFilter = [[EZFaceBlurFilter2 alloc] init];
     dynamicBlurFilter.blurSize = 1.5;
     dynamicBlurFilter.realRatio = 0.15;
+    
+    _blurSize.value = 0.5;
+    _blurRate.value = 0.15;
+    
+    _blurSizeText.text = [NSString stringWithFormat:@"%f", _blurSize.value];
+    _blurRateText.text = [NSString stringWithFormat:@"%f", _blurRate.value];
+    
     filter = [[GPUImageFilter alloc] init];
     tongFilter = [[GPUImageToneCurveFilter alloc] init];
     cycleDarken = [[EZCycleDiminish alloc] init];

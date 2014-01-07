@@ -7,6 +7,10 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="DLCImagePickerController">
             <connections>
+                <outlet property="blurRate" destination="42X-LB-WaP" id="LkO-Gs-o7c"/>
+                <outlet property="blurRateText" destination="ohM-9Q-hL8" id="gxF-Ii-bR0"/>
+                <outlet property="blurSize" destination="jSU-k7-gRV" id="ecr-Pp-qJ9"/>
+                <outlet property="blurSizeText" destination="b0k-2O-TM4" id="a0M-j1-fcg"/>
                 <outlet property="blurToggleButton" destination="50" id="61"/>
                 <outlet property="cameraToggleButton" destination="37" id="48"/>
                 <outlet property="cancelButton" destination="36" id="44"/>
@@ -28,6 +32,36 @@
                 <view contentMode="scaleAspectFill" id="7" customClass="GPUImageView">
                     <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                    <subviews>
+                        <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" id="jSU-k7-gRV" userLabel="blurSize">
+                            <rect key="frame" x="18" y="223" width="196" height="34"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <connections>
+                                <action selector="slideChanged:" destination="-1" eventType="valueChanged" id="qKo-7G-yau"/>
+                            </connections>
+                        </slider>
+                        <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" id="42X-LB-WaP" userLabel="blurRate">
+                            <rect key="frame" x="135" y="223" width="196" height="34"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <connections>
+                                <action selector="slideChanged:" destination="-1" eventType="valueChanged" id="KNS-GO-RTs"/>
+                            </connections>
+                        </slider>
+                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="b0k-2O-TM4" userLabel="Label - blurSize">
+                            <rect key="frame" x="67" y="83" width="83" height="21"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                            <color key="textColor" red="1" green="0.064019456969999999" blue="0.0097322759530000004" alpha="1" colorSpace="calibratedRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="ohM-9Q-hL8" userLabel="Label - blurRate">
+                            <rect key="frame" x="192" y="83" width="82" height="21"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                            <color key="textColor" red="1" green="0.064019456969999999" blue="0.0097322759530000004" alpha="1" colorSpace="calibratedRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                    </subviews>
                     <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                     <gestureRecognizers/>
                     <connections>

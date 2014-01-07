@@ -34,6 +34,24 @@ NSString *const kFaceBlurFragmentShaderString2 = SHADER_STRING
     //lowp float skindelta = dot(skinColor, skinColor);
     return min(lowdelta/0.75, 1.0);
 }
+
+ lowp float calcHue(lowp vec4 rawcolor)
+ {
+     const lowp vec4  kRGBToYPrime = vec4 (0.299, 0.587, 0.114, 0.0);
+     const lowp vec4  kRGBToI     = vec4 (0.595716, -0.274453, -0.321263, 0.0);
+     const lowp vec4  kRGBToQ     = vec4 (0.211456, -0.522591, 0.31135, 0.0);
+     
+     highp float   I      = dot (rawcolor, kRGBToI);
+     highp float   Q      = dot (rawcolor, kRGBToQ);
+     highp float hue = atan(Q, I);
+     
+     highp float  OI = dot(skinColor, kRGBToI.rgb);
+     highp float  OQ = dot(skinColor, kRGBToQ.rgb);
+     highp float orghue = atan(OQ, OI);
+     
+     lowp float res = 1.0/(exp(3.1415926535 - abs(hue - orghue)) + 1.0);
+     return res;
+ }
  
  void main()
  {
@@ -42,7 +60,7 @@ NSString *const kFaceBlurFragmentShaderString2 = SHADER_STRING
     
       highp vec2 textureCoordinateToUse = vec2(textureCoordinate2.x, (textureCoordinate2.y * aspectRatio + 0.5 - 0.5 * aspectRatio));
     
-     lowp float disRatio = 1.0 - colorDistance(sharpImageColor);
+     lowp float disRatio = 1.0 - calcHue(sharpImageColor);
      lowp float finalRatio = disRatio;
      if(disRatio < exponentChange){
         //finalRatio = disRatio * disRatio;

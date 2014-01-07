@@ -60,6 +60,7 @@ NSString *const kGPUImageGaussianBlurFragmentShaderString0 = SHADER_STRING
 }
  
  
+ 
  lowp vec4 colorMix(lowp vec4 src, lowp vec4 dest, highp float mixVal)
 {
      highp float mixedVal = -(mixVal * 10.0 - 5.0);

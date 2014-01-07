@@ -51,6 +51,14 @@ typedef enum {
 @property (nonatomic, assign) EZCameraTurnStatus turnStatus;
 @property (nonatomic, weak) IBOutlet GPUImageView *imageView;
 @property (nonatomic, weak) id <DLCImagePickerDelegate> delegate;
+
+@property (nonatomic, weak) IBOutlet UISlider* blurSize;
+@property (nonatomic, weak) IBOutlet UISlider* blurRate;
+@property (nonatomic, weak) IBOutlet UILabel* blurSizeText;
+@property (nonatomic, weak) IBOutlet UILabel* blurRateText;
+
+
+
 @property (nonatomic, weak) IBOutlet UIButton *photoCaptureButton;
 @property (nonatomic, weak) IBOutlet UIButton *cancelButton;
 
