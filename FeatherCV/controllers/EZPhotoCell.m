@@ -120,7 +120,7 @@
     return toolRegion;
 }
 
-- (UIView*) createDupContainer:(UIImage *)img
+- (UIView*) createDupContainerTest:(UIImage *)img
 {
     CGFloat adjustedHeight = [self calHeight:img.size];
     UIView* rt = [[UIView alloc] initWithFrame:CGRectMake(0, 0, ContainerWidth, adjustedHeight + ToolRegionHeight)];
@@ -129,7 +129,7 @@
 }
 
 
-- (UIView*) createDupContainerOld:(UIImage*)img
+- (UIView*) createDupContainer:(UIImage*)img
 {
     CGFloat adjustedHeight = [self calHeight:img.size];
     UIView* rotateContainer = [self createRotateContainer:CGRectMake(0, 0, ContainerWidth, adjustedHeight + ToolRegionHeight)];
