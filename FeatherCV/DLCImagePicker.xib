@@ -7,10 +7,10 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="DLCImagePickerController">
             <connections>
-                <outlet property="blurRate" destination="42X-LB-WaP" id="LkO-Gs-o7c"/>
-                <outlet property="blurRateText" destination="ohM-9Q-hL8" id="gxF-Ii-bR0"/>
-                <outlet property="blurSize" destination="jSU-k7-gRV" id="ecr-Pp-qJ9"/>
-                <outlet property="blurSizeText" destination="b0k-2O-TM4" id="a0M-j1-fcg"/>
+                <outlet property="blueGap" destination="85J-Ru-5nl" id="j18-8A-Enu"/>
+                <outlet property="blueGapText" destination="MNk-vl-hOI" id="oIb-bb-FJv"/>
+                <outlet property="bluePoint" destination="7GB-Iu-rec" id="UKB-9I-GOJ"/>
+                <outlet property="blueText" destination="X4X-jy-WAQ" id="ejZ-Ea-d9O"/>
                 <outlet property="blurToggleButton" destination="50" id="61"/>
                 <outlet property="cameraToggleButton" destination="37" id="48"/>
                 <outlet property="cancelButton" destination="36" id="44"/>
@@ -19,9 +19,15 @@
                 <outlet property="imageView" destination="7" id="43"/>
                 <outlet property="photoBar" destination="31" id="73"/>
                 <outlet property="photoCaptureButton" destination="32" id="45"/>
+                <outlet property="redGap" destination="rCL-o1-3cC" id="ulY-so-Y5c"/>
+                <outlet property="redGapText" destination="2x4-oP-fus" id="zbj-DP-C7K"/>
+                <outlet property="redPoint" destination="jSU-k7-gRV" id="ctu-59-vaC"/>
+                <outlet property="redText" destination="b0k-2O-TM4" id="0VI-Xb-JjK"/>
                 <outlet property="retakeButton" destination="80" id="81"/>
                 <outlet property="topBar" destination="34" id="74"/>
                 <outlet property="view" destination="4" id="42"/>
+                <outlet property="yellowPoint" destination="42X-LB-WaP" id="ZJd-bW-yw7"/>
+                <outlet property="yellowText" destination="ohM-9Q-hL8" id="ILS-Ul-LUY"/>
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
@@ -33,29 +39,71 @@
                     <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <subviews>
-                        <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" id="jSU-k7-gRV" userLabel="blurSize">
-                            <rect key="frame" x="18" y="223" width="196" height="34"/>
+                        <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" id="jSU-k7-gRV" userLabel="redSlider">
+                            <rect key="frame" x="-58" y="223" width="196" height="34"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <connections>
                                 <action selector="slideChanged:" destination="-1" eventType="valueChanged" id="qKo-7G-yau"/>
                             </connections>
                         </slider>
-                        <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" id="42X-LB-WaP" userLabel="blurRate">
-                            <rect key="frame" x="135" y="223" width="196" height="34"/>
+                        <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" id="42X-LB-WaP" userLabel="yellowSlider">
+                            <rect key="frame" x="1" y="223" width="196" height="34"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <connections>
                                 <action selector="slideChanged:" destination="-1" eventType="valueChanged" id="KNS-GO-RTs"/>
                             </connections>
                         </slider>
-                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="b0k-2O-TM4" userLabel="Label - blurSize">
-                            <rect key="frame" x="67" y="83" width="83" height="21"/>
+                        <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" id="7GB-Iu-rec" userLabel="blueSlider">
+                            <rect key="frame" x="62" y="223" width="196" height="34"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <connections>
+                                <action selector="slideChanged:" destination="-1" eventType="valueChanged" id="zuf-wh-SMa"/>
+                            </connections>
+                        </slider>
+                        <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" id="rCL-o1-3cC" userLabel="redAdjustAngle">
+                            <rect key="frame" x="126" y="223" width="196" height="34"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <connections>
+                                <action selector="slideChanged:" destination="-1" eventType="valueChanged" id="DKb-fS-Ifr"/>
+                            </connections>
+                        </slider>
+                        <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" id="85J-Ru-5nl" userLabel="blueAdjustAngle">
+                            <rect key="frame" x="188" y="223" width="196" height="34"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <connections>
+                                <action selector="slideChanged:" destination="-1" eventType="valueChanged" id="pBW-ee-hrh"/>
+                            </connections>
+                        </slider>
+                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="b0k-2O-TM4" userLabel="Label - red">
+                            <rect key="frame" x="3" y="83" width="56" height="21"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                             <color key="textColor" red="1" green="0.064019456969999999" blue="0.0097322759530000004" alpha="1" colorSpace="calibratedRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
-                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="ohM-9Q-hL8" userLabel="Label - blurRate">
-                            <rect key="frame" x="192" y="83" width="82" height="21"/>
+                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="ohM-9Q-hL8" userLabel="Label - yellow">
+                            <rect key="frame" x="67" y="83" width="60" height="21"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                            <color key="textColor" red="1" green="0.064019456969999999" blue="0.0097322759530000004" alpha="1" colorSpace="calibratedRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="X4X-jy-WAQ" userLabel="Label - blue">
+                            <rect key="frame" x="135" y="83" width="56" height="21"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                            <color key="textColor" red="1" green="0.064019456969999999" blue="0.0097322759530000004" alpha="1" colorSpace="calibratedRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="2x4-oP-fus" userLabel="Label - redGap">
+                            <rect key="frame" x="199" y="83" width="51" height="21"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                            <color key="textColor" red="1" green="0.064019456969999999" blue="0.0097322759530000004" alpha="1" colorSpace="calibratedRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="MNk-vl-hOI" userLabel="Label - blueGap">
+                            <rect key="frame" x="261" y="83" width="51" height="21"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                             <color key="textColor" red="1" green="0.064019456969999999" blue="0.0097322759530000004" alpha="1" colorSpace="calibratedRGB"/>

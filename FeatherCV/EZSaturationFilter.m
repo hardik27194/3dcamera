@@ -60,7 +60,7 @@ NSString *const kGPUImageMySatuFragmentShaderString = SHADER_STRING
  
  lowp float gaussian(highp float hue, highp float mid,highp float std)
  {
-     return (1.0/(std* sqrt(2.0*pi))) * exp(- ((hue-mid)*(hue-mid))/(2.0*std*std));
+     return (1.0/(std* sqrt(2.0*pi))) * exp(-((hue-mid)*(hue-mid))/(2.0*std*std));
  }
  
  
@@ -95,16 +95,27 @@ NSString *const kGPUImageMySatuFragmentShaderString = SHADER_STRING
       // Calculate the hue and chroma
       highp float hue = atan (rawYiq.b, rawYiq.g);
       // Make the user's adjustments
-      if(hue < lowRed || hue > highBlue){
+      //highp float redEnd = 6.28;
+      //highp float blueEnd = 3.14;
+     
+      if(hue > lowRed || hue < highBlue){
           gl_FragColor = sharpImageColor;
           return;
       }
       
-      if(hue >= lowRed && hue <= midYellow){
-          gl_FragColor = adjustColor(rawYiq, lowRed, midYellow, -yellowRedDegree);
+      if(hue <= lowRed && hue >= midYellow){
+          gl_FragColor = adjustColor(rawYiq, midYellow, lowRed, yellowRedDegree);
           return;
       }
-      gl_FragColor = adjustColor(rawYiq, midYellow, highBlue, yellowBlueDegree);
+     
+     /**
+     if(hue > -0.7 && hue < -0.6){
+         gl_FragColor = sharpImageColor*0.1;
+         return;
+     }
+      **/
+     gl_FragColor = adjustColor(rawYiq, highBlue, midYellow, -yellowBlueDegree);
+     //gl_FragColor = sharpImageColor;
      //gl_FragColor = sharpImageColor;
  }
  );
@@ -165,7 +176,11 @@ NSString *const kGPUImageHueFragmentShaderString = SHADER_STRING
     {
         return nil;
     }
-    
+    self.lowRed = 20;
+    self.midYellow = -30;
+    self.highBlue = -80;
+    self.yellowRedDegree = 10;
+    self.yellowBlueDegree = 10;
     //hueAdjustUniform = [filterProgram uniformIndex:@"hueAdjust"];
     //self.hue = 0.0;
     
@@ -194,5 +209,12 @@ NSString *const kGPUImageHueFragmentShaderString = SHADER_STRING
 {
     _yellowBlueDegree = fmodf(yellowBlueDegree, 360.0) * M_PI/180.0;
     [self setFloat:_yellowBlueDegree forUniformName:@"yellowBlueDegree"];
+}
+
+
+- (void) setYellowRedDegree:(CGFloat)yellowRedDegree
+{
+    _yellowRedDegree = fmodf(yellowRedDegree, 360.0) * M_PI/180.0;
+    [self setFloat:_yellowRedDegree forUniformName:@"yellowRedDegree"];
 }
 @end

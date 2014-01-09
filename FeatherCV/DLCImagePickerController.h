@@ -52,10 +52,18 @@ typedef enum {
 @property (nonatomic, weak) IBOutlet GPUImageView *imageView;
 @property (nonatomic, weak) id <DLCImagePickerDelegate> delegate;
 
-@property (nonatomic, weak) IBOutlet UISlider* blurSize;
-@property (nonatomic, weak) IBOutlet UISlider* blurRate;
-@property (nonatomic, weak) IBOutlet UILabel* blurSizeText;
-@property (nonatomic, weak) IBOutlet UILabel* blurRateText;
+@property (nonatomic, weak) IBOutlet UISlider* redPoint;
+@property (nonatomic, weak) IBOutlet UISlider* yellowPoint;
+@property (nonatomic, weak) IBOutlet UISlider* bluePoint;
+@property (nonatomic, weak) IBOutlet UISlider* redGap;
+@property (nonatomic, weak) IBOutlet UISlider* blueGap;
+@property (nonatomic, weak) IBOutlet UILabel* redText;
+@property (nonatomic, weak) IBOutlet UILabel* yellowText;
+@property (nonatomic, weak) IBOutlet UILabel* blueText;
+@property (nonatomic, weak) IBOutlet UILabel* redGapText;
+@property (nonatomic, weak) IBOutlet UILabel* blueGapText;
+
+
 
 
 

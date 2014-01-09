@@ -129,16 +129,33 @@
 //Will adjust the blur level
 - (IBAction) slideChanged:(id)sender
 {
-    if(sender == _blurRate){
-        dynamicBlurFilter.realRatio = _blurRate.value;
-    }else{
-        dynamicBlurFilter.blurSize = 1.0 + _blurSize.value;
-    }
-    
-    _blurSizeText.text = [NSString stringWithFormat:@"%f", _blurSize.value];
-    _blurRateText.text = [NSString stringWithFormat:@"%f", _blurRate.value];
+    [self adjustSlideValue:sender];
     [staticPicture processImage];
 }
+
+
+- (void) adjustSlideValue:(id)sender
+{
+    if(sender == _redPoint){
+        //dynamicBlurFilter.realRatio = _blurRate.value;
+        filter.lowRed = -5.0 + 50.0 * _redPoint.value;
+        _redText.text = [NSString stringWithFormat:@"%f", -5 + 50.0 * _redPoint.value];
+    }else if(sender == _yellowPoint){
+        filter.midYellow = -55.0 + 50.0 * _yellowPoint.value;
+        _yellowText.text = [NSString stringWithFormat:@"%f", -55 + 50.0 * _yellowPoint.value];
+    }else if(sender == _bluePoint){
+        filter.highBlue = -105.0 + 50.0 * _bluePoint.value;
+        _blueText.text = [NSString stringWithFormat:@"%f",-105.0 + 50.0 * _bluePoint.value];
+    }else if(sender == _redGap){
+        filter.yellowRedDegree = 20 * _redGap.value;
+        _redGapText.text = [NSString stringWithFormat:@"%f", 20*_redGap.value];
+    }else if(sender == _blueGap){
+        filter.yellowBlueDegree = 20* _blueGap.value;
+        _blueGapText.text = [NSString stringWithFormat:@"%f", 20* _blueGap.value];
+    }
+
+}
+
 
 //The flash filter will get setup here.
 - (void) setupDarkFilter
@@ -164,6 +181,25 @@
     [flashFilter setBlueControlPoints:@[pointValue(0.0, 0.0), pointValue(0.25, 0.253), pointValue(0.5, 0.5), pointValue(0.75, 0.8), pointValue(1, 1)]];
 }
 
+
+- (void) setupColorAdjust
+{
+    [_redPoint rotateAngle:-M_PI_2];
+    [_bluePoint rotateAngle:-M_PI_2];
+    [_yellowPoint rotateAngle:-M_PI_2];
+    [_redGap rotateAngle:-M_PI_2];
+    [_blueGap rotateAngle:-M_PI_2];
+    _redPoint.value = 0.5;
+    _bluePoint.value = 0.5;
+    _yellowPoint.value = 0.5;
+    _redGap.value = 0.5;
+    _blueGap.value = 0.5;
+    [self adjustSlideValue:_redPoint];
+    [self adjustSlideValue:_bluePoint];
+    [self adjustSlideValue:_yellowPoint];
+    [self adjustSlideValue:_redGap];
+    [self adjustSlideValue:_blueGap];
+}
 -(void)viewDidLoad {
     
     [super viewDidLoad];
@@ -189,8 +225,7 @@
     [redAdjustments addObjectsFromArray:@[pointValue(0.0, 0.0), pointValue(0.25, 0.25), pointValue(0.5, 0.5), pointValue(0.75, 0.75), pointValue(1.0, 1.0)]];
     [greenAdjustments addObjectsFromArray:@[pointValue(0.0, 0.0), pointValue(0.25, 0.25), pointValue(0.5, 0.5), pointValue(0.75, 0.75), pointValue(1.0, 1.0)]];
     [blueAdjustments addObjectsFromArray:@[pointValue(0.0, 0.0), pointValue(0.25, 0.25), pointValue(0.5, 0.5), pointValue(0.75, 0.75), pointValue(1.0, 1.0)]];
-    [_blurSize rotateAngle:-M_PI_2];
-    [_blurRate rotateAngle:-M_PI_2];
+    
     self.wantsFullScreenLayout = YES;
     _pageTurn = [[EZSoundEffect alloc] initWithSoundNamed:@"page_turn.aiff"];
     _shotReady = [[EZSoundEffect alloc] initWithSoundNamed:@"shot_voice.aiff"];
@@ -238,13 +273,10 @@
     dynamicBlurFilter.blurSize = 1.5;
     dynamicBlurFilter.realRatio = 0.15;
     
-    _blurSize.value = 0.5;
-    _blurRate.value = 0.15;
-    
-    _blurSizeText.text = [NSString stringWithFormat:@"%f", _blurSize.value];
-    _blurRateText.text = [NSString stringWithFormat:@"%f", _blurRate.value];
     
     filter = [[EZSaturationFilter alloc] init];
+    [self setupColorAdjust];
+    
     tongFilter = [[GPUImageToneCurveFilter alloc] init];
     cycleDarken = [[EZCycleDiminish alloc] init];
         //faceBlurFilter.blurSize = 2.0;
@@ -616,12 +648,13 @@
         }else if(maxLen > 1279.0){
             //dynamicBlurFilter.blurSize = 1.5;
         }
-        if(fobj){
-        [staticPicture addTarget:dynamicBlurFilter];
-        [dynamicBlurFilter addTarget:hueFilter];
-        }else{
+        
+        //if(fobj){
+        //[staticPicture addTarget:dynamicBlurFilter];
+        //[dynamicBlurFilter addTarget:hueFilter];
+        //}else{
             [staticPicture addTarget:hueFilter];
-        }
+        //}
         //[faceBlurFilter addTarget:filter];
         //}else{
         //EZDEBUG(@"Not add faceBlurFilter");
