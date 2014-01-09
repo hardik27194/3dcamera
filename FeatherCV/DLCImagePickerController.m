@@ -17,6 +17,7 @@
 #import "EZNightBlurFilter.h"
 #import "EZFaceUtilWrapper.h"
 #import "EZFaceResultObj.h"
+#import "EZSaturationFilter.h"
 //#import "EZFaceUtil.h"
 //#import "EZFaceResultObj.h"
 #import <GPUImageToneCurveFilter.h>
@@ -56,7 +57,7 @@
     EZFaceBlurFilter2* dynamicBlurFilter;
     //Used as the beginning of the filter
     GPUImageFilter* orgFiler;
-    GPUImageFilter* filter;
+    EZSaturationFilter* filter;
     GPUImagePicture *staticPicture;
     NSMutableArray* tongParameters;
     NSMutableArray* redAdjustments;
@@ -181,7 +182,7 @@
     greenAdjustments = [[NSMutableArray alloc] init];
     [tongParameters addObjectsFromArray:@[pointValue(0.0, 0.0), pointValue(0.25, 0.2816), pointValue(0.5, 0.5868), pointValue(0.75, 0.7949), pointValue(1.0, 1.0)]];
     hueFilter = [[GPUImageHueFilter alloc] init];
-    hueFilter.hue = 350;
+    hueFilter.hue = 355;
     EZDEBUG(@"adjust:%f", hueFilter.hue);
     orgFiler = [[GPUImageFilter alloc] init];
     //[_redAdjustments addObjectsFromArray:@[pointValue(0.0, 0.0), pointValue(0.25, 0.2615), pointValue(0.5, 0.512), pointValue(0.75, 0.762), pointValue(1.0, 1.0)]];
@@ -243,7 +244,7 @@
     _blurSizeText.text = [NSString stringWithFormat:@"%f", _blurSize.value];
     _blurRateText.text = [NSString stringWithFormat:@"%f", _blurRate.value];
     
-    filter = [[GPUImageFilter alloc] init];
+    filter = [[EZSaturationFilter alloc] init];
     tongFilter = [[GPUImageToneCurveFilter alloc] init];
     cycleDarken = [[EZCycleDiminish alloc] init];
         //faceBlurFilter.blurSize = 2.0;

@@ -38,5 +38,21 @@
 
 @property (readwrite, nonatomic) CGFloat aspectRatio;
 
+/**
+ uniform highp float lowRed;
+ uniform highp float midYellow;
+ uniform highp float highBlue;
+ 
+ uniform highp float yellowRedDegree;
+ uniform highp float yellowBlueDegree;
+ **/
+
+@property (readwrite, nonatomic) CGFloat lowRed;
+@property (readwrite, nonatomic) CGFloat midYellow;
+@property (readwrite, nonatomic) CGFloat highBlue;
+
+@property (readwrite, nonatomic) CGFloat yellowRedDegree;
+@property (readwrite, nonatomic) CGFloat yellowBlueDegree;
+
 @end
 
