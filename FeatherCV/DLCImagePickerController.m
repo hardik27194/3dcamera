@@ -58,6 +58,7 @@
     //Used as the beginning of the filter
     GPUImageFilter* orgFiler;
     EZSaturationFilter* filter;
+    EZSaturationFilter* fixColorFilter;
     GPUImagePicture *staticPicture;
     NSMutableArray* tongParameters;
     NSMutableArray* redAdjustments;
@@ -138,14 +139,14 @@
 {
     if(sender == _redPoint){
         //dynamicBlurFilter.realRatio = _blurRate.value;
-        filter.lowRed = -5.0 + 50.0 * _redPoint.value;
-        _redText.text = [NSString stringWithFormat:@"%f", -5 + 50.0 * _redPoint.value];
+        filter.lowRed = -50.0 + 100.0 * _redPoint.value;
+        _redText.text = [NSString stringWithFormat:@"%f", -50.0 + 100.0 * _redPoint.value];
     }else if(sender == _yellowPoint){
-        filter.midYellow = -55.0 + 50.0 * _yellowPoint.value;
-        _yellowText.text = [NSString stringWithFormat:@"%f", -55 + 50.0 * _yellowPoint.value];
+        filter.midYellow = -150.0 + 100.0 * _yellowPoint.value;
+        _yellowText.text = [NSString stringWithFormat:@"%f", -150 + 100.0 * _yellowPoint.value];
     }else if(sender == _bluePoint){
-        filter.highBlue = -105.0 + 50.0 * _bluePoint.value;
-        _blueText.text = [NSString stringWithFormat:@"%f",-105.0 + 50.0 * _bluePoint.value];
+        filter.highBlue = -360.0 + 110.0 * _bluePoint.value;
+        _blueText.text = [NSString stringWithFormat:@"%f",-360.0 + 110.0 * _bluePoint.value];
     }else if(sender == _redGap){
         filter.yellowRedDegree = 20 * _redGap.value;
         _redGapText.text = [NSString stringWithFormat:@"%f", 20*_redGap.value];
@@ -276,6 +277,13 @@
     
     filter = [[EZSaturationFilter alloc] init];
     [self setupColorAdjust];
+    
+    fixColorFilter = [[EZSaturationFilter alloc] init];
+    fixColorFilter.lowRed = 35.4;
+    fixColorFilter.midYellow = -30.3;
+    fixColorFilter.highBlue = -90;
+    fixColorFilter.yellowRedDegree = 4.6;
+    fixColorFilter.yellowBlueDegree = 10.9;
     
     tongFilter = [[GPUImageToneCurveFilter alloc] init];
     cycleDarken = [[EZCycleDiminish alloc] init];
@@ -619,6 +627,7 @@
     [orgFiler addTarget:hueFilter];
     [hueFilter addTarget:tongFilter];
     [tongFilter addTarget:filter];
+    //[fixColorFilter addTarget:filter];
     [filter addTarget:self.imageView];
     [filter prepareForImageCapture];
 }
@@ -673,6 +682,7 @@
             colorFilter = (GPUImageFilter*)darkBlurFilter;
         }
         [colorFilter addTarget:filter];
+        //[fixColorFilter addTarget:filter];
        
     }
     //[whiteBalancerFilter addTarget:filter];
