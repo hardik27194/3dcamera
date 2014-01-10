@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		181903EE187FD4E5001FC370 /* EZHomeBiBlur.m in Sources */ = {isa = PBXBuildFile; fileRef = 181903ED187FD4E5001FC370 /* EZHomeBiBlur.m */; };
+		181903F4187FF49C001FC370 /* EZHomeBlendFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 181903F3187FF49C001FC370 /* EZHomeBlendFilter.m */; };
+		181903F7187FFC64001FC370 /* EZHomeGaussianFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 181903F6187FFC64001FC370 /* EZHomeGaussianFilter.m */; };
 		182A55091862C735003D4A01 /* libGPUImage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 182A55041862C71A003D4A01 /* libGPUImage.a */; };
 		182A550D18643141003D4A01 /* EZFaceBlurFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 182A550C18643140003D4A01 /* EZFaceBlurFilter.m */; };
 		182A551018645374003D4A01 /* EZFaceBlurFilter2.m in Sources */ = {isa = PBXBuildFile; fileRef = 182A550F18645374003D4A01 /* EZFaceBlurFilter2.m */; };
@@ -259,6 +262,12 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		181903EC187FD4E5001FC370 /* EZHomeBiBlur.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZHomeBiBlur.h; sourceTree = "<group>"; };
+		181903ED187FD4E5001FC370 /* EZHomeBiBlur.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZHomeBiBlur.m; sourceTree = "<group>"; };
+		181903F2187FF49C001FC370 /* EZHomeBlendFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZHomeBlendFilter.h; sourceTree = "<group>"; };
+		181903F3187FF49C001FC370 /* EZHomeBlendFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZHomeBlendFilter.m; sourceTree = "<group>"; };
+		181903F5187FFC64001FC370 /* EZHomeGaussianFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZHomeGaussianFilter.h; sourceTree = "<group>"; };
+		181903F6187FFC64001FC370 /* EZHomeGaussianFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZHomeGaussianFilter.m; sourceTree = "<group>"; };
 		182A54FD1862C717003D4A01 /* GPUImage.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GPUImage.xcodeproj; path = ../../Documents/open_source/GPUImageCV/framework/GPUImage.xcodeproj; sourceTree = "<group>"; };
 		182A550B18643140003D4A01 /* EZFaceBlurFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZFaceBlurFilter.h; sourceTree = "<group>"; };
 		182A550C18643140003D4A01 /* EZFaceBlurFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZFaceBlurFilter.m; sourceTree = "<group>"; };
@@ -665,6 +674,12 @@
 				18F58B71187916F1006CB966 /* EZColorGaussianFilter.m */,
 				18F58B7318796CE9006CB966 /* EZNightBlurFilter.h */,
 				18F58B7418796CE9006CB966 /* EZNightBlurFilter.m */,
+				181903EC187FD4E5001FC370 /* EZHomeBiBlur.h */,
+				181903ED187FD4E5001FC370 /* EZHomeBiBlur.m */,
+				181903F2187FF49C001FC370 /* EZHomeBlendFilter.h */,
+				181903F3187FF49C001FC370 /* EZHomeBlendFilter.m */,
+				181903F5187FFC64001FC370 /* EZHomeGaussianFilter.h */,
+				181903F6187FFC64001FC370 /* EZHomeGaussianFilter.m */,
 			);
 			name = camera;
 			sourceTree = "<group>";
@@ -1360,6 +1375,7 @@
 				18E3472F183DFA3400C9D89D /* EZDummyPage.m in Sources */,
 				18E3477B183DFAA400C9D89D /* EZExtender.m in Sources */,
 				18F58B52186EC0D1006CB966 /* ILTranslucentView.m in Sources */,
+				181903F7187FFC64001FC370 /* EZHomeGaussianFilter.m in Sources */,
 				18E34693183DF54400C9D89D /* FeatherCV.xcdatamodeld in Sources */,
 				18A36FF31855C1F50022F0A8 /* DLCGrayscaleContrastFilter.m in Sources */,
 				18F58B7C187AF205006CB966 /* EZFaceResultObj.m in Sources */,
@@ -1398,6 +1414,7 @@
 				18F58B72187916F2006CB966 /* EZColorGaussianFilter.m in Sources */,
 				18E347DC183E050B00C9D89D /* ASIDataDecompressor.m in Sources */,
 				18E34785183DFAA400C9D89D /* EZKeyboadUtility.m in Sources */,
+				181903F4187FF49C001FC370 /* EZHomeBlendFilter.m in Sources */,
 				18E34786183DFAA400C9D89D /* EZUIUtility.m in Sources */,
 				18F58B57187130E0006CB966 /* UIView+Shadow.m in Sources */,
 				18E34725183DFA3300C9D89D /* EZPhotoCell.m in Sources */,
@@ -1406,6 +1423,7 @@
 				18E34788183DFAA400C9D89D /* EZImageFileCache.m in Sources */,
 				18E347FA183E081D00C9D89D /* AFImageRequestOperation.m in Sources */,
 				18E347FB183E081D00C9D89D /* UIImageView+AFNetworking.m in Sources */,
+				181903EE187FD4E5001FC370 /* EZHomeBiBlur.m in Sources */,
 				18E3470B183DFA1A00C9D89D /* EZTestSuites.m in Sources */,
 				18E3472A183DFA3300C9D89D /* EZTiltMainView.m in Sources */,
 				18E3477D183DFAA400C9D89D /* EZNetworkUtility.m in Sources */,

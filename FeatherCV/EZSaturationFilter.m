@@ -104,7 +104,7 @@ NSString *const kGPUImageMySatuFragmentShaderString = SHADER_STRING
       }
       
       if(hue <= lowRed && hue >= midYellow){
-          gl_FragColor = sharpImageColor*0.1;//gl_FragColor = adjustColor(rawYiq, midYellow, lowRed, yellowRedDegree);
+          gl_FragColor = adjustColor(rawYiq, midYellow, lowRed, yellowRedDegree);
           return;
       }
      
@@ -114,8 +114,8 @@ NSString *const kGPUImageMySatuFragmentShaderString = SHADER_STRING
          return;
      }
       **/
-     //gl_FragColor = adjustColor(rawYiq, highBlue, midYellow, -yellowBlueDegree);
-     gl_FragColor = sharpImageColor*0.1;
+     gl_FragColor = adjustColor(rawYiq, highBlue, midYellow, -yellowBlueDegree);
+     //gl_FragColor = sharpImageColor*0.1;
      //gl_FragColor = sharpImageColor;
  }
  );

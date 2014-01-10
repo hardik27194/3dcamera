@@ -18,6 +18,8 @@
 #import "EZFaceUtilWrapper.h"
 #import "EZFaceResultObj.h"
 #import "EZSaturationFilter.h"
+#import "EZHomeBiBlur.h"
+#import "EZHomeGaussianFilter.h"
 //#import "EZFaceUtil.h"
 //#import "EZFaceResultObj.h"
 #import <GPUImageToneCurveFilter.h>
@@ -55,6 +57,7 @@
     EZNightBlurFilter* darkBlurFilter;
     
     EZFaceBlurFilter2* dynamicBlurFilter;
+    EZHomeGaussianFilter* biBlurFilter;
     //Used as the beginning of the filter
     GPUImageFilter* orgFiler;
     EZSaturationFilter* filter;
@@ -134,25 +137,63 @@
     [staticPicture processImage];
 }
 
-
 - (void) adjustSlideValue:(id)sender
 {
+    
+    //CGFloat rotateAngle = -180.0;
     if(sender == _redPoint){
         //dynamicBlurFilter.realRatio = _blurRate.value;
-        filter.lowRed = -50.0 + 100.0 * _redPoint.value;
-        _redText.text = [NSString stringWithFormat:@"%f", -50.0 + 100.0 * _redPoint.value];
+        biBlurFilter.blurSize = _redPoint.value*5;
+        _redText.text = [NSString stringWithFormat:@"%f",_redPoint.value * 5];
     }else if(sender == _yellowPoint){
-        filter.midYellow = -150.0 + 100.0 * _yellowPoint.value;
-        _yellowText.text = [NSString stringWithFormat:@"%f", -150 + 100.0 * _yellowPoint.value];
+        biBlurFilter.distanceNormalizationFactor = _yellowPoint.value*50;
+        _yellowText.text = [NSString stringWithFormat:@"%f",_yellowPoint.value * 50];
+        
     }else if(sender == _bluePoint){
-        filter.highBlue = -360.0 + 110.0 * _bluePoint.value;
-        _blueText.text = [NSString stringWithFormat:@"%f",-360.0 + 110.0 * _bluePoint.value];
+        biBlurFilter.blurRatio = _bluePoint.value * 5;
+        _blueText.text = [NSString stringWithFormat:@"%f", _bluePoint.value * 5];
     }else if(sender == _redGap){
+        biBlurFilter.realRatio = _redGap.value;
+        _redGapText.text = [NSString stringWithFormat:@"%f", _redGap.value];
+    }
+    
+}
+
+- (void) adjustOldSlideValue:(id)sender
+{
+    
+    CGFloat rotateAngle = -180.0;
+    if(sender == _redPoint){
+        
+        //dynamicBlurFilter.realRatio = _blurRate.value;
+        filter.lowRed = rotateAngle + -5.0 + 50.0 * _redPoint.value;
+        
+        _redText.text = [NSString stringWithFormat:@"%f",rotateAngle + -5 + 50.0 * _redPoint.value];
+        
+    }else if(sender == _yellowPoint){
+        
+        filter.midYellow = rotateAngle + -55.0 + 50.0 * _yellowPoint.value;
+        
+        _yellowText.text = [NSString stringWithFormat:@"%f",rotateAngle + -55 + 50.0 * _yellowPoint.value];
+        
+    }else if(sender == _bluePoint){
+        
+        filter.highBlue = rotateAngle + -105.0 + 50.0 * _bluePoint.value;
+        
+        _blueText.text = [NSString stringWithFormat:@"%f",rotateAngle + -105.0 + 50.0 * _bluePoint.value];
+        
+    }else if(sender == _redGap){
+        
         filter.yellowRedDegree = 20 * _redGap.value;
+        
         _redGapText.text = [NSString stringWithFormat:@"%f", 20*_redGap.value];
+        
     }else if(sender == _blueGap){
+        
         filter.yellowBlueDegree = 20* _blueGap.value;
+        
         _blueGapText.text = [NSString stringWithFormat:@"%f", 20* _blueGap.value];
+        
     }
 
 }
@@ -276,7 +317,12 @@
     
     
     filter = [[EZSaturationFilter alloc] init];
-    [self setupColorAdjust];
+    filter.lowRed = -160;
+    filter.midYellow = -185;
+    filter.highBlue = -235;
+    filter.yellowRedDegree = 2.4;
+    filter.yellowBlueDegree = 20.0;
+    
     
     fixColorFilter = [[EZSaturationFilter alloc] init];
     fixColorFilter.lowRed = 35.4;
@@ -284,6 +330,13 @@
     fixColorFilter.highBlue = -90;
     fixColorFilter.yellowRedDegree = 4.6;
     fixColorFilter.yellowBlueDegree = 10.9;
+    
+    
+    
+    biBlurFilter = [[EZHomeGaussianFilter alloc] init];
+    //biBlurFilter.blurSize = 2.5;
+    //biBlurFilter.distanceNormalizationFactor = 5.0;
+    [self setupColorAdjust];
     
     tongFilter = [[GPUImageToneCurveFilter alloc] init];
     cycleDarken = [[EZCycleDiminish alloc] init];
@@ -626,8 +679,9 @@
     [stillCamera addTarget:orgFiler];
     [orgFiler addTarget:hueFilter];
     [hueFilter addTarget:tongFilter];
-    [tongFilter addTarget:filter];
-    //[fixColorFilter addTarget:filter];
+    [tongFilter addTarget:fixColorFilter];
+    [fixColorFilter addTarget:biBlurFilter];
+    [biBlurFilter addTarget:filter];
     [filter addTarget:self.imageView];
     [filter prepareForImageCapture];
 }
@@ -678,10 +732,12 @@
         CGFloat focalLength = [self getFacalLength];
         EZDEBUG(@"IsoNumber is:%f, focalLength:%f", isoNumber, focalLength);
         if(isoNumber > 600){
-            [tongFilter addTarget:darkBlurFilter];
-            colorFilter = (GPUImageFilter*)darkBlurFilter;
+            //[tongFilter addTarget:darkBlurFilter];
+            //colorFilter = (GPUImageFilter*)darkBlurFilter;
         }
-        [colorFilter addTarget:filter];
+        [colorFilter addTarget:fixColorFilter];
+        [fixColorFilter addTarget:biBlurFilter];
+        [biBlurFilter addTarget:filter];
         //[fixColorFilter addTarget:filter];
        
     }
@@ -811,6 +867,8 @@
     [cropFilter removeAllTargets];
     [tongFilter removeAllTargets];
     [cycleDarken removeAllTargets];
+    [biBlurFilter removeAllTargets];
+    [fixColorFilter removeAllTargets];
     [dynamicBlurFilter removeAllTargets];
     //regular filter
     [filter removeAllTargets];
