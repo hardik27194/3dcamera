@@ -7,27 +7,55 @@
 //
 
 #import "EZHomeBlendFilter.h"
+#import <GPUImageThreeInputFilter.h>
+#import "EZFourInputFilter.h"
 
 #if TARGET_IPHONE_SIMULATOR || TARGET_OS_IPHONE
 NSString *const kHomeBlendFragmentShaderString = SHADER_STRING
 (
  varying highp vec2 textureCoordinate;
+ 
+ //blurred
  varying highp vec2 textureCoordinate2;
+ 
+ //edge
+ varying highp vec2 textureCoordinate3;
+ 
+ //small blur
+ varying highp vec2 textureCoordinate4;
+ 
+//varying highp vec2 textureCoordinate3;
  
  uniform sampler2D inputImageTexture;
  uniform sampler2D inputImageTexture2;
+ uniform sampler2D inputImageTexture3;
+ uniform sampler2D inputImageTexture4;
  
- uniform lowp float realRatio;
- 
-
  void main()
  {
      
      lowp vec4 sharpImageColor = texture2D(inputImageTexture, textureCoordinate);
      lowp vec4 blurredImageColor = texture2D(inputImageTexture2, textureCoordinate2);
-     
-     
-     gl_FragColor = sharpImageColor*realRatio + blurredImageColor*(1.0 - realRatio) ;
+     lowp vec4 detectedEdge = texture2D(inputImageTexture3, textureCoordinate3);
+     lowp vec4 smallBlurColor = texture2D(inputImageTexture4, textureCoordinate4);
+     /**
+      highp vec4 rawYiq = color2YIQ(sharpImageColor);
+      // Calculate the hue and chroma
+      highp float hue = atan (rawYIQ.b, rawYIQ.g);
+      // Make the user's adjustments
+      if(hue < lowRed || hue > highBlue){
+      gl_FragColor = sharpImageColor;
+      return;
+      }
+      
+      if(hue >= lowRed && hue <= midYellow){
+      gl_FragColor = adjustColor(rawYiq, lowRed, midYellow, -yellowRedDegree);
+      return;
+      }
+      
+      gl_FragColor = adjustColor(rawYiq, midYellow, highBlue, yellowBlueDegree);
+      **/
+     gl_FragColor = (vec4(1.0)) * detectedEdge.r + smallBlurColor*(1.0 - detectedEdge.r);
  }
  );
 #else
@@ -67,25 +95,44 @@ NSString *const kFaceBlurFragmentShaderString = SHADER_STRING
 		return nil;
     }
     
-
-    _blurFilter = [[EZHomeBiBlur alloc] init];
+    hasOverriddenAspectRatio = NO;
+    
+    // First pass: apply a variable Gaussian blur
+    _blurFilter = [[GPUImageBilateralFilter alloc] init];
+    _blurFilter.blurSize = 3.0;
+    _blurFilter.distanceNormalizationFactor = 7.5;
+    
+    _smallBlurFilter = [[GPUImageGaussianBlurFilter alloc] init];
+    _smallBlurFilter.blurSize = 1.0;
     //blurFilter.blurSize = 2.0;
-    _blurFilter.blurSize = 5.0;
-    _blurFilter.distanceNormalizationFactor = 30;
+    //_blurFilter.blurSize = 5.0;
     [self addFilter:_blurFilter];
+    [self addFilter:_smallBlurFilter];
+    _edgeFilter = [[GPUImagePrewittEdgeDetectionFilter alloc] init];
+    [self addFilter:_edgeFilter];
     // Second pass: combine the blurred image with the original sharp one
-    _twoInputFilter = [[GPUImageTwoInputFilter alloc] initWithFragmentShaderFromString:kHomeBlendFragmentShaderString];
-    [self addFilter:_twoInputFilter];
-    self.realRatio = 0.8;
+    _combineFilter = [[EZFourInputFilter alloc] initWithFragmentShaderFromString:kHomeBlendFragmentShaderString];
+    [self addFilter:_combineFilter];
     // Texture location 0 needs to be the sharp image for both the blur and the second stage processing
-    [_blurFilter addTarget:_twoInputFilter atTextureLocation:1];
-    
+    [_blurFilter addTarget:_combineFilter atTextureLocation:1];
+    [_edgeFilter addTarget:_combineFilter atTextureLocation:2];
+    [_smallBlurFilter addTarget:_combineFilter atTextureLocation:3];
     // To prevent double updating of this filter, disable updates from the sharp image side
-    
-    
-  
+    self.initialFilters = [NSArray arrayWithObjects:_blurFilter, _edgeFilter,_smallBlurFilter, _combineFilter, nil];
+    self.terminalFilter = _combineFilter;
     return self;
 }
 
-
+- (void)setInputSize:(CGSize)newSize atIndex:(NSInteger)textureIndex;
+{
+    CGSize oldInputSize = inputTextureSize;
+    [super setInputSize:newSize atIndex:textureIndex];
+    inputTextureSize = newSize;
+    
+    if ( (!CGSizeEqualToSize(oldInputSize, inputTextureSize)) && (!hasOverriddenAspectRatio) && (!CGSizeEqualToSize(newSize, CGSizeZero)) )
+    {
+        CGFloat aspectRatio = (inputTextureSize.width / inputTextureSize.height);
+        [_combineFilter setFloat:aspectRatio forUniformName:@"aspectRatio"];
+    }
+}
 @end

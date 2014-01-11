@@ -12,19 +12,13 @@
 
 @interface EZHomeBlendFilter : GPUImageFilterGroup
 {
-    CGFloat firstDistanceNormalizationFactorUniform;
-    CGFloat secondDistanceNormalizationFactorUniform;
     BOOL hasOverriddenAspectRatio;
 }
 
+@property (nonatomic, strong) GPUImageBilateralFilter* blurFilter;
+@property (nonatomic, strong) GPUImageGaussianBlurFilter* smallBlurFilter;
+@property (nonatomic, strong) GPUImagePrewittEdgeDetectionFilter* edgeFilter;
+@property (nonatomic, strong) GPUImageFilter* combineFilter;
 
-
-@property (readwrite, nonatomic) CGFloat realRatio;
-
-@property (nonatomic, strong) GPUImageGaussianBlurFilter *gaussianBlur;
-
-@property (nonatomic, strong) GPUImageTwoInputFilter* twoInputFilter;
-
-@property (nonatomic, strong) EZHomeBiBlur *blurFilter;
 
 @end

@@ -11,7 +11,9 @@
 
 @interface EZHomeGaussianFilter : GPUImageTwoPassTextureSamplingFilter
 {
-    CGFloat firstDistanceNormalizationFactorUniform;
+    GLuint firstDistanceNormalizationFactorUniform;
+    GLuint textureUnitWidthUniform;
+    GLuint textureUnitHeightUniform;
 }
 /** A multiplier for the blur size, ranging from 0.0 on up, with a default of 1.0
  */

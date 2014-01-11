@@ -17,11 +17,16 @@ NSString *const kGPUImageHomeGaussianBlurVertexShaderString = SHADER_STRING
  
  uniform float texelWidthOffset;
  uniform float texelHeightOffset;
+ uniform float textureUnitWidthUniform;
+ uniform float textureUnitHeightUniform;
  uniform float blurRatio;
+ 
  varying vec2 textureCoordinate;
  varying float blurMultiplier[GAUSSIAN_SAMPLES];
  varying vec2 singleStepOffset;
  varying vec2 secSingleStepOffset;
+ varying float textureUnitHeight;
+ varying float textureUnitWidth;
  
  //varying vec2 secBlurCoordinates[GAUSSIAN_SAMPLES];
  //varying float originStep;
@@ -34,6 +39,8 @@ NSString *const kGPUImageHomeGaussianBlurVertexShaderString = SHADER_STRING
      
      // Calculate the positions for the blur
      int multiplier = 0;
+     textureUnitHeight = textureUnitHeightUniform;
+     textureUnitWidth = textureUnitWidthUniform;
      //vec2 blurStep;
      //vec2 secBlurStep;
      singleStepOffset = vec2(texelWidthOffset, texelHeightOffset);
@@ -217,6 +224,27 @@ NSString *const kGPUImageGaussianBlurFragmentShaderString = SHADER_STRING
                        firstStageFragmentShaderFromString:nil
                         secondStageVertexShaderFromString:nil
                       secondStageFragmentShaderFromString:nil];
+}
+
+- (void)setupFilterForSize:(CGSize)filterFrameSize;
+{
+    CGFloat unitWidth= 1.0 / filterFrameSize.width;
+    CGFloat unitHeight = 1.0 / filterFrameSize.height;
+        
+    runSynchronouslyOnVideoProcessingQueue(^{
+            [GPUImageContext setActiveShaderProgram:filterProgram];
+            if (GPUImageRotationSwapsWidthAndHeight(inputRotation))
+            {
+                glUniform1f(textureUnitWidthUniform, unitHeight);
+                glUniform1f(textureUnitHeightUniform, unitWidth);
+            }
+            else
+            {
+                glUniform1f(textureUnitWidthUniform, unitWidth);
+                glUniform1f(textureUnitHeightUniform, unitHeight);
+            }
+    });
+    
 }
 
 #pragma mark -

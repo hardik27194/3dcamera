@@ -22,6 +22,11 @@
 #import "EZHomeGaussianFilter.h"
 //#import "EZFaceUtil.h"
 //#import "EZFaceResultObj.h"
+#import <GPUImagePrewittEdgeDetectionFilter.h>
+#import <GPUImageSobelEdgeDetectionFilter.h>
+#import <GPUImageThresholdEdgeDetectionFilter.h>
+#import "EZHomeBlendFilter.h"
+
 #import <GPUImageToneCurveFilter.h>
 //#include <vector>
 
@@ -58,6 +63,7 @@
     
     EZFaceBlurFilter2* dynamicBlurFilter;
     EZHomeGaussianFilter* biBlurFilter;
+    EZHomeBlendFilter* finalBlendFilter;
     //Used as the beginning of the filter
     GPUImageFilter* orgFiler;
     EZSaturationFilter* filter;
@@ -67,6 +73,12 @@
     NSMutableArray* redAdjustments;
     NSMutableArray* greenAdjustments;
     NSMutableArray* blueAdjustments;
+    
+    //For the edge detectors
+    NSArray* edgeDectectors;
+    NSArray* edgeDectectorNames;
+    NSInteger currentEdge;
+    
     //NSMutableArray* _recordedMotions;
     CMAttitude* _prevMotion;
     //The meta data for the photo
@@ -242,6 +254,39 @@
     [self adjustSlideValue:_redGap];
     [self adjustSlideValue:_blueGap];
 }
+
+- (void) setupEdgeDetector
+{
+    GPUImagePrewittEdgeDetectionFilter * preWit = [[GPUImagePrewittEdgeDetectionFilter alloc] init];
+    GPUImageSobelEdgeDetectionFilter* sobel = [[GPUImageSobelEdgeDetectionFilter alloc] init];
+    GPUImageThresholdEdgeDetectionFilter* thresholdEdge = [[GPUImageThresholdEdgeDetectionFilter alloc] init];
+
+    currentEdge = 0;
+    edgeDectectors = @[preWit, sobel, thresholdEdge];
+    edgeDectectorNames = @[@"PreWit", @"Sobel", @"Threshold"];
+    _blueGapText.text = [edgeDectectorNames objectAtIndex:currentEdge];
+    
+}
+
+- (void) clearEdgesTarget
+{
+    for(GPUImageFilter* gf in edgeDectectors){
+        [gf removeAllTargets];
+    }
+}
+
+- (void) switchEdges
+{
+    ++currentEdge;
+    if(currentEdge == 3){
+        currentEdge = 0;
+    }
+    _blueGapText.text = [edgeDectectorNames objectAtIndex:currentEdge];
+    [self removeAllTargets];
+    [self prepareFilter];
+    
+}
+
 -(void)viewDidLoad {
     
     [super viewDidLoad];
@@ -338,6 +383,8 @@
     //biBlurFilter.distanceNormalizationFactor = 5.0;
     [self setupColorAdjust];
     
+    finalBlendFilter = [[EZHomeBlendFilter alloc] init];
+    
     tongFilter = [[GPUImageToneCurveFilter alloc] init];
     cycleDarken = [[EZCycleDiminish alloc] init];
         //faceBlurFilter.blurSize = 2.0;
@@ -353,7 +400,7 @@
     whiteBalancerFilter = [[GPUImageWhiteBalanceFilter alloc] init];
     whiteBalancerFilter.temperature = 4880;
     contrastfilter.saturation = 1.2;
-    
+    [self setupEdgeDetector];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         [self setUpCamera];
     });
@@ -680,8 +727,13 @@
     [orgFiler addTarget:hueFilter];
     [hueFilter addTarget:tongFilter];
     [tongFilter addTarget:fixColorFilter];
-    [fixColorFilter addTarget:biBlurFilter];
-    [biBlurFilter addTarget:filter];
+    //[fixColorFilter addTarget:biBlurFilter];
+    //[biBlurFilter addTarget:filter];
+    //GPUImageFilter* edgeFilter = [edgeDectectors objectAtIndex:currentEdge];
+    //[fixColorFilter addTarget:edgeFilter];
+    //[edgeFilter addTarget:filter];
+    [fixColorFilter addTarget:finalBlendFilter];
+    [finalBlendFilter addTarget:filter];
     [filter addTarget:self.imageView];
     [filter prepareForImageCapture];
 }
@@ -736,8 +788,13 @@
             //colorFilter = (GPUImageFilter*)darkBlurFilter;
         }
         [colorFilter addTarget:fixColorFilter];
-        [fixColorFilter addTarget:biBlurFilter];
-        [biBlurFilter addTarget:filter];
+        //GPUImageFilter* edgeFilter = [edgeDectectors objectAtIndex:currentEdge];
+        //[fixColorFilter addTarget:edgeFilter];
+        //[edgeFilter addTarget:filter];
+        [fixColorFilter addTarget:finalBlendFilter];
+        [finalBlendFilter addTarget:filter];
+        //[fixColorFilter addTarget:biBlurFilter];
+        //[biBlurFilter addTarget:filter];
         //[fixColorFilter addTarget:filter];
        
     }
@@ -880,6 +937,7 @@
     //blur
     [blurFilter removeAllTargets];
     [hueFilter removeAllTargets];
+    [self clearEdgesTarget];
 }
 
 -(IBAction)switchToLibrary:(id)sender {
@@ -1231,6 +1289,7 @@
 
 
 - (IBAction) handleTapToFocus:(UITapGestureRecognizer *)tgr{
+    [self switchEdges];
 	if (!isStatic && tgr.state == UIGestureRecognizerStateRecognized) {
 		CGPoint location = [tgr locationInView:self.imageView];
 		AVCaptureDevice *device = stillCamera.inputCamera;

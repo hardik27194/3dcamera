@@ -10,6 +10,7 @@
 		181903EE187FD4E5001FC370 /* EZHomeBiBlur.m in Sources */ = {isa = PBXBuildFile; fileRef = 181903ED187FD4E5001FC370 /* EZHomeBiBlur.m */; };
 		181903F4187FF49C001FC370 /* EZHomeBlendFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 181903F3187FF49C001FC370 /* EZHomeBlendFilter.m */; };
 		181903F7187FFC64001FC370 /* EZHomeGaussianFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 181903F6187FFC64001FC370 /* EZHomeGaussianFilter.m */; };
+		181903FA1881654D001FC370 /* EZFourInputFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 181903F91881654D001FC370 /* EZFourInputFilter.m */; };
 		182A55091862C735003D4A01 /* libGPUImage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 182A55041862C71A003D4A01 /* libGPUImage.a */; };
 		182A550D18643141003D4A01 /* EZFaceBlurFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 182A550C18643140003D4A01 /* EZFaceBlurFilter.m */; };
 		182A551018645374003D4A01 /* EZFaceBlurFilter2.m in Sources */ = {isa = PBXBuildFile; fileRef = 182A550F18645374003D4A01 /* EZFaceBlurFilter2.m */; };
@@ -268,6 +269,8 @@
 		181903F3187FF49C001FC370 /* EZHomeBlendFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZHomeBlendFilter.m; sourceTree = "<group>"; };
 		181903F5187FFC64001FC370 /* EZHomeGaussianFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZHomeGaussianFilter.h; sourceTree = "<group>"; };
 		181903F6187FFC64001FC370 /* EZHomeGaussianFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZHomeGaussianFilter.m; sourceTree = "<group>"; };
+		181903F81881654D001FC370 /* EZFourInputFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZFourInputFilter.h; sourceTree = "<group>"; };
+		181903F91881654D001FC370 /* EZFourInputFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZFourInputFilter.m; sourceTree = "<group>"; };
 		182A54FD1862C717003D4A01 /* GPUImage.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GPUImage.xcodeproj; path = ../../Documents/open_source/GPUImageCV/framework/GPUImage.xcodeproj; sourceTree = "<group>"; };
 		182A550B18643140003D4A01 /* EZFaceBlurFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZFaceBlurFilter.h; sourceTree = "<group>"; };
 		182A550C18643140003D4A01 /* EZFaceBlurFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZFaceBlurFilter.m; sourceTree = "<group>"; };
@@ -680,6 +683,8 @@
 				181903F3187FF49C001FC370 /* EZHomeBlendFilter.m */,
 				181903F5187FFC64001FC370 /* EZHomeGaussianFilter.h */,
 				181903F6187FFC64001FC370 /* EZHomeGaussianFilter.m */,
+				181903F81881654D001FC370 /* EZFourInputFilter.h */,
+				181903F91881654D001FC370 /* EZFourInputFilter.m */,
 			);
 			name = camera;
 			sourceTree = "<group>";
@@ -1393,6 +1398,7 @@
 				18E3477A183DFAA400C9D89D /* EZClickView.m in Sources */,
 				18E34729183DFA3300C9D89D /* EZBaseCollectionPage.m in Sources */,
 				18E34724183DFA3300C9D89D /* EZAlbumTablePage.m in Sources */,
+				181903FA1881654D001FC370 /* EZFourInputFilter.m in Sources */,
 				182A550D18643141003D4A01 /* EZFaceBlurFilter.m in Sources */,
 				18E3472E183DFA3400C9D89D /* EZContactCell.m in Sources */,
 				18E347F4183E081D00C9D89D /* AFHTTPRequestOperation.m in Sources */,
