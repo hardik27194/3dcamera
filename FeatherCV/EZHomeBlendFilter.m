@@ -31,6 +31,7 @@ NSString *const kHomeBlendFragmentShaderString = SHADER_STRING
  uniform sampler2D inputImageTexture3;
  uniform sampler2D inputImageTexture4;
  
+ uniform lowp float blurRatio;
  void main()
  {
      
@@ -55,7 +56,7 @@ NSString *const kHomeBlendFragmentShaderString = SHADER_STRING
       
       gl_FragColor = adjustColor(rawYiq, midYellow, highBlue, yellowBlueDegree);
       **/
-     gl_FragColor = (vec4(1.0)) * detectedEdge.r + smallBlurColor*(1.0 - detectedEdge.r);
+     gl_FragColor = (smallBlurColor*blurRatio + sharpImageColor*(1.0 - blurRatio)) * detectedEdge.r + blurredImageColor*(1.0 - detectedEdge.r);
  }
  );
 #else
@@ -98,29 +99,38 @@ NSString *const kFaceBlurFragmentShaderString = SHADER_STRING
     hasOverriddenAspectRatio = NO;
     
     // First pass: apply a variable Gaussian blur
-    _blurFilter = [[GPUImageBilateralFilter alloc] init];
+    _blurFilter = [[EZHomeBiBlur alloc] init];
     _blurFilter.blurSize = 3.0;
     _blurFilter.distanceNormalizationFactor = 7.5;
     
     _smallBlurFilter = [[GPUImageGaussianBlurFilter alloc] init];
     _smallBlurFilter.blurSize = 1.0;
+    
+    _edgeBlurFilter = [[GPUImageGaussianBlurFilter alloc] init];
+    
     //blurFilter.blurSize = 2.0;
     //_blurFilter.blurSize = 5.0;
     [self addFilter:_blurFilter];
     [self addFilter:_smallBlurFilter];
     _edgeFilter = [[GPUImagePrewittEdgeDetectionFilter alloc] init];
     [self addFilter:_edgeFilter];
+    [_edgeFilter addTarget:_edgeBlurFilter];
     // Second pass: combine the blurred image with the original sharp one
     _combineFilter = [[EZFourInputFilter alloc] initWithFragmentShaderFromString:kHomeBlendFragmentShaderString];
     [self addFilter:_combineFilter];
     // Texture location 0 needs to be the sharp image for both the blur and the second stage processing
     [_blurFilter addTarget:_combineFilter atTextureLocation:1];
-    [_edgeFilter addTarget:_combineFilter atTextureLocation:2];
+    [_edgeBlurFilter addTarget:_combineFilter atTextureLocation:2];
     [_smallBlurFilter addTarget:_combineFilter atTextureLocation:3];
     // To prevent double updating of this filter, disable updates from the sharp image side
-    self.initialFilters = [NSArray arrayWithObjects:_blurFilter, _edgeFilter,_smallBlurFilter, _combineFilter, nil];
+    self.initialFilters = [NSArray arrayWithObjects:_blurFilter, _edgeFilter,_edgeBlurFilter, _smallBlurFilter, _combineFilter, nil];
     self.terminalFilter = _combineFilter;
     return self;
+}
+
+- (void) setBlurRatio:(CGFloat)blurRatio
+{
+    [_combineFilter setFloat:blurRatio forUniformName:@"blurRatio"];
 }
 
 - (void)setInputSize:(CGSize)newSize atIndex:(NSInteger)textureIndex;

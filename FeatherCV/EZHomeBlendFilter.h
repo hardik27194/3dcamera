@@ -15,10 +15,12 @@
     BOOL hasOverriddenAspectRatio;
 }
 
-@property (nonatomic, strong) GPUImageBilateralFilter* blurFilter;
+@property (nonatomic, strong) EZHomeBiBlur* blurFilter;
 @property (nonatomic, strong) GPUImageGaussianBlurFilter* smallBlurFilter;
 @property (nonatomic, strong) GPUImagePrewittEdgeDetectionFilter* edgeFilter;
+@property (nonatomic, strong) GPUImageGaussianBlurFilter* edgeBlurFilter;
 @property (nonatomic, strong) GPUImageFilter* combineFilter;
 
+@property (nonatomic, assign) CGFloat blurRatio;
 
 @end
