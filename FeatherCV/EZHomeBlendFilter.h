@@ -25,6 +25,7 @@
 
 @property (nonatomic, assign) CGFloat blurRatio;
 @property (nonatomic, assign) CGFloat edgeRatio;
+@property (readwrite, nonatomic) NSArray* skinColors;
 
 @property (nonatomic, assign) int imageMode;
 

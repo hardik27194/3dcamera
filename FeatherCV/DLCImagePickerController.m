@@ -757,9 +757,9 @@
     [orgFiler addTarget:hueFilter];
     [hueFilter addTarget:tongFilter];
     [tongFilter addTarget:fixColorFilter];
-    [fixColorFilter addTarget:finalBlendFilter];
+    //[orgFiler addTarget:finalBlendFilter];
     //[fixColorFilter addTarget:edgeFilter];
-    [finalBlendFilter addTarget:filter];
+    [orgFiler addTarget:filter];
     [filter addTarget:self.imageView];
     [filter prepareForImageCapture];
 }
