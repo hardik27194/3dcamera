@@ -163,25 +163,33 @@
         finalBlendFilter.blurFilter.blurSize = _redPoint.value*5;
         _redText.text = [NSString stringWithFormat:@"%f",_redPoint.value * 5];
     }else if(sender == _yellowPoint){
-        finalBlendFilter.edgeRatio = _yellowPoint.value;
-        _yellowText.text = [NSString stringWithFormat:@"%f",_yellowPoint.value];
+        finalBlendFilter.blurFilter.distanceNormalizationFactor = _yellowPoint.value * 50;
+        _yellowText.text = [NSString stringWithFormat:@"%f", _yellowPoint.value * 50];
     }else if(sender == _bluePoint){
-        //finalBlendFilter.smallBlurFilter.blurSize = _bluePoint.value;
-        finalBlendFilter.edgeBlurFilter.blurSize = _bluePoint.value * 2;
-        _blueText.text = [NSString stringWithFormat:@"%f", _bluePoint.value*2];
+        finalBlendFilter.smallBlurFilter.blurSize = _bluePoint.value;
+        _blueText.text = [NSString stringWithFormat:@"%f",_bluePoint.value];
     }else if(sender == _redGap){
+        //finalBlendFilter.blurRatio = _redGap.value;
         finalBlendFilter.blurRatio = _redGap.value;
         _redGapText.text = [NSString stringWithFormat:@"%f", _redGap.value];
     }else if(sender == _blueGap){
-        CGFloat pixelSize = _blueGap.value;
+        CGFloat pixelSize = MAX(_blueGap.value/50.00, 0.0005);
         _blueGapText.text = [NSString stringWithFormat:@"%f", _blueGap.value/500.0];
-        CGFloat previousWidth = edgeFilter.texelWidth;
-        CGFloat previousHeight = edgeFilter.texelHeight;
+        CGFloat previousWidth = finalBlendFilter.edgeFilter.texelWidth;
+        CGFloat previousHeight = finalBlendFilter.edgeFilter.texelHeight;
         
-        double aspectRatio = previousHeight/previousWidth;
-        edgeFilter.texelHeight = edgeFilter.texelHeight; //  aspectRatio * (_blueGap.value/500.0);
-        edgeFilter.texelWidth = edgeFilter.texelWidth;// _blueGap.value/500.0;
-        EZDEBUG(@"previous %f, %f, current:%f, %f", previousWidth, previousHeight, edgeFilter.texelWidth, edgeFilter.texelHeight);
+        if(previousHeight > previousWidth){
+            double aspectRatio = previousHeight/previousWidth;
+            finalBlendFilter.edgeFilter.texelHeight = aspectRatio * pixelSize;
+            finalBlendFilter.edgeFilter.texelWidth = pixelSize;// _blueGap.value/500.0;
+        }else{
+            double aspectRatio = previousWidth/previousHeight;
+            finalBlendFilter.edgeFilter.texelHeight = pixelSize;
+            finalBlendFilter.edgeFilter.texelWidth = aspectRatio * pixelSize;// _blueGap.value/500.0;
+
+        }
+        EZDEBUG(@"previous %@, %@, current:%@, %@",[NSNumber numberWithDouble:previousWidth], [NSNumber numberWithDouble:previousHeight],[NSNumber numberWithDouble:finalBlendFilter.edgeFilter.texelWidth],[NSNumber numberWithDouble:finalBlendFilter.edgeFilter.texelHeight]
+                );
     }
     
 }
@@ -259,20 +267,19 @@
     [_redGap rotateAngle:-M_PI_2];
     [_blueGap rotateAngle:-M_PI_2];
     _redPoint.value = 0.282;
-    _bluePoint.value = 1.0;
-    _yellowPoint.value = 1.0;
-    _redGap.value = 0.54;
+    _yellowPoint.value = 0.12;
+    _bluePoint.value = 0.2;
+    _redGap.value = 1.0;
     _blueGap.value = 0.11;
     //Initial value
-    finalBlendFilter.blurFilter.distanceNormalizationFactor = 7.2;
-    finalBlendFilter.smallBlurFilter.blurSize = 0.2;
+    //finalBlendFilter.blurFilter.distanceNormalizationFactor = 7.2;
+    //finalBlendFilter.smallBlurFilter.blurSize = 0.2;
     //finalBlendFilter.blurRatio = _redGap.value;
     //finalBlendFilter.edgeBlurFilter.blurSize = _blueGap.value * 2;
     
     [self adjustSlideValue:_redPoint];
     [self adjustSlideValue:_yellowPoint];
     [self adjustSlideValue:_bluePoint];
-
     [self adjustSlideValue:_redGap];
     //[self adjustSlideValue:_blueGap];
 }
@@ -750,9 +757,9 @@
     [orgFiler addTarget:hueFilter];
     [hueFilter addTarget:tongFilter];
     [tongFilter addTarget:fixColorFilter];
-    //[fixColorFilter addTarget:finalBlendFilter];
-    [fixColorFilter addTarget:edgeFilter];
-    [edgeFilter addTarget:filter];
+    [fixColorFilter addTarget:finalBlendFilter];
+    //[fixColorFilter addTarget:edgeFilter];
+    [finalBlendFilter addTarget:filter];
     [filter addTarget:self.imageView];
     [filter prepareForImageCapture];
 }
@@ -762,10 +769,10 @@
     [staticPicture addTarget:hueFilter];
     [hueFilter addTarget:tongFilter];
     [tongFilter addTarget:fixColorFilter];
-    //[fixColorFilter addTarget:finalBlendFilter];
-    //[finalBlendFilter addTarget:filter];
-    [fixColorFilter addTarget:edgeFilter];
-    [edgeFilter addTarget:filter];
+    [fixColorFilter addTarget:finalBlendFilter];
+    [finalBlendFilter addTarget:filter];
+    //[fixColorFilter addTarget:edgeFilter];
+    //[edgeFilter addTarget:filter];
     [filter addTarget:self.imageView];
 
     GPUImageRotationMode imageViewRotationMode = kGPUImageNoRotation;
@@ -1181,9 +1188,8 @@
         isStatic = true;
         dispatch_later(0.5, ^(){
             EZDEBUG(@"Reprocess");
-            edgeFilter.texelWidth = edgeFilter.texelWidth;
-            edgeFilter.texelHeight = edgeFilter.texelHeight;
-            
+            finalBlendFilter.edgeFilter.texelWidth = finalBlendFilter.edgeFilter.texelWidth;
+            finalBlendFilter.edgeFilter.texelWidth = finalBlendFilter.edgeFilter.texelWidth;
             [staticPicture processImage];
         });
         //if(![self.filtersToggleButton isSelected]){
