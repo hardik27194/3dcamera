@@ -32,13 +32,14 @@ NSString *const kHomeBlendFragmentShaderString = SHADER_STRING
  uniform sampler2D inputImageTexture4;
  
  uniform lowp float blurRatio;
+ uniform lowp float edgeRatio;
  void main()
  {
      
      lowp vec4 sharpImageColor = texture2D(inputImageTexture, textureCoordinate);
      lowp vec4 blurredImageColor = texture2D(inputImageTexture2, textureCoordinate2);
-     lowp vec4 detectedEdge = texture2D(inputImageTexture3, textureCoordinate3);
-     lowp vec4 smallBlurColor = texture2D(inputImageTexture4, textureCoordinate4);
+     lowp vec4 smallBlurColor = texture2D(inputImageTexture3, textureCoordinate3);
+     lowp vec4 detectedEdge = texture2D(inputImageTexture2, textureCoordinate2);
      /**
       highp vec4 rawYiq = color2YIQ(sharpImageColor);
       // Calculate the hue and chroma
@@ -56,7 +57,12 @@ NSString *const kHomeBlendFragmentShaderString = SHADER_STRING
       
       gl_FragColor = adjustColor(rawYiq, midYellow, highBlue, yellowBlueDegree);
       **/
-     gl_FragColor = (smallBlurColor*blurRatio + sharpImageColor*(1.0 - blurRatio)) * detectedEdge.r + blurredImageColor*(1.0 - detectedEdge.r);
+     lowp float finalEdgeRatio = detectedEdge.r * edgeRatio;
+     gl_FragColor = detectedEdge;// * finalEdgeRatio + (1.0 - finalEdgeRatio) * vec4(0.5);
+     
+     //smallBlurColor * blurRatio + blurredImageColor * (1.0 - blurRatio)
+     //sharpImageColor + (1.0 - detectedEdge.r)* vec4(1.0); //+ (1.0 - detectedEdge.r) * (smallBlurColor * blurRatio + blurredImageColor * (1.0 - blurRatio));
+     //sharpImageColor * finalEdgeRatio + (1.0 - finalEdgeRatio) * (smallBlurColor * blurRatio + blurredImageColor * (1.0 - blurRatio)) ;//(smallBlurColor*blurRatio + sharpImageColor*(1.0 - blurRatio)) * detectedEdge.r + blurredImageColor*(1.0 - detectedEdge.r);
  }
  );
 #else
@@ -106,31 +112,38 @@ NSString *const kFaceBlurFragmentShaderString = SHADER_STRING
     _smallBlurFilter = [[GPUImageGaussianBlurFilter alloc] init];
     _smallBlurFilter.blurSize = 1.0;
     
-    _edgeBlurFilter = [[GPUImageGaussianBlurFilter alloc] init];
+    //_edgeBlurFilter = [[GPUImageGaussianBlurFilter alloc] init];
     
     //blurFilter.blurSize = 2.0;
     //_blurFilter.blurSize = 5.0;
     [self addFilter:_blurFilter];
     [self addFilter:_smallBlurFilter];
-    _edgeFilter = [[GPUImagePrewittEdgeDetectionFilter alloc] init];
+    _edgeFilter = [[EZHomeEdgeFilter alloc] init];
     [self addFilter:_edgeFilter];
-    [_edgeFilter addTarget:_edgeBlurFilter];
+    //[_edgeFilter addTarget:_edgeBlurFilter];
     // Second pass: combine the blurred image with the original sharp one
-    _combineFilter = [[EZFourInputFilter alloc] initWithFragmentShaderFromString:kHomeBlendFragmentShaderString];
+    _combineFilter = [[GPUImageThreeInputFilter alloc] initWithFragmentShaderFromString:kHomeBlendFragmentShaderString];
     [self addFilter:_combineFilter];
     // Texture location 0 needs to be the sharp image for both the blur and the second stage processing
-    [_blurFilter addTarget:_combineFilter atTextureLocation:1];
-    [_edgeBlurFilter addTarget:_combineFilter atTextureLocation:2];
-    [_smallBlurFilter addTarget:_combineFilter atTextureLocation:3];
+    [_blurFilter addTarget:_combineFilter atTextureLocation:2];
+    //[_smallBlurFilter addTarget:_combineFilter atTextureLocation:3];
+    [_edgeFilter addTarget:_combineFilter atTextureLocation:1];
     // To prevent double updating of this filter, disable updates from the sharp image side
-    self.initialFilters = [NSArray arrayWithObjects:_blurFilter, _edgeFilter,_edgeBlurFilter, _smallBlurFilter, _combineFilter, nil];
+    //[_combineFilter disableSecondFrameCheck];
+    self.initialFilters = [NSArray arrayWithObjects:_blurFilter, _smallBlurFilter,_edgeFilter,_combineFilter, nil];
     self.terminalFilter = _combineFilter;
+    
     return self;
 }
 
 - (void) setBlurRatio:(CGFloat)blurRatio
 {
     [_combineFilter setFloat:blurRatio forUniformName:@"blurRatio"];
+}
+
+- (void) setEdgeRatio:(CGFloat)edgeRatio
+{
+    [_combineFilter setFloat:edgeRatio forUniformName:@"edgeRatio"];
 }
 
 - (void)setInputSize:(CGSize)newSize atIndex:(NSInteger)textureIndex;

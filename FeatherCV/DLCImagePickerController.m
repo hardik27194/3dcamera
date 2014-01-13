@@ -25,6 +25,7 @@
 #import <GPUImagePrewittEdgeDetectionFilter.h>
 #import <GPUImageSobelEdgeDetectionFilter.h>
 #import <GPUImageThresholdEdgeDetectionFilter.h>
+#import "EZHomeEdgeFilter.h"
 #import "EZHomeBlendFilter.h"
 
 #import <GPUImageToneCurveFilter.h>
@@ -61,6 +62,8 @@
     EZFaceBlurFilter* faceBlurFilter;
     EZNightBlurFilter* darkBlurFilter;
     
+    
+    GPUImagePrewittEdgeDetectionFilter * edgeFilter;
     EZFaceBlurFilter2* dynamicBlurFilter;
     EZHomeGaussianFilter* biBlurFilter;
     EZHomeBlendFilter* finalBlendFilter;
@@ -153,23 +156,32 @@
 {
     
     //CGFloat rotateAngle = -180.0;
+    //finalBlendFilter.blurFilter.distanceNormalizationFactor = 7.01;
+    //finalBlendFilter.
     if(sender == _redPoint){
         //dynamicBlurFilter.realRatio = _blurRate.value;
         finalBlendFilter.blurFilter.blurSize = _redPoint.value*5;
         _redText.text = [NSString stringWithFormat:@"%f",_redPoint.value * 5];
     }else if(sender == _yellowPoint){
-        
-        finalBlendFilter.blurFilter.distanceNormalizationFactor = _yellowPoint.value*50;
-        _yellowText.text = [NSString stringWithFormat:@"%f",_yellowPoint.value * 50];
+        finalBlendFilter.edgeRatio = _yellowPoint.value;
+        _yellowText.text = [NSString stringWithFormat:@"%f",_yellowPoint.value];
     }else if(sender == _bluePoint){
-        finalBlendFilter.smallBlurFilter.blurSize = _bluePoint.value * 5;
-        _blueText.text = [NSString stringWithFormat:@"%f", _bluePoint.value * 5];
+        //finalBlendFilter.smallBlurFilter.blurSize = _bluePoint.value;
+        finalBlendFilter.edgeBlurFilter.blurSize = _bluePoint.value * 2;
+        _blueText.text = [NSString stringWithFormat:@"%f", _bluePoint.value*2];
     }else if(sender == _redGap){
         finalBlendFilter.blurRatio = _redGap.value;
         _redGapText.text = [NSString stringWithFormat:@"%f", _redGap.value];
     }else if(sender == _blueGap){
-        finalBlendFilter.edgeBlurFilter.blurSize = _blueGap.value * 2;
-        _blueGapText.text = [NSString stringWithFormat:@"%f", _blueGap.value * 2];
+        CGFloat pixelSize = _blueGap.value;
+        _blueGapText.text = [NSString stringWithFormat:@"%f", _blueGap.value/500.0];
+        CGFloat previousWidth = edgeFilter.texelWidth;
+        CGFloat previousHeight = edgeFilter.texelHeight;
+        
+        double aspectRatio = previousHeight/previousWidth;
+        edgeFilter.texelHeight = edgeFilter.texelHeight; //  aspectRatio * (_blueGap.value/500.0);
+        edgeFilter.texelWidth = edgeFilter.texelWidth;// _blueGap.value/500.0;
+        EZDEBUG(@"previous %f, %f, current:%f, %f", previousWidth, previousHeight, edgeFilter.texelWidth, edgeFilter.texelHeight);
     }
     
 }
@@ -246,16 +258,23 @@
     [_yellowPoint rotateAngle:-M_PI_2];
     [_redGap rotateAngle:-M_PI_2];
     [_blueGap rotateAngle:-M_PI_2];
-    _redPoint.value = 0.72;
-    _bluePoint.value = 0.47;
-    _yellowPoint.value = 0.35;
-    _redGap.value = 0.14;
+    _redPoint.value = 0.282;
+    _bluePoint.value = 1.0;
+    _yellowPoint.value = 1.0;
+    _redGap.value = 0.54;
     _blueGap.value = 0.11;
+    //Initial value
+    finalBlendFilter.blurFilter.distanceNormalizationFactor = 7.2;
+    finalBlendFilter.smallBlurFilter.blurSize = 0.2;
+    //finalBlendFilter.blurRatio = _redGap.value;
+    //finalBlendFilter.edgeBlurFilter.blurSize = _blueGap.value * 2;
+    
     [self adjustSlideValue:_redPoint];
-    [self adjustSlideValue:_bluePoint];
     [self adjustSlideValue:_yellowPoint];
+    [self adjustSlideValue:_bluePoint];
+
     [self adjustSlideValue:_redGap];
-    [self adjustSlideValue:_blueGap];
+    //[self adjustSlideValue:_blueGap];
 }
 
 - (void) setupEdgeDetector
@@ -359,6 +378,7 @@
     faceBlurFilter.blurSize = 5.0;
     faceBlurFilter.realRatio = 0.80;
     
+    edgeFilter = [[GPUImagePrewittEdgeDetectionFilter alloc] init];
     
     dynamicBlurFilter = [[EZFaceBlurFilter2 alloc] init];
     dynamicBlurFilter.blurSize = 1.5;
@@ -385,9 +405,8 @@
     biBlurFilter = [[EZHomeGaussianFilter alloc] init];
     //biBlurFilter.blurSize = 2.5;
     //biBlurFilter.distanceNormalizationFactor = 5.0;
-    [self setupColorAdjust];
-    
     finalBlendFilter = [[EZHomeBlendFilter alloc] init];
+    [self setupColorAdjust];
     
     tongFilter = [[GPUImageToneCurveFilter alloc] init];
     cycleDarken = [[EZCycleDiminish alloc] init];
@@ -731,8 +750,9 @@
     [orgFiler addTarget:hueFilter];
     [hueFilter addTarget:tongFilter];
     [tongFilter addTarget:fixColorFilter];
-    [fixColorFilter addTarget:finalBlendFilter];
-    [finalBlendFilter addTarget:filter];
+    //[fixColorFilter addTarget:finalBlendFilter];
+    [fixColorFilter addTarget:edgeFilter];
+    [edgeFilter addTarget:filter];
     [filter addTarget:self.imageView];
     [filter prepareForImageCapture];
 }
@@ -742,8 +762,10 @@
     [staticPicture addTarget:hueFilter];
     [hueFilter addTarget:tongFilter];
     [tongFilter addTarget:fixColorFilter];
-    [fixColorFilter addTarget:finalBlendFilter];
-    [finalBlendFilter addTarget:filter];
+    //[fixColorFilter addTarget:finalBlendFilter];
+    //[finalBlendFilter addTarget:filter];
+    [fixColorFilter addTarget:edgeFilter];
+    [edgeFilter addTarget:filter];
     [filter addTarget:self.imageView];
 
     GPUImageRotationMode imageViewRotationMode = kGPUImageNoRotation;
@@ -959,6 +981,8 @@
     [biBlurFilter removeAllTargets];
     [fixColorFilter removeAllTargets];
     [dynamicBlurFilter removeAllTargets];
+    [edgeFilter removeAllTargets];
+    edgeFilter.hasOverriddenImageSizeFactor = false;
     //regular filter
     [filter removeAllTargets];
     [darkBlurFilter removeAllTargets];
@@ -1149,11 +1173,19 @@
         }
          **/
         [self prepareStaticFilter:firstObj image:img];
+        //[self.delegate imagePickerController:self didFinishPickingMediaWithInfo:@{@"image":img}];
         [self.retakeButton setHidden:NO];
         [self.photoCaptureButton setTitle:@"Done" forState:UIControlStateNormal];
         [self.photoCaptureButton setImage:nil forState:UIControlStateNormal];
         [self.photoCaptureButton setEnabled:YES];
         isStatic = true;
+        dispatch_later(0.5, ^(){
+            EZDEBUG(@"Reprocess");
+            edgeFilter.texelWidth = edgeFilter.texelWidth;
+            edgeFilter.texelHeight = edgeFilter.texelHeight;
+            
+            [staticPicture processImage];
+        });
         //if(![self.filtersToggleButton isSelected]){
         //    [self showFilters];
         //}
@@ -1288,6 +1320,10 @@
 }
 
 -(IBAction) cancel:(id)sender {
+    EZDEBUG(@"Cancel get called");
+    if(isStatic){
+        [staticPicture processImage];
+    }
     [self.delegate imagePickerControllerDidCancel:self];
 }
 

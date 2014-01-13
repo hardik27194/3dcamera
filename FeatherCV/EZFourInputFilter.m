@@ -196,6 +196,8 @@ NSString *const kGPUImageFourInputTextureVertexShaderString = SHADER_STRING
     }
     else if (textureIndex == 1)
     {
+        //This is the fix 
+        //[super setInputSize:newSize atIndex:textureIndex];
         if (CGSizeEqualToSize(newSize, CGSizeZero))
         {
             hasSetSecondTexture = NO;
@@ -376,7 +378,7 @@ NSString *const kGPUImageFourInputTextureVertexShaderString = SHADER_STRING
     }
     
     // || (hasReceivedFirstFrame && secondFrameCheckDisabled) || (hasReceivedSecondFrame && firstFrameCheckDisabled)
-    if ((hasReceivedFirstFrame && hasReceivedSecondFrame && hasReceivedThirdFrame && hasReceivedFourthFrame) || updatedMovieFrameOppositeStillImage)
+    if (hasReceivedFirstFrame && hasReceivedSecondFrame && hasReceivedThirdFrame && hasReceivedFourthFrame)
     {
         outputTextureRetainCount = [targets count];
         

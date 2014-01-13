@@ -26,4 +26,6 @@ extern NSString *const kGPUImageFourthInputTextureVertexShaderString;
 }
 
 - (void)disableFourthFrameCheck;
+
+- (void) resetUpdatedFrame;
 @end
