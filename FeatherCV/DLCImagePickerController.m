@@ -1327,9 +1327,49 @@
 
 -(IBAction) cancel:(id)sender {
     EZDEBUG(@"Cancel get called");
-    if(isStatic){
-        [staticPicture processImage];
+    //if(isStatic){
+    //    [staticPicture processImage];
+    //}
+    int imageMode = finalBlendFilter.imageMode + 1;
+    if(imageMode > 2){
+        imageMode = 0;
     }
+    finalBlendFilter.imageMode = imageMode;
+    EZDEBUG(@"I will store the image mode:%i", finalBlendFilter.imageMode);
+
+    GPUImageOutput<GPUImageInput> *processUpTo;
+    processUpTo = filter;
+    
+    EZDEBUG(@"Before call process image");
+    [staticPicture processImage];
+    EZDEBUG(@"After call process image");
+    
+    //if(!stillCamera.isFrontFacing){
+    UIImage *currentFilteredVideoFrame = nil;
+    
+    if(stillCamera.isFrontFacing){
+        currentFilteredVideoFrame = [processUpTo imageFromCurrentlyProcessedOutputWithOrientation:staticPictureOriginalOrientation];
+        EZDEBUG(@"The current orienation:%i, static orientatin:%i", currentFilteredVideoFrame.imageOrientation, staticPictureOriginalOrientation);
+        currentFilteredVideoFrame = [currentFilteredVideoFrame rotateByOrientation:staticPictureOriginalOrientation];
+    }else{
+        currentFilteredVideoFrame = [processUpTo imageFromCurrentlyProcessedOutputWithOrientation:staticPictureOriginalOrientation];
+        //currentFilteredVideoFrame = staticPicture
+        EZDEBUG(@"Before shink:%@", NSStringFromCGSize(currentFilteredVideoFrame.size));
+        
+    }
+    //}
+    
+    //std::vector<EZFaceResult*> faces;
+    //EZFaceUtil faceUtil = singleton<EZFaceUtil>();
+    //NSArray* faces = [EZFaceUtilWrapper detectFace:currentFilteredVideoFrame ratio:0.25];
+    //EZDEBUG(@"detected face:%i", faces.count);
+    NSDictionary *info = @{@"image":currentFilteredVideoFrame};
+    if(photoMeta){
+        info = @{@"image":currentFilteredVideoFrame, @"metadata":photoMeta};
+    }
+    //[info setValue:currentFilteredVideoFrame forKey:@"image"];
+    EZDEBUG(@"image size:%f, %f", currentFilteredVideoFrame.size.width, currentFilteredVideoFrame.size.height);
+    [self.delegate imagePickerController:self didFinishPickingMediaWithInfo:info];
     [self.delegate imagePickerControllerDidCancel:self];
 }
 

@@ -26,4 +26,6 @@
 @property (nonatomic, assign) CGFloat blurRatio;
 @property (nonatomic, assign) CGFloat edgeRatio;
 
+@property (nonatomic, assign) int imageMode;
+
 @end

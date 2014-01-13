@@ -33,6 +33,7 @@ NSString *const kHomeBlendFragmentShaderString = SHADER_STRING
  
  uniform lowp float blurRatio;
  uniform lowp float edgeRatio;
+ uniform lowp int imageMode;
  void main()
  {
      
@@ -58,7 +59,13 @@ NSString *const kHomeBlendFragmentShaderString = SHADER_STRING
       gl_FragColor = adjustColor(rawYiq, midYellow, highBlue, yellowBlueDegree);
       **/
      lowp float finalEdgeRatio = detectedEdge.r;
-     gl_FragColor = sharpImageColor * finalEdgeRatio + (1.0 - finalEdgeRatio) * (smallBlurColor * blurRatio + blurredImageColor * (1.0 - blurRatio));// * finalEdgeRatio + (1.0 - finalEdgeRatio) * vec4(0.5);
+     if(imageMode == 0){
+         gl_FragColor = sharpImageColor * finalEdgeRatio + (1.0 - finalEdgeRatio) * (smallBlurColor * blurRatio + blurredImageColor * (1.0 - blurRatio));// * finalEdgeRatio + (1.0 - finalEdgeRatio) * vec4(0.5);
+     }else if(imageMode == 1){
+         gl_FragColor = detectedEdge;
+     }else if(imageMode == 2){
+         gl_FragColor = sharpImageColor;
+     }
      
      //smallBlurColor * blurRatio + blurredImageColor * (1.0 - blurRatio)
      //sharpImageColor + (1.0 - detectedEdge.r)* vec4(1.0); //+ (1.0 - detectedEdge.r) * (smallBlurColor * blurRatio + blurredImageColor * (1.0 - blurRatio));
@@ -132,7 +139,7 @@ NSString *const kFaceBlurFragmentShaderString = SHADER_STRING
     //[_combineFilter disableSecondFrameCheck];
     self.initialFilters = [NSArray arrayWithObjects:_blurFilter, _smallBlurFilter,_edgeFilter,_combineFilter, nil];
     self.terminalFilter = _combineFilter;
-    
+    self.imageMode = 0;
     return self;
 }
 
@@ -144,6 +151,12 @@ NSString *const kFaceBlurFragmentShaderString = SHADER_STRING
 - (void) setEdgeRatio:(CGFloat)edgeRatio
 {
     [_combineFilter setFloat:edgeRatio forUniformName:@"edgeRatio"];
+}
+
+- (void) setImageMode:(int)imageMode
+{
+    _imageMode = imageMode;
+    [_combineFilter setInteger:imageMode forUniformName:@"imageMode"];
 }
 
 - (void)setInputSize:(CGSize)newSize atIndex:(NSInteger)textureIndex;

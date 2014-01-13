@@ -10,6 +10,7 @@
 
 @implementation EZHomeEdgeFilter
 
+/**
 - (void)setupFilterForSize:(CGSize)filterFrameSize;
 {
     
@@ -43,6 +44,6 @@
         
     //}
 }
-
+**/
 
 @end
