@@ -773,33 +773,53 @@
     }
 }
 
+
+- (NSArray*) adjustFrameForOrienation:(CGRect)faceRegion orientation:(UIImageOrientation)orientation
+{
+    EZDEBUG(@"image orientation value:%i", orientation);
+    if(orientation == UIImageOrientationUp){
+        EZDEBUG(@"image orientation up");
+    }else if(orientation == UIImageOrientationRight){
+        EZDEBUG(@"image orientation right");
+    }else if(orientation == UIImageOrientationLeft){
+        EZDEBUG(@"image orientation left");
+    }
+    
+    CGFloat width = faceRegion.size.width * self.imageView.frame.size.width;
+    CGFloat height = faceRegion.size.height * self.imageView.frame.size.height;
+    
+    CGFloat px = faceRegion.origin.x * self.imageView.frame.size.width;
+    CGFloat py = faceRegion.origin.y * self.imageView.frame.size.height;
+    CGPoint interestPoint = CGPointMake(px + 0.5 * width, py + 0.5*height);
+    CGRect frame = CGRectMake(px, py, width, height);
+    CGRect fixFrame = [self.view convertRect:frame fromView:self.imageView];
+    return @[[NSValue valueWithCGPoint:interestPoint], [NSValue valueWithCGRect:fixFrame]];
+
+}
+
 - (void) startDetectFace
 {
     UIImage* capturedImage = orgFiler.blackFilter.imageFromCurrentlyProcessedOutput; //[imageView contentAsImage];
+    UIImageOrientation orientation = capturedImage.imageOrientation;
     capturedImage = [capturedImage rotateByOrientation:capturedImage.imageOrientation];
+    /**
     dispatch_main(
     ^(){
         [self generateTestImage:capturedImage];
     });
-    
+    **/
     //[[EZThreadUtility getInstance] executeBlockInQueue:^(){
     NSArray* result = [EZFaceUtilWrapper detectFace:capturedImage ratio:0.005];
         EZDEBUG(@"Let's test the image size:%@, face result:%i", NSStringFromCGSize(capturedImage.size), result.count);
         if(result.count > 0){
             EZFaceResultObj* fres = [result objectAtIndex:0];
             CGRect faceRegion = fres.orgRegion;
-           
-            CGFloat width = faceRegion.size.width * self.imageView.frame.size.width;
-            CGFloat height = faceRegion.size.height * self.imageView.frame.size.height;
-
-            CGFloat px = faceRegion.origin.x * self.imageView.frame.size.width;
-            CGFloat py = faceRegion.origin.y * self.imageView.frame.size.height;
-            CGRect frame = CGRectMake(px, py, width, height);
-            CGRect fixFrame = [self.view convertRect:frame fromView:self.imageView];
-            
-            EZDEBUG(@"Find face at:%@, frame:%@, before convert:%@", NSStringFromCGRect(faceRegion), NSStringFromCGRect(fixFrame), NSStringFromCGRect(frame));
+            NSArray* res = [self adjustFrameForOrienation:faceRegion orientation:orientation];
+            CGPoint poi = [[res objectAtIndex:0] CGPointValue];
+            CGRect fixFrame = [[res objectAtIndex:1] CGRectValue];
+            EZDEBUG(@"Find face at:%@, frame:%@", NSStringFromCGRect(faceRegion), NSStringFromCGRect(fixFrame));
             dispatch_main(^(){
-                [self focusCamera:CGPointMake(px + 0.5 * width, py + 0.5*height) frame:fixFrame];
+                [self focusCamera:poi frame:fixFrame];
                 _detectingFace = false;
             });
             
@@ -1516,19 +1536,17 @@
                 [device setExposurePointOfInterest:pointOfInterest];
                 [device setExposureMode:AVCaptureExposureModeContinuousAutoExposure];
             }
-            
-            ;
-            self.focusView.alpha = 1;
-            self.focusView.frame = focusFrame;
-            [UIView animateWithDuration:0.5 delay:0.5 options:0 animations:^{
-                self.focusView.alpha = 0;
-            } completion:nil];
-            
             [device unlockForConfiguration];
         } else {
             NSLog(@"ERROR = %@", error);
         }
     }
+    
+    self.focusView.alpha = 1;
+    self.focusView.frame = focusFrame;
+    [UIView animateWithDuration:0.5 delay:0.5 options:0 animations:^{
+        self.focusView.alpha = 0;
+    } completion:nil];
 
 }
 
