@@ -73,7 +73,7 @@ NSString *const kHomeBlendFragmentShaderString = SHADER_STRING
      lowp vec4 sharpImageColor = texture2D(inputImageTexture, textureCoordinate);
      lowp vec4 blurredImageColor = texture2D(inputImageTexture2, textureCoordinate2);
      lowp vec4 smallBlurColor = texture2D(inputImageTexture3, textureCoordinate3);
-     lowp vec4 detectedEdge = texture2D(inputImageTexture4, textureCoordinate4);
+     lowp vec4 detectedEdge = texture2D(inputImageTexture3, textureCoordinate3);
      /**
       highp vec4 rawYiq = color2YIQ(sharpImageColor);
       // Calculate the hue and chroma
@@ -94,7 +94,7 @@ NSString *const kHomeBlendFragmentShaderString = SHADER_STRING
      lowp float finalEdgeRatio = detectedEdge.r;
      if(imageMode == 0){
          lowp float colorDist = calcHue(sharpImageColor);
-         gl_FragColor =  colorDist * sharpImageColor +  (1.0 - colorDist) * (sharpImageColor * finalEdgeRatio + (1.0 - finalEdgeRatio) * (smallBlurColor * blurRatio + blurredImageColor * (1.0 - blurRatio)));// * finalEdgeRatio + (1.0 - finalEdgeRatio) * vec4(0.5);
+         gl_FragColor =  colorDist * sharpImageColor +  (1.0 - colorDist) * (sharpImageColor * finalEdgeRatio + (1.0 - finalEdgeRatio) * blurredImageColor);// * finalEdgeRatio + (1.0 - finalEdgeRatio) * vec4(0.5);
      }else if(imageMode == 1){
          gl_FragColor = detectedEdge;
      }else if(imageMode == 2){
@@ -158,20 +158,20 @@ NSString *const kFaceBlurFragmentShaderString = SHADER_STRING
     //blurFilter.blurSize = 2.0;
     //_blurFilter.blurSize = 5.0;
     [self addFilter:_blurFilter];
-    [self addFilter:_smallBlurFilter];
+    //[self addFilter:_smallBlurFilter];
     _edgeFilter = [[GPUImagePrewittEdgeDetectionFilter alloc] init];
     [self addFilter:_edgeFilter];
     //[_edgeFilter addTarget:_edgeBlurFilter];
     // Second pass: combine the blurred image with the original sharp one
-    _combineFilter = [[EZFourInputFilter alloc] initWithFragmentShaderFromString:kHomeBlendFragmentShaderString];
+    _combineFilter = [[GPUImageThreeInputFilter alloc] initWithFragmentShaderFromString:kHomeBlendFragmentShaderString];
     [self addFilter:_combineFilter];
     // Texture location 0 needs to be the sharp image for both the blur and the second stage processing
     [_blurFilter addTarget:_combineFilter atTextureLocation:1];
-    [_smallBlurFilter addTarget:_combineFilter atTextureLocation:2];
-    [_edgeFilter addTarget:_combineFilter atTextureLocation:3];
+    //[_smallBlurFilter addTarget:_combineFilter atTextureLocation:2];
+    [_edgeFilter addTarget:_combineFilter atTextureLocation:2];
     // To prevent double updating of this filter, disable updates from the sharp image side
     //[_combineFilter disableSecondFrameCheck];
-    self.initialFilters = [NSArray arrayWithObjects:_blurFilter, _smallBlurFilter,_edgeFilter,_combineFilter, nil];
+    self.initialFilters = [NSArray arrayWithObjects:_blurFilter,_edgeFilter,_combineFilter, nil];
     self.skinColors = @[@(0.703),@(0.473),@(0.332)];
     self.terminalFilter = _combineFilter;
     self.imageMode = 0;

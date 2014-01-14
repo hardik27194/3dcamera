@@ -17,6 +17,7 @@ NSString *const kGPUImageGaussianBlurVertexShaderString0 = SHADER_STRING
  
  uniform float texelWidthOffset;
  uniform float texelHeightOffset;
+
  
  varying vec2 textureCoordinate;
  varying vec2 blurCoordinates[GAUSSIAN_SAMPLES];

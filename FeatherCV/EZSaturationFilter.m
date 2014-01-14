@@ -23,6 +23,8 @@ NSString *const kGPUImageMySatuFragmentShaderString = SHADER_STRING
  uniform highp float yellowRedDegree;
  uniform highp float yellowBlueDegree;
  
+ uniform lowp float redEnhanceLevel;
+ 
  const highp  vec4  kRGBToYPrime = vec4 (0.299, 0.587, 0.114, 0.0);
  const highp  vec4  kRGBToI     = vec4 (0.595716, -0.274453, -0.321263, 0.0);
  const highp  vec4  kRGBToQ     = vec4 (0.211456, -0.522591, 0.31135, 0.0);
@@ -91,15 +93,22 @@ NSString *const kGPUImageMySatuFragmentShaderString = SHADER_STRING
  {
      
      lowp vec4 sharpImageColor = texture2D(inputImageTexture, textureCoordinate);
-      highp vec4 rawYiq = color2YIQ(sharpImageColor);
-      // Calculate the hue and chroma
-      highp float hue = atan (rawYiq.b, rawYiq.g);
-      // Make the user's adjustments
-      //highp float redEnd = 6.28;
-      //highp float blueEnd = 3.14;
      
+     lowp vec4 fixRedColor =  sharpImageColor;
+     lowp float red2Green = sharpImageColor.r - sharpImageColor.g;
+     lowp float red2Blue = sharpImageColor.r - sharpImageColor.b;
+     if(red2Blue > 0.0 && red2Green > 0.0 && (red2Green+red2Blue) > redEnhanceLevel){
+         fixRedColor.r = min(1.0, sharpImageColor.r + sharpImageColor.g * red2Green + sharpImageColor.b * red2Blue);
+         fixRedColor.g = max(0.0, sharpImageColor.g - sharpImageColor.g * red2Green);
+         fixRedColor.b = max(0.0, sharpImageColor.b - sharpImageColor.b * red2Blue);
+     }
+     
+     highp vec4 rawYiq = color2YIQ(fixRedColor);
+     // Calculate the hue and chroma
+     highp float hue = atan (rawYiq.b, rawYiq.g);
+
       if(hue > lowRed || hue < highBlue){
-          gl_FragColor = sharpImageColor;
+          gl_FragColor = fixRedColor;
           return;
       }
       
@@ -211,6 +220,12 @@ NSString *const kGPUImageHueFragmentShaderString = SHADER_STRING
     [self setFloat:_yellowBlueDegree forUniformName:@"yellowBlueDegree"];
 }
 
+
+- (void) setRedEnhanceLevel:(CGFloat)redEnhanceLevel
+{
+    _redEnhanceLevel = redEnhanceLevel;
+    [self setFloat:_redEnhanceLevel forUniformName:@"redEnhanceLevel"];
+}
 
 - (void) setYellowRedDegree:(CGFloat)yellowRedDegree
 {

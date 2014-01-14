@@ -19,6 +19,9 @@
  uniform highp float yellowBlueDegree;
  **/
 
+@property (readwrite, nonatomic) CGFloat redEnhanceLevel;
+
+
 @property (readwrite, nonatomic) CGFloat lowRed;
 @property (readwrite, nonatomic) CGFloat midYellow;
 @property (readwrite, nonatomic) CGFloat highBlue;
