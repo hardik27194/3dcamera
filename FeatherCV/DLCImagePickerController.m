@@ -27,6 +27,8 @@
 #import <GPUImageThresholdEdgeDetectionFilter.h>
 #import "EZHomeEdgeFilter.h"
 #import "EZHomeBlendFilter.h"
+#import "EZThreadUtility.h"
+#import "EZDoubleOutFilter.h"
 
 #import <GPUImageToneCurveFilter.h>
 //#include <vector>
@@ -68,7 +70,7 @@
     EZHomeGaussianFilter* biBlurFilter;
     EZHomeBlendFilter* finalBlendFilter;
     //Used as the beginning of the filter
-    GPUImageFilter* orgFiler;
+    EZDoubleOutFilter* orgFiler;
     EZSaturationFilter* filter;
     EZSaturationFilter* fixColorFilter;
     GPUImagePicture *staticPicture;
@@ -170,9 +172,13 @@
         _blueText.text = [NSString stringWithFormat:@"%f",_bluePoint.value];
     }else if(sender == _redGap){
         //finalBlendFilter.blurRatio = _redGap.value;
-        finalBlendFilter.blurRatio = _redGap.value;
+        //finalBlendFilter.blurRatio = _redGap.value;
+        fixColorFilter.redRatio = _redGap.value;
         _redGapText.text = [NSString stringWithFormat:@"%f", _redGap.value];
     }else if(sender == _blueGap){
+        fixColorFilter.redEnhanceLevel = _blueGap.value;
+        _blueGapText.text = [NSString stringWithFormat:@"%f", _blueGap.value];
+        /**
         CGFloat pixelSize = MAX(_blueGap.value/50.00, 0.0005);
         _blueGapText.text = [NSString stringWithFormat:@"%f", _blueGap.value/500.0];
         CGFloat previousWidth = finalBlendFilter.edgeFilter.texelWidth;
@@ -190,6 +196,7 @@
         }
         EZDEBUG(@"previous %@, %@, current:%@, %@",[NSNumber numberWithDouble:previousWidth], [NSNumber numberWithDouble:previousHeight],[NSNumber numberWithDouble:finalBlendFilter.edgeFilter.texelWidth],[NSNumber numberWithDouble:finalBlendFilter.edgeFilter.texelHeight]
                 );
+         **/
     }
     
 }
@@ -269,8 +276,8 @@
     _redPoint.value = 0.282;
     _yellowPoint.value = 0.12;
     _bluePoint.value = 0.2;
-    _redGap.value = 1.0;
-    _blueGap.value = 0.11;
+    _redGap.value = 0.1;
+    _blueGap.value = 0.6;
     //Initial value
     //finalBlendFilter.blurFilter.distanceNormalizationFactor = 7.2;
     //finalBlendFilter.smallBlurFilter.blurSize = 0.2;
@@ -281,7 +288,7 @@
     [self adjustSlideValue:_yellowPoint];
     [self adjustSlideValue:_bluePoint];
     [self adjustSlideValue:_redGap];
-    //[self adjustSlideValue:_blueGap];
+    [self adjustSlideValue:_blueGap];
 }
 
 - (void) setupEdgeDetector
@@ -337,7 +344,7 @@
     hueFilter = [[GPUImageHueFilter alloc] init];
     hueFilter.hue = 355;
     EZDEBUG(@"adjust:%f", hueFilter.hue);
-    orgFiler = [[GPUImageFilter alloc] init];
+    orgFiler = [[EZDoubleOutFilter alloc] init];
     //[_redAdjustments addObjectsFromArray:@[pointValue(0.0, 0.0), pointValue(0.25, 0.2615), pointValue(0.5, 0.512), pointValue(0.75, 0.762), pointValue(1.0, 1.0)]];
     [redAdjustments addObjectsFromArray:@[pointValue(0.0, 0.0), pointValue(0.25, 0.25), pointValue(0.5, 0.5), pointValue(0.75, 0.75), pointValue(1.0, 1.0)]];
     [greenAdjustments addObjectsFromArray:@[pointValue(0.0, 0.0), pointValue(0.25, 0.25), pointValue(0.5, 0.5), pointValue(0.75, 0.75), pointValue(1.0, 1.0)]];
@@ -434,6 +441,7 @@
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         [self setUpCamera];
     });
+    [self startFaceCapture];
     _isFrontCamera = false;
 }
 
@@ -752,19 +760,91 @@
     return res;
 }
 
+
+- (void) generateTestImage:(UIImage*)capturedImage
+{
+    if(_faceCaptureTest){
+        _faceCaptureTest.image = capturedImage;
+    }else{
+        _faceCaptureTest = [[UIImageView alloc] initWithFrame:CGRectMake(0, 400, 50, 50)];
+        _faceCaptureTest.contentMode = UIViewContentModeScaleAspectFill;
+        [self.view addSubview:_faceCaptureTest];
+        _faceCaptureTest.image = capturedImage;
+    }
+}
+
+- (void) startDetectFace
+{
+    UIImage* capturedImage = orgFiler.blackFilter.imageFromCurrentlyProcessedOutput; //[imageView contentAsImage];
+    capturedImage = [capturedImage rotateByOrientation:capturedImage.imageOrientation];
+    dispatch_main(
+    ^(){
+        [self generateTestImage:capturedImage];
+    });
+    
+    //[[EZThreadUtility getInstance] executeBlockInQueue:^(){
+    NSArray* result = [EZFaceUtilWrapper detectFace:capturedImage ratio:0.005];
+        EZDEBUG(@"Let's test the image size:%@, face result:%i", NSStringFromCGSize(capturedImage.size), result.count);
+        if(result.count > 0){
+            EZFaceResultObj* fres = [result objectAtIndex:0];
+            CGRect faceRegion = fres.orgRegion;
+           
+            CGFloat width = faceRegion.size.width * self.imageView.frame.size.width;
+            CGFloat height = faceRegion.size.height * self.imageView.frame.size.height;
+
+            CGFloat px = faceRegion.origin.x * self.imageView.frame.size.width;
+            CGFloat py = faceRegion.origin.y * self.imageView.frame.size.height;
+            CGRect frame = CGRectMake(px, py, width, height);
+            CGRect fixFrame = [self.view convertRect:frame fromView:self.imageView];
+            
+            EZDEBUG(@"Find face at:%@, frame:%@, before convert:%@", NSStringFromCGRect(faceRegion), NSStringFromCGRect(fixFrame), NSStringFromCGRect(frame));
+            dispatch_main(^(){
+                [self focusCamera:CGPointMake(px + 0.5 * width, py + 0.5*height) frame:fixFrame];
+                _detectingFace = false;
+            });
+            
+        }else{
+            _detectingFace = false;
+        }
+    
+    //} isConcurrent:YES];
+}
+
+- (void) startFaceCapture
+{
+    [[EZThreadUtility getInstance] executeBlockInQueue:^(){
+        EZDEBUG(@"Start capture faces");
+        while (TRUE) {
+            if(_detectFace && _isVisible && !_detectingFace){
+                _detectingFace = TRUE;
+                //dispatch_main(^(){
+                @autoreleasepool {
+                    [self startDetectFace];
+                }
+                //});
+            }
+            [NSThread sleepForTimeInterval:1.0];
+        }
+    } isConcurrent:TRUE];
+}
+
 -(void) prepareLiveFilter {
+    _detectFace = true;
+    //[self startFaceCapture];
     [stillCamera addTarget:orgFiler];
-    [orgFiler addTarget:hueFilter];
-    [hueFilter addTarget:tongFilter];
+    //[orgFiler addTarget:hueFilter];
+    [orgFiler addTarget:tongFilter];
     [tongFilter addTarget:fixColorFilter];
     //[orgFiler addTarget:finalBlendFilter];
-    [fixColorFilter addTarget:filter];
+    //[fixColorFilter addTarget:filter];
     //[finalBlendFilter addTarget:filter];
+    [fixColorFilter addTarget:filter];
     [filter addTarget:self.imageView];
     [filter prepareForImageCapture];
 }
 
 -(void) prepareStaticFilter:(EZFaceResultObj*)fobj image:(UIImage*)img{
+    _detectFace = false;
     EZDEBUG(@"Prepare new static image get called, flash image:%i, image size:%@", _isImageWithFlash, NSStringFromCGSize(img.size));
     [staticPicture addTarget:hueFilter];
     [hueFilter addTarget:tongFilter];
@@ -1132,7 +1212,7 @@
 }
 
 -(void)captureImageInner:(BOOL)flip {
-    
+    _detectFace = false;
     void (^completion)(UIImage *, NSError *) = ^(UIImage *img, NSError *error) {
         photoMeta = stillCamera.currentCaptureMetadata;
         EZDEBUG(@"Captured meta data:%@", photoMeta);
@@ -1191,6 +1271,7 @@
             finalBlendFilter.edgeFilter.texelWidth = finalBlendFilter.edgeFilter.texelWidth;
             finalBlendFilter.edgeFilter.texelWidth = finalBlendFilter.edgeFilter.texelWidth;
             [staticPicture processImage];
+            //_detectFace = true;
         });
         //if(![self.filtersToggleButton isSelected]){
         //    [self showFilters];
@@ -1405,43 +1486,51 @@
 
 
 - (IBAction) handleTapToFocus:(UITapGestureRecognizer *)tgr{
-    [self switchEdges];
+    //[self switchEdges];
 	if (!isStatic && tgr.state == UIGestureRecognizerStateRecognized) {
 		CGPoint location = [tgr locationInView:self.imageView];
-		AVCaptureDevice *device = stillCamera.inputCamera;
+		
 		CGPoint pointOfInterest = CGPointMake(.5f, .5f);
 		CGSize frameSize = [[self imageView] frame].size;
 		if ([stillCamera cameraPosition] == AVCaptureDevicePositionFront) {
             location.x = frameSize.width - location.x;
 		}
 		pointOfInterest = CGPointMake(location.y / frameSize.height, 1.f - (location.x / frameSize.width));
-		if ([device isFocusPointOfInterestSupported] && [device isFocusModeSupported:AVCaptureFocusModeAutoFocus]) {
-            NSError *error;
-            if ([device lockForConfiguration:&error]) {
-                [device setFocusPointOfInterest:pointOfInterest];
-                
-                [device setFocusMode:AVCaptureFocusModeAutoFocus];
-                
-                if([device isExposurePointOfInterestSupported] && [device isExposureModeSupported:AVCaptureExposureModeContinuousAutoExposure]) {
-                    [device setExposurePointOfInterest:pointOfInterest];
-                    [device setExposureMode:AVCaptureExposureModeContinuousAutoExposure];
-                }
-                
-                self.focusView.center = [tgr locationInView:self.view];
-                self.focusView.alpha = 1;
-                
-                [UIView animateWithDuration:0.5 delay:0.5 options:0 animations:^{
-                    self.focusView.alpha = 0;
-                } completion:nil];
-                
-                [device unlockForConfiguration];
-			} else {
-                NSLog(@"ERROR = %@", error);
-			}
-		}
-	}
+        CGPoint center = [tgr locationInView:self.view];
+        CGRect focusFrame = CGRectMake(center.x - self.focusView.width/2.0, center.y - self.focusView.height/2.0, self.focusView.frame.size.width, self.focusView.frame.size.height);
+        [self focusCamera:pointOfInterest frame:focusFrame];
+    }
 }
- 
+
+- (void) focusCamera:(CGPoint)pointOfInterest frame:(CGRect)focusFrame;
+{
+    AVCaptureDevice *device = stillCamera.inputCamera;
+    if ([device isFocusPointOfInterestSupported] && [device isFocusModeSupported:AVCaptureFocusModeAutoFocus]) {
+        NSError *error;
+        if ([device lockForConfiguration:&error]) {
+            [device setFocusPointOfInterest:pointOfInterest];
+            
+            [device setFocusMode:AVCaptureFocusModeAutoFocus];
+            
+            if([device isExposurePointOfInterestSupported] && [device isExposureModeSupported:AVCaptureExposureModeContinuousAutoExposure]) {
+                [device setExposurePointOfInterest:pointOfInterest];
+                [device setExposureMode:AVCaptureExposureModeContinuousAutoExposure];
+            }
+            
+            ;
+            self.focusView.alpha = 1;
+            self.focusView.frame = focusFrame;
+            [UIView animateWithDuration:0.5 delay:0.5 options:0 animations:^{
+                self.focusView.alpha = 0;
+            } completion:nil];
+            
+            [device unlockForConfiguration];
+        } else {
+            NSLog(@"ERROR = %@", error);
+        }
+    }
+
+}
 
 
 -(IBAction) handlePinch:(UIPinchGestureRecognizer *) sender {

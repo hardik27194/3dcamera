@@ -204,6 +204,7 @@ NSString *const kFaceBlurFragmentShaderString = SHADER_STRING
     [_combineFilter setFloatVec3:skinColor forUniformName:@"skinColor"];
 }
 
+//Some issue with this method call?
 - (void)setInputSize:(CGSize)newSize atIndex:(NSInteger)textureIndex;
 {
     CGSize oldInputSize = inputTextureSize;

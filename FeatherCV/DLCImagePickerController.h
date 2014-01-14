@@ -111,6 +111,14 @@ typedef enum {
 //This is the image which shot with torch, I will render it with torch filter
 @property (nonatomic, assign) BOOL isImageWithFlash;
 
+//Whether detect face in live or not
+@property (nonatomic, assign) BOOL detectFace;
+
+//While I am detecting the face
+@property (nonatomic, assign) BOOL detectingFace;
+
+@property (nonatomic, strong) UIImageView* faceCaptureTest;
+
 
 //This method will change the turnStatus
 - (void) captureTurnedImage;

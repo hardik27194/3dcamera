@@ -201,7 +201,7 @@ void EZFaceUtil::filterFaces(cv::Mat& inputFrame, std::vector<EZFaceResult*>& in
 
 NSArray* EZFaceUtil::detectFace(UIImage* image, CGFloat miniRatio)
 {
-    CGFloat maxLen = 320;
+    CGFloat maxLen = 480;
     CGSize imageRatio = image.size;
     if(image.size.width > image.size.height && image.size.width > maxLen){
         imageRatio.width = maxLen;
@@ -217,7 +217,7 @@ NSArray* EZFaceUtil::detectFace(UIImage* image, CGFloat miniRatio)
     std::vector<EZFaceResult*> faces;
     cv::Mat imageFrame;
     [image toMat:imageFrame];
-    detectFace(imageFrame, faces);
+    detectSimpleFace(imageFrame, faces);
     NSMutableArray* res = nil;
     if(faces.size() > 0){
         EZDEBUG(@"Found face:%lu", faces.size());
@@ -242,6 +242,38 @@ NSArray* EZFaceUtil::detectFace(UIImage* image, CGFloat miniRatio)
     return res;
 }
 //EZFaceResult* fr
+void EZFaceUtil::detectSimpleFace(cv::Mat& inputFrame, std::vector<EZFaceResult*>& faces)
+{
+    
+    //cv::Mat singleChannel(inputFrame.rows, inputFrame.cols, CV_8UC1);
+    EZDEBUG(@"Simply get gray");
+    //getGray(inputFrame, singleChannel);
+    
+    //clahe->apply(singleChannel, singleChannel);
+    //equalizeHist(singleChannel, singleChannel);
+    
+    //-- Detect faces
+    std::vector<cv::Rect> faceRects;
+    
+    faceCascader.detectMultiScale(inputFrame, faceRects, 1.1, 3, CV_HAAR_SCALE_IMAGE|0, cv::Size(30, 30), cv::Size(inputFrame.rows, inputFrame.cols));
+    
+    EZDEBUG(@"frame rows:%d, cols:%d, original size:%d, %d", inputFrame.rows, inputFrame.cols, inputFrame.rows, inputFrame.cols);
+    //cv::resize(src, dst, Size(1024, 768), 0, 0, INTER_CUBIC)
+    //CGFloat iwidth = inputFrame.cols;
+    //CGFloat iheight = inputFrame.rows;
+    
+    for( int i = 0; i < faceRects.size(); i++ )
+    {
+        NSLog(@"face:%i, x:%d, y:%d, width:%d, height:%d", i, faceRects[i].x, faceRects[i].y, faceRects[i].width, faceRects[i].height);
+        EZFaceResult* fres = new EZFaceResult();
+        fres->orgRect = faceRects[i];
+        NSLog(@"x:%f, y:%f, width:%f, height:%f", fres->orgRect.x, fres->orgRect.y, fres->orgRect.width, fres->orgRect.height);
+        //fres->destRect = cv::Rect(0, 0, cropSize.width, cropSize.height);
+        faces.push_back(fres);
+    }
+}
+
+
 
 void EZFaceUtil::detectFace(cv::Mat& inputFrame, std::vector<EZFaceResult*>& faces,bool hasSmile, cv::Size cropSize)
 {

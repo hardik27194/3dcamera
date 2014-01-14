@@ -48,6 +48,8 @@ public:
     
     void detectSmile(cv::Mat& inputFrame, EZFaceResult* faceResult);
     
+    //No gray scale, no histgram.
+    void detectSimpleFace(cv::Mat& inputFrame, std::vector<EZFaceResult*>& faces);
     //Get the face out.
     //In this method I will
     //1. Shrink the image to the specified image

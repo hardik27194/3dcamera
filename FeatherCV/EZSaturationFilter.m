@@ -24,6 +24,7 @@ NSString *const kGPUImageMySatuFragmentShaderString = SHADER_STRING
  uniform highp float yellowBlueDegree;
  
  uniform lowp float redEnhanceLevel;
+ uniform lowp float redRatio;
  
  const highp  vec4  kRGBToYPrime = vec4 (0.299, 0.587, 0.114, 0.0);
  const highp  vec4  kRGBToI     = vec4 (0.595716, -0.274453, -0.321263, 0.0);
@@ -94,36 +95,42 @@ NSString *const kGPUImageMySatuFragmentShaderString = SHADER_STRING
      
      lowp vec4 sharpImageColor = texture2D(inputImageTexture, textureCoordinate);
      
-     lowp vec4 fixRedColor =  sharpImageColor;
-     lowp float red2Green = sharpImageColor.r - sharpImageColor.g;
-     lowp float red2Blue = sharpImageColor.r - sharpImageColor.b;
-     if(red2Blue > 0.0 && red2Green > 0.0 && (red2Green+red2Blue) > redEnhanceLevel){
-         fixRedColor.r = min(1.0, sharpImageColor.r + sharpImageColor.g * red2Green + sharpImageColor.b * red2Blue);
-         fixRedColor.g = max(0.0, sharpImageColor.g - sharpImageColor.g * red2Green);
-         fixRedColor.b = max(0.0, sharpImageColor.b - sharpImageColor.b * red2Blue);
-     }
      
-     highp vec4 rawYiq = color2YIQ(fixRedColor);
+     
+     highp vec4 rawYiq = color2YIQ(sharpImageColor);
      // Calculate the hue and chroma
      highp float hue = atan (rawYiq.b, rawYiq.g);
 
       if(hue > lowRed || hue < highBlue){
-          gl_FragColor = fixRedColor;
-          return;
+          //gl_FragColor = sharpImageColor;
+          //return;
       }
       
-      if(hue <= lowRed && hue >= midYellow){
-          gl_FragColor = adjustColor(rawYiq, midYellow, lowRed, yellowRedDegree);
-          return;
+      else if(hue <= lowRed && hue >= midYellow){
+          sharpImageColor = adjustColor(rawYiq, midYellow, lowRed, yellowRedDegree);
+          //return;
+      }
+      else
+      {
+          sharpImageColor = adjustColor(rawYiq, highBlue, midYellow, -yellowBlueDegree);
       }
      
+     lowp vec4 fixRedColor =  sharpImageColor;
+     lowp float red2Green = sharpImageColor.r - sharpImageColor.g;
+     lowp float red2Blue = sharpImageColor.r - sharpImageColor.b;
+     if(red2Blue > 0.0 && red2Green > 0.0 && (red2Green+red2Blue) > redEnhanceLevel){
+         fixRedColor.r = min(1.0, sharpImageColor.r + red2Green * red2Green * redRatio);
+         fixRedColor.g = max(0.0, sharpImageColor.g - red2Green * red2Green * redRatio);
+         //fixRedColor.b = max(0.0, sharpImageColor.b - sharpImageColor.b * red2Blue);
+     }
+     gl_FragColor = fixRedColor;
      /**
      if(hue > -0.7 && hue < -0.6){
          gl_FragColor = sharpImageColor*0.1;
          return;
      }
       **/
-     gl_FragColor = adjustColor(rawYiq, highBlue, midYellow, -yellowBlueDegree);
+     
      //gl_FragColor = sharpImageColor*0.1;
      //gl_FragColor = sharpImageColor;
  }
@@ -220,6 +227,12 @@ NSString *const kGPUImageHueFragmentShaderString = SHADER_STRING
     [self setFloat:_yellowBlueDegree forUniformName:@"yellowBlueDegree"];
 }
 
+- (void) setRedRatio:(CGFloat)redRatio
+{
+    _redRatio = redRatio;
+    [self setFloat:_redRatio forUniformName:@"redRatio"];
+
+}
 
 - (void) setRedEnhanceLevel:(CGFloat)redEnhanceLevel
 {

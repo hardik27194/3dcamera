@@ -12,6 +12,8 @@
 		181903F7187FFC64001FC370 /* EZHomeGaussianFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 181903F6187FFC64001FC370 /* EZHomeGaussianFilter.m */; };
 		181903FA1881654D001FC370 /* EZFourInputFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 181903F91881654D001FC370 /* EZFourInputFilter.m */; };
 		181903FD1882980E001FC370 /* EZHomeEdgeFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 181903FC1882980E001FC370 /* EZHomeEdgeFilter.m */; };
+		1819040018853903001FC370 /* EZDoubleOutFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 181903FF18853903001FC370 /* EZDoubleOutFilter.m */; };
+		181904031885406A001FC370 /* EZBlackAndCropFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 181904021885406A001FC370 /* EZBlackAndCropFilter.m */; };
 		182A55091862C735003D4A01 /* libGPUImage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 182A55041862C71A003D4A01 /* libGPUImage.a */; };
 		182A550D18643141003D4A01 /* EZFaceBlurFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 182A550C18643140003D4A01 /* EZFaceBlurFilter.m */; };
 		182A551018645374003D4A01 /* EZFaceBlurFilter2.m in Sources */ = {isa = PBXBuildFile; fileRef = 182A550F18645374003D4A01 /* EZFaceBlurFilter2.m */; };
@@ -274,6 +276,10 @@
 		181903F91881654D001FC370 /* EZFourInputFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZFourInputFilter.m; sourceTree = "<group>"; };
 		181903FB1882980E001FC370 /* EZHomeEdgeFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZHomeEdgeFilter.h; sourceTree = "<group>"; };
 		181903FC1882980E001FC370 /* EZHomeEdgeFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZHomeEdgeFilter.m; sourceTree = "<group>"; };
+		181903FE18853902001FC370 /* EZDoubleOutFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZDoubleOutFilter.h; sourceTree = "<group>"; };
+		181903FF18853903001FC370 /* EZDoubleOutFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZDoubleOutFilter.m; sourceTree = "<group>"; };
+		181904011885406A001FC370 /* EZBlackAndCropFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZBlackAndCropFilter.h; sourceTree = "<group>"; };
+		181904021885406A001FC370 /* EZBlackAndCropFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZBlackAndCropFilter.m; sourceTree = "<group>"; };
 		182A54FD1862C717003D4A01 /* GPUImage.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GPUImage.xcodeproj; path = ../../Documents/open_source/GPUImageCV/framework/GPUImage.xcodeproj; sourceTree = "<group>"; };
 		182A550B18643140003D4A01 /* EZFaceBlurFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZFaceBlurFilter.h; sourceTree = "<group>"; };
 		182A550C18643140003D4A01 /* EZFaceBlurFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZFaceBlurFilter.m; sourceTree = "<group>"; };
@@ -690,6 +696,10 @@
 				181903F91881654D001FC370 /* EZFourInputFilter.m */,
 				181903FB1882980E001FC370 /* EZHomeEdgeFilter.h */,
 				181903FC1882980E001FC370 /* EZHomeEdgeFilter.m */,
+				181903FE18853902001FC370 /* EZDoubleOutFilter.h */,
+				181903FF18853903001FC370 /* EZDoubleOutFilter.m */,
+				181904011885406A001FC370 /* EZBlackAndCropFilter.h */,
+				181904021885406A001FC370 /* EZBlackAndCropFilter.m */,
 			);
 			name = camera;
 			sourceTree = "<group>";
@@ -1401,6 +1411,7 @@
 				18E34775183DFAA400C9D89D /* EZStyleImage.m in Sources */,
 				18E3468C183DF54400C9D89D /* main.m in Sources */,
 				18E3477A183DFAA400C9D89D /* EZClickView.m in Sources */,
+				181904031885406A001FC370 /* EZBlackAndCropFilter.m in Sources */,
 				18E34729183DFA3300C9D89D /* EZBaseCollectionPage.m in Sources */,
 				18E34724183DFA3300C9D89D /* EZAlbumTablePage.m in Sources */,
 				181903FA1881654D001FC370 /* EZFourInputFilter.m in Sources */,
@@ -1411,6 +1422,7 @@
 				18E3482C183F03A600C9D89D /* EZFaceTestPage.mm in Sources */,
 				18E34779183DFAA400C9D89D /* EZClickImage.m in Sources */,
 				18E34739183DFA5800C9D89D /* APLStackLayout.m in Sources */,
+				1819040018853903001FC370 /* EZDoubleOutFilter.m in Sources */,
 				18A36FF01855C1DB0022F0A8 /* DLCBlurOverlayView.m in Sources */,
 				18E3477E183DFAA400C9D89D /* EZThreadUtility.m in Sources */,
 				18E34776183DFAA400C9D89D /* EZCycleDiminish.m in Sources */,

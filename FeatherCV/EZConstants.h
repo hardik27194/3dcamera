@@ -60,6 +60,8 @@ return shared##classname; \
 dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC)); \
 dispatch_after(popTime, dispatch_get_main_queue(), body)
 
+#define dispatch_main(body) dispatch_async(dispatch_get_main_queue(), body)
+
 //Weixin related constants
 #define EZAppID @"a95992fc1a43415593de3643ecfa9a60"
 #define EZWeixinAppID @"wxc6b37b77dff0ad2d" 
