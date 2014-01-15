@@ -71,8 +71,9 @@
     EZHomeBlendFilter* finalBlendFilter;
     //Used as the beginning of the filter
     EZDoubleOutFilter* orgFiler;
-    EZSaturationFilter* filter;
+    GPUImageFilter* filter;
     EZSaturationFilter* fixColorFilter;
+    EZSaturationFilter* secFixColorFilter;
     GPUImagePicture *staticPicture;
     NSMutableArray* tongParameters;
     NSMutableArray* redAdjustments;
@@ -231,45 +232,6 @@
     
 }
 
-- (void) adjustOldSlideValue:(id)sender
-{
-    
-    CGFloat rotateAngle = -180.0;
-    if(sender == _redPoint){
-        
-        //dynamicBlurFilter.realRatio = _blurRate.value;
-        filter.lowRed = rotateAngle + -5.0 + 50.0 * _redPoint.value;
-        
-        _redText.text = [NSString stringWithFormat:@"%f",rotateAngle + -5 + 50.0 * _redPoint.value];
-        
-    }else if(sender == _yellowPoint){
-        
-        filter.midYellow = rotateAngle + -55.0 + 50.0 * _yellowPoint.value;
-        
-        _yellowText.text = [NSString stringWithFormat:@"%f",rotateAngle + -55 + 50.0 * _yellowPoint.value];
-        
-    }else if(sender == _bluePoint){
-        
-        filter.highBlue = rotateAngle + -105.0 + 50.0 * _bluePoint.value;
-        
-        _blueText.text = [NSString stringWithFormat:@"%f",rotateAngle + -105.0 + 50.0 * _bluePoint.value];
-        
-    }else if(sender == _redGap){
-        
-        filter.yellowRedDegree = 20 * _redGap.value;
-        
-        _redGapText.text = [NSString stringWithFormat:@"%f", 20*_redGap.value];
-        
-    }else if(sender == _blueGap){
-        
-        filter.yellowBlueDegree = 20* _blueGap.value;
-        
-        _blueGapText.text = [NSString stringWithFormat:@"%f", 20* _blueGap.value];
-        
-    }
-
-}
-
 
 //The flash filter will get setup here.
 - (void) setupDarkFilter
@@ -370,7 +332,7 @@
     redAdjustments = [[NSMutableArray alloc] init];
     blueAdjustments = [[NSMutableArray alloc] init];
     greenAdjustments = [[NSMutableArray alloc] init];
-    [tongParameters addObjectsFromArray:@[pointValue(0.0, 0.0), pointValue(0.25, 0.2816), pointValue(0.5, 0.5868), pointValue(0.75, 0.7949), pointValue(1.0, 1.0)]];
+    [tongParameters addObjectsFromArray:@[pointValue(0.0, 0.0), pointValue(0.25, 0.2716), pointValue(0.5, 0.5768), pointValue(0.75, 0.7949), pointValue(1.0, 1.0)]];
     hueFilter = [[GPUImageHueFilter alloc] init];
     hueFilter.hue = 355;
     EZDEBUG(@"adjust:%f", hueFilter.hue);
@@ -428,13 +390,14 @@
     dynamicBlurFilter.blurSize = 1.5;
     dynamicBlurFilter.realRatio = 0.15;
     
+    filter = [[GPUImageFilter alloc] init];
     
-    filter = [[EZSaturationFilter alloc] init];
-    filter.lowRed = -160;
-    filter.midYellow = -185;
-    filter.highBlue = -235;
-    filter.yellowRedDegree = 2.4;
-    filter.yellowBlueDegree = 20.0;
+    secFixColorFilter = [[EZSaturationFilter alloc] init];
+    secFixColorFilter.lowRed = -160;
+    secFixColorFilter.midYellow = -185;
+    secFixColorFilter.highBlue = -235;
+    secFixColorFilter.yellowRedDegree = 2.4;
+    secFixColorFilter.yellowBlueDegree = 20.0;
     
     
     fixColorFilter = [[EZSaturationFilter alloc] init];
@@ -822,7 +785,7 @@
             CGRect fixFrame = [[res objectAtIndex:1] CGRectValue];
             EZDEBUG(@"Find face at:%@, frame:%@", NSStringFromCGRect(faceRegion), NSStringFromCGRect(fixFrame));
             dispatch_main(^(){
-                [self focusCamera:poi frame:fixFrame];
+                [self focusCamera:poi frame:fixFrame expose:false];
                 _detectingFace = false;
             });
             
@@ -855,13 +818,13 @@
     _detectFace = true;
     //[self startFaceCapture];
     [stillCamera addTarget:orgFiler];
-    //[orgFiler addTarget:hueFilter];
-    [orgFiler addTarget:tongFilter];
-    [tongFilter addTarget:fixColorFilter];
+    [orgFiler addTarget:hueFilter];
+    //[orgFiler addTarget:tongFilter];
+    //[tongFilter addTarget:fixColorFilter];
     //[orgFiler addTarget:finalBlendFilter];
     //[fixColorFilter addTarget:filter];
     //[finalBlendFilter addTarget:filter];
-    [fixColorFilter addTarget:filter];
+    [hueFilter addTarget:filter];
     [filter addTarget:self.imageView];
     [filter prepareForImageCapture];
 }
@@ -886,10 +849,11 @@
         finalBlendFilter.blurFilter.blurSize = blurCycle;
         finalBlendFilter.smallBlurFilter.blurSize = blurAspectRatio * blurCycle;
         EZDEBUG(@"Will blur face:%@, blurCycle:%f", NSStringFromCGRect(fobj.orgRegion), blurCycle);
+        [finalBlendFilter addTarget:secFixColorFilter];
     }else{
-        [imageFilter addTarget:filter];
+        [imageFilter addTarget:secFixColorFilter];
     }
-
+    [secFixColorFilter addTarget:filter];
     [filter addTarget:self.imageView];
     GPUImageRotationMode imageViewRotationMode = kGPUImageNoRotation;
     switch (staticPictureOriginalOrientation) {
@@ -1113,6 +1077,7 @@
     [faceBlurFilter removeAllTargets];
     [simpleFilter removeAllTargets];
     [darkFilter removeAllTargets];
+    [secFixColorFilter removeAllTargets];
     //blur
     [blurFilter removeAllTargets];
     [hueFilter removeAllTargets];
@@ -1540,26 +1505,24 @@
 		pointOfInterest = CGPointMake(location.y / frameSize.height, 1.f - (location.x / frameSize.width));
         CGPoint center = [tgr locationInView:self.view];
         CGRect focusFrame = CGRectMake(center.x - self.focusView.width/2.0, center.y - self.focusView.height/2.0, self.focusView.frame.size.width, self.focusView.frame.size.height);
-        [self focusCamera:pointOfInterest frame:focusFrame];
+        [self focusCamera:pointOfInterest frame:focusFrame expose:TRUE];
     }
 }
 
-- (void) focusCamera:(CGPoint)pointOfInterest frame:(CGRect)focusFrame;
+- (void) focusCamera:(CGPoint)pointOfInterest frame:(CGRect)focusFrame expose:(BOOL)expose
 {
     AVCaptureDevice *device = stillCamera.inputCamera;
     if ([device isFocusPointOfInterestSupported] && [device isFocusModeSupported:AVCaptureFocusModeAutoFocus]) {
         NSError *error;
         if ([device lockForConfiguration:&error]) {
             [device setFocusPointOfInterest:pointOfInterest];
-            
             [device setFocusMode:AVCaptureFocusModeAutoFocus];
-            
-            /**
-            if([device isExposurePointOfInterestSupported] && [device isExposureModeSupported:AVCaptureExposureModeContinuousAutoExposure]) {
-                [device setExposurePointOfInterest:pointOfInterest];
-                [device setExposureMode:AVCaptureExposureModeContinuousAutoExposure];
+            if(expose){
+                if([device isExposurePointOfInterestSupported] && [device isExposureModeSupported:AVCaptureExposureModeContinuousAutoExposure]) {
+                    [device setExposurePointOfInterest:pointOfInterest];
+                    [device setExposureMode:AVCaptureExposureModeContinuousAutoExposure];
+                }
             }
-             **/
             [device unlockForConfiguration];
         } else {
             NSLog(@"ERROR = %@", error);
@@ -1571,6 +1534,7 @@
     [UIView animateWithDuration:0.5 delay:0.5 options:0 animations:^{
         self.focusView.alpha = 0;
     } completion:nil];
+
 
 }
 
