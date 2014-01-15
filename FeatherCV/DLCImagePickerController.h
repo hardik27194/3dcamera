@@ -62,11 +62,6 @@ typedef enum {
 @property (nonatomic, weak) IBOutlet UILabel* blueText;
 @property (nonatomic, weak) IBOutlet UILabel* redGapText;
 @property (nonatomic, weak) IBOutlet UILabel* blueGapText;
-
-
-
-
-
 @property (nonatomic, weak) IBOutlet UIButton *photoCaptureButton;
 @property (nonatomic, weak) IBOutlet UIButton *cancelButton;
 
@@ -116,6 +111,8 @@ typedef enum {
 
 //While I am detecting the face
 @property (nonatomic, assign) BOOL detectingFace;
+
+@property (nonatomic, assign) BOOL increasedLine;
 
 @property (nonatomic, strong) UIImageView* faceCaptureTest;
 

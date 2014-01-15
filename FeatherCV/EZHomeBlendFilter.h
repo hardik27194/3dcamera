@@ -11,6 +11,7 @@
 #import "EZHomeBiBlur.h"
 #import <GPUImageThreeInputFilter.h>
 #import "EZHomeEdgeFilter.h"
+#import "EZHomeEdgeFilter.h"
 @class EZFourInputFilter;
 @interface EZHomeBlendFilter : GPUImageFilterGroup
 {
@@ -19,7 +20,7 @@
 
 @property (nonatomic, strong) EZHomeBiBlur* blurFilter;
 @property (nonatomic, strong) GPUImageGaussianBlurFilter* smallBlurFilter;
-@property (nonatomic, strong) GPUImagePrewittEdgeDetectionFilter* edgeFilter;
+@property (nonatomic, strong) EZHomeEdgeFilter* edgeFilter;
 @property (nonatomic, strong) GPUImageGaussianBlurFilter* edgeBlurFilter;
 @property (nonatomic, strong) EZFourInputFilter* combineFilter;
 

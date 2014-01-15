@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <GPUImageSobelEdgeDetectionFilter.h>
-@interface EZHomeEdgeFilter : GPUImageSobelEdgeDetectionFilter
+#import <GPUImageThresholdEdgeDetectionFilter.h>
+@interface EZHomeEdgeFilter : GPUImageThresholdEdgeDetectionFilter
 
 @end

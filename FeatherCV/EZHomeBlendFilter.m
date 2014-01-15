@@ -160,7 +160,7 @@ NSString *const kFaceBlurFragmentShaderString = SHADER_STRING
     //_blurFilter.blurSize = 5.0;
     [self addFilter:_blurFilter];
     [self addFilter:_smallBlurFilter];
-    _edgeFilter = [[GPUImagePrewittEdgeDetectionFilter alloc] init];
+    _edgeFilter = [[EZHomeEdgeFilter alloc] init];
     [self addFilter:_edgeFilter];
     //[_edgeFilter addTarget:_edgeBlurFilter];
     // Second pass: combine the blurred image with the original sharp one
