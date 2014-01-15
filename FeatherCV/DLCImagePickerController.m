@@ -154,6 +154,29 @@
     [staticPicture processImage];
 }
 
+- (void) adjustLine
+{
+    CGFloat pixelSize = 0.0005;//MAX(0.05/50.00, 0.0005);
+    _blueGapText.text = [NSString stringWithFormat:@"%f", _blueGap.value/500.0];
+    EZDEBUG(@"calculate value:%f", pixelSize);
+    CGFloat previousWidth = finalBlendFilter.edgeFilter.texelWidth;
+    CGFloat previousHeight = finalBlendFilter.edgeFilter.texelHeight;
+    
+    if(previousHeight > previousWidth){
+        double aspectRatio = previousHeight/previousWidth;
+        finalBlendFilter.edgeFilter.texelHeight = aspectRatio * pixelSize;
+        finalBlendFilter.edgeFilter.texelWidth = pixelSize;// _blueGap.value/500.0;
+    }else{
+        double aspectRatio = previousWidth/previousHeight;
+        finalBlendFilter.edgeFilter.texelHeight = pixelSize;
+        finalBlendFilter.edgeFilter.texelWidth = aspectRatio * pixelSize;// _blueGap.value/500.0;
+        
+    }
+    EZDEBUG(@"previous %@, %@, current:%@, %@",[NSNumber numberWithDouble:previousWidth], [NSNumber numberWithDouble:previousHeight],[NSNumber numberWithDouble:finalBlendFilter.edgeFilter.texelWidth],[NSNumber numberWithDouble:finalBlendFilter.edgeFilter.texelHeight]
+            );
+
+}
+
 - (void) adjustSlideValue:(id)sender
 {
     
@@ -420,7 +443,12 @@
     //biBlurFilter.blurSize = 2.5;
     //biBlurFilter.distanceNormalizationFactor = 5.0;
     finalBlendFilter = [[EZHomeBlendFilter alloc] init];
-    [self setupColorAdjust];
+    finalBlendFilter.blurFilter.blurSize = 1.2;//Original value
+    finalBlendFilter.blurFilter.distanceNormalizationFactor = 13;
+    finalBlendFilter.smallBlurFilter.blurSize = 0.20;
+    finalBlendFilter.blurRatio = 0.20;
+    //[self setupColorAdjust];
+    //[self adjustLine];
     
     tongFilter = [[GPUImageToneCurveFilter alloc] init];
     cycleDarken = [[EZCycleDiminish alloc] init];
@@ -839,7 +867,7 @@
                 _detectingFace = TRUE;
                 //dispatch_main(^(){
                 @autoreleasepool {
-                    [self startDetectFace];
+                    //[self startDetectFace];
                 }
                 //});
             }
@@ -866,13 +894,14 @@
 -(void) prepareStaticFilter:(EZFaceResultObj*)fobj image:(UIImage*)img{
     _detectFace = false;
     EZDEBUG(@"Prepare new static image get called, flash image:%i, image size:%@", _isImageWithFlash, NSStringFromCGSize(img.size));
-    [staticPicture addTarget:hueFilter];
-    [hueFilter addTarget:tongFilter];
+    [staticPicture addTarget:tongFilter];
+    //[hueFilter addTarget:tongFilter];
     [tongFilter addTarget:fixColorFilter];
     [fixColorFilter addTarget:finalBlendFilter];
     [finalBlendFilter addTarget:filter];
     //[fixColorFilter addTarget:edgeFilter];
     //[edgeFilter addTarget:filter];
+    //[fixColorFilter addTarget:filter];
     [filter addTarget:self.imageView];
 
     GPUImageRotationMode imageViewRotationMode = kGPUImageNoRotation;
@@ -1242,7 +1271,7 @@
         
         //UIImage* flipped = img;
         if(!stillCamera.isFrontFacing){
-            img = [img resizedImageWithMaximumSize:CGSizeMake(img.size.width/2.0, img.size.height/2.0)];
+            img = [img resizedImageWithMaximumSize:CGSizeMake(img.size.width/4.0, img.size.height/4.0)];
             EZDEBUG(@"After shrink:%@", NSStringFromCGSize(img.size));
         }else{
             EZDEBUG(@"Rotate before static:%i, static orientation:%i", img.imageOrientation, staticPictureOriginalOrientation);
@@ -1287,9 +1316,9 @@
         [self.photoCaptureButton setEnabled:YES];
         isStatic = true;
         dispatch_later(0.5, ^(){
-            EZDEBUG(@"Reprocess");
-            finalBlendFilter.edgeFilter.texelWidth = finalBlendFilter.edgeFilter.texelWidth;
-            finalBlendFilter.edgeFilter.texelWidth = finalBlendFilter.edgeFilter.texelWidth;
+            finalBlendFilter.edgeFilter.texelWidth = finalBlendFilter.edgeFilter.texelWidth*1.4;
+            finalBlendFilter.edgeFilter.texelHeight = finalBlendFilter.edgeFilter.texelHeight*1.4;
+            EZDEBUG(@"Reprocess width:%f, height:%f",  finalBlendFilter.edgeFilter.texelWidth,  finalBlendFilter.edgeFilter.texelHeight);
             [staticPicture processImage];
             //_detectFace = true;
         });
@@ -1445,6 +1474,7 @@
     [staticPicture processImage];
     EZDEBUG(@"After call process image");
     
+    /**
     //if(!stillCamera.isFrontFacing){
     UIImage *currentFilteredVideoFrame = nil;
     
@@ -1464,6 +1494,8 @@
     //EZFaceUtil faceUtil = singleton<EZFaceUtil>();
     //NSArray* faces = [EZFaceUtilWrapper detectFace:currentFilteredVideoFrame ratio:0.25];
     //EZDEBUG(@"detected face:%i", faces.count);
+    
+    
     NSDictionary *info = @{@"image":currentFilteredVideoFrame};
     if(photoMeta){
         info = @{@"image":currentFilteredVideoFrame, @"metadata":photoMeta};
@@ -1472,6 +1504,7 @@
     EZDEBUG(@"image size:%f, %f", currentFilteredVideoFrame.size.width, currentFilteredVideoFrame.size.height);
     [self.delegate imagePickerController:self didFinishPickingMediaWithInfo:info];
     [self.delegate imagePickerControllerDidCancel:self];
+     **/
 }
 
 -(IBAction) handlePan:(UIGestureRecognizer *) sender {
@@ -1532,10 +1565,12 @@
             
             [device setFocusMode:AVCaptureFocusModeAutoFocus];
             
+            /**
             if([device isExposurePointOfInterestSupported] && [device isExposureModeSupported:AVCaptureExposureModeContinuousAutoExposure]) {
                 [device setExposurePointOfInterest:pointOfInterest];
                 [device setExposureMode:AVCaptureExposureModeContinuousAutoExposure];
             }
+             **/
             [device unlockForConfiguration];
         } else {
             NSLog(@"ERROR = %@", error);

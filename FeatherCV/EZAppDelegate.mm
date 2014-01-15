@@ -221,8 +221,8 @@
         }];
     }];
     
-    [[EZDataUtil getInstance] readAlbumInBackground:5 limit:5];
-    [[EZDataUtil getInstance] loadPhotoBooks];
+    //[[EZDataUtil getInstance] readAlbumInBackground:5 limit:5];
+    //[[EZDataUtil getInstance] loadPhotoBooks];
     return scrollContainer;
     //return homeNavigationBar;
     

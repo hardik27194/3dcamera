@@ -197,6 +197,8 @@ NSString *const kGPUImageHueFragmentShaderString = SHADER_STRING
     self.highBlue = -80;
     self.yellowRedDegree = 10;
     self.yellowBlueDegree = 10;
+    self.redRatio = 0.15;
+    self.redEnhanceLevel = 0.40;
     //hueAdjustUniform = [filterProgram uniformIndex:@"hueAdjust"];
     //self.hue = 0.0;
     

@@ -21,7 +21,7 @@
 @property (nonatomic, strong) GPUImageGaussianBlurFilter* smallBlurFilter;
 @property (nonatomic, strong) GPUImagePrewittEdgeDetectionFilter* edgeFilter;
 @property (nonatomic, strong) GPUImageGaussianBlurFilter* edgeBlurFilter;
-@property (nonatomic, strong) GPUImageThreeInputFilter* combineFilter;
+@property (nonatomic, strong) EZFourInputFilter* combineFilter;
 
 @property (nonatomic, assign) CGFloat blurRatio;
 @property (nonatomic, assign) CGFloat edgeRatio;
