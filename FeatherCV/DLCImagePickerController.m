@@ -20,8 +20,6 @@
 #import "EZSaturationFilter.h"
 #import "EZHomeBiBlur.h"
 #import "EZHomeGaussianFilter.h"
-//#import "EZFaceUtil.h"
-//#import "EZFaceResultObj.h"
 #import <GPUImagePrewittEdgeDetectionFilter.h>
 #import <GPUImageSobelEdgeDetectionFilter.h>
 #import <GPUImageThresholdEdgeDetectionFilter.h>
@@ -1258,15 +1256,17 @@
         }
         [self prepareStaticFilter:firstObj image:img];
         dispatch_later(0.5, ^(){
-            if(!_increasedLine){
+            if(firstObj){
+            if(_increasedLine){
                 _increasedLine = true;
-                finalBlendFilter.edgeFilter.texelWidth = finalBlendFilter.edgeFilter.texelWidth * 1.2;
-                finalBlendFilter.edgeFilter.texelHeight = finalBlendFilter.edgeFilter.texelHeight * 1.2;
+                finalBlendFilter.edgeFilter.texelWidth =  finalBlendFilter.edgeFilter.texelWidth * 1.2;
+                finalBlendFilter.edgeFilter.texelHeight = finalBlendFilter.edgeFilter.texelWidth * 1.2;
             }else{
                 finalBlendFilter.edgeFilter.texelWidth = finalBlendFilter.edgeFilter.texelWidth;
                 finalBlendFilter.edgeFilter.texelHeight = finalBlendFilter.edgeFilter.texelHeight;
             }
             EZDEBUG(@"Reprocess width:%f, height:%f",  finalBlendFilter.edgeFilter.texelWidth,  finalBlendFilter.edgeFilter.texelHeight);
+            }
             [staticPicture processImage];
             //_detectFace = true;
         });
