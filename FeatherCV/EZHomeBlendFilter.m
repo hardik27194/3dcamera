@@ -37,16 +37,10 @@ NSString *const kHomeBlendFragmentShaderString = SHADER_STRING
  uniform lowp float edgeRatio;
  uniform lowp int imageMode;
  
- /**
- highp float colorDistance(lowp vec4 dest, lowp vec4 src)
-{
-    lowp vec3 delta = src.rgb - dest.rgb;
-    return sqrt(dot(delta, delta)/dot(src.rgb, src.rgb));
-}
-  **/
  const lowp vec4  kRGBToYPrime = vec4 (0.299, 0.587, 0.114, 0.0);
  const lowp vec4  kRGBToI     = vec4 (0.595716, -0.274453, -0.321263, 0.0);
  const lowp vec4  kRGBToQ     = vec4 (0.211456, -0.522591, 0.31135, 0.0);
+ const highp vec3 W = vec3(0.2125, 0.7154, 0.0721);
  lowp float calcHueOld(lowp vec4 rawcolor)
  {
 
@@ -64,7 +58,10 @@ NSString *const kHomeBlendFragmentShaderString = SHADER_STRING
  
  lowp float calcHue(lowp vec4 rawcolor)
  {
-     return 1.0/(exp((1.5 - distance(rawcolor.rgb, skinColor))) + 1.0);
+     highp float fd = distance(rawcolor.rgb, skinColor);
+     fd = fd * fd;
+     return min(1.0, fd);
+     //return 1.0/(exp((1.5 - distance(rawcolor.rgb, skinColor))) + 1.0);
  }
  
  void main()
@@ -74,37 +71,21 @@ NSString *const kHomeBlendFragmentShaderString = SHADER_STRING
      lowp vec4 blurredImageColor = texture2D(inputImageTexture2, textureCoordinate2);
      lowp vec4 smallBlurColor = texture2D(inputImageTexture3, textureCoordinate3);
      lowp vec4 detectedEdge = texture2D(inputImageTexture4, textureCoordinate4);
-     /**
-      highp vec4 rawYiq = color2YIQ(sharpImageColor);
-      // Calculate the hue and chroma
-      highp float hue = atan (rawYIQ.b, rawYIQ.g);
-      // Make the user's adjustments
-      if(hue < lowRed || hue > highBlue){
-      gl_FragColor = sharpImageColor;
-      return;
-      }
-      
-      if(hue >= lowRed && hue <= midYellow){
-      gl_FragColor = adjustColor(rawYiq, lowRed, midYellow, -yellowRedDegree);
-      return;
-      }
-      
-      gl_FragColor = adjustColor(rawYiq, midYellow, highBlue, yellowBlueDegree);
-      **/
      lowp float finalEdgeRatio = detectedEdge.r;
      if(imageMode == 0){
          lowp float colorDist = calcHue(sharpImageColor);
+         lowp vec3 darkColor = vec3(0.35);
+         lowp float brightness = dot(sharpImageColor.rgb, W);
+         brightness = brightness * brightness;
+         
+         finalEdgeRatio = finalEdgeRatio * (1.0 - brightness);
          //colorDist * sharpImageColor +  (1.0 - colorDist) *
-         gl_FragColor = colorDist * sharpImageColor + (1.0 - colorDist) * (sharpImageColor * finalEdgeRatio + (1.0 - finalEdgeRatio) * (smallBlurColor*blurRatio + (1.0 - blurRatio)*blurredImageColor));// * finalEdgeRatio + (1.0 - finalEdgeRatio) * vec4(0.5);
+         gl_FragColor = colorDist * sharpImageColor +  (1.0 - colorDist) * (sharpImageColor * finalEdgeRatio + (1.0 - finalEdgeRatio) * (smallBlurColor*blurRatio + (1.0 - blurRatio)*blurredImageColor));//* finalEdgeRatio + (1.0 - finalEdgeRatio) * vec4(0.5);
      }else if(imageMode == 1){
          gl_FragColor = detectedEdge;
      }else if(imageMode == 2){
          gl_FragColor = sharpImageColor;
      }
-     
-     //smallBlurColor * blurRatio + blurredImageColor * (1.0 - blurRatio)
-     //sharpImageColor + (1.0 - detectedEdge.r)* vec4(1.0); //+ (1.0 - detectedEdge.r) * (smallBlurColor * blurRatio + blurredImageColor * (1.0 - blurRatio));
-     //sharpImageColor * finalEdgeRatio + (1.0 - finalEdgeRatio) * (smallBlurColor * blurRatio + blurredImageColor * (1.0 - blurRatio)) ;//(smallBlurColor*blurRatio + sharpImageColor*(1.0 - blurRatio)) * detectedEdge.r + blurredImageColor*(1.0 - detectedEdge.r);
  }
  );
 #else

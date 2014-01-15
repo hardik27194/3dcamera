@@ -227,7 +227,6 @@ NSArray* EZFaceUtil::detectFace(UIImage* image, CGFloat miniRatio)
             CGFloat widthRatio = fres->orgRect.width/imageRatio.width;
             CGFloat heightRatio = fres->orgRect.height/imageRatio.height;
              EZDEBUG(@"Find a face: %f, %f, %f, ratio: %f,%f", fres->orgRect.width, fres->orgRect.height, miniRatio, widthRatio, heightRatio);
-            
             if(widthRatio*heightRatio > miniRatio){
                 EZDEBUG(@"Find a face now");
                 EZFaceResultObj* fobj = [[EZFaceResultObj alloc] init];

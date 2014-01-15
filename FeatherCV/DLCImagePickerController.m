@@ -92,6 +92,10 @@
     BOOL isStatic;
     BOOL hasBlur;
     int selectedFilter;
+    CGFloat blurAspectRatio;
+    CGFloat globalBlur;
+    CGFloat faceBlurBase;
+    CGFloat faceChangeGap;
     dispatch_once_t showLibraryOnceToken;
 }
 
@@ -184,8 +188,10 @@
     //finalBlendFilter.blurFilter.distanceNormalizationFactor = 7.01;
     //finalBlendFilter.
     if(sender == _redPoint){
+        
         //dynamicBlurFilter.realRatio = _blurRate.value;
-        //finalBlendFilter.blurFilter.blurSize = _redPoint.value*5;
+        finalBlendFilter.blurFilter.blurSize = _redPoint.value*5;
+        finalBlendFilter.smallBlurFilter.blurSize = blurAspectRatio * _redPoint.value * 5;
         _redText.text = [NSString stringWithFormat:@"%f",_redPoint.value * 5];
     }else if(sender == _yellowPoint){
         //finalBlendFilter.blurFilter.distanceNormalizationFactor = _yellowPoint.value * 50;
@@ -297,7 +303,7 @@
     [_yellowPoint rotateAngle:-M_PI_2];
     [_redGap rotateAngle:-M_PI_2];
     [_blueGap rotateAngle:-M_PI_2];
-    _redPoint.value = 0.282;
+    _redPoint.value = 0.6;
     _yellowPoint.value = 0.12;
     _bluePoint.value = 0.2;
     _redGap.value = 0.1;
@@ -444,10 +450,14 @@
     //biBlurFilter.blurSize = 2.5;
     //biBlurFilter.distanceNormalizationFactor = 5.0;
     finalBlendFilter = [[EZHomeBlendFilter alloc] init];
-    finalBlendFilter.blurFilter.blurSize = 2.0;//Original value
+    blurAspectRatio = 0.20/3.0;
+    globalBlur = 3.0;
+    faceChangeGap = 2.5;
+    faceBlurBase = 0.5;
+    finalBlendFilter.blurFilter.blurSize = globalBlur;//Original value
     finalBlendFilter.blurFilter.distanceNormalizationFactor = 13;
-    finalBlendFilter.smallBlurFilter.blurSize = 0.20;
-    finalBlendFilter.blurRatio = 0.20;
+    finalBlendFilter.smallBlurFilter.blurSize = blurAspectRatio * globalBlur;
+    finalBlendFilter.blurRatio = 0.25;
     [self setupColorAdjust];
     //[self adjustLine];
     
@@ -711,46 +721,10 @@
     [self removeAllTargets];
     
     selectedFilter = sender.tag;
-    [self setFilter:sender.tag];
+    //[self setFilter:sender.tag];
     [self prepareFilter];
 }
 
-
--(void) setFilter:(int) index {
-    switch (index) {
-        case 1:{
-            filter = [[GPUImageContrastFilter alloc] init];
-            [(GPUImageContrastFilter *) filter setContrast:1.75];
-        } break;
-        case 2: {
-            filter = [[GPUImageToneCurveFilter alloc] initWithACV:@"crossprocess"];
-        } break;
-        case 3: {
-            filter = [[GPUImageToneCurveFilter alloc] initWithACV:@"02"];
-        } break;
-        case 4: {
-            filter = [[DLCGrayscaleContrastFilter alloc] init];
-        } break;
-        case 5: {
-            filter = [[GPUImageToneCurveFilter alloc] initWithACV:@"17"];
-        } break;
-        case 6: {
-            filter = [[GPUImageToneCurveFilter alloc] initWithACV:@"aqua"];
-        } break;
-        case 7: {
-            filter = [[GPUImageToneCurveFilter alloc] initWithACV:@"yellow-red"];
-        } break;
-        case 8: {
-            filter = [[GPUImageToneCurveFilter alloc] initWithACV:@"06"];
-        } break;
-        case 9: {
-            filter = [[GPUImageToneCurveFilter alloc] initWithACV:@"purple-green"];
-        } break;
-        default:
-            filter = [[GPUImageFilter alloc] init];
-            break;
-    }
-}
 
 -(void) prepareFilter {    
     if (![UIImagePickerController isSourceTypeAvailable: UIImagePickerControllerSourceTypeCamera]) {
@@ -770,7 +744,7 @@
     NSArray* isoRating = [exif objectForKey:@"ISOSpeedRatings"];
     CGFloat res = -1.0;
     if(isoRating && isoRating.count > 0){
-        res = [[isoRating objectAtIndex:0] integerValue];
+        res = [[isoRating objectAtIndex:0] floatValue];
     }
     
     return res;
@@ -894,17 +868,29 @@
 
 -(void) prepareStaticFilter:(EZFaceResultObj*)fobj image:(UIImage*)img{
     _detectFace = false;
-    EZDEBUG(@"Prepare new static image get called, flash image:%i, image size:%@", _isImageWithFlash, NSStringFromCGSize(img.size));
+    
     [staticPicture addTarget:fixColorFilter];
-    //[hueFilter addTarget:tongFilter];
     [fixColorFilter addTarget:tongFilter];
-    [tongFilter addTarget:finalBlendFilter];
-    [finalBlendFilter addTarget:filter];
-    //[fixColorFilter addTarget:edgeFilter];
-    //[edgeFilter addTarget:filter];
-    //[fixColorFilter addTarget:filter];
-    [filter addTarget:self.imageView];
+    CGFloat dark = [self getISOSpeedRating];
+    EZDEBUG(@"Prepare new static image get called, flash image:%i, image size:%@, dark:%f", _isImageWithFlash, NSStringFromCGSize(img.size), dark);
+    GPUImageFilter* imageFilter = tongFilter;
+    if(dark >= 600){
+        [tongFilter addTarget:darkBlurFilter];
+        imageFilter = (GPUImageFilter*)darkBlurFilter;
+    }
+    
+    if(fobj){
+        [imageFilter addTarget:finalBlendFilter];
+        [finalBlendFilter addTarget:filter];
+        CGFloat blurCycle = faceBlurBase + faceChangeGap * fobj.orgRegion.size.width;
+        finalBlendFilter.blurFilter.blurSize = blurCycle;
+        finalBlendFilter.smallBlurFilter.blurSize = blurAspectRatio * blurCycle;
+        EZDEBUG(@"Will blur face:%@, blurCycle:%f", NSStringFromCGRect(fobj.orgRegion), blurCycle);
+    }else{
+        [imageFilter addTarget:filter];
+    }
 
+    [filter addTarget:self.imageView];
     GPUImageRotationMode imageViewRotationMode = kGPUImageNoRotation;
     switch (staticPictureOriginalOrientation) {
         case UIImageOrientationLeft:
@@ -1293,29 +1279,19 @@
         
         //UIImageView* iview = [[UIImageView alloc] initWithFrame:CGRectMake(0, 400, 100, 100)];
         //iview.image = flipped;
-         NSArray* faces = [EZFaceUtilWrapper detectFace:img ratio:0.25];
+        
+        NSArray* faces = [EZFaceUtilWrapper detectFace:img ratio:0.01];
         EZDEBUG(@"Capture the flip is:%i, flipped orientation:%i, orginal:%i, faces:%i", flip, img.imageOrientation, img.imageOrientation, faces.count);
         EZFaceResultObj* firstObj = nil;
         if(faces.count > 0){
-            firstObj = [faces objectAtIndex:0];
+            for(EZFaceResultObj* fobj in faces){
+                if(fobj.orgRegion.size.width > firstObj.orgRegion.size.width){
+                    firstObj = fobj;
+                }
+            }
+            //firstObj = [faces objectAtIndex:0];
         }
-        //[self.view addSubview:iview];
-        //For the testing purpose only
-        
-        /**
-        if(stillCamera.isFrontFacing){
-            UIImage* rotated = [img rotateByOrientation:img.imageOrientation];
-            EZDEBUG(@"Rotated:%i, original:%i", rotated.imageOrientation, img.imageOrientation);
-            [self.delegate imagePickerController:self didFinishPickingMediaWithInfo:@{@"image":rotated}];
-        }
-         **/
         [self prepareStaticFilter:firstObj image:img];
-        //[self.delegate imagePickerController:self didFinishPickingMediaWithInfo:@{@"image":img}];
-        [self.retakeButton setHidden:NO];
-        [self.photoCaptureButton setTitle:@"Done" forState:UIControlStateNormal];
-        [self.photoCaptureButton setImage:nil forState:UIControlStateNormal];
-        [self.photoCaptureButton setEnabled:YES];
-        isStatic = true;
         dispatch_later(0.5, ^(){
             if(!_increasedLine){
                 _increasedLine = true;
@@ -1329,6 +1305,12 @@
             [staticPicture processImage];
             //_detectFace = true;
         });
+        
+        [self.retakeButton setHidden:NO];
+        [self.photoCaptureButton setTitle:@"Done" forState:UIControlStateNormal];
+        [self.photoCaptureButton setImage:nil forState:UIControlStateNormal];
+        [self.photoCaptureButton setEnabled:YES];
+        isStatic = true;
         //if(![self.filtersToggleButton isSelected]){
         //    [self showFilters];
         //}
@@ -1458,7 +1440,7 @@
         [self hideFilters];
     }
     EZDEBUG(@"The selectedFilter is:%i", selectedFilter);
-    [self setFilter:selectedFilter];
+    //[self setFilter:selectedFilter];
     [self prepareFilter];
 }
 
