@@ -267,7 +267,7 @@
     _yellowPoint.value = 0.12;
     _bluePoint.value = 0.2;
     _redGap.value = 0.1;
-    _blueGap.value = 0.225;
+    _blueGap.value = 0.2;
     //Initial value
     //finalBlendFilter.blurFilter.distanceNormalizationFactor = 7.2;
     //finalBlendFilter.smallBlurFilter.blurSize = 0.2;
@@ -417,9 +417,11 @@
     faceBlurBase = 0.5;
     finalBlendFilter.blurFilter.blurSize = globalBlur;//Original value
     finalBlendFilter.blurFilter.distanceNormalizationFactor = 13;
-    finalBlendFilter.smallBlurFilter.blurSize = blurAspectRatio * globalBlur;
-    finalBlendFilter.blurRatio = 0.25;
-    [self setupColorAdjust];
+    finalBlendFilter.smallBlurFilter.blurSize = 0.15;
+    finalBlendFilter.blurRatio = 0.30;
+    finalBlendFilter.edgeFilter.threshold = 0.4;
+    //finalBlendFilter.edgeFilter.
+    //[self setupColorAdjust];
     //[self adjustLine];
     
     tongFilter = [[GPUImageToneCurveFilter alloc] init];
@@ -845,7 +847,7 @@
         [finalBlendFilter addTarget:filter];
         CGFloat blurCycle = faceBlurBase + faceChangeGap * fobj.orgRegion.size.width;
         finalBlendFilter.blurFilter.blurSize = blurCycle;
-        finalBlendFilter.smallBlurFilter.blurSize = blurAspectRatio * blurCycle;
+        //finalBlendFilter.smallBlurFilter.blurSize = blurAspectRatio * blurCycle;
         EZDEBUG(@"Will blur face:%@, blurCycle:%f", NSStringFromCGRect(fobj.orgRegion), blurCycle);
         [finalBlendFilter addTarget:secFixColorFilter];
     }else{
@@ -1257,15 +1259,17 @@
         [self prepareStaticFilter:firstObj image:img];
         dispatch_later(0.5, ^(){
             if(firstObj){
-            if(_increasedLine){
-                _increasedLine = true;
-                finalBlendFilter.edgeFilter.texelWidth =  finalBlendFilter.edgeFilter.texelWidth * 1.2;
-                finalBlendFilter.edgeFilter.texelHeight = finalBlendFilter.edgeFilter.texelWidth * 1.2;
-            }else{
-                finalBlendFilter.edgeFilter.texelWidth = finalBlendFilter.edgeFilter.texelWidth;
-                finalBlendFilter.edgeFilter.texelHeight = finalBlendFilter.edgeFilter.texelHeight;
-            }
-            EZDEBUG(@"Reprocess width:%f, height:%f",  finalBlendFilter.edgeFilter.texelWidth,  finalBlendFilter.edgeFilter.texelHeight);
+                CGFloat orgWidth = finalBlendFilter.edgeFilter.texelWidth;
+                CGFloat orgHeight = finalBlendFilter.edgeFilter.texelHeight;
+                if(!_increasedLine){
+                    _increasedLine = true;
+                    finalBlendFilter.edgeFilter.texelWidth =  finalBlendFilter.edgeFilter.texelWidth * 1.5;
+                    finalBlendFilter.edgeFilter.texelHeight = finalBlendFilter.edgeFilter.texelWidth * 1.5;
+                }else{
+                    finalBlendFilter.edgeFilter.texelWidth = finalBlendFilter.edgeFilter.texelWidth;
+                    finalBlendFilter.edgeFilter.texelHeight = finalBlendFilter.edgeFilter.texelHeight;
+                }
+                EZDEBUG(@"Reprocess width:%f, height:%f, original width:%f, height:%f",  finalBlendFilter.edgeFilter.texelWidth,  finalBlendFilter.edgeFilter.texelHeight, orgWidth, orgHeight);
             }
             [staticPicture processImage];
             //_detectFace = true;
