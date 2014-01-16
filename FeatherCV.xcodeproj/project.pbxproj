@@ -42,7 +42,7 @@
 		18A36FEF1855C1DB0022F0A8 /* DLCImagePickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A36FEC1855C1DB0022F0A8 /* DLCImagePickerController.m */; };
 		18A36FF01855C1DB0022F0A8 /* DLCBlurOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A36FEE1855C1DB0022F0A8 /* DLCBlurOverlayView.m */; };
 		18A36FF31855C1F50022F0A8 /* DLCGrayscaleContrastFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A36FF21855C1F50022F0A8 /* DLCGrayscaleContrastFilter.m */; };
-		18A36FF61855C2700022F0A8 /* DLCImagePiker.xib in Resources */ = {isa = PBXBuildFile; fileRef = 18A36FF51855C2700022F0A8 /* DLCImagePiker.xib */; };
+		18A36FF61855C2700022F0A8 /* DLCImagePicker.xib in Resources */ = {isa = PBXBuildFile; fileRef = 18A36FF51855C2700022F0A8 /* DLCImagePicker.xib */; };
 		18A3701A1855C2A40022F0A8 /* focus-crosshair.png in Resources */ = {isa = PBXBuildFile; fileRef = 18A36FF81855C2A40022F0A8 /* focus-crosshair.png */; };
 		18A3701B1855C2A40022F0A8 /* focus-crosshair@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 18A36FF91855C2A40022F0A8 /* focus-crosshair@2x.png */; };
 		18A3701C1855C2A40022F0A8 /* library@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 18A36FFA1855C2A40022F0A8 /* library@2x.png */; };
@@ -314,7 +314,7 @@
 		18A36FEE1855C1DB0022F0A8 /* DLCBlurOverlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DLCBlurOverlayView.m; sourceTree = "<group>"; };
 		18A36FF11855C1F50022F0A8 /* DLCGrayscaleContrastFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DLCGrayscaleContrastFilter.h; sourceTree = "<group>"; };
 		18A36FF21855C1F50022F0A8 /* DLCGrayscaleContrastFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DLCGrayscaleContrastFilter.m; sourceTree = "<group>"; };
-		18A36FF51855C2700022F0A8 /* DLCImagePiker.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DLCImagePiker.xib; sourceTree = "<group>"; };
+		18A36FF51855C2700022F0A8 /* DLCImagePicker.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DLCImagePicker.xib; sourceTree = "<group>"; };
 		18A36FF81855C2A40022F0A8 /* focus-crosshair.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "focus-crosshair.png"; sourceTree = "<group>"; };
 		18A36FF91855C2A40022F0A8 /* focus-crosshair@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "focus-crosshair@2x.png"; sourceTree = "<group>"; };
 		18A36FFA1855C2A40022F0A8 /* library@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "library@2x.png"; sourceTree = "<group>"; };
@@ -669,7 +669,7 @@
 			isa = PBXGroup;
 			children = (
 				18A36FF71855C28D0022F0A8 /* UI */,
-				18A36FF51855C2700022F0A8 /* DLCImagePiker.xib */,
+				18A36FF51855C2700022F0A8 /* DLCImagePicker.xib */,
 				18A36FF11855C1F50022F0A8 /* DLCGrayscaleContrastFilter.h */,
 				18A36FF21855C1F50022F0A8 /* DLCGrayscaleContrastFilter.m */,
 				18A36FEB1855C1DB0022F0A8 /* DLCImagePickerController.h */,
@@ -1310,7 +1310,7 @@
 				18A370391855C2A40022F0A8 /* micro_carbon@2x.png in Resources */,
 				18A370261855C2A40022F0A8 /* flash-auto.png in Resources */,
 				18A370331855C2A40022F0A8 /* filter-close@2x.png in Resources */,
-				18A36FF61855C2700022F0A8 /* DLCImagePiker.xib in Resources */,
+				18A36FF61855C2700022F0A8 /* DLCImagePicker.xib in Resources */,
 				18A3701B1855C2A40022F0A8 /* focus-crosshair@2x.png in Resources */,
 				18A370271855C2A40022F0A8 /* flash-auto@2x.png in Resources */,
 				18E34821183F02D600C9D89D /* haarcascade_mcs_nose.xml in Resources */,
