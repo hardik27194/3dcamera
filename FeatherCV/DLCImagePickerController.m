@@ -6,6 +6,11 @@
 //  Copyright (c) 2012 Dmitri Cherniak. All rights reserved.
 //
 
+#import <GPUImagePrewittEdgeDetectionFilter.h>
+#import <GPUImageSobelEdgeDetectionFilter.h>
+#import <GPUImageThresholdEdgeDetectionFilter.h>
+#import <GPUImageToneCurveFilter.h>
+
 #import "DLCImagePickerController.h"
 #import "DLCGrayscaleContrastFilter.h"
 #import "EZFaceBlurFilter.h"
@@ -20,15 +25,12 @@
 #import "EZSaturationFilter.h"
 #import "EZHomeBiBlur.h"
 #import "EZHomeGaussianFilter.h"
-#import <GPUImagePrewittEdgeDetectionFilter.h>
-#import <GPUImageSobelEdgeDetectionFilter.h>
-#import <GPUImageThresholdEdgeDetectionFilter.h>
 #import "EZHomeEdgeFilter.h"
 #import "EZHomeBlendFilter.h"
 #import "EZThreadUtility.h"
 #import "EZDoubleOutFilter.h"
+#import "EZFileUtil.h"
 
-#import <GPUImageToneCurveFilter.h>
 //#include <vector>
 
 #define kStaticBlurSize 2.0f
@@ -95,6 +97,9 @@
     CGFloat globalBlur;
     CGFloat faceBlurBase;
     CGFloat faceChangeGap;
+    
+    UIImageView* testView;
+    UIImageView* testView2;
     dispatch_once_t showLibraryOnceToken;
 }
 
@@ -337,7 +342,7 @@
     orgFiler = [[EZDoubleOutFilter alloc] init];
     //[_redAdjustments addObjectsFromArray:@[pointValue(0.0, 0.0), pointValue(0.25, 0.2615), pointValue(0.5, 0.512), pointValue(0.75, 0.762), pointValue(1.0, 1.0)]];
     [redAdjustments addObjectsFromArray:@[pointValue(0.0, 0.0), pointValue(0.25, 0.25), pointValue(0.5, 0.5), pointValue(0.75, 0.75), pointValue(1.0, 1.0)]];
-    [greenAdjustments addObjectsFromArray:@[pointValue(0.0, 0.0), pointValue(0.25, 0.25), pointValue(0.5, 0.5), pointValue(0.75, 0.75), pointValue(1.0, 1.0)]];
+    [greenAdjustments addObjectsFromArray:@[pointValue(0.0, 0.0), pointValue(0.25, 0.255), pointValue(0.5, 0.505), pointValue(0.75, 0.755), pointValue(1.0, 1.0)]];
     [blueAdjustments addObjectsFromArray:@[pointValue(0.0, 0.0), pointValue(0.25, 0.25), pointValue(0.5, 0.5), pointValue(0.75, 0.75), pointValue(1.0, 1.0)]];
     
     self.wantsFullScreenLayout = YES;
@@ -396,7 +401,7 @@
     secFixColorFilter.highBlue = -235;
     secFixColorFilter.yellowRedDegree = 2.4;
     secFixColorFilter.yellowBlueDegree = 20.0;
-    
+    secFixColorFilter.redEnhanceLevel = 0.6;
     
     fixColorFilter = [[EZSaturationFilter alloc] init];
     fixColorFilter.lowRed = 35.4;
@@ -404,7 +409,7 @@
     fixColorFilter.highBlue = -90;
     fixColorFilter.yellowRedDegree = 4.6;
     fixColorFilter.yellowBlueDegree = 10.9;
-    
+    fixColorFilter.redEnhanceLevel = 0.6;
     
     
     biBlurFilter = [[EZHomeGaussianFilter alloc] init];
@@ -413,10 +418,10 @@
     finalBlendFilter = [[EZHomeBlendFilter alloc] init];
     blurAspectRatio = 0.20/3.0;
     globalBlur = 3.0;
-    faceChangeGap = 2.5;
-    faceBlurBase = 0.5;
+    faceChangeGap = 2.8;
+    faceBlurBase = 0.3;
     finalBlendFilter.blurFilter.blurSize = globalBlur;//Original value
-    finalBlendFilter.blurFilter.distanceNormalizationFactor = 13;
+    finalBlendFilter.blurFilter.distanceNormalizationFactor = 8;
     finalBlendFilter.smallBlurFilter.blurSize = 0.15;
     finalBlendFilter.blurRatio = 0.30;
     finalBlendFilter.edgeFilter.threshold = 0.4;
@@ -578,13 +583,6 @@
     }
     EZDEBUG(@"After call capture:%i",stillCamera.isFrontFacing);
     [stillCamera startCameraCapture];
-    
-    //double delayInSeconds = 0.2;
-    //dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
-    //dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-    
-    //});
-    
     
 }
 
@@ -846,9 +844,11 @@
         [imageFilter addTarget:finalBlendFilter];
         [finalBlendFilter addTarget:filter];
         CGFloat blurCycle = faceBlurBase + faceChangeGap * fobj.orgRegion.size.width;
+        CGFloat adjustedFactor = 17 - 10 * fobj.orgRegion.size.width;
+        finalBlendFilter.blurFilter.distanceNormalizationFactor = adjustedFactor;
         finalBlendFilter.blurFilter.blurSize = blurCycle;
         //finalBlendFilter.smallBlurFilter.blurSize = blurAspectRatio * blurCycle;
-        EZDEBUG(@"Will blur face:%@, blurCycle:%f", NSStringFromCGRect(fobj.orgRegion), blurCycle);
+        EZDEBUG(@"Will blur face:%@, blurCycle:%f, adjustedColor:%f", NSStringFromCGRect(fobj.orgRegion), blurCycle, adjustedFactor);
         [finalBlendFilter addTarget:secFixColorFilter];
     }else{
         [imageFilter addTarget:secFixColorFilter];
@@ -1337,20 +1337,13 @@
         [self prepareForCapture];
         
     } else {
-        
         GPUImageOutput<GPUImageInput> *processUpTo;
-        
-        
         processUpTo = filter;
-        
-       
         EZDEBUG(@"Before call process image");
         [staticPicture processImage];
         EZDEBUG(@"After call process image");
-        
         //if(!stillCamera.isFrontFacing){
         UIImage *currentFilteredVideoFrame = nil;
-        
         if(stillCamera.isFrontFacing){
            currentFilteredVideoFrame = [processUpTo imageFromCurrentlyProcessedOutputWithOrientation:staticPictureOriginalOrientation];
             EZDEBUG(@"The current orienation:%i, static orientatin:%i", currentFilteredVideoFrame.imageOrientation, staticPictureOriginalOrientation);
@@ -1359,7 +1352,6 @@
             currentFilteredVideoFrame = [processUpTo imageFromCurrentlyProcessedOutputWithOrientation:staticPictureOriginalOrientation];
             //currentFilteredVideoFrame = staticPicture
             EZDEBUG(@"Before shink:%@", NSStringFromCGSize(currentFilteredVideoFrame.size));
-            
         }
         //}
         
@@ -1413,11 +1405,34 @@
     [self prepareFilter];
 }
 
+- (void) testImageSave
+{
+    EZHomeBlendFilter* hb = [[EZHomeBlendFilter alloc] init];
+    GPUImageFilter* finalFilter = [[GPUImageFilter alloc] init];
+    UIImage* orgImage = [UIImage imageNamed:@"smile_face.png"];
+    UIImage* filteredImage = [EZFileUtil saveEffectsImage:orgImage effects:@[hb, finalFilter]];
+    EZDEBUG(@"Filtered image:%@", NSStringFromCGSize(filteredImage.size));
+    if(testView == nil){
+        testView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 100, 150, 200)];
+        testView.contentMode = UIViewContentModeScaleAspectFit;
+        [self.view addSubview:testView];
+        
+        testView2 = [[UIImageView alloc] initWithFrame:CGRectMake(160, 100, 150, 200)];
+        testView2.contentMode = UIViewContentModeScaleAspectFit;
+        [self.view addSubview:testView2];
+    }
+    testView.image = filteredImage;
+    testView2.image = orgImage;
+}
+
+
 -(IBAction) cancel:(id)sender {
     EZDEBUG(@"Cancel get called");
     //if(isStatic){
     //    [staticPicture processImage];
     //}
+    //UIImage* renderImage =
+    
     int imageMode = finalBlendFilter.imageMode + 1;
     if(imageMode > 2){
         imageMode = 0;

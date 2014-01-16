@@ -6,11 +6,157 @@
 //
 //
 
+#import <AssetsLibrary/AssetsLibrary.h>
+#import <GPUImage.h>
 #import "EZFileUtil.h"
 #import "EZConstants.h"
 #import "EZExtender.h"
+#import "EZThreadUtility.h"
+
 
 @implementation EZFileUtil
+
+
++ (NSArray*) generateMergeRect:(CGSize)size pieces:(int)pieces
+{
+    NSMutableArray* res = [[NSMutableArray alloc] initWithCapacity:pieces];
+    CGFloat height = size.height;
+    CGFloat gap = floorf(height/pieces);
+    //CGFloat left = height;
+    CGFloat start = 0;
+    CGFloat addBond = floorf(0.05 * height);
+    EZDEBUG(@"The gap for each floor is:%f", gap);
+    for(int i = 0; i < pieces; i++){
+        if(i == 0){
+            [res addObject:[NSValue valueWithCGRect:CGRectMake(0, 0, size.width, gap)]];
+            
+        }else if(i == (pieces - 1)){
+            [res addObject:[NSValue valueWithCGRect:CGRectMake(0, addBond, size.width, height - start)]];
+        }else{
+            [res addObject:[NSValue valueWithCGRect:CGRectMake(0, addBond, size.width, gap)]];
+        }
+        start += gap;
+    }
+    return res;
+}
+
+//What's the purpose of this method
+//I will generate the image for the split service.
++ (NSArray*) generateSplitRect:(CGSize)size pieces:(int)pieces
+{
+    NSMutableArray* res = [[NSMutableArray alloc] initWithCapacity:pieces];
+    CGFloat height = size.height;
+    CGFloat gap = floorf(height/pieces);
+    //CGFloat left = height;
+    CGFloat start = 0;
+    CGFloat addBond = floorf(0.05 * height);
+    EZDEBUG(@"The gap for each floor is:%f", gap);
+    for(int i = 0; i < pieces; i++){
+        if(i == 0){
+            [res addObject:[NSValue valueWithCGRect:CGRectMake(0, 0, size.width, gap + addBond)]];
+            
+        }else if(i == (pieces - 1)){
+            [res addObject:[NSValue valueWithCGRect:CGRectMake(0, start-addBond, size.width,addBond + height - start)]];
+        }else{
+            [res addObject:[NSValue valueWithCGRect:CGRectMake(0, start - addBond, size.width, 2*addBond + gap)]];
+        }
+        start += gap;
+    }
+    return res;
+}
+
++ (UIImage*) saveEffectsImage:(UIImage*)img effects:(NSArray*)effects
+{
+    int preConfigPieces = 4;
+    UIImage* blockImge = img;
+    //img = nil;
+    ///[[EZThreadUtility getInstance] executeBlockInQueue:^(){
+        NSArray* splitRects = [self generateSplitRect:blockImge.size pieces:preConfigPieces];
+        CGSize imgSize = blockImge.size;
+        NSMutableArray* splittedImages = [[NSMutableArray alloc] init];
+        for(int i = 0; i < splitRects.count; i++){
+            CGRect cropRect = [[splitRects objectAtIndex:i]CGRectValue];
+            UIImage* cropImg = [blockImge imageCroppedWithRect:cropRect];
+            cropImg = [self processImages:cropImg effects:effects];
+            [splittedImages addObject:cropImg];
+        }
+        blockImge = nil;
+        UIImage* combineImage = [self combineImages:splittedImages size:imgSize];
+        //EZDEBUG(@"Combined size:%@,", NSStringFromCGSize(imgSize))
+        //completed(combineImage);
+    return combineImage;
+    //} isConcurrent:YES];
+}
+
++ (NSString*) saveToAlbum:(UIImage *)image meta:(NSDictionary *)info
+{
+    EZDEBUG(@"Store image get called");
+    ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
+    UIImage* img = [info objectForKey:@"image"];
+    NSDictionary* orgdata = [info objectForKey:@"metadata"];
+    NSMutableDictionary* metadata =[[NSMutableDictionary alloc] init];
+    if(metadata){
+        [metadata setDictionary:orgdata];
+    }
+    EZDEBUG(@"Recived metadata:%@, actual orientation:%i", metadata, img.imageOrientation);
+    [metadata setValue:@(img.imageOrientation) forKey:@"Orientation"];
+    [library writeImageToSavedPhotosAlbum:img.CGImage metadata:metadata completionBlock:^(NSURL *assetURL, NSError *error2)
+     {
+         //             report_memory(@"After writing to library");
+         if (error2) {
+             EZDEBUG(@"ERROR: the image failed to be written");
+         }
+         else {
+             EZDEBUG(@"Stored image to album assetURL: %@", assetURL);
+             //return assetURL.absoluteString;
+        }
+     }];
+
+    return nil;
+}
+
++ (UIImage*) combineImages:(NSArray *)imgs size:(CGSize)newSize
+{
+    
+    //CGSize newSize = CGSizeMake(width, height);
+    UIGraphicsBeginImageContext(newSize);
+    NSArray* imgRects = [self generateMergeRect:newSize pieces:imgs.count];
+    CGFloat startPos = 0.0;
+    CGFloat gap = floorf(newSize.height/imgs.count);
+    for(int i = 0; i < imgs.count; i++){
+        CGRect cropRect = [[imgRects objectAtIndex:i]CGRectValue];
+        UIImage* img = [imgs objectAtIndex:i];
+        EZDEBUG(@"before crop:%@, after crop:%@", NSStringFromCGSize(img.size), NSStringFromCGRect(cropRect));
+        img =  [img imageCroppedWithRect:cropRect];
+        [img drawAtPoint:CGPointMake(0, startPos)];
+        startPos += gap;
+    }
+    UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return newImage;
+}
+//I could use this to generate gaussian effects now.
+//Cool.
++ (UIImage*) processImages:(UIImage*)img effects:(NSArray*)effects
+{
+    if(effects.count){
+        GPUImagePicture* gp = [[GPUImagePicture alloc] initWithImage:img smoothlyScaleOutput:YES];
+        GPUImageFilter* filter = nil;
+        for(GPUImageFilter* gf in effects){
+            [gf removeAllTargets];
+            if(!filter){
+                [gp addTarget:gf];
+                filter = gf;
+            }else{
+                [filter addTarget:gf];
+            }
+        }
+        //[filter prepareForImageCapture];
+        [gp processImage];
+        return [filter imageFromCurrentlyProcessedOutputWithOrientation:img.imageOrientation];
+    }
+    return img;
+}
 
 + (void) removeFile:(NSString*)file dirType:(NSSearchPathDirectory)type
 {

@@ -16,9 +16,9 @@
 - (UIImage *) resizedImageWithMaximumSize: (CGSize) size;
 - (UIImage *) resizedImageWithMinimumSize: (CGSize) size;
 
+//This is exactly what do I need.
+- (UIImage *) imageCroppedWithRect:(CGRect)rect;
 //- (UIImage *) rotateToRightDirection;
-
-- (UIImage *) rotate:(UIImageOrientation)orient;
 - (UIImage *) rotateByOrientation:(UIImageOrientation)orientation;
 
 - (UIImage *) flipImage;

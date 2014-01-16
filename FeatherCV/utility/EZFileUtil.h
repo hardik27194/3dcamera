@@ -28,10 +28,26 @@ static EZLRUMap* imageCaches;
 //NSApplicationDirectory.
 + (NSURL*) fileToURL:(NSString*)fileName;
 
+//Return the File URL
+//This method will complete following things.
+//1. Split the image into four part.
+//2. Process image
+//3. Combine it into a single image and store it.
+//
++ (UIImage*) saveEffectsImage:(UIImage*)img effects:(NSArray*)effects;
+
++ (NSArray*) generateSplitRect:(CGSize)size pieces:(int)pieces;
+
++ (UIImage*) processImages:(UIImage*)img effects:(NSArray*)effects;
+
++ (UIImage*) combineImages:(NSArray*)imgs size:(CGSize)size;
+
 
 + (NSString*) saveImageToCacheWithName:(UIImage*)img filename:(NSString*)filename;
 + (NSString*) saveImageToCache:(UIImage*)img;
 + (NSArray*) saveImagesToCache:(NSArray*)uiImages;
+
++ (NSString*) saveToAlbum:(UIImage*)image meta:(NSDictionary*)meta;
 //It is to remove all the audio file on the iPad
 //So I could use the directory space for other purpose.
 + (void) removeAllAudioFiles;

@@ -154,7 +154,7 @@ NSString *const kFaceBlurFragmentShaderString = SHADER_STRING
     // To prevent double updating of this filter, disable updates from the sharp image side
     //[_combineFilter disableSecondFrameCheck];
     self.initialFilters = [NSArray arrayWithObjects:_blurFilter,_edgeFilter,_smallBlurFilter, _combineFilter, nil];
-    self.skinColors = @[@(0.703),@(0.473),@(0.332)];
+    self.skinColors = @[@(0.653),@(0.423),@(0.282)];
     self.terminalFilter = _combineFilter;
     //self.edgeRatio =
     self.imageMode = 0;

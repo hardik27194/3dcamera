@@ -13,6 +13,9 @@
 #import "EZExtender.h"
 #import "EZSoundEffect.h"
 #import "EZClickView.h"
+#import "EZFileUtil.h"
+#import "EZHomeBlendFilter.h"
+#import <GPUImageFilter.h>
 
 @implementation EZTestSuites
 
@@ -25,6 +28,18 @@
     //[EZTestSuites testAddressBook];
     //[EZTestSuites testGetNumberFromString];
     //[EZTestSuites testSoundEffects];
+    //[self testImageProcess];
+}
+
++ (void) testImageProcess
+{
+    UIImage* testImg = [UIImage imageNamed:@"smile_face.png"];
+    EZHomeBlendFilter* filter = [[EZHomeBlendFilter alloc] init];
+    GPUImageFilter* imageFilter = [[GPUImageFilter alloc] init];
+    
+    UIImage* processed = [EZFileUtil saveEffectsImage:testImg effects:@[filter, imageFilter]];
+    [EZFileUtil saveToAlbum:processed meta:@{}];
+    EZDEBUG(@"Successfully completed the image process");
 }
 
 + (void) testClickView:(UIView *)parentView
