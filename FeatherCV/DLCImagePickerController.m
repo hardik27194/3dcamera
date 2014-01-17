@@ -404,11 +404,11 @@
     secFixColorFilter.redEnhanceLevel = 0.6;
     
     fixColorFilter = [[EZSaturationFilter alloc] init];
-    fixColorFilter.lowRed = 35.4;
-    fixColorFilter.midYellow = -30.3;
-    fixColorFilter.highBlue = -90;
-    fixColorFilter.yellowRedDegree = 4.6;
-    fixColorFilter.yellowBlueDegree = 10.9;
+    fixColorFilter.lowRed = 30.4;
+    fixColorFilter.midYellow = -25.3;
+    fixColorFilter.highBlue = -85;
+    fixColorFilter.yellowRedDegree = 4.6/2.0;
+    fixColorFilter.yellowBlueDegree = 10.9/2.0;
     fixColorFilter.redEnhanceLevel = 0.6;
     
     
@@ -829,7 +829,7 @@
                 _detectingFace = TRUE;
                 //dispatch_main(^(){
                 @autoreleasepool {
-                    [self startDetectFace];
+                    //[self startDetectFace];
                 }
                 //});
             }
@@ -870,7 +870,7 @@
         [imageFilter addTarget:finalBlendFilter];
         [finalBlendFilter addTarget:filter];
         CGFloat blurCycle = faceBlurBase + faceChangeGap * fobj.orgRegion.size.width;
-        CGFloat adjustedFactor = 17 - 10 * fobj.orgRegion.size.width;
+        CGFloat adjustedFactor = MIN(17 - 10 * fobj.orgRegion.size.width, 10.0);
         finalBlendFilter.blurFilter.distanceNormalizationFactor = adjustedFactor;
         finalBlendFilter.blurFilter.blurSize = blurCycle;
         //finalBlendFilter.smallBlurFilter.blurSize = blurAspectRatio * blurCycle;
