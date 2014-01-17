@@ -444,6 +444,8 @@
     whiteBalancerFilter = [[GPUImageWhiteBalanceFilter alloc] init];
     whiteBalancerFilter.temperature = 4880;
     contrastfilter.saturation = 1.2;
+    imageView.fillMode = kGPUImageFillModePreserveAspectRatioAndFill;
+    EZDEBUG(@"The imageView frame:%@", NSStringFromCGRect(imageView.frame));
     [self setupEdgeDetector];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         [self setUpCamera];
@@ -740,20 +742,44 @@
 
 - (NSArray*) adjustFrameForOrienation:(CGRect)faceRegion orientation:(UIImageOrientation)orientation
 {
-    EZDEBUG(@"image orientation value:%i", orientation);
-    if(orientation == UIImageOrientationUp){
-        EZDEBUG(@"image orientation up");
-    }else if(orientation == UIImageOrientationRight){
-        EZDEBUG(@"image orientation right");
-    }else if(orientation == UIImageOrientationLeft){
-        EZDEBUG(@"image orientation left");
-    }
-    
     CGFloat width = faceRegion.size.width * self.imageView.frame.size.width;
     CGFloat height = faceRegion.size.height * self.imageView.frame.size.height;
     
     CGFloat px = faceRegion.origin.x * self.imageView.frame.size.width;
     CGFloat py = faceRegion.origin.y * self.imageView.frame.size.height;
+    EZDEBUG(@"image orientation value:%i", orientation);
+    if(orientation == UIImageOrientationUp){
+        EZDEBUG(@"image orientation up");
+        
+    }else if(orientation == UIImageOrientationRight){
+        //width = faceRegion.size.width * self.imageView.frame.size.height;
+        width = faceRegion.size.width * self.imageView.frame.size.height;
+        height = faceRegion.size.height * self.imageView.frame.size.width;
+
+        px = faceRegion.origin.x * self.imageView.frame.size.height;
+        py = faceRegion.origin.y * self.imageView.frame.size.width;
+        CGFloat tmpWidth = width;
+        width = height * 1.1;
+        height = tmpWidth * 0.8;
+        CGFloat tmpX = px;
+        px = py;
+        py = self.imageView.frame.size.height - tmpX - tmpWidth;
+        EZDEBUG(@"image orientation right");
+    }else if(orientation == UIImageOrientationLeft){
+        EZDEBUG(@"image orientation left");
+        width = faceRegion.size.width * self.imageView.frame.size.height;
+        height = faceRegion.size.height * self.imageView.frame.size.width;
+        px = faceRegion.origin.x * self.imageView.frame.size.height;
+        py = faceRegion.origin.y * self.imageView.frame.size.width;
+        CGFloat tmpWidth = width;
+        width = height * 1.1;
+        height = tmpWidth * 0.8;
+        CGFloat tmpY = py;
+        py = px;
+        px = self.imageView.frame.size.width - tmpY - width;
+        
+    }
+    
     CGPoint interestPoint = CGPointMake(px + 0.5 * width, py + 0.5*height);
     CGRect frame = CGRectMake(px, py, width, height);
     CGRect fixFrame = [self.view convertRect:frame fromView:self.imageView];
@@ -803,7 +829,7 @@
                 _detectingFace = TRUE;
                 //dispatch_main(^(){
                 @autoreleasepool {
-                    //[self startDetectFace];
+                    [self startDetectFace];
                 }
                 //});
             }

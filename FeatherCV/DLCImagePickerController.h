@@ -72,7 +72,6 @@ typedef enum {
 @property (nonatomic, weak) IBOutlet UIButton *flashToggleButton;
 @property (nonatomic, weak) IBOutlet UIButton *retakeButton;
 
-
 @property (nonatomic, weak) IBOutlet UIScrollView *filterScrollView;
 @property (nonatomic, weak) IBOutlet UIImageView *filtersBackgroundImageView;
 @property (nonatomic, weak) IBOutlet UIView *photoBar;
@@ -97,7 +96,6 @@ typedef enum {
 //The purpose is to make sure if we are using the automatic shot or not.
 //If it is, we will switch back to front facing.
 @property (nonatomic, assign) BOOL selfShot;
-
 //If current camera point forward
 @property (nonatomic, assign) BOOL isFrontCamera;
 
