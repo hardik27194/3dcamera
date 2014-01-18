@@ -870,7 +870,7 @@
         [imageFilter addTarget:finalBlendFilter];
         [finalBlendFilter addTarget:filter];
         CGFloat blurCycle = faceBlurBase + faceChangeGap * fobj.orgRegion.size.width;
-        CGFloat adjustedFactor = MIN(17 - 10 * fobj.orgRegion.size.width, 10.0);
+        CGFloat adjustedFactor = MAX(17 - 10 * fobj.orgRegion.size.width, 10.0);
         finalBlendFilter.blurFilter.distanceNormalizationFactor = adjustedFactor;
         finalBlendFilter.blurFilter.blurSize = blurCycle;
         //finalBlendFilter.smallBlurFilter.blurSize = blurAspectRatio * blurCycle;
