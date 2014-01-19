@@ -40,6 +40,7 @@
     if (_assetLibaray == nil) {
         _assetLibaray = [[ALAssetsLibrary alloc] init];
     }
+    _contacts = [[NSMutableArray alloc] init];
     return self;
 }
 
@@ -145,6 +146,7 @@
                                                  
                                                  EZDEBUG(@"Completed photobook reading, will call back now");
                                                  [[EZMessageCenter getInstance] postEvent:EZGetContacts attached:res];
+                                                 [_contacts addObjectsFromArray:res];
                                                 });
     });
     //return res;

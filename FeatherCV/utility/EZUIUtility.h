@@ -8,11 +8,13 @@
 
 #import <Foundation/Foundation.h>
 #import "EZAppConstants.h"
+#import "EZClickView.h"
 //#import "DLCImagePickerController.h"
 
 
 
 //Put UI related functionality here
+//@class EZClickView;
 @interface EZUIUtility : NSObject<UIImagePickerControllerDelegate, UINavigationControllerDelegate>
 
 @property (nonatomic, assign) BOOL cameraRaised;
@@ -22,6 +24,13 @@
 @property (nonatomic, assign) BOOL triggerBySlide;
 
 @property (nonatomic, strong) EZEventBlock completed;
+
+@property (nonatomic, strong) NSMutableArray* showMenuItems;
+
+@property (nonatomic, weak) UIWindow* mainWindow;
+
+//each time camera Click Button is visible, I will add my own process
+@property (nonatomic, strong) EZClickView* cameraClickButton;
 
 @property (nonatomic, strong) NSArray* colors;
 

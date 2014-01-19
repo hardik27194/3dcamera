@@ -7,6 +7,7 @@
 //
 
 #import "EZAlbumTablePage.h"
+#import <AssetsLibrary/AssetsLibrary.h>
 #import "EZPhotoCell.h"
 #import "EZDisplayPhoto.h"
 #import "EZThreadUtility.h"
@@ -14,6 +15,9 @@
 #import "EZFileUtil.h"
 #import "EZClickView.h"
 #import "EZTestSuites.h"
+#import "EZUIUtility.h"
+#import "DLCImagePickerController.h"
+#import "EZDataUtil.h"
 
 
 static int photoCount = 1;
@@ -49,11 +53,113 @@ static int photoCount = 1;
     return self;
 }
 
+- (UIView*) createSeperate:(CGRect)orgBound
+{
+    UIView* seperate = [[UIView alloc] initWithFrame:CGRectMake(orgBound.origin.x, orgBound.size.height - 2, orgBound.size.width, 2)];
+    seperate.backgroundColor = [UIColor whiteColor];
+    UIView* darker = [[UIView alloc] initWithFrame:CGRectMake(0, 1, orgBound.size.width, 1)];
+    darker.backgroundColor = RGBCOLOR(227, 227, 227);
+    [seperate addSubview:darker];
+    return  seperate;
+}
+
+- (UIView*) createMenuView:(NSArray*)menuNames
+{
+    CGFloat itemHight = 40;
+    UIView* res = [[UIView alloc] initWithFrame:CGRectMake(5, 60, 100, itemHight * menuNames.count)];
+    res.clipsToBounds = YES;
+    res.backgroundColor = RGBA(255, 100, 100, 128);
+    for(int i = 0; i < menuNames.count; i ++){
+        NSDictionary* menuItem = [menuNames objectAtIndex:i];
+        EZClickView* clickView = [[EZClickView alloc] initWithFrame:CGRectMake(0, 40*i, 100, 40)];
+        clickView.backgroundColor = [UIColor clearColor];
+        [clickView addSubview:[self createSeperate:clickView.frame]];
+        UILabel* title = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 100, 38)];
+        title.text = [menuItem objectForKey:@"text"];
+        title.font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+        title.textAlignment = NSTextAlignmentCenter;
+        [clickView addSubview:title];
+        clickView.releasedBlock = [menuItem objectForKey:@"block"];
+        [res addSubview:clickView];
+    }
+    return res;
+}
+
+
+- (void) showMenu:(id)sender
+{
+    if(!_menuView){
+        _menuView = [self createMenuView:EZUIUtility.sharedEZUIUtility.showMenuItems];
+        _menuHeight = _menuView.frame.size.height;
+        [TopView addSubview:_menuView];
+        _menuView.height = 0;
+    }
+    if(_menuView.height > 10){
+        [UIView animateWithDuration:0.3 animations:^(){
+            _menuView.height = 0;
+        }];
+    }else{
+        [UIView animateWithDuration:0.3 animations:^(){
+            _menuView.height = _menuHeight;
+        }];
+    }
+}
+
+- (void)imagePickerController:(DLCImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
+{
+    EZDEBUG(@"Store image get called");
+    ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
+    UIImage* img = [info objectForKey:@"image"];
+    NSDictionary* orgdata = [info objectForKey:@"metadata"];
+    NSMutableDictionary* metadata =[[NSMutableDictionary alloc] init];
+    if(metadata){
+        [metadata setDictionary:orgdata];
+    }
+    EZDEBUG(@"Recived metadata:%@, actual orientation:%i", metadata, img.imageOrientation);
+    [metadata setValue:@(img.imageOrientation) forKey:@"Orientation"];
+    [library writeImageToSavedPhotosAlbum:img.CGImage metadata:metadata completionBlock:^(NSURL *assetURL, NSError *error2)
+     {
+         //             report_memory(@"After writing to library");
+         if (error2) {
+             EZDEBUG(@"ERROR: the image failed to be written");
+         }
+         else {
+             EZDEBUG(@"Stored image to album assetURL: %@", assetURL);
+             [[EZDataUtil getInstance] assetURLToAsset:assetURL success:^(ALAsset* result){
+                 EZDEBUG(@"Transfer the image to EZDisplayPhoto successfully");
+                 EZDisplayPhoto* ed = [[EZDisplayPhoto alloc] init];
+                 ed.isFront = true;
+                 EZPhoto* ep = [[EZPhoto alloc] init];
+                 ed.pid = ++[EZDataUtil getInstance].photoCount;
+                 ep.asset = result;
+                 ep.isLocal = true;
+                 ed.photo = ep;
+                 ed.photo.owner = [[EZPerson alloc] init];
+                 ed.photo.owner.name = @"天哥";
+                 ed.photo.owner.avatar = [EZFileUtil fileToURL:@"tian_2.jpeg"].absoluteString;
+                 //EZDEBUG(@"Before size");
+                 ep.size = [result defaultRepresentation].dimensions;
+                 [[EZMessageCenter getInstance]postEvent:EZTakePicture attached:ed];
+                 EZDEBUG(@"after size:%f, %f", ep.size.width, ep.size.height);
+             }];
+         }
+     }];
+    
+}
+
+- (void)imagePickerControllerDidCancel:(DLCImagePickerController *)picker
+{
+    
+}
 
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    //self.navigationItem.rightBarButtonItem = [[UINavigationItem alloc] initWithTitle:@""];
+    
+    self.navigationItem.leftBarButtonItem  = [[UIBarButtonItem alloc] initWithTitle:@"更多" style:UIBarButtonItemStylePlain target:self action:@selector(showMenu:)];
     _combinedPhotos = [[NSMutableArray alloc] init];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     //self.tableView.backgroundColor = RGBCOLOR(230, 231, 226);
@@ -86,7 +192,39 @@ static int photoCount = 1;
         [_combinedPhotos insertObject:dp atIndex:0];
         [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
     }];
+    
+    CGRect bound = [UIScreen mainScreen].bounds;
+    CGFloat diameter = 70.0;
+    EZClickView* clickButton = [[EZClickView alloc] initWithFrame:CGRectMake((320 - diameter)/2, bound.size.height - diameter - 20, diameter, diameter)];
+    [clickButton enableRoundImage];
+    [self.view addSubview:clickButton];
+    clickButton.backgroundColor = RGBACOLOR(255, 255, 255, 128);
+    _cameraClicked = ^(id sender){
+        DLCImagePickerController* controller = [[DLCImagePickerController alloc] init];
+        //controller.prefersStatusBarHidden = TRUE;
+        controller.delegate = weakSelf;
+        [weakSelf presentViewController:controller animated:TRUE completion:^(){
+            EZDEBUG(@"Presentation completed");
+        }];
+    };
 
+    EZUIUtility.sharedEZUIUtility.cameraClickButton = clickButton;
+    dispatch_main(^(){
+        EZDEBUG(@"The mainWindow:%i, topView:%i", (int)EZUIUtility.sharedEZUIUtility.mainWindow,(int)TopView);
+        [TopView addSubview:clickButton];
+    });
+}
+
+- (void) viewWillDisappear:(BOOL)animated
+{
+    _menuView.height = 0;
+}
+
+- (void) viewDidAppear:(BOOL)animated
+{
+    EZDEBUG(@"View did show");
+    [super viewDidAppear:animated];
+    EZUIUtility.sharedEZUIUtility.cameraClickButton.releasedBlock = _cameraClicked;
 }
 
 - (void)didReceiveMemoryWarning

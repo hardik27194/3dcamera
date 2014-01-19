@@ -8,9 +8,10 @@
 
 #import <UIKit/UIKit.h>
 #import "EZAppConstants.h"
+#import "DLCImagePickerController.h"
 
 @class EZDisplayPhoto;
-@interface EZAlbumTablePage : UITableViewController
+@interface EZAlbumTablePage : UITableViewController<DLCImagePickerDelegate>
 
 
 @property (nonatomic, strong) NSMutableArray* combinedPhotos;
@@ -33,12 +34,18 @@
 @property (nonatomic, strong) UILabel* dailyCount;
 @property (nonatomic, strong) UIView* container;
 
+@property (nonatomic, assign) CGFloat menuHeight;
+
+@property (nonatomic, strong) UIView* menuView;
+
 //This is a successful pattern I have explored several years ago.
 @property (nonatomic, strong) EZQueryBlock queryBlock;
 
 //either user are dragging or the tableview is scrolling,
 //This scrolling is true.
 @property (nonatomic, assign) BOOL isScrolling;
+
+@property (nonatomic, strong) EZEventBlock cameraClicked;
 
 
 //Where do we begin

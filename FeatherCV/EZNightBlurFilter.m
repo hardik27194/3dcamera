@@ -21,15 +21,15 @@ NSString *const kFaceBlurFragmentShaderString3 = SHADER_STRING
  uniform lowp float excludeBlurSize;
  uniform highp float aspectRatio;
  uniform lowp float realRatio;
- const lowp vec3 skinColor = vec3(0.247, 0.122, 0.094);
+ const lowp vec3 skinColor = vec3(0.227, 0.112, 0.084);
  //const lowp vec3 skinColor = vec3(0.78, 0.5254, 0.372);
  
  lowp float colorDistance(lowp vec4 src)
 {
-    highp vec3 delta = src.rgb - skinColor;
-    lowp float lowdelta = dot(delta, delta);
-    lowp float skindelta = dot(src, src);
-    return min(lowdelta/0.75, 1.0);
+    highp float delta = distance(src.rgb, skinColor);
+    //lowp float lowdelta = dot(delta, delta);
+    //lowp float skindelta = dot(src, src);
+    return min(delta/1.5, 1.0);
 }
  
  void main()

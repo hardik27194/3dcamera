@@ -24,9 +24,10 @@
     self = [super initWithStyle:style];
     if (self) {
         // Custom initialization
-        self.title = @"小朋友";
+        self.title = @"朋友";
         [self.tableView registerClass:[EZContactTableCell class] forCellReuseIdentifier:@"Cell"];
-        _contacts = [[NSMutableArray alloc] init];
+        //_contacts = [[NSMutableArray alloc] init];
+        _contacts = [EZDataUtil getInstance].contacts;
     }
     return self;
 }
@@ -37,13 +38,15 @@
     //[self reloadPersons];
     [[EZMessageCenter getInstance] registerEvent:EZGetContacts block:^(NSArray* persons){
         EZDEBUG(@"Get person, count:%i", persons.count);
-        [_contacts addObjectsFromArray:persons];
+        //[_contacts addObjectsFromArray:persons];
+        _contacts = [EZDataUtil getInstance].contacts;
         [self.tableView reloadData];
     }];
     
     [[EZMessageCenter getInstance] registerEvent:EZUpdateContacts block:^(id sender){
         EZDEBUG(@"Will update the contacts table");
-        //[self.tableView reloadData];
+        _contacts = [EZDataUtil getInstance].contacts;
+        [self.tableView reloadData];
     }];
 }
 

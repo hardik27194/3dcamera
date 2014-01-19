@@ -16,6 +16,8 @@
 - (UIImage *) resizedImageWithMaximumSize: (CGSize) size;
 - (UIImage *) resizedImageWithMinimumSize: (CGSize) size;
 
+- (UIImage *) createBlurImage:(CGFloat)blurSize;
+
 //This is exactly what do I need.
 - (UIImage *) imageCroppedWithRect:(CGRect)rect;
 //- (UIImage *) rotateToRightDirection;

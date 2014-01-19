@@ -57,7 +57,7 @@
         [self.collectionView registerClass:[EZContactCell class] forCellWithReuseIdentifier:CELL_ID];
     }
     self.title = @"朋友";
-    _contacts = [[NSMutableArray alloc] init];
+    _contacts =  [EZDataUtil getInstance].contacts; //[[NSMutableArray alloc] init];
     self.collectionView.alwaysBounceVertical = true;
     [self createHiddenButton];
     //UISwipeGestureRecognizer* swiper = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipped:)];
