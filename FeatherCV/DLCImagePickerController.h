@@ -91,6 +91,13 @@ typedef enum {
 @property (nonatomic, strong) EZSoundEffect* shotVoice;
 
 @property (nonatomic, strong) NSMutableArray* storedMotionDelta;
+@property (nonatomic, assign) BOOL quitFaceDetection;
+
+
+//0 mean off
+//1 mean on
+//2 mean auto
+@property (nonatomic, assign) int flashMode;
 
 //What's the purpose of this method?
 //The purpose is to make sure if we are using the automatic shot or not.

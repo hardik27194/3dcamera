@@ -1,15 +1,15 @@
 //
-//  EZSaturationFilter.m
+//  EZColorBrighter.m
 //  FeatherCV
 //
-//  Created by xietian on 13-12-23.
-//  Copyright (c) 2013年 tiange. All rights reserved.
+//  Created by xietian on 14-1-20.
+//  Copyright (c) 2014年 tiange. All rights reserved.
 //
 
-#import "EZSaturationFilter.h"
-// Adapted from http://stackoverflow.com/questions/9234724/how-to-change-hue-of-a-texture-with-glsl - see for code and discussion
+#import "EZColorBrighter.h"
+
 #if TARGET_IPHONE_SIMULATOR || TARGET_OS_IPHONE
-NSString *const kGPUImageMySatuFragmentShaderString = SHADER_STRING
+NSString *const kGPUImageMyColorFragmentShaderString = SHADER_STRING
 (
  precision highp float;
  
@@ -92,39 +92,15 @@ NSString *const kGPUImageMySatuFragmentShaderString = SHADER_STRING
  
  void main()
  {
-     
      lowp vec4 sharpImageColor = texture2D(inputImageTexture, textureCoordinate);
-     
-     
-     
-     highp vec4 rawYiq = color2YIQ(sharpImageColor);
-     // Calculate the hue and chroma
-     highp float hue = atan (rawYiq.b, rawYiq.g);
-
-      if(hue > lowRed || hue < highBlue){
-          //gl_FragColor = sharpImageColor;
-          //return;
-      }
-      
-      else if(hue <= lowRed && hue >= midYellow){
-          sharpImageColor = adjustColor(rawYiq, midYellow, lowRed, yellowRedDegree);
-          //return;
-      }
-      else
-      {
-          sharpImageColor = adjustColor(rawYiq, highBlue, midYellow, -yellowBlueDegree);
-      }
-     
-    gl_FragColor = sharpImageColor;
-     /**
-     if(hue > -0.7 && hue < -0.6){
-         gl_FragColor = sharpImageColor*0.1;
-         return;
+     lowp vec4 fixRedColor =  sharpImageColor;
+     lowp float red2Green = sharpImageColor.r - sharpImageColor.g;
+     lowp float red2Blue = sharpImageColor.r - sharpImageColor.b;
+     if(red2Blue > 0.0 && red2Green > 0.0 && (red2Green+red2Blue) > redEnhanceLevel){
+         fixRedColor.r = min(1.0, sharpImageColor.r + red2Green * red2Green * redRatio);
+         fixRedColor.g = max(0.0, sharpImageColor.g - red2Green * red2Green * redRatio);
      }
-      **/
-     
-     //gl_FragColor = sharpImageColor*0.1;
-     //gl_FragColor = sharpImageColor;
+     gl_FragColor = fixRedColor;
  }
  );
 #else
@@ -175,54 +151,33 @@ NSString *const kGPUImageHueFragmentShaderString = SHADER_STRING
  );
 #endif
 
-@implementation EZSaturationFilter
+@implementation EZColorBrighter
 
 
 - (id)init
 {
-    if(! (self = [super initWithFragmentShaderFromString:kGPUImageMySatuFragmentShaderString]) )
+    if(! (self = [super initWithFragmentShaderFromString:kGPUImageMyColorFragmentShaderString]) )
     {
         return nil;
     }
-    self.lowRed = 20;
-    self.midYellow = -30;
-    self.highBlue = -80;
-    self.yellowRedDegree = 10;
-    self.yellowBlueDegree = 10;
-    
-    //hueAdjustUniform = [filterProgram uniformIndex:@"hueAdjust"];
-    //self.hue = 0.0;
-    
+    self.redRatio = 0.15;
+    self.redEnhanceLevel = 0.40;
     return self;
 }
 
-- (void) setLowRed:(CGFloat)lowRed
+
+- (void) setRedRatio:(CGFloat)redRatio
 {
-    _lowRed = fmodf(lowRed, 360.0) * M_PI/180.0;
-    [self setFloat:_lowRed forUniformName:@"lowRed"];
+    _redRatio = redRatio;
+    [self setFloat:_redRatio forUniformName:@"redRatio"];
+    
 }
 
-- (void) setMidYellow:(CGFloat)midYellow
+- (void) setRedEnhanceLevel:(CGFloat)redEnhanceLevel
 {
-    _midYellow = fmodf(midYellow, 360.0) * M_PI/180.0;
-    [self setFloat:_midYellow forUniformName:@"midYellow"];
+    _redEnhanceLevel = redEnhanceLevel;
+    [self setFloat:_redEnhanceLevel forUniformName:@"redEnhanceLevel"];
 }
 
-- (void) setHighBlue:(CGFloat)highBlue
-{
-    _highBlue = fmodf(highBlue, 360.0) * M_PI/180.0;
-    [self setFloat:_highBlue forUniformName:@"highBlue"];
-}
 
-- (void) setYellowBlueDegree:(CGFloat)yellowBlueDegree
-{
-    _yellowBlueDegree = fmodf(yellowBlueDegree, 360.0) * M_PI/180.0;
-    [self setFloat:_yellowBlueDegree forUniformName:@"yellowBlueDegree"];
-}
-
-- (void) setYellowRedDegree:(CGFloat)yellowRedDegree
-{
-    _yellowRedDegree = fmodf(yellowRedDegree, 360.0) * M_PI/180.0;
-    [self setFloat:_yellowRedDegree forUniformName:@"yellowRedDegree"];
-}
 @end
