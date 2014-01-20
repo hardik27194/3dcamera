@@ -402,7 +402,7 @@
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         [self setUpCamera];
     });
-    [self startFaceCapture];
+    //[self startFaceCapture];
     CGRect bound = [UIScreen mainScreen].bounds;
     
     
@@ -471,8 +471,8 @@
     faceBlurBase = 0.3;
     finalBlendFilter.blurFilter.blurSize = globalBlur;//Original value
     finalBlendFilter.blurFilter.distanceNormalizationFactor = 8;
-    finalBlendFilter.smallBlurFilter.blurSize = 0.17;
-    finalBlendFilter.blurRatio = 0.25;
+    finalBlendFilter.smallBlurFilter.blurSize = 0.2;
+    finalBlendFilter.blurRatio = 0.3;
     finalBlendFilter.edgeFilter.threshold = 0.4;
 
     cycleDarken = [[EZCycleDiminish alloc] init];
