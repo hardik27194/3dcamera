@@ -146,13 +146,13 @@
             [gf removeAllTargets];
             if(!filter){
                 [gp addTarget:gf];
-                filter = gf;
             }else{
                 [filter addTarget:gf];
             }
+            filter = gf;
         }
-        //[filter prepareForImageCapture];
-        [gp processImage];
+        [filter prepareForImageCapture];
+        //[gp processImage];
         return [filter imageFromCurrentlyProcessedOutputWithOrientation:img.imageOrientation];
     }
     return img;

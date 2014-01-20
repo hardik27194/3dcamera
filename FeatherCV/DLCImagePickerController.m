@@ -806,7 +806,7 @@
 
 - (void) startDetectFace
 {
-    if(!(_detectFace && _isVisible && !_detectingFace)){
+    if(!(_detectFace && _isVisible && !_detectingFace && !isStatic)){
         return;
     }
      _detectingFace = TRUE;
@@ -838,7 +838,7 @@
         EZDEBUG(@"Start capture faces");
         while (!_quitFaceDetection) {
             @autoreleasepool {
-                [self startDetectFace];
+                //[self startDetectFace];
             }
             [NSThread sleepForTimeInterval:1.0];
         }
@@ -1492,9 +1492,10 @@
             NSArray* filters = [self prepareImageFilter:_detectedFaceObj imageSize:_imageSize];
             UIImage* orgImage = [UIImage imageWithContentsOfFile:_highResImageFile];
             EZDEBUG(@"stored file:%@,The org size file:%@",_highResImageFile, NSStringFromCGSize(orgImage.size));
-            finalBlendFilter.imageMode = 1;
-            [EZFileUtil deleteFile:_highResImageFile];
+            finalBlendFilter.imageMode = 0;
+            //[EZFileUtil deleteFile:_highResImageFile];
             currentFilteredVideoFrame = [EZFileUtil saveEffectsImage:orgImage effects:filters];
+            //[EZFileUtil deleteFile:_highResImageFile];
             EZDEBUG(@"processed size:%@", NSStringFromCGSize(currentFilteredVideoFrame.size));
             orgImage = nil;
         }else{
