@@ -75,4 +75,10 @@ static EZLRUMap* imageCaches;
 //On trouble I could think of is that the cache file will get removed. 
 + (NSString*) saveToCache:(NSData*)data filename:(NSString*)filename;
 
++ (NSString*) saveToDocument:(NSData*)data filename:(NSString*)filename;
+
++ (NSString*) saveImageToDocument:(UIImage*)image filename:(NSString*)filename;
+
++ (void) deleteFile:(NSString*)filename;
+
 @end

@@ -176,6 +176,32 @@
     }
 }
 
++ (NSString*) saveImageToDocument:(UIImage*)image filename:(NSString*)fileName
+{
+    return [self saveToDocument:image.toData filename:fileName];
+}
+
++ (NSString*) saveToDocument:(NSData*)data filename:(NSString*)filename
+{
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsPath = [paths objectAtIndex:0]; //Get the docs directory
+    NSString *filePath = [documentsPath stringByAppendingPathComponent:filename]; //Add the file name
+    EZDEBUG(@"Full path will be stored:%@", filePath);
+    [data writeToFile:filePath atomically:YES]; //Write the file
+    return filePath;
+}
+
+
++ (void) deleteFile:(NSString*)fileName
+{
+    NSError* err = nil;
+    [[NSFileManager defaultManager] removeItemAtPath:fileName error:&err];
+    if(err){
+        EZDEBUG(@"failed to delete files, the error:%@", err);
+    }
+
+}
+
 //Will list all file under the specified directory
 + (NSArray*) listAllFiles:(NSSearchPathDirectory)type
 {
@@ -229,12 +255,6 @@
     [EZFileUtil removeAllFileWithSuffix:@"caf"];
 }
 
-
-
-+ (void) deleteFile:(NSString*)files
-{
-    
-}
 
 + (NSString*) getTempFileName:(NSString*)padding  postFix:(NSString*)postFix
 {
@@ -387,5 +407,6 @@
     [data writeToFile:filePath atomically:YES]; //Write the file
     return filePath;
 }
+
 
 @end

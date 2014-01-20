@@ -336,7 +336,7 @@
     [super viewDidAppear:animated];
     EZDEBUG(@"DLCImage view really appear");
     __weak DLCImagePickerController* weakSelf = self;
-    EZUIUtility.sharedEZUIUtility.cameraClickButton.releasedBlock = ^(id sender){
+    EZUIUtility.sharedEZUIUtility.cameraClickButton.pressedBlock = ^(id sender){
         [weakSelf takePhoto:nil];
     };
     _isVisible = TRUE;
@@ -1388,9 +1388,11 @@
 
 - (void) handleFullImage:(UIImage*)img
 {
+    photoMeta = stillCamera.currentCaptureMetadata;
+    EZDEBUG(@"Captured meta data:%@", photoMeta);
     _imageSize = img.size;
-    _highResImageFile = [EZFileUtil saveImageToCache:img];
-    EZDEBUG(@"Will save image to the store:%@, %@", NSStringFromCGSize(_imageSize), _highResImageFile);
+    _highResImageFile = [EZFileUtil saveImageToDocument:img filename:@"fullsize.png"];
+    EZDEBUG(@"Will save image to the document:%@, %@", NSStringFromCGSize(_imageSize), _highResImageFile);
     img = nil;
 }
 
@@ -1401,9 +1403,7 @@
         [weakSelf completeImage:img flip:flip error:error];
     };
     
-    void (^fullImageProcess)(UIImage *, NSError *) = ^(UIImage *img, NSError* error) {
-        [weakSelf handleFullImage:img];
-    };
+    
     _highResImageFile = nil;
     _imageSize = CGSizeMake(0, 0);
 
@@ -1418,8 +1418,11 @@
         GPUImageFilter *finalFilter = simpleFilter;
         [finalFilter prepareForImageCapture];
         EZDEBUG(@"Capture before get inside");
+        void (^fullImageProcess)(UIImage *, NSError *) = ^(UIImage *fullImg, NSError* error) {
+            [weakSelf handleFullImage:fullImg];
+            completion(img, nil);
+        };
         [stillCamera capturePhotoAsImageProcessedUpToFilter:finalFilter withCompletionHandler:fullImageProcess];
-        completion(img, nil);
         EZDEBUG(@"Capture without crop");
     } else {
         // A workaround inside capturePhotoProcessedUpToFilter:withImageOnGPUHandler: would cause the above method to fail,
@@ -1488,8 +1491,9 @@
         if(_highResImageFile){
             NSArray* filters = [self prepareImageFilter:_detectedFaceObj imageSize:_imageSize];
             UIImage* orgImage = [UIImage imageWithContentsOfFile:_highResImageFile];
-            EZDEBUG(@"The org size file:%@", NSStringFromCGSize(orgImage.size));
+            EZDEBUG(@"stored file:%@,The org size file:%@",_highResImageFile, NSStringFromCGSize(orgImage.size));
             finalBlendFilter.imageMode = 1;
+            [EZFileUtil deleteFile:_highResImageFile];
             currentFilteredVideoFrame = [EZFileUtil saveEffectsImage:orgImage effects:filters];
             EZDEBUG(@"processed size:%@", NSStringFromCGSize(currentFilteredVideoFrame.size));
             orgImage = nil;

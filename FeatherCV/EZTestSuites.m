@@ -29,6 +29,15 @@
     //[EZTestSuites testGetNumberFromString];
     //[EZTestSuites testSoundEffects];
     //[self testImageProcess];
+    //[self testImageStore];
+}
+
++ (void) testImageStore
+{
+    UIImage* testImg = [UIImage imageNamed:@"smile_face.png"];
+    NSString* storedFile = [EZFileUtil saveImageToCache:testImg];
+    UIImage* readBack = [UIImage imageWithContentsOfFile:storedFile];
+    EZDEBUG(@"storedFile:%@, org size:%@, stored size:%@", storedFile, NSStringFromCGSize(testImg.size), NSStringFromCGSize(readBack.size));
 }
 
 + (void) testImageProcess
