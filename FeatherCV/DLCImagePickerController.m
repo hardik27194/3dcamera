@@ -899,7 +899,7 @@
         [fixColorFilter addTarget:secFixColorFilter];
         [secFixColorFilter addTarget:redEnhanceFilter];
         [redEnhanceFilter addTarget:filter];
-        CGFloat blurCycle = faceBlurBase + faceChangeGap * fobj.orgRegion.size.width;
+        CGFloat blurCycle = faceBlurBase + 4.7 * fobj.orgRegion.size.width;
         CGFloat adjustedFactor = 13.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
         finalBlendFilter.blurFilter.distanceNormalizationFactor = adjustedFactor;
         finalBlendFilter.blurFilter.blurSize = blurCycle;
