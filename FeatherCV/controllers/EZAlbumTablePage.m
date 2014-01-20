@@ -224,7 +224,7 @@ static int photoCount = 1;
 {
     EZDEBUG(@"View did show");
     [super viewDidAppear:animated];
-    EZUIUtility.sharedEZUIUtility.cameraClickButton.releasedBlock = _cameraClicked;
+    EZUIUtility.sharedEZUIUtility.cameraClickButton.pressedBlock = _cameraClicked;
 }
 
 - (void)didReceiveMemoryWarning
