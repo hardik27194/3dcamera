@@ -42,12 +42,12 @@ NSString *const kGPUImageHomeThresholdEdgeDetectionFragmentShaderString = SHADER
      float rightIntensity = texture2D(inputImageTexture, rightTextureCoordinate).r;
      float bottomIntensity = texture2D(inputImageTexture, bottomTextureCoordinate).r;
      float topIntensity = texture2D(inputImageTexture, topTextureCoordinate).r;
-     float h = -topLeftIntensity - 2.0 * topIntensity - topRightIntensity + bottomLeftIntensity + 2.0 * bottomIntensity + bottomRightIntensity;
-     float v = -bottomLeftIntensity - 2.0 * leftIntensity - topLeftIntensity + bottomRightIntensity + 2.0 * rightIntensity + topRightIntensity;
-     
+     float h = -topLeftIntensity - topIntensity - topRightIntensity + bottomLeftIntensity + bottomIntensity + bottomRightIntensity;
+     float v = -bottomLeftIntensity - leftIntensity - topLeftIntensity + bottomRightIntensity + rightIntensity + topRightIntensity;
      float mag = length(vec2(h, v));
-     mag = step(threshold, mag);
-     
+     float delta = mag - threshold;
+     delta = abs(delta) * delta;
+     mag = clamp(mag + delta,0.0, 1.0);
      gl_FragColor = vec4(vec3(mag), 1.0);
  }
  );
