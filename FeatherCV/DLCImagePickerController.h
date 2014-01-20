@@ -10,6 +10,7 @@
 #import "GPUImage.h"
 #import "DLCBlurOverlayView.h"
 #import "EZSoundEffect.h"
+#import "EZFaceResultObj.h"
 
 typedef enum {
     //This is the initial status
@@ -122,6 +123,10 @@ typedef enum {
 @property (nonatomic, strong) UIImageView* faceCaptureTest;
 
 @property (nonatomic, strong) NSString* highResImageFile;
+
+@property (nonatomic, strong) EZFaceResultObj* detectedFaceObj;
+
+@property (nonatomic, assign) CGSize imageSize;
 
 //This method will change the turnStatus
 - (void) captureTurnedImage;
