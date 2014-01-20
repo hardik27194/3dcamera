@@ -1519,18 +1519,18 @@
 
 -(IBAction) cancel:(id)sender {
     EZDEBUG(@"Cancel get called");
-    //[self switchDisplayImage];
+    [self switchDisplayImage];
     //if(isStatic){
     //    [staticPicture processImage];
     //}
     //UIImage* renderImage =
     
-    
+    /**
     EZUIUtility.sharedEZUIUtility.cameraClickButton.releasedBlock = nil;
     [self dismissViewControllerAnimated:YES completion:^(){
         EZDEBUG(@"DLCCamera Will get dismissed");
     }];
-
+     **/
 
 }
 
