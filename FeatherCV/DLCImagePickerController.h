@@ -121,6 +121,7 @@ typedef enum {
 
 @property (nonatomic, strong) UIImageView* faceCaptureTest;
 
+@property (nonatomic, strong) NSString* highResolutionFile;
 
 //This method will change the turnStatus
 - (void) captureTurnedImage;

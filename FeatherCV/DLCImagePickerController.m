@@ -1316,7 +1316,7 @@
     [stillCamera stopCameraCapture];
     [self removeAllTargets];
     if(!stillCamera.isFrontFacing){
-        img = [img resizedImageWithMaximumSize:CGSizeMake(img.size.width/2.0, img.size.height/2.0)];
+        //img = [img resizedImageWithMaximumSize:CGSizeMake(img.size.width/2.0, img.size.height/2.0)];
         EZDEBUG(@"After shrink:%@", NSStringFromCGSize(img.size));
     }else{
         EZDEBUG(@"Rotate before static:%i, static orientation:%i", img.imageOrientation, staticPictureOriginalOrientation);
@@ -1383,6 +1383,11 @@
     //}
 }
 
+- (void) handleFullImage:(UIImage*)img
+{
+    
+}
+
 -(void)captureImageInner:(BOOL)flip {
     _detectFace = false;
     __weak DLCImagePickerController* weakSelf = self;
@@ -1390,17 +1395,23 @@
         [weakSelf completeImage:img flip:flip error:error];
     };
     
+    void (^fullImageProcess)(UIImage *, NSError *) = ^(UIImage *img, NSError* error) {
+        
+    };
     
     AVCaptureDevicePosition currentCameraPosition = stillCamera.inputCamera.position;
     Class contextClass = NSClassFromString(@"GPUImageContext") ?: NSClassFromString(@"GPUImageOpenGLESContext");
     if ((currentCameraPosition != AVCaptureDevicePositionFront) || (![contextClass supportsFastTextureUpload])) {
-        EZDEBUG(@"Prepare for the capture");
+        //EZDEBUG(@"Prepare for the capture");
+        UIImage *img = [orgFiler imageFromCurrentlyProcessedOutput];
+        EZDEBUG(@"Get current image");
         [self removeAllTargets];
         [stillCamera addTarget:simpleFilter];
         GPUImageFilter *finalFilter = simpleFilter;
-           [finalFilter prepareForImageCapture];
+        [finalFilter prepareForImageCapture];
         EZDEBUG(@"Capture before get inside");
-        [stillCamera capturePhotoAsImageProcessedUpToFilter:finalFilter withCompletionHandler:completion];
+        [stillCamera capturePhotoAsImageProcessedUpToFilter:finalFilter withCompletionHandler:fullImageProcess];
+        completion(img, nil);
         EZDEBUG(@"Capture without crop");
     } else {
         // A workaround inside capturePhotoProcessedUpToFilter:withImageOnGPUHandler: would cause the above method to fail,
