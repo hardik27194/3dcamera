@@ -806,7 +806,7 @@
 
 - (void) startDetectFace
 {
-    if(!(_detectFace && _isVisible && !_detectingFace)){
+    if(!(_detectFace && _isVisible && !_detectingFace && !isStatic)){
         return;
     }
      _detectingFace = TRUE;
