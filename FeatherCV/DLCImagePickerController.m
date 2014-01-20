@@ -1385,7 +1385,7 @@
 
 - (void) handleFullImage:(UIImage*)img
 {
-    
+    _highResImageFile = [EZFileUtil saveImageToCache:img];
 }
 
 -(void)captureImageInner:(BOOL)flip {
@@ -1396,9 +1396,9 @@
     };
     
     void (^fullImageProcess)(UIImage *, NSError *) = ^(UIImage *img, NSError* error) {
-        
+        [weakSelf handleFullImage:img];
     };
-    
+    _highResImageFile = nil;
     AVCaptureDevicePosition currentCameraPosition = stillCamera.inputCamera.position;
     Class contextClass = NSClassFromString(@"GPUImageContext") ?: NSClassFromString(@"GPUImageOpenGLESContext");
     if ((currentCameraPosition != AVCaptureDevicePositionFront) || (![contextClass supportsFastTextureUpload])) {
@@ -1423,6 +1423,12 @@
     }
 }
 
+//This is for process image step wise
+- (NSArray*) prepareImageFilter
+{
+    
+}
+
 -(IBAction) takePhoto:(id)sender{
     smileDetected.alpha = 0;
     [self.photoCaptureButton setEnabled:NO];
@@ -1438,24 +1444,28 @@
         [self prepareForCapture];
         
     } else {
-        GPUImageOutput<GPUImageInput> *processUpTo;
-        processUpTo = filter;
-        EZDEBUG(@"Before call process image");
-        [staticPicture processImage];
-        EZDEBUG(@"After call process image");
-        //if(!stillCamera.isFrontFacing){
         UIImage *currentFilteredVideoFrame = nil;
-        if(stillCamera.isFrontFacing){
-           currentFilteredVideoFrame = [processUpTo imageFromCurrentlyProcessedOutputWithOrientation:staticPictureOriginalOrientation];
-            EZDEBUG(@"The current orienation:%i, static orientatin:%i", currentFilteredVideoFrame.imageOrientation, staticPictureOriginalOrientation);
-            currentFilteredVideoFrame = [currentFilteredVideoFrame rotateByOrientation:staticPictureOriginalOrientation];
+        if(_highResImageFile){
+            
         }else{
-            currentFilteredVideoFrame = [processUpTo imageFromCurrentlyProcessedOutputWithOrientation:staticPictureOriginalOrientation];
-            //currentFilteredVideoFrame = staticPicture
-            EZDEBUG(@"Before shink:%@", NSStringFromCGSize(currentFilteredVideoFrame.size));
-        }
+            GPUImageOutput<GPUImageInput> *processUpTo;
+            processUpTo = filter;
+            EZDEBUG(@"Before call process image");
+            [staticPicture processImage];
+            EZDEBUG(@"After call process image");
+            //if(!stillCamera.isFrontFacing){
+            
+            if(stillCamera.isFrontFacing){
+                currentFilteredVideoFrame = [processUpTo imageFromCurrentlyProcessedOutputWithOrientation:staticPictureOriginalOrientation];
+                EZDEBUG(@"The current orienation:%i, static orientatin:%i", currentFilteredVideoFrame.imageOrientation, staticPictureOriginalOrientation);
+                currentFilteredVideoFrame = [currentFilteredVideoFrame rotateByOrientation:staticPictureOriginalOrientation];
+            }else{
+                currentFilteredVideoFrame = [processUpTo imageFromCurrentlyProcessedOutputWithOrientation:staticPictureOriginalOrientation];
+                //currentFilteredVideoFrame = staticPicture
+                EZDEBUG(@"Before shink:%@", NSStringFromCGSize(currentFilteredVideoFrame.size));
+            }
         //}
-        
+        }
         //std::vector<EZFaceResult*> faces;
         //EZFaceUtil faceUtil = singleton<EZFaceUtil>();
         //NSArray* faces = [EZFaceUtilWrapper detectFace:currentFilteredVideoFrame ratio:0.25];
