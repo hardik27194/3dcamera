@@ -12,6 +12,7 @@
 #import "EZConstants.h"
 #import "EZExtender.h"
 #import "EZThreadUtility.h"
+#import "EZHomeBlendFilter.h"
 
 
 @implementation EZFileUtil
@@ -65,9 +66,9 @@
     return res;
 }
 
-+ (UIImage*) saveEffectsImage:(UIImage*)img effects:(NSArray*)effects
++ (UIImage*) saveEffectsImage:(UIImage*)img effects:(NSArray*)effects piece:(NSInteger)piece orientation:(UIImageOrientation)orientation
 {
-    int preConfigPieces = 4;
+    int preConfigPieces = piece;
     UIImage* blockImge = img;
     //img = nil;
     ///[[EZThreadUtility getInstance] executeBlockInQueue:^(){
@@ -81,7 +82,7 @@
             [splittedImages addObject:cropImg];
         }
         blockImge = nil;
-        UIImage* combineImage = [self combineImages:splittedImages size:imgSize];
+        UIImage* combineImage = [self combineImages:splittedImages size:imgSize orientation:orientation];
         //EZDEBUG(@"Combined size:%@,", NSStringFromCGSize(imgSize))
         //completed(combineImage);
     return combineImage;
@@ -115,7 +116,7 @@
     return nil;
 }
 
-+ (UIImage*) combineImages:(NSArray *)imgs size:(CGSize)newSize
++ (UIImage*) combineImages:(NSArray *)imgs size:(CGSize)newSize orientation:(UIImageOrientation)orientation
 {
     
     //CGSize newSize = CGSizeMake(width, height);
@@ -142,6 +143,7 @@
     if(effects.count){
         GPUImagePicture* gp = [[GPUImagePicture alloc] initWithImage:img smoothlyScaleOutput:YES];
         GPUImageFilter* filter = nil;
+        EZHomeBlendFilter* homeBlender = nil;
         for(GPUImageFilter* gf in effects){
             [gf removeAllTargets];
             if(!filter){
@@ -149,10 +151,17 @@
             }else{
                 [filter addTarget:gf];
             }
+            if([gf isKindOfClass:[EZHomeBlendFilter class]]){
+                //EZDEBUG(@"Found home blend filter, set up the texel width");
+                //[((EZHomeBlendFilter*)gf).edgeFilter setupFilterForSize:img.size];
+                homeBlender = (EZHomeBlendFilter*)gf;
+            }
             filter = gf;
         }
-        [filter prepareForImageCapture];
+        //[filter prepareForImageCapture];
         //[gp processImage];
+        //[homeBlender.edgeFilter setupFilterForSize:img.size];
+        [gp processImage];
         return [filter imageFromCurrentlyProcessedOutputWithOrientation:img.imageOrientation];
     }
     return img;

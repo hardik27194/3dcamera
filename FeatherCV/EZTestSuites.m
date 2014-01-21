@@ -46,7 +46,7 @@
     EZHomeBlendFilter* filter = [[EZHomeBlendFilter alloc] init];
     GPUImageFilter* imageFilter = [[GPUImageFilter alloc] init];
     
-    UIImage* processed = [EZFileUtil saveEffectsImage:testImg effects:@[filter, imageFilter]];
+    UIImage* processed = [EZFileUtil saveEffectsImage:testImg effects:@[filter, imageFilter] piece:6 orientation:0];
     [EZFileUtil saveToAlbum:processed meta:@{}];
     EZDEBUG(@"Successfully completed the image process");
 }

@@ -34,13 +34,13 @@ static EZLRUMap* imageCaches;
 //2. Process image
 //3. Combine it into a single image and store it.
 //
-+ (UIImage*) saveEffectsImage:(UIImage*)img effects:(NSArray*)effects;
++ (UIImage*) saveEffectsImage:(UIImage*)img effects:(NSArray*)effects piece:(NSInteger)piece orientation:(UIImageOrientation)orientation;
 
 + (NSArray*) generateSplitRect:(CGSize)size pieces:(int)pieces;
 
 + (UIImage*) processImages:(UIImage*)img effects:(NSArray*)effects;
 
-+ (UIImage*) combineImages:(NSArray*)imgs size:(CGSize)size;
++ (UIImage*) combineImages:(NSArray*)imgs size:(CGSize)size orientation:(UIImageOrientation)orientation;
 
 
 + (NSString*) saveImageToCacheWithName:(UIImage*)img filename:(NSString*)filename;

@@ -11,4 +11,8 @@
 #import <GPUImageThresholdEdgeDetectionFilter.h>
 @interface EZHomeEdgeFilter : GPUImageThresholdEdgeDetectionFilter
 
+//This is the value we could adjust for the purpose make the line wider
+//This seems reasonable to me.
+@property (nonatomic, assign) CGFloat edgeRatio;
+
 @end

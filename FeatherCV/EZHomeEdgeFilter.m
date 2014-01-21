@@ -45,10 +45,12 @@ NSString *const kGPUImageHomeThresholdEdgeDetectionFragmentShaderString = SHADER
      float h = -topLeftIntensity - topIntensity - topRightIntensity + bottomLeftIntensity + bottomIntensity + bottomRightIntensity;
      float v = -bottomLeftIntensity - leftIntensity - topLeftIntensity + bottomRightIntensity + rightIntensity + topRightIntensity;
      float mag = length(vec2(h, v));
+     /**
      float delta = mag - threshold;
      delta = abs(delta) * delta;
      mag = clamp(mag + delta,0.0, 1.0);
-     gl_FragColor = vec4(vec3(mag), 1.0);
+      **/ 
+    gl_FragColor = vec4(vec3(mag), 1.0);
  }
  );
 #else
@@ -134,8 +136,22 @@ NSString *const kGPUImageThresholdEdgeDetectionFragmentShaderString = SHADER_STR
     {
 		return nil;
     }
-    
+    _edgeRatio = 1.5;
     return self;
+}
+
+
+
+- (void)setupFilterForSize:(CGSize)filterFrameSize;
+{
+    //NSLog(@"Sobel size is:%@, hasOverridden:%i,current:%f, %f, thread:%@", NSStringFromCGSize(filterFrameSize), _hasOverriddenImageSizeFactor, _texelWidth, _texelHeight, [NSThread callStackSymbols]);
+    //EZDEBUG(@"HomeEdgeFilter before get in:%@, %i",NSStringFromCGSize(filterFrameSize), self.hasOverriddenImageSizeFactor);
+    //if (!self.hasOverriddenImageSizeFactor)
+    
+    EZDEBUG(@"HomeEdgeFilter get called:%@",NSStringFromCGSize(filterFrameSize));
+    self.texelWidth = (1.0 / filterFrameSize.width) * _edgeRatio;
+    self.texelHeight = (1.0 / filterFrameSize.height) * _edgeRatio;
+    //}
 }
 
 #pragma mark -
