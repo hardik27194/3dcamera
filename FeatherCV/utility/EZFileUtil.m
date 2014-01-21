@@ -21,11 +21,59 @@
 + (NSArray*) generateMergeRect:(CGSize)size pieces:(int)pieces
 {
     NSMutableArray* res = [[NSMutableArray alloc] initWithCapacity:pieces];
+    CGFloat edgeUnit = sqrt(pieces);
+    CGFloat heightGap = floorf(size.height/edgeUnit);
+    CGFloat widthGap = floorf(size.width/edgeUnit);
+    CGFloat widthBand = floorf(0.12 * widthGap);
+    CGFloat heightBand = floorf(0.12 * heightGap);
+    EZDEBUG(@"The gap width, height:%f, %f", widthGap, heightGap);
+    for(int i = 0; i < edgeUnit; i++){
+        for(int j = 0; j < edgeUnit; j++){
+            if(i == 0){
+                if(j == 0){ //upper left
+                    [res addObject:[NSValue valueWithCGRect:CGRectMake(0, 0, widthGap, heightGap)]];
+                }else if(j == (edgeUnit - 1)){ //right
+                    CGFloat remain = size.width - widthGap * j;
+                    [res addObject:[NSValue valueWithCGRect:CGRectMake(widthBand, 0, remain, heightGap)]];
+                }else{
+                    [res addObject:[NSValue valueWithCGRect:CGRectMake(widthBand, 0, widthGap, heightGap)]];
+                }
+                
+            }else if(i == (edgeUnit - 1)){
+                CGFloat remain = size.height - heightGap * i;
+                if(j == 0){
+                    [res addObject:[NSValue valueWithCGRect:CGRectMake(0, heightBand, widthGap, remain)]];
+                }else if(j == (edgeUnit - 1)){
+                    CGFloat widthRemain = size.width - widthGap * j;
+                    [res addObject:[NSValue valueWithCGRect:CGRectMake(widthBand, heightBand, widthRemain, remain)]];
+                }else{
+                    [res addObject:[NSValue valueWithCGRect:CGRectMake(widthBand, heightBand, widthGap, remain)]];
+                }
+            }else{//middle cell
+                if(j == 0){
+                    [res addObject:[NSValue valueWithCGRect:CGRectMake(0, heightBand, widthGap, heightGap)]];
+                }else if(j == (edgeUnit - 1)){
+                    CGFloat widthRemain = size.width - widthGap * j;
+                    [res addObject:[NSValue valueWithCGRect:CGRectMake(widthBand, heightBand, widthRemain, heightGap)]];
+                }else{
+                    [res addObject:[NSValue valueWithCGRect:CGRectMake(widthBand, heightBand, widthGap, heightGap)]];
+                }
+                
+            }
+            
+        }
+    }
+    return res;
+}
+
++ (NSArray*) generateMergeRectOld:(CGSize)size pieces:(int)pieces
+{
+    NSMutableArray* res = [[NSMutableArray alloc] initWithCapacity:pieces];
     CGFloat height = size.height;
     CGFloat gap = floorf(height/pieces);
     //CGFloat left = height;
     CGFloat start = 0;
-    CGFloat addBond = floorf(0.05 * height);
+    CGFloat addBond = floorf(0.12 * gap);
     EZDEBUG(@"The gap for each floor is:%f", gap);
     for(int i = 0; i < pieces; i++){
         if(i == 0){
@@ -46,22 +94,47 @@
 + (NSArray*) generateSplitRect:(CGSize)size pieces:(int)pieces
 {
     NSMutableArray* res = [[NSMutableArray alloc] initWithCapacity:pieces];
-    CGFloat height = size.height;
-    CGFloat gap = floorf(height/pieces);
-    //CGFloat left = height;
-    CGFloat start = 0;
-    CGFloat addBond = floorf(0.05 * height);
-    EZDEBUG(@"The gap for each floor is:%f", gap);
-    for(int i = 0; i < pieces; i++){
+    CGFloat edgeUnit = sqrt(pieces);
+    CGFloat heightGap = floorf(size.height/edgeUnit);
+    CGFloat widthGap = floorf(size.width/edgeUnit);
+    CGFloat widthBand = floorf(0.12 * widthGap);
+    CGFloat heightBand = floorf(0.12 * heightGap);
+    EZDEBUG(@"The gap width, height:%f, %f", widthGap, heightGap);
+    for(int i = 0; i < edgeUnit; i++){
+        for(int j = 0; j < edgeUnit; j++){
         if(i == 0){
-            [res addObject:[NSValue valueWithCGRect:CGRectMake(0, 0, size.width, gap + addBond)]];
+            if(j == 0){ //upper left
+                [res addObject:[NSValue valueWithCGRect:CGRectMake(0, 0, widthGap + widthBand, heightGap + heightBand)]];
+            }else if(j == (edgeUnit - 1)){ //right
+                CGFloat remain = size.width - widthGap * j;
+                [res addObject:[NSValue valueWithCGRect:CGRectMake(widthGap * j - widthBand, 0, remain + widthBand, heightGap + heightBand)]];
+            }else{
+                [res addObject:[NSValue valueWithCGRect:CGRectMake(widthGap * j - widthBand, 0, widthGap + 2 * widthBand, heightGap + heightBand)]];
+            }
             
-        }else if(i == (pieces - 1)){
-            [res addObject:[NSValue valueWithCGRect:CGRectMake(0, start-addBond, size.width,addBond + height - start)]];
-        }else{
-            [res addObject:[NSValue valueWithCGRect:CGRectMake(0, start - addBond, size.width, 2*addBond + gap)]];
+        }else if(i == (edgeUnit - 1)){
+            CGFloat remain = size.height - heightGap * i;
+            if(j == 0){
+                [res addObject:[NSValue valueWithCGRect:CGRectMake(0, heightGap*i - heightBand, widthGap + widthBand, remain + heightBand)]];
+            }else if(j == (edgeUnit - 1)){
+                CGFloat widthRemain = size.width - widthGap * j;
+                [res addObject:[NSValue valueWithCGRect:CGRectMake(widthGap * j - widthBand, heightGap * i - heightBand, widthRemain + widthBand, remain + heightBand)]];
+            }else{
+                [res addObject:[NSValue valueWithCGRect:CGRectMake(widthGap * j - widthBand,  heightGap * i - heightBand, widthGap + 2 * widthBand, remain + heightBand)]];
+            }
+        }else{//middle cell
+            if(j == 0){
+                [res addObject:[NSValue valueWithCGRect:CGRectMake(0, i * heightGap - heightBand, widthGap +  widthBand, heightGap + 2 * heightBand)]];
+            }else if(j == (edgeUnit - 1)){
+                CGFloat widthRemain = size.width - widthGap * j;
+                [res addObject:[NSValue valueWithCGRect:CGRectMake(widthGap * j - widthBand, i * heightGap - heightBand, widthRemain + widthBand, heightGap + 2 * heightBand)]];
+            }else{
+                [res addObject:[NSValue valueWithCGRect:CGRectMake(widthGap * j - widthBand, heightGap * i - heightBand, widthGap + 2 * widthBand, heightGap + 2 * heightBand)]];
+            }
+
         }
-        start += gap;
+        
+        }
     }
     return res;
 }
@@ -78,6 +151,9 @@
         for(int i = 0; i < splitRects.count; i++){
             CGRect cropRect = [[splitRects objectAtIndex:i]CGRectValue];
             UIImage* cropImg = [blockImge imageCroppedWithRect:cropRect];
+            if(i == 0){
+                [self processImages:cropImg effects:effects];
+            }
             cropImg = [self processImages:cropImg effects:effects];
             [splittedImages addObject:cropImg];
         }
@@ -116,21 +192,88 @@
     return nil;
 }
 
-+ (UIImage*) combineImages:(NSArray *)imgs size:(CGSize)newSize orientation:(UIImageOrientation)orientation
++ (UIImage*) combineImages:(NSArray*)images size:(CGSize)newSize orientation:(UIImageOrientation)orientation
+
+{
+    EZDEBUG(@"new combine image get called");
+    //CGAffineTransform transform = CGAffineTransformIdentity;
+    CGContextRef    context = NULL;
+    void *          bitmapData;
+    int             bitmapByteCount;
+    int             bitmapBytesPerRow;
+    
+    // Declare the number of bytes per row. Each pixel in the bitmap in this
+    // example is represented by 4 bytes; 8 bits each of red, green, blue, and
+    // alpha.
+    bitmapBytesPerRow   = (newSize.width * 4);
+    bitmapByteCount     = (bitmapBytesPerRow * newSize.height);
+    bitmapData = malloc(bitmapByteCount);
+    if (bitmapData == NULL)
+    {
+        return nil;
+    }
+    UIImage* first = [images objectAtIndex:0];
+    CGColorSpaceRef colorspace = CGImageGetColorSpace(first.CGImage);
+    context = CGBitmapContextCreate (bitmapData,newSize.width,newSize.height,8,bitmapBytesPerRow,
+                                     colorspace, kCGBitmapAlphaInfoMask & kCGImageAlphaPremultipliedLast);
+    CGColorSpaceRelease(colorspace);
+    if (context == NULL){
+        // error creating context
+        return nil;
+    }
+    CGAffineTransform ctm = CGContextGetCTM(context);
+    // Toggle the origin's position between the bottom-left and top-left.
+    CGAffineTransformTranslate(ctm, 0.0, newSize.height);
+    // Flip the handedness of the coordinate system.
+    CGAffineTransformScale(ctm, 1.0, -1.0);
+    // Apply the new coordinate system to the CGContext.
+    CGContextConcatCTM(context, ctm);
+    NSArray* imgRects = [self generateMergeRect:newSize pieces:images.count];
+    //CGFloat gap = floorf(newSize.height/imgs.count);
+    int edgeCount = sqrt(images.count);
+    CGFloat widthGap = newSize.width/edgeCount;
+    CGFloat heighGap = newSize.height/edgeCount;
+    for(int row = 0; row < edgeCount; row++){
+        for(int col = 0; col < edgeCount; col++){
+            int pos = row*edgeCount + col;
+            CGRect cropRect = [[imgRects objectAtIndex:pos]CGRectValue];
+            UIImage* img = [images objectAtIndex:pos];
+            //EZDEBUG(@"before crop:%@, after crop:%@", NSStringFromCGSize(img.size), NSStringFromCGRect(cropRect));
+            img =  [img imageCroppedWithRect:cropRect];
+            //[img drawAtPoint:CGPointMake(col * widthGap, row * heighGap)];
+            CGContextDrawImage(context, CGRectMake(col * widthGap,(edgeCount - 1 - row) * heighGap, img.size.width, img.size.height), img.CGImage);
+        }
+    }
+    CGImageRef imgRef2 = CGBitmapContextCreateImage(context);
+    CGContextRelease(context);
+    free(bitmapData);
+    UIImage * image = [UIImage imageWithCGImage:imgRef2 scale:1.0 orientation:orientation];
+    CGImageRelease(imgRef2);
+    
+    EZDEBUG(@"new combine succeed");
+    return image;
+}
+
+
++ (UIImage*) combineImagesOld:(NSArray *)imgs size:(CGSize)newSize orientation:(UIImageOrientation)orientation
 {
     
     //CGSize newSize = CGSizeMake(width, height);
     UIGraphicsBeginImageContext(newSize);
     NSArray* imgRects = [self generateMergeRect:newSize pieces:imgs.count];
-    CGFloat startPos = 0.0;
-    CGFloat gap = floorf(newSize.height/imgs.count);
-    for(int i = 0; i < imgs.count; i++){
-        CGRect cropRect = [[imgRects objectAtIndex:i]CGRectValue];
-        UIImage* img = [imgs objectAtIndex:i];
-        EZDEBUG(@"before crop:%@, after crop:%@", NSStringFromCGSize(img.size), NSStringFromCGRect(cropRect));
-        img =  [img imageCroppedWithRect:cropRect];
-        [img drawAtPoint:CGPointMake(0, startPos)];
-        startPos += gap;
+    //CGFloat gap = floorf(newSize.height/imgs.count);
+    int edgeCount = sqrt(imgs.count);
+    CGFloat widthGap = newSize.width/edgeCount;
+    CGFloat heighGap = newSize.height/edgeCount;
+    for(int row = 0; row < edgeCount; row++){
+        for(int col = 0; col < edgeCount; col++){
+            int pos = row*edgeCount + col;
+            CGRect cropRect = [[imgRects objectAtIndex:pos]CGRectValue];
+            UIImage* img = [imgs objectAtIndex:pos];
+            EZDEBUG(@"before crop:%@, after crop:%@", NSStringFromCGSize(img.size), NSStringFromCGRect(cropRect));
+            img =  [img imageCroppedWithRect:cropRect];
+            [img drawAtPoint:CGPointMake(col * widthGap, row * heighGap)];
+        }
     }
     UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();

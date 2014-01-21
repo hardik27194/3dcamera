@@ -18,6 +18,8 @@
 
 - (UIImage *) createBlurImage:(CGFloat)blurSize;
 
+
+- (UIImage*) croppedImageWithRect: (CGRect) rect;
 //This is exactly what do I need.
 - (UIImage *) imageCroppedWithRect:(CGRect)rect;
 //- (UIImage *) rotateToRightDirection;

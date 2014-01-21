@@ -43,7 +43,7 @@ static inline CGSize swapWidthAndHeight(CGSize size)
     }else{
         flippingOrientation = self.imageOrientation + 4;
     }
-    UIImage* flippedImage = [self rotate:flippingOrientation];
+    UIImage* flippedImage = [self rotateByOrientation:flippingOrientation];
     EZDEBUG(@"Flip image as:%i, flippingOrientation:%i", self.imageOrientation, flippingOrientation);
     return flippedImage;
 }
@@ -335,101 +335,6 @@ static inline CGSize swapWidthAndHeight(CGSize size)
     UIImage * image = [UIImage imageWithCGImage:imgRef2 scale:self.scale orientation:UIImageOrientationUp];
     CGImageRelease(imgRef2);
     return image;
-}
-
-
--(UIImage*)rotate:(UIImageOrientation)orient
-{
-    CGRect             bnds = CGRectZero;
-    UIImage*           copy = nil;
-    CGContextRef       ctxt = nil;
-    CGRect             rect = CGRectZero;
-    CGAffineTransform  tran = CGAffineTransformIdentity;
-    
-    bnds.size = self.size;
-    rect.size = self.size;
-    
-    
-    switch (orient)
-    {
-        case UIImageOrientationUp:
-            return self;
-            
-        case UIImageOrientationUpMirrored:
-            tran = CGAffineTransformMakeTranslation(rect.size.width, 0.0);
-            tran = CGAffineTransformScale(tran, -1.0, 1.0);
-            break;
-            
-        case UIImageOrientationDown:
-            tran = CGAffineTransformMakeTranslation(rect.size.width,
-                                                    rect.size.height);
-            tran = CGAffineTransformRotate(tran, degreesToRadians(180.0));
-            break;
-            
-        case UIImageOrientationDownMirrored:
-            tran = CGAffineTransformMakeTranslation(0.0, rect.size.height);
-            tran = CGAffineTransformScale(tran, 1.0, -1.0);
-            break;
-            
-        case UIImageOrientationLeft:
-            bnds.size = swapWidthAndHeight(bnds.size);
-            tran = CGAffineTransformMakeTranslation(0.0, rect.size.width);
-            tran = CGAffineTransformRotate(tran, degreesToRadians(-90.0));
-            break;
-            
-        case UIImageOrientationLeftMirrored:
-            bnds.size = swapWidthAndHeight(bnds.size);
-            tran = CGAffineTransformMakeTranslation(rect.size.height,
-                                                    rect.size.width);
-            tran = CGAffineTransformScale(tran, -1.0, 1.0);
-            tran = CGAffineTransformRotate(tran, degreesToRadians(-90.0));
-            break;
-            
-        case UIImageOrientationRight:
-            bnds.size = swapWidthAndHeight(bnds.size);
-            tran = CGAffineTransformMakeTranslation(rect.size.height, 0.0);
-            tran = CGAffineTransformRotate(tran, degreesToRadians(90.0));
-            break;
-            
-        case UIImageOrientationRightMirrored:
-            bnds.size = swapWidthAndHeight(bnds.size);
-            tran = CGAffineTransformMakeScale(-1.0, 1.0);
-            tran = CGAffineTransformRotate(tran, degreesToRadians(90.0));
-            break;
-            
-        default:
-            // orientation value supplied is invalid
-            assert(false);
-            return nil;
-    }
-    
-    EZDEBUG(@"orientation:%i, origin:%@, changed:%@", self.imageOrientation, NSStringFromCGSize(self.size), NSStringFromCGSize(bnds.size));
-    
-    UIGraphicsBeginImageContext(bnds.size);
-    ctxt = UIGraphicsGetCurrentContext();
-    
-    switch (orient)
-    {
-        case UIImageOrientationLeft:
-        case UIImageOrientationLeftMirrored:
-        case UIImageOrientationRight:
-        case UIImageOrientationRightMirrored:
-            CGContextScaleCTM(ctxt, -1.0, 1.0);
-            CGContextTranslateCTM(ctxt, -rect.size.height, 0.0);
-            break;
-            
-        default:
-            CGContextScaleCTM(ctxt, 1.0, -1.0);
-            CGContextTranslateCTM(ctxt, 0.0, -rect.size.height);
-            break;
-    }
-    
-    CGContextConcatCTM(ctxt, tran);
-    CGContextDrawImage(ctxt, bnds, self.CGImage);
-    copy = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    
-    return copy;
 }
 
 

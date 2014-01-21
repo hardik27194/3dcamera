@@ -856,6 +856,7 @@
 {
     finalBlendFilter.imageMode = imgMode;
     [staticPicture processImage];
+    //finalBlendFilter.imageMode = 2;
 }
 
 -(void) prepareStaticFilter:(EZFaceResultObj*)fobj image:(UIImage*)img{
@@ -902,6 +903,8 @@
         smileDetected.releasedBlock = ^(id obj){
             //blender.imageMode = 2;
             [weakSelf setImageMode:2];
+            //So that the whole image will not get affected.
+            weakSelf.detectedFaceObj = nil;
             //weakButton.hidden = TRUE;
             [UIView animateWithDuration:0.2 animations:^(){
                 weakButton.alpha = 0.0;
@@ -930,7 +933,7 @@
             break;
     }
 
-    [self.imageView setInputRotation:imageViewRotationMode atIndex:0];
+    [self.imageView setInputRotation:kGPUImageNoRotation atIndex:0];
     [staticPicture processImage];
 }
 
@@ -1027,7 +1030,7 @@
     }
     
     // seems like atIndex is ignored by GPUImageView...
-    [self.imageView setInputRotation:imageViewRotationMode atIndex:0];
+    [self.imageView setInputRotation:kGPUImageNoRotation atIndex:0];
     
     
     [staticPicture processImage];
@@ -1366,10 +1369,11 @@
 {
     photoMeta = stillCamera.currentCaptureMetadata;
     EZDEBUG(@"Captured meta data:%@", photoMeta);
-    _imageSize = img.size;
-    _highResImageFile = [EZFileUtil saveImageToDocument:img filename:@"fullsize.png"];
-    EZDEBUG(@"Will save image to the document:%@, %@", NSStringFromCGSize(_imageSize), _highResImageFile);
-    img = nil;
+    [[EZThreadUtility getInstance] executeBlockInQueue:^(){
+        _imageSize = img.size;
+        _highResImageFile = [EZFileUtil saveImageToDocument:img filename:@"fullsize.png"];
+        EZDEBUG(@"Will save image to the document:%@, %@", NSStringFromCGSize(_imageSize), _highResImageFile);
+    } isConcurrent:YES];
 }
 
 -(void)captureImageInner:(BOOL)flip {
@@ -1425,6 +1429,8 @@
     //[fixColorFilter addTarget:secFixColorFilter];
     EZDEBUG(@"Prepare new static image get called, flash image:%i, image size:%@, dark:%f", _isImageWithFlash, NSStringFromCGSize(size), dark);
     //GPUImageFilter* imageFilter = secFixColorFilter;
+    //fobj = [[EZFaceResultObj alloc] init];
+    //fobj.orgRegion = CGRectMake(0, 0, 0.3, 0.3);
     if(fobj){
         //[tongFilter addTarget:finalBlendFilter];
         EZHomeBlendFilter* faceBlur = [self createFaceBlurFilter];
@@ -1442,7 +1448,7 @@
         //faceBlur.edgeFilter.texelHeight = edgeSize.height;
         //finalBlendFilter.smallBlurFilter.blurSize = blurAspectRatio * blurCycle;
         EZDEBUG(@"Will blur face:%@, blurCycle:%f, adjustedColor:%f", NSStringFromCGRect(fobj.orgRegion), blurCycle, adjustedFactor);
-        faceBlur.imageMode = 1;
+        faceBlur.imageMode = 0;
     }else{
         [res addObject:[self createRedStretchFilter]];
         [res addObject:[self createBlueStretchFilter]];
@@ -1468,25 +1474,39 @@
     } else {
         UIImage *currentFilteredVideoFrame = nil;
         if(_highResImageFile){
+            [[EZThreadUtility getInstance] executeBlockInQueue:^(){
             NSArray* filters = [self prepareImageFilter:_detectedFaceObj imageSize:_imageSize];
             UIImage* orgImage = [UIImage imageWithContentsOfFile:_highResImageFile];
-            orgImage = [orgImage resizedImageWithMaximumSize:CGSizeMake(orgImage.size.width/3.0,orgImage.size.height/3.0)] ;
+            //orgImage = [orgImage resizedImageWithMaximumSize:CGSizeMake(orgImage.size.width, orgImage.size.height/2.0)];//[orgImage resizedImageWithMaximumSize:CGSizeMake(orgImage.size.width/2.0,orgImage.size.height/2.0)] ;
+            //orgImage = [orgImage croppedImageWithRect:CGRectMake(0, 0, orgImage.size.width/2.0, orgImage.size.height/2.0)];
             EZDEBUG(@"stored file:%@,The org size file:%@",_highResImageFile, NSStringFromCGSize(orgImage.size));
             //finalBlendFilter.imageMode = 0;
             //[EZFileUtil deleteFile:_highResImageFile];
-            currentFilteredVideoFrame = [EZFileUtil saveEffectsImage:orgImage effects:filters piece:6 orientation:staticPictureOriginalOrientation];
+            UIImage* processed = [EZFileUtil saveEffectsImage:orgImage effects:filters piece:16 orientation:staticPictureOriginalOrientation];
             //[EZFileUtil deleteFile:_highResImageFile];
             
-            EZDEBUG(@"processed size:%@", NSStringFromCGSize(currentFilteredVideoFrame.size));
-            
+            EZDEBUG(@"background processed size:%@", NSStringFromCGSize(processed.size));
+            NSDictionary *info = @{@"image":processed};
+                if(photoMeta){
+                    info = @{@"image":processed, @"metadata":photoMeta};
+                }
+                //[info setValue:currentFilteredVideoFrame forKey:@"image"];
+                EZDEBUG(@"image size:%f, %f", processed.size.width, processed.size.height);
+                [self.delegate imagePickerController:self didFinishPickingMediaWithInfo:info];
+                
+            /**
             if(!testView){
                 testView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 100, 150, 200)];
                 testView.contentMode = UIViewContentModeScaleAspectFit;
                 [self.view addSubview:testView];
             }
             testView.image = currentFilteredVideoFrame;
-            
+            **/
             orgImage = nil;
+            } isConcurrent:YES];
+            [self retakePhoto:retakeButton];
+            [self.photoCaptureButton setEnabled:YES];
+            return;
         }else{
             GPUImageOutput<GPUImageInput> *processUpTo;
             processUpTo = filter;
