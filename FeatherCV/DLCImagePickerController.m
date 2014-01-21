@@ -305,8 +305,8 @@
     faceBlurBase = 0.3;
     faceBlender.blurFilter.blurSize = globalBlur;//Original value
     faceBlender.blurFilter.distanceNormalizationFactor = 13;
-    faceBlender.smallBlurFilter.blurSize = 0.17;
-    faceBlender.blurRatio = 0.25;
+    faceBlender.smallBlurFilter.blurSize = 0.2;
+    faceBlender.blurRatio = 0.30;
     faceBlender.edgeFilter.threshold = 0.4;
     return faceBlender;
 }
@@ -444,7 +444,7 @@
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         [self setUpCamera];
     });
-    [self startFaceCapture];
+    //[self startFaceCapture];
     CGRect bound = [UIScreen mainScreen].bounds;
     
     
@@ -482,6 +482,7 @@
     redEnhanceFilter = [self createRedEnhanceFilter];
     finalBlendFilter = [self createFaceBlurFilter];
     //cycleDarken = [[EZCycleDiminish alloc] init];
+
     simpleFilter = [[GPUImageFilter alloc] init];
 }
 
@@ -884,8 +885,8 @@
         [fixColorFilter addTarget:secFixColorFilter];
         [secFixColorFilter addTarget:redEnhanceFilter];
         [redEnhanceFilter addTarget:filter];
-        CGFloat blurCycle = faceBlurBase + faceChangeGap * fobj.orgRegion.size.width;
-        CGFloat adjustedFactor = 13.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
+        CGFloat blurCycle = 4.0 * fobj.orgRegion.size.width;
+        CGFloat adjustedFactor = 14.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
         finalBlendFilter.blurFilter.distanceNormalizationFactor = adjustedFactor;
         finalBlendFilter.blurFilter.blurSize = blurCycle;
         //finalBlendFilter.smallBlurFilter.blurSize = blurAspectRatio * blurCycle;
@@ -1441,8 +1442,8 @@
         [res addObject:[self createRedStretchFilter]];
         [res addObject:[self createBlueStretchFilter]];
         [res addObject:[self createRedEnhanceFilter]];
-        CGFloat blurCycle = faceChangeGap * fobj.orgRegion.size.width;
-        CGFloat adjustedFactor = 13.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
+        CGFloat blurCycle = 4.0 * fobj.orgRegion.size.width;
+        CGFloat adjustedFactor = 14.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
         faceBlur.blurFilter.distanceNormalizationFactor = adjustedFactor;
         faceBlur.blurFilter.blurSize = blurCycle;
         //CGSize edgeSize = [self adjustEdgeWidth:_imageSize orientation:staticPictureOriginalOrientation];
@@ -1602,8 +1603,6 @@
 
 -(IBAction) cancel:(id)sender {
     EZDEBUG(@"Cancel get called");
-    finalBlendFilter.edgeFilter.edgeRatio += 0.2;
-    EZDEBUG(@"Edge ratio is:%f", finalBlendFilter.edgeFilter.edgeRatio);
     [self switchDisplayImage];
     //if(isStatic){
     //    [staticPicture processImage];
