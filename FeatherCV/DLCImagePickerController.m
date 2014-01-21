@@ -75,6 +75,7 @@
     //Used as the beginning of the filter
     EZDoubleOutFilter* orgFiler;
     GPUImageFilter* filter;
+    UIImageOrientation currentOrientation;
     EZSaturationFilter* fixColorFilter;
     EZSaturationFilter* secFixColorFilter;
     GPUImagePicture *staticPicture;
@@ -1369,6 +1370,7 @@
 {
     photoMeta = stillCamera.currentCaptureMetadata;
     EZDEBUG(@"Captured meta data:%@", photoMeta);
+    currentOrientation = img.imageOrientation;
     [[EZThreadUtility getInstance] executeBlockInQueue:^(){
         _imageSize = img.size;
         _highResImageFile = [EZFileUtil saveImageToDocument:img filename:@"fullsize.png"];
@@ -1482,7 +1484,7 @@
             EZDEBUG(@"stored file:%@,The org size file:%@",_highResImageFile, NSStringFromCGSize(orgImage.size));
             //finalBlendFilter.imageMode = 0;
             //[EZFileUtil deleteFile:_highResImageFile];
-            UIImage* processed = [EZFileUtil saveEffectsImage:orgImage effects:filters piece:16 orientation:staticPictureOriginalOrientation];
+            UIImage* processed = [EZFileUtil saveEffectsImage:orgImage effects:filters piece:16 orientation:currentOrientation];
             //[EZFileUtil deleteFile:_highResImageFile];
             
             EZDEBUG(@"background processed size:%@", NSStringFromCGSize(processed.size));

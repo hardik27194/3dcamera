@@ -143,6 +143,7 @@
 {
     int preConfigPieces = piece;
     UIImage* blockImge = img;
+    EZDEBUG(@"split process, the current orientation:%i", orientation);
     //img = nil;
     ///[[EZThreadUtility getInstance] executeBlockInQueue:^(){
         NSArray* splitRects = [self generateSplitRect:blockImge.size pieces:preConfigPieces];
@@ -251,7 +252,7 @@
     CGImageRelease(imgRef2);
     
     EZDEBUG(@"new combine succeed");
-    return image;
+    return [image rotateByOrientation:orientation];
 }
 
 
