@@ -177,6 +177,9 @@ static inline CGSize swapWidthAndHeight(CGSize size)
 - (UIImage *) drawImageInBounds: (CGRect) bounds
 {
     UIGraphicsBeginImageContext(bounds.size);
+    CGContextRef ctx = UIGraphicsGetCurrentContext();
+    CGContextSetInterpolationQuality(ctx, kCGInterpolationHigh);
+    CGContextSetShouldAntialias(ctx, true); //<< default varies by context type
     [self drawInRect: bounds];
     UIImage *resizedImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
