@@ -161,10 +161,13 @@ NSString *const kGPUImageThresholdEdgeDetectionFragmentShaderString = SHADER_STR
     //NSLog(@"Sobel size is:%@, hasOverridden:%i,current:%f, %f, thread:%@", NSStringFromCGSize(filterFrameSize), _hasOverriddenImageSizeFactor, _texelWidth, _texelHeight, [NSThread callStackSymbols]);
     //EZDEBUG(@"HomeEdgeFilter before get in:%@, %i",NSStringFromCGSize(filterFrameSize), self.hasOverriddenImageSizeFactor);
     //if (!self.hasOverriddenImageSizeFactor)
-    
-    EZDEBUG(@"HomeEdgeFilter get called:%@",NSStringFromCGSize(filterFrameSize));
-    self.texelWidth = (1.0 / filterFrameSize.width) * _edgeRatio;
-    self.texelHeight = (1.0 / filterFrameSize.height) * _edgeRatio;
+    EZDEBUG(@"HomeEdgeFilter get called:%@, override image:%i",NSStringFromCGSize(filterFrameSize), self.hasOverriddenImageSizeFactor);
+    [super setupFilterForSize:filterFrameSize];
+   
+    //if (!self.hasOverriddenImageSizeFactor){
+    //self.texelWidth = (1.0 / filterFrameSize.width) * _edgeRatio;
+    //self.texelHeight = (1.0 / filterFrameSize.height) * _edgeRatio;
+    //}
     //}
 }
 

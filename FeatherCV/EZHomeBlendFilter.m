@@ -81,7 +81,6 @@ NSString *const kHomeBlendFragmentShaderString = SHADER_STRING
          lowp vec3 darkColor = vec3(0.35);
          lowp float brightness = dot(sharpImageColor.rgb, W);
          brightness = brightness * brightness;
-         
          finalEdgeRatio = finalEdgeRatio * (1.0 - brightness);
          //colorDist * sharpImageColor +  (1.0 - colorDist) *
          gl_FragColor = colorDist * sharpImageColor +  (1.0 - colorDist) * (sharpImageColor * finalEdgeRatio + (1.0 - finalEdgeRatio) * (smallBlurColor*blurRatio + (1.0 - blurRatio)*blurredImageColor));//* finalEdgeRatio + (1.0 - finalEdgeRatio) * vec4(0.5);

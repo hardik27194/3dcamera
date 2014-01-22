@@ -1343,6 +1343,23 @@
         finalBlendFilter.edgeFilter.texelHeight = textureSize.height;
     }
      **/
+    if(firstObj){
+        CGFloat orgWidth = finalBlendFilter.edgeFilter.texelWidth;
+        CGFloat orgHeight = finalBlendFilter.edgeFilter.texelHeight;
+        CGFloat lineWidth = 1.0/imageSize.width;
+        CGFloat lineHeight = 1.0/imageSize.height;
+        if(staticPictureOriginalOrientation == UIImageOrientationUp || staticPictureOriginalOrientation == UIImageOrientationDown || staticPictureOriginalOrientation == UIImageOrientationDownMirrored || staticPictureOriginalOrientation == UIImageOrientationUpMirrored){
+            
+        }else{
+            CGFloat tmpWidth = lineWidth;
+            lineWidth = lineHeight;
+            lineHeight = tmpWidth;
+        }
+        finalBlendFilter.edgeFilter.texelHeight = lineHeight * 1.5;
+        finalBlendFilter.edgeFilter.texelWidth = lineWidth * 1.5;
+        EZDEBUG(@"Reprocess width:%f, height:%f, original width:%f, height:%f, image Orientation:%i, calculated width:%f, height:%f",  finalBlendFilter.edgeFilter.texelWidth,  finalBlendFilter.edgeFilter.texelHeight, orgWidth, orgHeight, staticPictureOriginalOrientation, lineWidth, lineHeight);
+    }
+    
     [staticPicture processImage];
     [self.retakeButton setHidden:NO];
     [self.photoCaptureButton setTitle:@"Done" forState:UIControlStateNormal];
