@@ -1395,7 +1395,7 @@
     Class contextClass = NSClassFromString(@"GPUImageContext") ?: NSClassFromString(@"GPUImageOpenGLESContext");
     if ((currentCameraPosition != AVCaptureDevicePositionFront) || (![contextClass supportsFastTextureUpload])) {
         //EZDEBUG(@"Prepare for the capture");
-        UIImage *img = [orgFiler imageFromCurrentlyProcessedOutput];
+        //UIImage *img = [orgFiler imageFromCurrentlyProcessedOutput];
         EZDEBUG(@"Get current image");
         [self removeAllTargets];
         [stillCamera addTarget:simpleFilter];
@@ -1403,8 +1403,10 @@
         [finalFilter prepareForImageCapture];
         EZDEBUG(@"Capture before get inside");
         void (^fullImageProcess)(UIImage *, NSError *) = ^(UIImage *fullImg, NSError* error) {
-            [weakSelf handleFullImage:fullImg];
-            completion(img, nil);
+            //[weakSelf handleFullImage:fullImg];
+            fullImg = [fullImg resizedImageWithMaximumSize:CGSizeMake(fullImg.size.width/2.5,fullImg.size.height/2.5)];
+            EZDEBUG(@"tailored full size length:%@", NSStringFromCGSize(fullImg.size));
+            completion(fullImg, nil);
         };
         [stillCamera capturePhotoAsImageProcessedUpToFilter:finalFilter withCompletionHandler:fullImageProcess];
         EZDEBUG(@"Capture without crop");
@@ -1626,7 +1628,9 @@
         imageMode = 0;
     }
     finalBlendFilter.imageMode = imageMode;
-    EZDEBUG(@"I will store the image mode:%i", finalBlendFilter.imageMode);
+    EZDEBUG(@"I will store the image mode:%i, texelWidth:%f. texelHeight:%f", finalBlendFilter.imageMode, finalBlendFilter.edgeFilter.texelWidth, finalBlendFilter.edgeFilter.texelHeight);
+    finalBlendFilter.edgeFilter.texelWidth = finalBlendFilter.edgeFilter.texelWidth;
+    finalBlendFilter.edgeFilter.texelHeight = finalBlendFilter.edgeFilter.texelHeight;
     [staticPicture processImage];
     EZDEBUG(@"After call process image");
 }
