@@ -22,7 +22,7 @@ NSString *const kHomeBlendFragmentShaderString = SHADER_STRING
  varying highp vec2 textureCoordinate3;
  
  //small blur
- varying highp vec2 textureCoordinate4;
+ //varying highp vec2 textureCoordinate4;
  
 //varying highp vec2 textureCoordinate3;
  
@@ -74,8 +74,9 @@ NSString *const kHomeBlendFragmentShaderString = SHADER_STRING
      lowp vec4 sharpImageColor = texture2D(inputImageTexture, textureCoordinate);
      lowp vec4 blurredImageColor = texture2D(inputImageTexture2, textureCoordinate2);
      lowp vec4 smallBlurColor = texture2D(inputImageTexture3, textureCoordinate3);
-     lowp vec4 detectedEdge = texture2D(inputImageTexture4, textureCoordinate4);
-     lowp float finalEdgeRatio = detectedEdge.r;
+     //lowp vec4 detectedEdge = texture2D(inputImageTexture4, textureCoordinate4);
+     lowp float finalEdgeRatio = 0.5;//detectedEdge.r;
+     /**
      if(imageMode == 0){
          lowp float colorDist = calcHue(sharpImageColor);
          lowp vec3 darkColor = vec3(0.35);
@@ -83,12 +84,14 @@ NSString *const kHomeBlendFragmentShaderString = SHADER_STRING
          brightness = brightness * brightness;
          finalEdgeRatio = finalEdgeRatio * (1.0 - brightness);
          //colorDist * sharpImageColor +  (1.0 - colorDist) *
-         gl_FragColor = colorDist * sharpImageColor +  (1.0 - colorDist) * (sharpImageColor * finalEdgeRatio + (1.0 - finalEdgeRatio) * (smallBlurColor*blurRatio + (1.0 - blurRatio)*blurredImageColor));//* finalEdgeRatio + (1.0 - finalEdgeRatio) * vec4(0.5);
+         gl_FragColor = colorDist * sharpImageColor +  (1.0 - colorDist) * (sharpImageColor * finalEdgeRatio + (1.0 - finalEdgeRatio) * (smallBlurColor*blurRatio + (1.0 - blurRatio)*blurredImageColor));// finalEdgeRatio + (1.0 - finalEdgeRatio) * vec4(0.5);
      }else if(imageMode == 1){
-         gl_FragColor = detectedEdge;
+         gl_FragColor = vec4(0.0);//detectedEdge;
      }else if(imageMode == 2){
          gl_FragColor = sharpImageColor;
      }
+      **/
+     gl_FragColor = blurredImageColor;
  }
  );
 #else
@@ -148,12 +151,12 @@ NSString *const kFaceBlurFragmentShaderString = SHADER_STRING
     [self addFilter:_edgeFilter];
     //[_edgeFilter addTarget:_edgeBlurFilter];
     // Second pass: combine the blurred image with the original sharp one
-    _combineFilter = [[EZFourInputFilter alloc] initWithFragmentShaderFromString:kHomeBlendFragmentShaderString];
+    _combineFilter = [[GPUImageThreeInputFilter alloc] initWithFragmentShaderFromString:kHomeBlendFragmentShaderString];
     [self addFilter:_combineFilter];
     // Texture location 0 needs to be the sharp image for both the blur and the second stage processing
     [_blurFilter addTarget:_combineFilter atTextureLocation:1];
     [_smallBlurFilter addTarget:_combineFilter atTextureLocation:2];
-    [_edgeFilter addTarget:_combineFilter atTextureLocation:3];
+    [_edgeFilter addTarget:_blurFilter atTextureLocation:1];
     // To prevent double updating of this filter, disable updates from the sharp image side
     //[_combineFilter disableSecondFrameCheck];
     self.initialFilters = [NSArray arrayWithObjects:_blurFilter,_edgeFilter,_smallBlurFilter, _combineFilter, nil];

@@ -1,15 +1,15 @@
 //
-//  EZ.h
+//  EZHomeLineBiFilter.h
 //  FeatherCV
 //
-//  Created by xietian on 14-1-10.
+//  Created by xietian on 14-1-22.
 //  Copyright (c) 2014年 tiange. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-#import <GPUImage.h>
+#import "GPUImageFilter.h"
+#import "GPUImage.h"
 
-@interface EZHomeBiBlur : GPUImageGaussianBlurFilter
+@interface EZHomeLineBiFilter : GPUImageGaussianBlurFilter
 {
     CGFloat firstDistanceNormalizationFactorUniform;
     CGFloat secondDistanceNormalizationFactorUniform;
@@ -31,3 +31,4 @@
 @property (nonatomic, assign) int imageMode;
 
 @end
+

@@ -233,6 +233,7 @@
 		18F58B7C187AF205006CB966 /* EZFaceResultObj.m in Sources */ = {isa = PBXBuildFile; fileRef = 18F58B7B187AF205006CB966 /* EZFaceResultObj.m */; };
 		18F58B7F187AF540006CB966 /* EZFaceUtilWrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = 18F58B7E187AF540006CB966 /* EZFaceUtilWrapper.mm */; };
 		18FA529E188CD04D00C91D18 /* EZColorBrighter.m in Sources */ = {isa = PBXBuildFile; fileRef = 18FA529D188CD04D00C91D18 /* EZColorBrighter.m */; };
+		18FA52A3188FDDEE00C91D18 /* EZHomeLineBiFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 18FA52A2188FDDEE00C91D18 /* EZHomeLineBiFilter.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -595,6 +596,8 @@
 		18F58B7E187AF540006CB966 /* EZFaceUtilWrapper.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = EZFaceUtilWrapper.mm; sourceTree = "<group>"; };
 		18FA529C188CD04D00C91D18 /* EZColorBrighter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZColorBrighter.h; sourceTree = "<group>"; };
 		18FA529D188CD04D00C91D18 /* EZColorBrighter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZColorBrighter.m; sourceTree = "<group>"; };
+		18FA52A1188FDDEE00C91D18 /* EZHomeLineBiFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZHomeLineBiFilter.h; sourceTree = "<group>"; };
+		18FA52A2188FDDEE00C91D18 /* EZHomeLineBiFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZHomeLineBiFilter.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -705,6 +708,8 @@
 				181904021885406A001FC370 /* EZBlackAndCropFilter.m */,
 				18FA529C188CD04D00C91D18 /* EZColorBrighter.h */,
 				18FA529D188CD04D00C91D18 /* EZColorBrighter.m */,
+				18FA52A1188FDDEE00C91D18 /* EZHomeLineBiFilter.h */,
+				18FA52A2188FDDEE00C91D18 /* EZHomeLineBiFilter.m */,
 			);
 			name = camera;
 			sourceTree = "<group>";
@@ -1432,6 +1437,7 @@
 				18A36FF01855C1DB0022F0A8 /* DLCBlurOverlayView.m in Sources */,
 				18E3477E183DFAA400C9D89D /* EZThreadUtility.m in Sources */,
 				18E34776183DFAA400C9D89D /* EZCycleDiminish.m in Sources */,
+				18FA52A3188FDDEE00C91D18 /* EZHomeLineBiFilter.m in Sources */,
 				182A551018645374003D4A01 /* EZFaceBlurFilter2.m in Sources */,
 				181903FD1882980E001FC370 /* EZHomeEdgeFilter.m in Sources */,
 				18E34777183DFAA400C9D89D /* EZCrossHair.m in Sources */,

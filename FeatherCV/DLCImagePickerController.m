@@ -886,7 +886,7 @@
         [secFixColorFilter addTarget:redEnhanceFilter];
         [redEnhanceFilter addTarget:filter];
         CGFloat blurCycle = 4.0 * fobj.orgRegion.size.width;
-        CGFloat adjustedFactor = 14.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
+        CGFloat adjustedFactor = 20.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
         finalBlendFilter.blurFilter.distanceNormalizationFactor = adjustedFactor;
         finalBlendFilter.blurFilter.blurSize = blurCycle;
         //finalBlendFilter.smallBlurFilter.blurSize = blurAspectRatio * blurCycle;
@@ -1463,7 +1463,7 @@
         [res addObject:[self createBlueStretchFilter]];
         [res addObject:[self createRedEnhanceFilter]];
         CGFloat blurCycle = 4.0 * fobj.orgRegion.size.width;
-        CGFloat adjustedFactor = 14.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
+        CGFloat adjustedFactor = 20.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
         faceBlur.blurFilter.distanceNormalizationFactor = adjustedFactor;
         faceBlur.blurFilter.blurSize = blurCycle;
         //CGSize edgeSize = [self adjustEdgeWidth:_imageSize orientation:staticPictureOriginalOrientation];
@@ -1640,11 +1640,12 @@
 
 - (void) switchDisplayImage
 {
-    int imageMode = finalBlendFilter.imageMode + 1;
+    int imageMode = finalBlendFilter.blurFilter.imageMode + 1;
     if(imageMode > 2){
         imageMode = 0;
     }
-    finalBlendFilter.imageMode = imageMode;
+    //finalBlendFilter.imageMode = imageMode;
+    finalBlendFilter.blurFilter.imageMode = imageMode;
     EZDEBUG(@"I will store the image mode:%i, texelWidth:%f. texelHeight:%f", finalBlendFilter.imageMode, finalBlendFilter.edgeFilter.texelWidth, finalBlendFilter.edgeFilter.texelHeight);
     finalBlendFilter.edgeFilter.texelWidth = finalBlendFilter.edgeFilter.texelWidth;
     finalBlendFilter.edgeFilter.texelHeight = finalBlendFilter.edgeFilter.texelHeight;

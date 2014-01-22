@@ -1,16 +1,16 @@
 //
-//  EZ.m
+//  EZHomeLineBiFilter.m
 //  FeatherCV
 //
-//  Created by xietian on 14-1-10.
+//  Created by xietian on 14-1-22.
 //  Copyright (c) 2014年 tiange. All rights reserved.
 //
 
-#import "EZHomeBiBlur.h"
+#import "EZHomeLineBiFilter.h"
 
 #if TARGET_IPHONE_SIMULATOR || TARGET_OS_IPHONE
 
-NSString *const kGPUImageCombinedBlurVertexShaderString = SHADER_STRING
+NSString *const kGPUImageHomeLineBiBlurVertexShaderString = SHADER_STRING
 (
  attribute vec4 position;
  attribute vec4 inputTextureCoordinate;
@@ -21,7 +21,7 @@ NSString *const kGPUImageCombinedBlurVertexShaderString = SHADER_STRING
  
  uniform float texelWidthOffset;
  uniform float texelHeightOffset;
-
+ 
  varying vec2 textureCoordinate;
  varying vec2 blurCoordinates[GAUSSIAN_SAMPLES];
  
@@ -46,7 +46,7 @@ NSString *const kGPUImageCombinedBlurVertexShaderString = SHADER_STRING
  );
 
 
-NSString *const kGPUImageHomeBilateralFilterFragmentShaderString = SHADER_STRING
+NSString *const kGPUImageHomeLineBilateralFilterFragmentShaderString = SHADER_STRING
 (
  uniform sampler2D inputImageTexture;
  uniform sampler2D inputImageTexture2;
@@ -234,17 +234,17 @@ NSString *const kGPUImageBilateralFilterFragmentShaderString = SHADER_STRING
  );
 #endif
 
-@implementation EZHomeBiBlur
+@implementation EZHomeLineBiFilter
 
 @synthesize distanceNormalizationFactor = _distanceNormalizationFactor;
 
 - (id)init;
 {
     
-    if (!(self = [super initWithFirstStageVertexShaderFromString:kGPUImageCombinedBlurVertexShaderString
-                              firstStageFragmentShaderFromString:kGPUImageHomeBilateralFilterFragmentShaderString
-                               secondStageVertexShaderFromString:kGPUImageCombinedBlurVertexShaderString
-                             secondStageFragmentShaderFromString:kGPUImageHomeBilateralFilterFragmentShaderString])) {
+    if (!(self = [super initWithFirstStageVertexShaderFromString:kGPUImageHomeLineBiBlurVertexShaderString
+                              firstStageFragmentShaderFromString:kGPUImageHomeLineBilateralFilterFragmentShaderString
+                               secondStageVertexShaderFromString:kGPUImageHomeLineBiBlurVertexShaderString
+                             secondStageFragmentShaderFromString:kGPUImageHomeLineBilateralFilterFragmentShaderString])) {
         return nil;
     }
     
@@ -275,7 +275,7 @@ NSString *const kGPUImageBilateralFilterFragmentShaderString = SHADER_STRING
         filterInputTextureUniform2 = [filterProgram uniformIndex:@"inputImageTexture2"]; // This does assume a name of "inputImageTexture2" for second input texture in the fragment shader
         glEnableVertexAttribArray(filterSecondTextureCoordinateAttribute);
     });
-
+    
     return self;
 }
 
@@ -389,7 +389,7 @@ NSString *const kGPUImageBilateralFilterFragmentShaderString = SHADER_STRING
         glUniform1i(filterInputTextureUniform2, 4);
         glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, vertices);
         glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, textureCoordinates);
-       
+        
         
         //glVertexAttribPointer(filterSecondTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, [[self class] textureCoordinatesForRotation:inputRotation2]);
         glVertexAttribPointer(secondFilterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, textureCoordinates);
@@ -416,7 +416,7 @@ NSString *const kGPUImageBilateralFilterFragmentShaderString = SHADER_STRING
         
         shouldConserveMemoryForNextFrame = NO;
     }
-
+    
 }
 
 - (void)releaseInputTexturesIfNeeded;

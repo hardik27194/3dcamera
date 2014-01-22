@@ -65,6 +65,7 @@ NSString *const kGPUImageHomeThresholdEdgeDetectionFragmentShaderString = SHADER
      float mag = length(vec2(h, v));
      
      gl_FragColor = vec4(vec3(mag), 1.0);
+     //gl_FragColor = vec4(0.5);
  }
  );
 #else
