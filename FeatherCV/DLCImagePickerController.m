@@ -1372,6 +1372,7 @@
     photoMeta = stillCamera.currentCaptureMetadata;
     EZDEBUG(@"Captured meta data:%@", photoMeta);
     currentOrientation = img.imageOrientation;
+    img = [img resizedImageWithMaximumSize:CGSizeMake(img.size.width/2.0, img.size.height/2.0)];
     [[EZThreadUtility getInstance] executeBlockInQueue:^(){
         _imageSize = img.size;
         _highResImageFile = [EZFileUtil saveImageToDocument:img filename:@"fullsize.png"];
@@ -1485,7 +1486,7 @@
             EZDEBUG(@"stored file:%@,The org size file:%@",_highResImageFile, NSStringFromCGSize(orgImage.size));
             //finalBlendFilter.imageMode = 0;
             //[EZFileUtil deleteFile:_highResImageFile];
-            UIImage* processed = [EZFileUtil saveEffectsImage:orgImage effects:filters piece:16 orientation:currentOrientation];
+            UIImage* processed = [EZFileUtil saveEffectsImage:orgImage effects:filters piece:9 orientation:currentOrientation];
             //[EZFileUtil deleteFile:_highResImageFile];
             
             EZDEBUG(@"background processed size:%@", NSStringFromCGSize(processed.size));
