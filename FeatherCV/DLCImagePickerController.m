@@ -281,7 +281,7 @@
     stretchFilter.midYellow = -25.3;
     stretchFilter.highBlue = -85;
     stretchFilter.yellowRedDegree = 5.0;////4.6/2.0;
-    stretchFilter.yellowBlueDegree = 2.3;//10.9/2.0;
+    stretchFilter.yellowBlueDegree = 0.0;//10.9/2.0;
     return stretchFilter;
 }
 
@@ -289,9 +289,9 @@
 {
     EZSaturationFilter* stretchFilter = [[EZSaturationFilter alloc] init];
     stretchFilter.lowRed = -160;
-    stretchFilter.midYellow = -175;//old 185
-    stretchFilter.highBlue = -235;
-    stretchFilter.yellowRedDegree = 2.4;
+    stretchFilter.midYellow = -180;//old 185
+    stretchFilter.highBlue = -265;
+    stretchFilter.yellowRedDegree = 10.0;
     stretchFilter.yellowBlueDegree = 20.0;
     return stretchFilter;
 }
@@ -315,9 +315,9 @@
 {
     GPUImageToneCurveFilter* resFilter = [[GPUImageToneCurveFilter alloc] init];
     
-    [resFilter setRgbCompositeControlPoints:@[pointValue(0.0, 0.0), pointValue(0.125, 0.145), pointValue(0.25, 0.28), pointValue(0.5, 0.5668), pointValue(0.75, 0.7949), pointValue(1.0, 1.0)]];
-    [resFilter setRedControlPoints:@[pointValue(0.0, 0.0), pointValue(0.25, 0.25), pointValue(0.5, 0.5), pointValue(0.75, 0.75), pointValue(1.0, 1.0)]];
-    [resFilter setGreenControlPoints:@[pointValue(0.0, 0.0), pointValue(0.25, 0.25), pointValue(0.5, 0.5), pointValue(0.75, 0.75), pointValue(1.0, 1.0)]];
+    [resFilter setRgbCompositeControlPoints:@[pointValue(0.0, 0.0), pointValue(0.125, 0.135), pointValue(0.25, 0.26), pointValue(0.5, 0.5468), pointValue(0.75, 0.7949), pointValue(1.0, 1.0)]];
+    [resFilter setRedControlPoints:@[pointValue(0.0, 0.0), pointValue(0.25, 0.26), pointValue(0.5, 0.5), pointValue(0.75, 0.75), pointValue(1.0, 0.99)]];
+    [resFilter setGreenControlPoints:@[pointValue(0.0, 0.0),pointValue(0.125, 0.135), pointValue(0.25, 0.25), pointValue(0.5, 0.5), pointValue(0.75, 0.75), pointValue(1.0, 0.995)]];
     [resFilter setBlueControlPoints:@[pointValue(0.0, 0.0), pointValue(0.25, 0.25), pointValue(0.5, 0.5), pointValue(0.75, 0.75), pointValue(1.0, 1.0)]];
     return resFilter;
 }
@@ -326,6 +326,7 @@
 {
     EZColorBrighter* res = [[EZColorBrighter alloc] init];
     res.redEnhanceLevel = 0.6;
+    res.redRatio = 0.20;
     return res;
 }
 
@@ -885,8 +886,8 @@
         [fixColorFilter addTarget:secFixColorFilter];
         [secFixColorFilter addTarget:redEnhanceFilter];
         [redEnhanceFilter addTarget:filter];
-        CGFloat blurCycle = 4.0 * fobj.orgRegion.size.width;
-        CGFloat adjustedFactor = 20.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
+        CGFloat blurCycle = 3.0 * fobj.orgRegion.size.width;
+        CGFloat adjustedFactor = 12.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
         finalBlendFilter.blurFilter.distanceNormalizationFactor = adjustedFactor;
         finalBlendFilter.blurFilter.blurSize = blurCycle;
         //finalBlendFilter.smallBlurFilter.blurSize = blurAspectRatio * blurCycle;
@@ -1640,12 +1641,12 @@
 
 - (void) switchDisplayImage
 {
-    int imageMode = finalBlendFilter.blurFilter.imageMode + 1;
+    int imageMode = finalBlendFilter.smallBlurFilter.imageMode + 1;
     if(imageMode > 2){
         imageMode = 0;
     }
     //finalBlendFilter.imageMode = imageMode;
-    finalBlendFilter.blurFilter.imageMode = imageMode;
+    finalBlendFilter.smallBlurFilter.imageMode = imageMode;
     EZDEBUG(@"I will store the image mode:%i, texelWidth:%f. texelHeight:%f", finalBlendFilter.imageMode, finalBlendFilter.edgeFilter.texelWidth, finalBlendFilter.edgeFilter.texelHeight);
     finalBlendFilter.edgeFilter.texelWidth = finalBlendFilter.edgeFilter.texelWidth;
     finalBlendFilter.edgeFilter.texelHeight = finalBlendFilter.edgeFilter.texelHeight;
