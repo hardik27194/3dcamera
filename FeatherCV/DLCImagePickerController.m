@@ -288,10 +288,10 @@
 - (EZSaturationFilter*) createBlueStretchFilter
 {
     EZSaturationFilter* stretchFilter = [[EZSaturationFilter alloc] init];
-    stretchFilter.lowRed = -160;
-    stretchFilter.midYellow = -180;//old 185
-    stretchFilter.highBlue = -265;
-    stretchFilter.yellowRedDegree = 10.0;
+    stretchFilter.lowRed = -130;
+    stretchFilter.midYellow = -195;//old 185
+    stretchFilter.highBlue = -245;
+    stretchFilter.yellowRedDegree = 5.0;
     stretchFilter.yellowBlueDegree = 20.0;
     return stretchFilter;
 }
@@ -315,7 +315,7 @@
 {
     GPUImageToneCurveFilter* resFilter = [[GPUImageToneCurveFilter alloc] init];
     
-    [resFilter setRgbCompositeControlPoints:@[pointValue(0.0, 0.0), pointValue(0.125, 0.135), pointValue(0.25, 0.26), pointValue(0.5, 0.5468), pointValue(0.75, 0.7949), pointValue(1.0, 1.0)]];
+    [resFilter setRgbCompositeControlPoints:@[pointValue(0.0, 0.0), pointValue(0.125, 0.125), pointValue(0.25, 0.25), pointValue(0.5, 0.5368), pointValue(0.75, 0.7949), pointValue(1.0, 1.0)]];
     [resFilter setRedControlPoints:@[pointValue(0.0, 0.0), pointValue(0.25, 0.26), pointValue(0.5, 0.5), pointValue(0.75, 0.75), pointValue(1.0, 0.99)]];
     [resFilter setGreenControlPoints:@[pointValue(0.0, 0.0),pointValue(0.125, 0.135), pointValue(0.25, 0.25), pointValue(0.5, 0.5), pointValue(0.75, 0.75), pointValue(1.0, 0.995)]];
     [resFilter setBlueControlPoints:@[pointValue(0.0, 0.0), pointValue(0.25, 0.25), pointValue(0.5, 0.5), pointValue(0.75, 0.75), pointValue(1.0, 1.0)]];
@@ -836,13 +836,17 @@
     _detectFace = true;
     //[self startFaceCapture];
     [stillCamera addTarget:orgFiler];
-    [orgFiler addTarget:hueFilter];
+    //[orgFiler addTarget:hueFilter];
+    [orgFiler addTarget:tongFilter];
+    [tongFilter addTarget:fixColorFilter];
+    [fixColorFilter addTarget:secFixColorFilter];
+    [secFixColorFilter addTarget:redEnhanceFilter];
     //[orgFiler addTarget:tongFilter];
     //[tongFilter addTarget:fixColorFilter];
     //[orgFiler addTarget:finalBlendFilter];
     //[fixColorFilter addTarget:filter];
     //[finalBlendFilter addTarget:filter];
-    [hueFilter addTarget:filter];
+    [redEnhanceFilter addTarget:filter];
     [filter addTarget:self.imageView];
     [filter prepareForImageCapture];
 }
@@ -923,10 +927,10 @@
     GPUImageRotationMode imageViewRotationMode = kGPUImageNoRotation;
     switch (staticPictureOriginalOrientation) {
         case UIImageOrientationLeft:
-            imageViewRotationMode = kGPUImageRotateLeft;
+            imageViewRotationMode = kGPUImageRotateRight;
             break;
         case UIImageOrientationRight:
-            imageViewRotationMode = kGPUImageRotateRight;
+            imageViewRotationMode = kGPUImageRotateLeft;
             break;
         case UIImageOrientationDown:
             imageViewRotationMode = kGPUImageRotate180;
@@ -935,8 +939,11 @@
             imageViewRotationMode = kGPUImageNoRotation;
             break;
     }
-
-    [self.imageView setInputRotation:kGPUImageNoRotation atIndex:0];
+    if(stillCamera.isFrontFacing){
+        [self.imageView setInputRotation:kGPUImageNoRotation atIndex:0];
+    }else{
+        [self.imageView setInputRotation:imageViewRotationMode atIndex:0];
+    }
     [staticPicture processImage];
 }
 
@@ -1321,8 +1328,13 @@
     //UIImageView* iview = [[UIImageView alloc] initWithFrame:CGRectMake(0, 400, 100, 100)];
     //iview.image = flipped;
     _detectedFaceObj = nil;
-    NSArray* faces = [EZFaceUtilWrapper detectFace:img ratio:0.01];
-    EZDEBUG(@"Capture the flip is:%i, flipped orientation:%i, orginal:%i, faces:%i", flip, img.imageOrientation, img.imageOrientation, faces.count);
+    
+    EZDEBUG(@"Capture the flip is:%i, flipped orientation:%i, orginal:%i", flip, img.imageOrientation, img.imageOrientation);
+    UIImage* detectImage = img;
+    if(!stillCamera.isFrontFacing){
+        detectImage = [img rotateByOrientation:img.imageOrientation];
+    }
+    NSArray* faces = [EZFaceUtilWrapper detectFace:detectImage ratio:0.01];
     EZFaceResultObj* firstObj = nil;
     if(faces.count > 0){
         for(EZFaceResultObj* fobj in faces){
@@ -1360,7 +1372,7 @@
         finalBlendFilter.edgeFilter.texelWidth = lineWidth * 1.5;
         EZDEBUG(@"Reprocess width:%f, height:%f, original width:%f, height:%f, image Orientation:%i, calculated width:%f, height:%f",  finalBlendFilter.edgeFilter.texelWidth,  finalBlendFilter.edgeFilter.texelHeight, orgWidth, orgHeight, staticPictureOriginalOrientation, lineWidth, lineHeight);
     }
-    
+    //[self.imageView setInputRotation:<#(GPUImageRotationMode)#> atIndex:<#(NSInteger)#>]
     [staticPicture processImage];
     [self.retakeButton setHidden:NO];
     [self.photoCaptureButton setTitle:@"Done" forState:UIControlStateNormal];
@@ -1390,7 +1402,7 @@
     photoMeta = stillCamera.currentCaptureMetadata;
     EZDEBUG(@"Captured meta data:%@", photoMeta);
     currentOrientation = img.imageOrientation;
-    img = [img resizedImageWithMaximumSize:CGSizeMake(img.size.width/2.0, img.size.height/2.0)];
+    img = [img resizedImageWithMinimumSize:CGSizeMake(980.0, 980.0)];
     [[EZThreadUtility getInstance] executeBlockInQueue:^(){
         _imageSize = img.size;
         _highResImageFile = [EZFileUtil saveImageToDocument:img filename:@"fullsize.png"];
@@ -1422,8 +1434,9 @@
         EZDEBUG(@"Capture before get inside");
         void (^fullImageProcess)(UIImage *, NSError *) = ^(UIImage *fullImg, NSError* error) {
             //[weakSelf handleFullImage:fullImg];
-            fullImg = [fullImg resizedImageWithMaximumSize:CGSizeMake(fullImg.size.width/2.5,fullImg.size.height/2.5)];
-            EZDEBUG(@"tailored full size length:%@", NSStringFromCGSize(fullImg.size));
+            UIImageOrientation prevOrient = fullImg.imageOrientation;
+            fullImg = [fullImg resizedImageWithMinimumSize:CGSizeMake(980.0, 980.0)];
+            EZDEBUG(@"tailored full size length:%@, prevOrient:%i, current orientation:%i", NSStringFromCGSize(fullImg.size), prevOrient, fullImg.imageOrientation);
             completion(fullImg, nil);
         };
         [stillCamera capturePhotoAsImageProcessedUpToFilter:finalFilter withCompletionHandler:fullImageProcess];
@@ -1544,7 +1557,7 @@
                 EZDEBUG(@"The current orienation:%i, static orientatin:%i", currentFilteredVideoFrame.imageOrientation, staticPictureOriginalOrientation);
                 currentFilteredVideoFrame = [currentFilteredVideoFrame rotateByOrientation:staticPictureOriginalOrientation];
             }else{
-                currentFilteredVideoFrame = [processUpTo imageFromCurrentlyProcessedOutputWithOrientation:staticPictureOriginalOrientation];
+                currentFilteredVideoFrame = [processUpTo imageFromCurrentlyProcessedOutputWithOrientation:UIImageOrientationUp];
                 //currentFilteredVideoFrame = staticPicture
                 EZDEBUG(@"Before shink:%@", NSStringFromCGSize(currentFilteredVideoFrame.size));
             }

@@ -58,10 +58,24 @@ NSString *const kGPUImageHomeLineBilateralFilterFragmentShaderString = SHADER_ST
  
  uniform mediump float distanceNormalizationFactor;
  uniform lowp int imageMode;
+ const lowp vec3 skinColor = vec3(0.753, 0.473, 0.332);
+ 
  lowp float sigmoid(highp float mixVal, highp float midVal)
  {
      highp float mixedVal = -(mixVal - midVal)*1.5;
      return 1.0/(exp(mixedVal) + 1.0);
+ }
+ 
+ lowp float calcHue(lowp vec4 rawcolor)
+ {
+     highp float fd = distance(rawcolor.rgb, skinColor);
+     if(fd < 0.8){
+         fd = fd * fd;
+     }else{
+         fd = 1.0/(exp(-fd * fd * 2.0) + 1.0);
+     }
+     return min(1.0, fd * 0.9);
+     //return 1.0/(exp((1.5 - distance(rawcolor.rgb, skinColor))) + 1.0);
  }
  
  void main()
@@ -79,72 +93,81 @@ NSString *const kGPUImageHomeLineBilateralFilterFragmentShaderString = SHADER_ST
      gaussianWeightTotal = 0.18;
      sum = centralColor * 0.18;
      
+     lowp float orgDist = 1.0 - calcHue(centralColor);
      highp float scaleFactor = distanceNormalizationFactor;
      highp float midVal = 3.0;
      
      lowp float sampleRatio = 1.0 - texture2D(inputImageTexture2, blurCoordinates[0]).r;
      sampleColor = texture2D(inputImageTexture, blurCoordinates[0]);
+     lowp float sampleDist = calcHue(sampleColor);
      //distanceFromCentralColor = min(distance(centralColor, sampleColor) * distanceNormalizationFactor, 1.0);
      //distanceFromCentralColor = sigmoid(distance(centralColor, sampleColor)*scaleFactor, midVal);
      //gaussianWeight = 0.05 * (1.0 - distanceFromCentralColor);
-     gaussianWeight = otherRatio * sampleRatio;
+     gaussianWeight = otherRatio * sampleRatio * (1.0 - sampleDist) * orgDist;
      gaussianWeightTotal += gaussianWeight;
      sum += sampleColor * gaussianWeight;
      
      sampleRatio = 1.0 - texture2D(inputImageTexture2, blurCoordinates[1]).r;
      sampleColor = texture2D(inputImageTexture, blurCoordinates[1]);
+     sampleDist = calcHue(sampleColor);
      //distanceFromCentralColor = sigmoid(distance(centralColor, sampleColor)*scaleFactor, midVal);
      //gaussianWeight = 0.09 * (1.0 - distanceFromCentralColor);
-     gaussianWeight = otherRatio * sampleRatio;
+     gaussianWeight = otherRatio * sampleRatio * (1.0 - sampleDist) * orgDist;
      gaussianWeightTotal += gaussianWeight;
      sum += sampleColor * gaussianWeight;
      
      sampleRatio = 1.0 - texture2D(inputImageTexture2, blurCoordinates[2]).r;
      sampleColor = texture2D(inputImageTexture, blurCoordinates[2]);
+     sampleDist = calcHue(sampleColor);
      //distanceFromCentralColor = sigmoid(distance(centralColor, sampleColor)*scaleFactor, midVal);
      //gaussianWeight = 0.12 * (1.0 - distanceFromCentralColor);
-     gaussianWeight = otherRatio * sampleRatio;
+     gaussianWeight = otherRatio * sampleRatio * (1.0 - sampleDist) * orgDist;
      gaussianWeightTotal += gaussianWeight;
      sum += sampleColor * gaussianWeight;
      
      sampleRatio = 1.0 - texture2D(inputImageTexture2, blurCoordinates[3]).r;
      sampleColor = texture2D(inputImageTexture, blurCoordinates[3]);
+     sampleDist = calcHue(sampleColor);
      //distanceFromCentralColor = sigmoid(distance(centralColor, sampleColor)*scaleFactor, midVal);
      //gaussianWeight = 0.15 * (1.0 - distanceFromCentralColor);
-     gaussianWeight = otherRatio * sampleRatio;
+     gaussianWeight = otherRatio * sampleRatio * (1.0 - sampleDist) * orgDist;
      gaussianWeightTotal += gaussianWeight;
      sum += sampleColor * gaussianWeight;
      
      
      sampleRatio = 1.0 - texture2D(inputImageTexture2, blurCoordinates[5]).r;
      sampleColor = texture2D(inputImageTexture, blurCoordinates[5]);
+     sampleDist = calcHue(sampleColor);
      //distanceFromCentralColor = sigmoid(distance(centralColor, sampleColor)*scaleFactor, midVal);
      //gaussianWeight = 0.15 * (1.0 - distanceFromCentralColor);
-     gaussianWeight = otherRatio * sampleRatio;
+     gaussianWeight = otherRatio * sampleRatio * (1.0 - sampleDist) * orgDist;
      gaussianWeightTotal += gaussianWeight;
      sum += sampleColor * gaussianWeight;
      
      sampleRatio = 1.0 - texture2D(inputImageTexture2, blurCoordinates[6]).r;
      sampleColor = texture2D(inputImageTexture, blurCoordinates[6]);
+     sampleDist = calcHue(sampleColor);
      //distanceFromCentralColor = sigmoid(distance(centralColor, sampleColor)*scaleFactor, midVal);
      //gaussianWeight = 0.12 * (1.0 - distanceFromCentralColor);
-     gaussianWeight = otherRatio * sampleRatio;
+     gaussianWeight = otherRatio * sampleRatio * (1.0 - sampleDist) * orgDist;
      gaussianWeightTotal += gaussianWeight;
      sum += sampleColor * gaussianWeight;
      
      sampleRatio = 1.0 - texture2D(inputImageTexture2, blurCoordinates[7]).r;
      sampleColor = texture2D(inputImageTexture, blurCoordinates[7]);
+     sampleDist = calcHue(sampleColor);
      //distanceFromCentralColor = sigmoid(distance(centralColor, sampleColor)*scaleFactor, midVal);
      //gaussianWeight = 0.09 * (1.0 - distanceFromCentralColor);
-     gaussianWeight = otherRatio * sampleRatio;
+     gaussianWeight = otherRatio * sampleRatio * (1.0 - sampleDist) * orgDist;
      gaussianWeightTotal += gaussianWeight;
      sum += sampleColor * gaussianWeight;
      
      sampleRatio = 1.0 - texture2D(inputImageTexture2, blurCoordinates[8]).r;
      sampleColor = texture2D(inputImageTexture, blurCoordinates[8]);
+     sampleDist = calcHue(sampleColor);
      //distanceFromCentralColor = sigmoid(distance(centralColor, sampleColor)*scaleFactor, midVal);
      //gaussianWeight = 0.05 * (1.0 - distanceFromCentralColor);
-     gaussianWeight = otherRatio * sampleRatio;
+     gaussianWeight = otherRatio * sampleRatio * (1.0 - sampleDist) * orgDist;
      gaussianWeightTotal += gaussianWeight;
      sum += sampleColor * gaussianWeight;
      if(imageMode == 0){

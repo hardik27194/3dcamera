@@ -181,7 +181,8 @@ static inline CGSize swapWidthAndHeight(CGSize size)
     CGContextSetInterpolationQuality(ctx, kCGInterpolationHigh);
     CGContextSetShouldAntialias(ctx, true); //<< default varies by context type
     [self drawInRect: bounds];
-    UIImage *resizedImage = UIGraphicsGetImageFromCurrentImageContext();
+    //UIImage *resizedImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIImage *resizedImage = [UIImage imageWithCGImage:UIGraphicsGetImageFromCurrentImageContext().CGImage scale:self.scale orientation:self.imageOrientation];
     UIGraphicsEndImageContext();
     return resizedImage;
 }

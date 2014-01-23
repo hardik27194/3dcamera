@@ -83,12 +83,13 @@ NSString *const kHomeBlendFragmentShaderString = SHADER_STRING
          brightness = brightness * brightness;
          finalEdgeRatio = finalEdgeRatio * (1.0 - brightness);
          //colorDist * sharpImageColor +  (1.0 - colorDist) *
-         gl_FragColor = colorDist * sharpImageColor +  (1.0 - colorDist) * (sharpImageColor * finalEdgeRatio + (1.0 - finalEdgeRatio) * (smallBlurColor*blurRatio + (1.0 - blurRatio)*blurredImageColor));//* finalEdgeRatio + (1.0 - finalEdgeRatio) * vec4(0.5);
+         gl_FragColor = colorDist * sharpImageColor +  (1.0 - colorDist) * (sharpImageColor * finalEdgeRatio + (1.0 - finalEdgeRatio) * (smallBlurColor*blurRatio + (1.0 - blurRatio)*blurredImageColor));// finalEdgeRatio + (1.0 - finalEdgeRatio) * vec4(0.5);
      }else if(imageMode == 1){
          gl_FragColor = detectedEdge;
      }else if(imageMode == 2){
          gl_FragColor = sharpImageColor;
      }
+     //gl_FragColor = blurredImageColor;
  }
  );
 #else
@@ -138,12 +139,14 @@ NSString *const kFaceBlurFragmentShaderString = SHADER_STRING
     _smallBlurFilter = [[EZHomeLineBiFilter alloc] init];
     _smallBlurFilter.blurSize = 1.0;
     
+    _skinBrighter = [[EZSkinBrighter alloc] init];
+    [_skinBrighter setRgbCompositeControlPoints:@[pointValue(0.0, 0.0),pointValue(0.125, 0.135), pointValue(0.25, 0.29), pointValue(0.5, 0.51), pointValue(0.75, 0.75), pointValue(1.0, 1.0)]];
     //_edgeBlurFilter = [[GPUImageGaussianBlurFilter alloc] init];
     
     //blurFilter.blurSize = 2.0;
     //_blurFilter.blurSize = 5.0;
-    [self addFilter:_blurFilter];
-    [self addFilter:_smallBlurFilter];
+    //[self addFilter:_blurFilter];
+    //[self addFilter:_smallBlurFilter];
     _edgeFilter = [[EZHomeEdgeFilter alloc] init];
     [self addFilter:_edgeFilter];
     //[_edgeFilter addTarget:_edgeBlurFilter];
@@ -151,13 +154,19 @@ NSString *const kFaceBlurFragmentShaderString = SHADER_STRING
     _combineFilter = [[EZFourInputFilter alloc] initWithFragmentShaderFromString:kHomeBlendFragmentShaderString];
     [self addFilter:_combineFilter];
     // Texture location 0 needs to be the sharp image for both the blur and the second stage processing
+    [self addFilter:_skinBrighter];
+    
+    [_skinBrighter addTarget:_blurFilter];
+    [_skinBrighter addTarget:_smallBlurFilter];
+    [_edgeFilter addTarget:_smallBlurFilter atTextureLocation:1];
+    
     [_blurFilter addTarget:_combineFilter atTextureLocation:1];
     [_smallBlurFilter addTarget:_combineFilter atTextureLocation:2];
-    [_edgeFilter addTarget:_smallBlurFilter atTextureLocation:1];
     [_edgeFilter addTarget:_combineFilter atTextureLocation:3];
+    
     // To prevent double updating of this filter, disable updates from the sharp image side
     //[_combineFilter disableSecondFrameCheck];
-    self.initialFilters = [NSArray arrayWithObjects:_blurFilter,_edgeFilter,_smallBlurFilter, _combineFilter, nil];
+    self.initialFilters = [NSArray arrayWithObjects:_edgeFilter,_skinBrighter, _combineFilter, nil];
     self.skinColors = @[@(0.753),@(0.473),@(0.332)];
     self.terminalFilter = _combineFilter;
     //self.edgeRatio =

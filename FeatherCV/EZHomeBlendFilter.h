@@ -12,12 +12,15 @@
 #import <GPUImageThreeInputFilter.h>
 #import "EZHomeEdgeFilter.h"
 #import "EZHomeLineBiFilter.h"
+#import "EZSkinBrighter.h"
+
 @class EZFourInputFilter;
 @interface EZHomeBlendFilter : GPUImageFilterGroup
 {
     BOOL hasOverriddenAspectRatio;
 }
 
+@property (nonatomic, strong) EZSkinBrighter* skinBrighter;
 @property (nonatomic, strong) EZHomeBiBlur* blurFilter;
 @property (nonatomic, strong) EZHomeLineBiFilter* smallBlurFilter;
 @property (nonatomic, strong) EZHomeEdgeFilter* edgeFilter;
