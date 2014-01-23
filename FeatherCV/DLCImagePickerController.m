@@ -477,8 +477,11 @@
     
     filter = [[GPUImageFilter alloc] init];
     secFixColorFilter = [self createBlueStretchFilter];
+    [secFixColorFilter updateAllConfigure];
+    //[secFixColorFilter ]
     //secFixColorFilter.redEnhanceLevel = 0.6;
     fixColorFilter = [self createRedStretchFilter];
+    [fixColorFilter updateAllConfigure];
     //fixColorFilter.redEnhanceLevel = 0.6;
     redEnhanceFilter = [self createRedEnhanceFilter];
     finalBlendFilter = [self createFaceBlurFilter];
