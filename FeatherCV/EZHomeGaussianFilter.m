@@ -76,11 +76,11 @@ NSString *const kGPUImageHomeGaussianBlurFragmentShaderString = SHADER_STRING
  {
      highp float fd = distance(rawcolor.rgb, skinColor);
      if(fd < 0.8){
-         fd = fd * fd;
+         fd = fd * fd * fd;
      }else{
          fd = 1.0/(exp(-fd * fd * 2.0) + 1.0);
      }
-     return min(1.0, fd * 0.9);
+     return min(1.0, fd);
      //return 1.0/(exp((1.5 - distance(rawcolor.rgb, skinColor))) + 1.0);
  }
  
