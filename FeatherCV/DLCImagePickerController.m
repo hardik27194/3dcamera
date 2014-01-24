@@ -894,7 +894,7 @@
         [secFixColorFilter addTarget:redEnhanceFilter];
         [redEnhanceFilter addTarget:filter];
         CGFloat blurCycle = 3.0 * fobj.orgRegion.size.width;
-        CGFloat adjustedFactor = 12.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
+        CGFloat adjustedFactor = 13.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
         finalBlendFilter.blurFilter.distanceNormalizationFactor = adjustedFactor;
         finalBlendFilter.blurFilter.blurSize = blurCycle;
         //finalBlendFilter.smallBlurFilter.blurSize = blurAspectRatio * blurCycle;
@@ -1479,7 +1479,7 @@
         [res addObject:[self createBlueStretchFilter]];
         [res addObject:[self createRedEnhanceFilter]];
         CGFloat blurCycle = 4.0 * fobj.orgRegion.size.width;
-        CGFloat adjustedFactor = 20.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
+        CGFloat adjustedFactor = 13.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
         faceBlur.blurFilter.distanceNormalizationFactor = adjustedFactor;
         faceBlur.blurFilter.blurSize = blurCycle;
         //CGSize edgeSize = [self adjustEdgeWidth:_imageSize orientation:staticPictureOriginalOrientation];
