@@ -83,6 +83,9 @@ NSString *const kHomeBlendFragmentShaderString = SHADER_STRING
          brightness = brightness * brightness;
          finalEdgeRatio = finalEdgeRatio * (1.0 - brightness);
          //colorDist * sharpImageColor +  (1.0 - colorDist) *
+         if(finalEdgeRatio > 0.5){
+             finalEdgeRatio = 1.0;
+         }
          gl_FragColor = colorDist * sharpImageColor +  (1.0 - colorDist) * (sharpImageColor * finalEdgeRatio + (1.0 - finalEdgeRatio) * (smallBlurColor*blurRatio + (1.0 - blurRatio)*blurredImageColor));// finalEdgeRatio + (1.0 - finalEdgeRatio) * vec4(0.5);
      }else if(imageMode == 1){
          gl_FragColor = detectedEdge;
