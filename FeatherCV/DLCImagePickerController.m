@@ -477,11 +477,11 @@
     
     filter = [[GPUImageFilter alloc] init];
     secFixColorFilter = [self createBlueStretchFilter];
-    [secFixColorFilter updateAllConfigure];
+    //[secFixColorFilter updateAllConfigure];
     //[secFixColorFilter ]
     //secFixColorFilter.redEnhanceLevel = 0.6;
     fixColorFilter = [self createRedStretchFilter];
-    [fixColorFilter updateAllConfigure];
+    //[fixColorFilter updateAllConfigure];
     //fixColorFilter.redEnhanceLevel = 0.6;
     redEnhanceFilter = [self createRedEnhanceFilter];
     finalBlendFilter = [self createFaceBlurFilter];
@@ -1371,11 +1371,10 @@
             lineWidth = lineHeight;
             lineHeight = tmpWidth;
         }
-        finalBlendFilter.edgeFilter.texelHeight = lineHeight * 1.5;
-        finalBlendFilter.edgeFilter.texelWidth = lineWidth * 1.5;
+        finalBlendFilter.edgeFilter.texelHeight = lineHeight * 2.0;
+        finalBlendFilter.edgeFilter.texelWidth = lineWidth * 2.0;
         EZDEBUG(@"Reprocess width:%f, height:%f, original width:%f, height:%f, image Orientation:%i, calculated width:%f, height:%f",  finalBlendFilter.edgeFilter.texelWidth,  finalBlendFilter.edgeFilter.texelHeight, orgWidth, orgHeight, staticPictureOriginalOrientation, lineWidth, lineHeight);
     }
-    //[self.imageView setInputRotation:<#(GPUImageRotationMode)#> atIndex:<#(NSInteger)#>]
     [staticPicture processImage];
     [self.retakeButton setHidden:NO];
     [self.photoCaptureButton setTitle:@"Done" forState:UIControlStateNormal];

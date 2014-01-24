@@ -9,15 +9,6 @@
 #import "GPUImageFilter.h"
 
 @interface EZSaturationFilter : GPUImageFilter
-{
-    GLint gaussianRedTextureUniform;
-    GLuint guassianRedTexture;
-    GLubyte *guassianRedByteArray;
-    
-    GLint gaussianBlueTextureUniform;
-    GLuint guassianBlueTexture;
-    GLubyte *guassianBlueByteArray;
-}
 
 /**
  uniform highp float lowRed;
@@ -37,7 +28,5 @@
 
 @property (readwrite, nonatomic) CGFloat yellowRedDegree;
 @property (readwrite, nonatomic) CGFloat yellowBlueDegree;
-
-- (void) updateAllConfigure;
 
 @end

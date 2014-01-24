@@ -15,9 +15,6 @@ NSString *const kGPUImageMySatuFragmentShaderString = SHADER_STRING
  
  varying highp vec2 textureCoordinate;
  uniform sampler2D inputImageTexture;
- uniform sampler2D guassianBlueTexture;
- uniform sampler2D guassianRedTexture;
- 
  const highp float pi = 3.14159265358979;
  uniform highp float lowRed;
  uniform highp float midYellow;
@@ -28,8 +25,6 @@ NSString *const kGPUImageMySatuFragmentShaderString = SHADER_STRING
  
  uniform lowp float redEnhanceLevel;
  uniform lowp float redRatio;
- 
- uniform lowp int guassianMode;
  
  const highp  vec4  kRGBToYPrime = vec4 (0.299, 0.587, 0.114, 0.0);
  const highp  vec4  kRGBToI     = vec4 (0.595716, -0.274453, -0.321263, 0.0);
@@ -71,14 +66,6 @@ NSString *const kGPUImageMySatuFragmentShaderString = SHADER_STRING
      return (1.0/(std* sqrt(2.0*pi))) * exp(-((hue-mid)*(hue-mid))/(2.0*std*std));
  }
  
- lowp float guassianTexture(highp float hue, highp float mixDegree)
- {
-     if(mixDegree > 0){
-         return texture2D(guassianRedTexture, vec2(hue, 0.0)).r;
-     }else{
-         return texture2D(guassianBlueTexture, vec2(hue, 0.0)).r;
-     }
- }
  
  lowp vec4 adjustColor(highp vec4 rawYiq, highp float startP, highp float endP, highp float mixDegree)
  {
@@ -93,11 +80,7 @@ NSString *const kGPUImageMySatuFragmentShaderString = SHADER_STRING
      highp float mid = (startP + endP)/2.0;
      //The higher the std, the narrower the distribution
      highp float std = abs(startP - endP)/5.0;
-     highp float guassianPos = abs((hue - startP)/(endP - startP));
-     lowp float gap = gaussianTexture(guassianPos, mid, std);
-     if(guassianMode == 1){
-         gap = guassian(hue, mid, std);
-     }
+     lowp float gap = gaussian(hue, mid, std);
      hue += gap * mixDegree;
      highp float chroma  = sqrt(rawYiq.g * rawYiq.g + rawYiq.b * rawYiq.b);
      // Convert back to YIQ
@@ -111,6 +94,8 @@ NSString *const kGPUImageMySatuFragmentShaderString = SHADER_STRING
  {
      
      lowp vec4 sharpImageColor = texture2D(inputImageTexture, textureCoordinate);
+     
+     
      
      highp vec4 rawYiq = color2YIQ(sharpImageColor);
      // Calculate the hue and chroma
@@ -204,114 +189,11 @@ NSString *const kGPUImageHueFragmentShaderString = SHADER_STRING
     self.highBlue = -80;
     self.yellowRedDegree = 10;
     self.yellowBlueDegree = 10;
-    gaussianRedTextureUniform = [filterProgram uniformIndex:@"guassianRedTexture"];
-    gaussianBlueTextureUniform = [filterProgram uniformIndex:@"guassianBlueTexture"];
     
     //hueAdjustUniform = [filterProgram uniformIndex:@"hueAdjust"];
     //self.hue = 0.0;
+    
     return self;
-}
-
-- (void) updateAllConfigure
-{
-      runSynchronouslyOnVideoProcessingQueue(^{
-          [self updateBlueGaussianPosition];
-          [self updateRedGuassianPosition];
-      });
-}
-
-
-- (void)updateBlueGaussianPosition
-{
-  
-        [GPUImageContext useImageProcessingContext];
-        if (!guassianBlueTexture)
-        {
-            glActiveTexture(GL_TEXTURE4);
-            glGenTextures(1, &guassianBlueTexture);
-            glBindTexture(GL_TEXTURE_2D, guassianBlueTexture);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-            guassianBlueByteArray = calloc(256 * 4, sizeof(GLubyte));
-        }
-        else
-        {
-            glActiveTexture(GL_TEXTURE4);
-            glBindTexture(GL_TEXTURE_2D, guassianBlueTexture);
-        }
-        [self fillGaussianArray:guassianBlueByteArray start:_highBlue end:_midYellow];
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 256 /*width*/, 1 /*height*/, 0, GL_BGRA, GL_UNSIGNED_BYTE, guassianBlueByteArray);
-}
-
--  (void) fillGaussianArray:(GLubyte*)gaussianArray start:(CGFloat)start end:(CGFloat)end
-{
-    CGFloat gap = (end - start)/256.0;
-    CGFloat mid = (start + end)/2.0;
-    CGFloat std = (start - end)/5.0;
-    CGFloat hue = start;
-    for(int i = 0; i < 256; i++){
-        gaussianArray[i] = (1.0/(std* sqrt(2.0*M_PI))) * exp(-((hue-mid)*(hue-mid))/(2.0*std*std));
-        hue += gap;
-    }
-}
-
-
-- (void)updateRedGuassianPosition
-{
-        [GPUImageContext useImageProcessingContext];
-        if (!guassianRedTexture)
-        {
-            glActiveTexture(GL_TEXTURE3);
-            glGenTextures(1, &guassianRedTexture);
-            glBindTexture(GL_TEXTURE_2D, guassianRedTexture);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-            guassianRedByteArray = calloc(256 * 4, sizeof(GLubyte));
-        }
-        else
-        {
-            glActiveTexture(GL_TEXTURE3);
-            glBindTexture(GL_TEXTURE_2D, guassianRedTexture);
-        }
-        [self fillGaussianArray:guassianRedByteArray start:_midYellow end:_lowRed];
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 256 /*width*/, 1 /*height*/, 0, GL_BGRA, GL_UNSIGNED_BYTE, guassianRedByteArray);
-    
-}
-
-
-- (void)renderToTextureWithVertices:(const GLfloat *)vertices textureCoordinates:(const GLfloat *)textureCoordinates sourceTexture:(GLuint)sourceTexture;
-{
-    if (self.preventRendering)
-    {
-        return;
-    }
-    
-    [GPUImageContext setActiveShaderProgram:filterProgram];
-    [self setFilterFBO];
-    
-    glClearColor(backgroundColorRed, backgroundColorGreen, backgroundColorBlue, backgroundColorAlpha);
-    glClear(GL_COLOR_BUFFER_BIT);
-    
-  	glActiveTexture(GL_TEXTURE2);
-  	glBindTexture(GL_TEXTURE_2D, sourceTexture);
-  	glUniform1i(filterInputTextureUniform, 2);
-    
-    glActiveTexture(GL_TEXTURE3);
-    glBindTexture(GL_TEXTURE_2D, guassianRedTexture);
-    glUniform1i(gaussianRedTextureUniform, 3);
-    
-    glActiveTexture(GL_TEXTURE4);
-    glBindTexture(GL_TEXTURE_2D, guassianBlueTexture);
-    glUniform1i(gaussianBlueTextureUniform, 4);
-    
-    glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, vertices);
-    glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, textureCoordinates);
-    
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 }
 
 - (void) setLowRed:(CGFloat)lowRed
