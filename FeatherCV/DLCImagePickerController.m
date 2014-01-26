@@ -305,8 +305,8 @@
     faceBlurBase = 0.3;
     faceBlender.blurFilter.blurSize = globalBlur;//Original value
     faceBlender.blurFilter.distanceNormalizationFactor = 13;
-    faceBlender.smallBlurFilter.blurSize = 0.1;
-    faceBlender.blurRatio = 0.30;
+    faceBlender.smallBlurFilter.blurSize = 0.05;
+    faceBlender.blurRatio = 0.20;
     faceBlender.edgeFilter.threshold = 0.4;
     return faceBlender;
 }
