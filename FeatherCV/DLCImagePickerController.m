@@ -315,7 +315,7 @@
 {
     GPUImageToneCurveFilter* resFilter = [[GPUImageToneCurveFilter alloc] init];
     
-    [resFilter setRgbCompositeControlPoints:@[pointValue(0.0, 0.0), pointValue(0.125, 0.125), pointValue(0.25, 0.25), pointValue(0.5, 0.5368), pointValue(0.75, 0.7949), pointValue(1.0, 1.0)]];
+    [resFilter setRgbCompositeControlPoints:@[pointValue(0.0, 0.0), pointValue(0.125, 0.125), pointValue(0.25, 0.25), pointValue(0.5, 0.5268), pointValue(0.75, 0.7699), pointValue(1.0, 1.0)]];
     [resFilter setRedControlPoints:@[pointValue(0.0, 0.0), pointValue(0.25, 0.26), pointValue(0.5, 0.5), pointValue(0.75, 0.75), pointValue(1.0, 0.99)]];
     [resFilter setGreenControlPoints:@[pointValue(0.0, 0.0),pointValue(0.125, 0.135), pointValue(0.25, 0.25), pointValue(0.5, 0.5), pointValue(0.75, 0.75), pointValue(1.0, 0.995)]];
     [resFilter setBlueControlPoints:@[pointValue(0.0, 0.0), pointValue(0.25, 0.25), pointValue(0.5, 0.5), pointValue(0.75, 0.75), pointValue(1.0, 1.0)]];
