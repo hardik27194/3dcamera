@@ -69,7 +69,7 @@ NSString *const kGPUImageHomeLineBilateralFilterFragmentShaderString = SHADER_ST
  lowp float calcHue(lowp vec4 rawcolor)
  {
      highp float fd = distance(rawcolor.rgb, skinColor);
-     if(fd < 0.7){
+     if(fd < 0.65){
          fd = fd * fd * fd;
      }else{
          fd = 1.0/(exp(-fd * 2.0) + 1.0);
