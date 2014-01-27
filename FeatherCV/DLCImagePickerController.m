@@ -282,7 +282,7 @@
     stretchFilter.lowRed = 30.4;
     stretchFilter.midYellow = -25.3;
     stretchFilter.highBlue = -85;
-    stretchFilter.yellowRedDegree = 5.0;////4.6/2.0;
+    stretchFilter.yellowRedDegree = 3.0;////4.6/2.0;
     stretchFilter.yellowBlueDegree = 0.0;//10.9/2.0;
     return stretchFilter;
 }
@@ -307,8 +307,8 @@
     faceBlurBase = 0.3;
     faceBlender.blurFilter.blurSize = globalBlur;//Original value
     faceBlender.blurFilter.distanceNormalizationFactor = 13;
-    faceBlender.smallBlurFilter.blurSize = 0.05;
-    faceBlender.blurRatio = 0.35;
+    faceBlender.smallBlurFilter.blurSize = 0.07;
+    faceBlender.blurRatio = 0.32;
     faceBlender.edgeFilter.threshold = 0.4;
     return faceBlender;
 }
@@ -328,7 +328,7 @@
 {
     EZColorBrighter* res = [[EZColorBrighter alloc] init];
     res.redEnhanceLevel = 0.6;
-    res.redRatio = 0.20;
+    res.redRatio = 0.25;
     return res;
 }
 
@@ -860,11 +860,18 @@
 - (EZClickView*) createSmileButton
 {
     CGRect bound = [UIScreen mainScreen].bounds;
-    EZClickView* smile = [[EZClickView alloc] initWithFrame:CGRectMake(160 + (204.0 - 66.0)/2, bound.size.height-66.0-31, 66.0, 66.0)];
+    EZClickView* smile = [[EZClickView alloc] initWithFrame:CGRectMake(160 + (204.0 - 66.0)/2, bound.size.height-66.0-24, 66.0, 66.0)];
     [smile enableRoundImage];
     smile.backgroundColor = RGBA(200, 100, 20, 128);
     return smile;
 }
+
+
+- (BOOL) getImageMode
+{
+    return finalBlendFilter.imageMode;
+}
+
 - (void) setImageMode:(int)imgMode
 {
     finalBlendFilter.imageMode = imgMode;
@@ -892,20 +899,28 @@
     //[fixColorFilter addTarget:secFixColorFilter];
     EZDEBUG(@"Prepare new static image get called, flash image:%i, image size:%@, dark:%f", _isImageWithFlash, NSStringFromCGSize(img.size), dark);
     //GPUImageFilter* imageFilter = secFixColorFilter;
-    if(fobj){
+    if(fobj || stillCamera.isFrontFacing){
         [hueFilter addTarget:finalBlendFilter];
         //[secFixColorFilter addTarget:finalBlendFilter];
         [finalBlendFilter addTarget:fixColorFilter];
         [fixColorFilter addTarget:secFixColorFilter];
         [secFixColorFilter addTarget:redEnhanceFilter];
         [redEnhanceFilter addTarget:filter];
-        CGFloat blurCycle = 3.0 * fobj.orgRegion.size.width;
+        CGFloat blurCycle = 1.5;
+        if(fobj){
+            blurCycle = 3.25 * fobj.orgRegion.size.width;
+        }else{
+            fobj = [[EZFaceResultObj alloc] init];
+            fobj.orgRegion = CGRectMake(0.1, 0.1, 0.3, 0.3);
+            blurCycle = 0.9;
+        }
         CGFloat adjustedFactor = 14.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
         finalBlendFilter.blurFilter.distanceNormalizationFactor = adjustedFactor;
         finalBlendFilter.blurFilter.blurSize = blurCycle;
+        finalBlendFilter.imageMode = 2;
         //finalBlendFilter.smallBlurFilter.blurSize = blurAspectRatio * blurCycle;
         EZDEBUG(@"Will blur face:%@, blurCycle:%f, adjustedColor:%f", NSStringFromCGRect(fobj.orgRegion), blurCycle, adjustedFactor);
-        finalBlendFilter.imageMode = 0;
+        //finalBlendFilter.imageMode = 0;
         if(!smileDetected){
             smileDetected = [self createSmileButton];
             [self.view addSubview:smileDetected];
@@ -915,16 +930,19 @@
             smileDetected.alpha = 1.0;
         }];
         __weak DLCImagePickerController* weakSelf = self;
-        __weak EZClickView* weakButton = smileDetected;
+        //__weak EZClickView* weakButton = smileDetected;
         smileDetected.releasedBlock = ^(id obj){
             //blender.imageMode = 2;
-            [weakSelf setImageMode:2];
+            if([weakSelf getImageMode] == 0){
+                [weakSelf setImageMode:2];
+                weakSelf.detectedFaceObj = nil;
+            }else{
+                [weakSelf setImageMode:0];
+                weakSelf.detectedFaceObj = fobj;
+            }
             //So that the whole image will not get affected.
-            weakSelf.detectedFaceObj = nil;
+            //weakSelf.detectedFaceObj = nil;
             //weakButton.hidden = TRUE;
-            [UIView animateWithDuration:0.2 animations:^(){
-                weakButton.alpha = 0.0;
-            }];
         };
     }else{
         [hueFilter addTarget:fixColorFilter];
