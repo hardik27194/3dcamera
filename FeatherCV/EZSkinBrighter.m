@@ -13,8 +13,8 @@ NSString *const kGPUImageSkinToneCurveFragmentShaderString = SHADER_STRING
  varying highp vec2 textureCoordinate;
  uniform sampler2D inputImageTexture;
  uniform sampler2D toneCurveTexture;
- 
- const lowp vec3 skinColor = vec3(0.753, 0.473, 0.332);
+ //215, 165, 138
+ const lowp vec3 skinColor = vec3(0.783, 0.503, 0.40);
  
  lowp float calcHue(lowp vec4 rawcolor)
  {
@@ -22,7 +22,7 @@ NSString *const kGPUImageSkinToneCurveFragmentShaderString = SHADER_STRING
      if(fd < 0.675){
          fd = fd * fd * fd;
      }else{
-         fd = 1.0/(exp(-fd * 2.0) + 1.0);
+         fd = 1.0/(exp(-fd * 1.5) + 1.0);
      }
      return min(1.0, fd);
      //return 1.0/(exp((1.5 - distance(rawcolor.rgb, skinColor))) + 1.0);

@@ -445,9 +445,9 @@
     EZDEBUG(@"The imageView frame:%@", NSStringFromCGRect(imageView.frame));
     //[self setupEdgeDetector];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-        [self setUpCamera];
+        [self setupCamera];
     });
-    //[self startFaceCapture];
+    [self startFaceCapture];
     CGRect bound = [UIScreen mainScreen].bounds;
     
     
@@ -650,7 +650,7 @@
     [[UIApplication sharedApplication] setStatusBarHidden:false];
 }
 
--(void) setUpCamera {
+-(void) setupCamera {
     
     if ([UIImagePickerController isSourceTypeAvailable: UIImagePickerControllerSourceTypeCamera]) {
         // Has camera
@@ -665,6 +665,15 @@
             }else{
                 [self.flashToggleButton setEnabled:NO];
             }
+            
+            AVCaptureDevice *device = stillCamera.inputCamera;
+            if ([device isFocusModeSupported:AVCaptureFocusModeContinuousAutoFocus]) {
+                NSError *error;
+                if ([device lockForConfiguration:&error]) {
+                    [device setFocusMode:AVCaptureFocusModeContinuousAutoFocus];
+                }
+            }
+            EZDEBUG(@"Setup the camera for auto focus");
             [self prepareFilter];
         });
     } else {
@@ -803,6 +812,9 @@
      _detectingFace = TRUE;
     UIImage* capturedImage = orgFiler.blackFilter.imageFromCurrentlyProcessedOutput; //[imageView contentAsImage];
     UIImageOrientation orientation = capturedImage.imageOrientation;
+    if(capturedImage.size.width <= 0){
+        return;
+    }
     capturedImage = [capturedImage rotateByOrientation:capturedImage.imageOrientation];
     NSArray* result = [EZFaceUtilWrapper detectFace:capturedImage ratio:0.005];
         EZDEBUG(@"Let's test the image size:%@, face result:%i", NSStringFromCGSize(capturedImage.size), result.count);
@@ -829,7 +841,7 @@
         EZDEBUG(@"Start capture faces");
         while (!_quitFaceDetection) {
             @autoreleasepool {
-                //[self startDetectFace];
+                [self startDetectFace];
             }
             [NSThread sleepForTimeInterval:1.0];
         }
@@ -982,7 +994,7 @@
 -(void) removeAllTargets {
     [stillCamera removeAllTargets];
     [staticPicture removeAllTargets];
-    [whiteBalancerFilter removeAllTargets];
+    //[whiteBalancerFilter removeAllTargets];
     [cropFilter removeAllTargets];
     [tongFilter removeAllTargets];
     //[cycleDarken removeAllTargets];
@@ -1197,11 +1209,14 @@
     //iview.image = flipped;
     _detectedFaceObj = nil;
     
-    EZDEBUG(@"Capture the flip is:%i, flipped orientation:%i, orginal:%i", flip, img.imageOrientation, img.imageOrientation);
     UIImage* detectImage = img;
-    if(!stillCamera.isFrontFacing){
-        detectImage = [img rotateByOrientation:img.imageOrientation];
-    }
+    //if(!stillCamera.isFrontFacing){
+        //detectImage = [img changeOriention:UIImageOrientationUp];
+    //}
+    EZDEBUG(@"Capture the flip is:%i, flipped orientation:%i, orginal:%i, staticOrientation:%i", flip, detectImage.imageOrientation, img.imageOrientation, staticPictureOriginalOrientation);
+    //UIImageView* faceView = [[UIImageView alloc] initWithFrame:CGRectMake(10, 100, 100, 100)];
+    //faceView.image = detectImage;
+    //[imageView addSubview:faceView];
     NSArray* faces = [EZFaceUtilWrapper detectFace:detectImage ratio:0.01];
     EZFaceResultObj* firstObj = nil;
     if(faces.count > 0){
@@ -1599,7 +1614,7 @@
         NSError *error;
         if ([device lockForConfiguration:&error]) {
             [device setFocusPointOfInterest:pointOfInterest];
-            [device setFocusMode:AVCaptureFocusModeAutoFocus];
+            [device setFocusMode:AVCaptureFocusModeContinuousAutoFocus];
             if(expose){
                 if([device isExposurePointOfInterestSupported] && [device isExposureModeSupported:AVCaptureExposureModeContinuousAutoExposure]) {
                     [device setExposurePointOfInterest:pointOfInterest];

@@ -25,6 +25,9 @@
 //- (UIImage *) rotateToRightDirection;
 - (UIImage *) rotateByOrientation:(UIImageOrientation)orientation;
 
+//Change the orientation without rotate it.
+- (UIImage *) changeOriention:(UIImageOrientation)orientation;
+
 - (UIImage *) flipImage;
 
 + (UIImage *)imageWithColor:(UIColor *)color;

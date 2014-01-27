@@ -201,7 +201,7 @@ void EZFaceUtil::filterFaces(cv::Mat& inputFrame, std::vector<EZFaceResult*>& in
 
 NSArray* EZFaceUtil::detectFace(UIImage* image, CGFloat miniRatio)
 {
-    CGFloat maxLen = 280;
+    CGFloat maxLen = 240;
     CGSize imageRatio = image.size;
     if(image.size.width > image.size.height && image.size.width > maxLen){
         imageRatio.width = maxLen;

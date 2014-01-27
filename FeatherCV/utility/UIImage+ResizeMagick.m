@@ -223,6 +223,23 @@ static inline CGSize swapWidthAndHeight(CGSize size)
     return result;
 }
 
+
+- (UIImage *) changeOriention:(UIImageOrientation)orientation
+{
+    CGRect rect = CGRectMake(0, 0, self.size.width, self.size.width);
+    if (self.scale > 1.0f) {    // this is for Retina display capability
+        rect = CGRectMake(rect.origin.x * self.scale,
+                          rect.origin.y * self.scale,
+                          rect.size.width * self.scale,
+                          rect.size.height * self.scale);
+    }
+    
+    CGImageRef imageRef = CGImageCreateWithImageInRect(self.CGImage, rect);
+    UIImage *result = [UIImage imageWithCGImage:imageRef scale:self.scale orientation:orientation];
+    CGImageRelease(imageRef);
+    return result;
+}
+
 -(UIImage*) rotateByOrientation:(UIImageOrientation)orientation
 {
     CGImageRef imgRef = self.CGImage;
