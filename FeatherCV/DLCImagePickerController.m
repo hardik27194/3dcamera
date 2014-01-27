@@ -921,6 +921,9 @@
         CGFloat blurCycle = 1.5;
         if(fobj){
             blurCycle = 3.25 * fobj.orgRegion.size.width;
+            if(fobj.orgRegion.size.width > 0.5){
+                blurCycle = 1.2 * blurCycle;
+            }
         }else{
             fobj = [[EZFaceResultObj alloc] init];
             fobj.orgRegion = CGRectMake(0.1, 0.1, 0.3, 0.3);
