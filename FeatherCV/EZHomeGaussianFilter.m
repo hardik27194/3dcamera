@@ -75,7 +75,7 @@ NSString *const kGPUImageHomeGaussianBlurFragmentShaderString = SHADER_STRING
  lowp float calcHue(lowp vec4 rawcolor)
  {
      highp float fd = distance(rawcolor.rgb, skinColor);
-     if(fd < 0.65){
+     if(fd < 0.675){
          fd = fd * fd * fd;
      }else{
          fd = 1.0/(exp(-fd * 2.0) + 1.0);
