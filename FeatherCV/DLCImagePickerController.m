@@ -112,6 +112,7 @@
     EZClickView* smileDetected;
     UIImageView* blackView;
     UIView* blackCover;
+    CGSize orgFocusSize;
 }
 
 @synthesize delegate,
@@ -307,8 +308,8 @@
     faceBlurBase = 0.3;
     faceBlender.blurFilter.blurSize = globalBlur;//Original value
     faceBlender.blurFilter.distanceNormalizationFactor = 13;
-    faceBlender.smallBlurFilter.blurSize = 0.07;
-    faceBlender.blurRatio = 0.32;
+    faceBlender.smallBlurFilter.blurSize = 0.05;
+    faceBlender.blurRatio = 0.3;
     faceBlender.edgeFilter.threshold = 0.4;
     return faceBlender;
 }
@@ -350,30 +351,12 @@
     _bluePoint.value = 0.2;
     _redGap.value = 0.1;
     _blueGap.value = 0.2;
-    //Initial value
-    //finalBlendFilter.blurFilter.distanceNormalizationFactor = 7.2;
-    //finalBlendFilter.smallBlurFilter.blurSize = 0.2;
-    //finalBlendFilter.blurRatio = _redGap.value;
-    //finalBlendFilter.edgeBlurFilter.blurSize = _blueGap.value * 2;
-    
+   
     [self adjustSlideValue:_redPoint];
     [self adjustSlideValue:_yellowPoint];
     [self adjustSlideValue:_bluePoint];
     [self adjustSlideValue:_redGap];
     [self adjustSlideValue:_blueGap];
-}
-
-- (void) switchEdges
-{
-    /**
-    ++currentEdge;
-    if(currentEdge == 3){
-        currentEdge = 0;
-    }
-    _blueGapText.text = [edgeDectectorNames objectAtIndex:currentEdge];
-    [self removeAllTargets];
-    [self prepareFilter];
-    **/
 }
 
 - (void) viewDidAppear:(BOOL)animated
@@ -422,6 +405,7 @@
     self.focusView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"focus-crosshair"]];
 	[self.view addSubview:self.focusView];
 	self.focusView.alpha = 0;
+    orgFocusSize = self.focusView.frame.size;
     
     self.blurOverlayView = [[DLCBlurOverlayView alloc] initWithFrame:CGRectMake(0, 0,
 																				self.imageView.frame.size.width,
@@ -669,9 +653,12 @@
             AVCaptureDevice *device = stillCamera.inputCamera;
             if ([device isFocusModeSupported:AVCaptureFocusModeContinuousAutoFocus]) {
                 NSError *error;
+                //[device lockForConfiguration];
                 if ([device lockForConfiguration:&error]) {
                     [device setFocusMode:AVCaptureFocusModeContinuousAutoFocus];
+                    [device unlockForConfiguration];
                 }
+                
             }
             EZDEBUG(@"Setup the camera for auto focus");
             [self prepareFilter];
@@ -762,6 +749,8 @@
 {
     CGFloat width = faceRegion.size.width * self.imageView.frame.size.width;
     CGFloat height = faceRegion.size.height * self.imageView.frame.size.height;
+    width = MIN(width, height);
+    height = width;
     CGFloat px = faceRegion.origin.x * self.imageView.frame.size.width;
     CGFloat py = faceRegion.origin.y * self.imageView.frame.size.height;
     EZDEBUG(@"image orientation value:%i", orientation);
@@ -772,12 +761,13 @@
         //width = faceRegion.size.width * self.imageView.frame.size.height;
         width = faceRegion.size.width * self.imageView.frame.size.height;
         height = faceRegion.size.height * self.imageView.frame.size.width;
-
+        width = MIN(width, height);
+        height = width;
         px = faceRegion.origin.x * self.imageView.frame.size.height;
         py = faceRegion.origin.y * self.imageView.frame.size.width;
         CGFloat tmpWidth = width;
-        width = height * 1.1;
-        height = tmpWidth * 0.8;
+        width = height;
+        height = tmpWidth;
         CGFloat tmpX = px;
         px = py;
         py = self.imageView.frame.size.height - tmpX - tmpWidth;
@@ -786,11 +776,13 @@
         EZDEBUG(@"image orientation left");
         width = faceRegion.size.width * self.imageView.frame.size.height;
         height = faceRegion.size.height * self.imageView.frame.size.width;
+        width = MIN(width, height);
+        height = width;
         px = faceRegion.origin.x * self.imageView.frame.size.height;
         py = faceRegion.origin.y * self.imageView.frame.size.width;
         CGFloat tmpWidth = width;
-        width = height * 1.1;
-        height = tmpWidth * 0.8;
+        width = height;
+        height = tmpWidth;
         CGFloat tmpY = py;
         py = px;
         px = self.imageView.frame.size.width - tmpY - width;
@@ -1531,18 +1523,16 @@
 
 -(IBAction) cancel:(id)sender {
     EZDEBUG(@"Cancel get called");
-    [self switchDisplayImage];
+    //[self switchDisplayImage];
     //if(isStatic){
     //    [staticPicture processImage];
     //}
     //UIImage* renderImage =
     
-    /**
     EZUIUtility.sharedEZUIUtility.cameraClickButton.releasedBlock = nil;
     [self dismissViewControllerAnimated:YES completion:^(){
         EZDEBUG(@"DLCCamera Will get dismissed");
     }];
-     **/
 
 }
 
@@ -1605,7 +1595,7 @@
 		}
 		pointOfInterest = CGPointMake(location.y / frameSize.height, 1.f - (location.x / frameSize.width));
         CGPoint center = [tgr locationInView:self.view];
-        CGRect focusFrame = CGRectMake(center.x - self.focusView.width/2.0, center.y - self.focusView.height/2.0, self.focusView.frame.size.width, self.focusView.frame.size.height);
+        CGRect focusFrame = CGRectMake(center.x - self.focusView.width/2.0, center.y - self.focusView.height/2.0, orgFocusSize.width, orgFocusSize.height);
         [self focusCamera:pointOfInterest frame:focusFrame expose:TRUE];
     }
 }

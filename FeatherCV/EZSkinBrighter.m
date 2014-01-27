@@ -19,7 +19,7 @@ NSString *const kGPUImageSkinToneCurveFragmentShaderString = SHADER_STRING
  lowp float calcHue(lowp vec4 rawcolor)
  {
      highp float fd = distance(rawcolor.rgb, skinColor);
-     if(fd < 0.675){
+     if(fd < 0.7){
          fd = fd * fd * fd;
      }else{
          fd = 1.0/(exp(-fd * 1.5) + 1.0);
