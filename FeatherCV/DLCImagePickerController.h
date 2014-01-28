@@ -128,6 +128,8 @@ typedef enum {
 
 @property (nonatomic, assign) CGSize imageSize;
 
+@property (nonatomic, assign) CGPoint prevFocusPoint;
+
 //This method will change the turnStatus
 - (void) captureTurnedImage;
 

@@ -19,6 +19,13 @@
 		182A551018645374003D4A01 /* EZFaceBlurFilter2.m in Sources */ = {isa = PBXBuildFile; fileRef = 182A550F18645374003D4A01 /* EZFaceBlurFilter2.m */; };
 		18512A331861BE6300282264 /* shot_voice.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 18512A321861BE6300282264 /* shot_voice.aiff */; };
 		1866AD8C1890FC7000DB46E2 /* EZSkinBrighter.m in Sources */ = {isa = PBXBuildFile; fileRef = 1866AD8B1890FC7000DB46E2 /* EZSkinBrighter.m */; };
+		1866AD9C18965EF000DB46E2 /* EZCycleTongFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 1866AD9B18965EF000DB46E2 /* EZCycleTongFilter.m */; };
+		1866ADAA18966E7000DB46E2 /* BaseAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = 1866ADA118966E7000DB46E2 /* BaseAnimation.m */; };
+		1866ADAB18966E7000DB46E2 /* ModalAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = 1866ADA318966E7000DB46E2 /* ModalAnimation.m */; };
+		1866ADAC18966E7000DB46E2 /* SlideAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = 1866ADA518966E7000DB46E2 /* SlideAnimation.m */; };
+		1866ADAD18966E7000DB46E2 /* ShuffleAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = 1866ADA718966E7000DB46E2 /* ShuffleAnimation.m */; };
+		1866ADAE18966E7000DB46E2 /* ScaleAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = 1866ADA918966E7000DB46E2 /* ScaleAnimation.m */; };
+		1866ADB11897698900DB46E2 /* EZRaiseAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = 1866ADB01897698900DB46E2 /* EZRaiseAnimation.m */; };
 		1874D9D71867F57E005743FC /* EZSaturationFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 1874D9D61867F57E005743FC /* EZSaturationFilter.m */; };
 		1874D9DD18699386005743FC /* header_2.png in Resources */ = {isa = PBXBuildFile; fileRef = 1874D9DB18699385005743FC /* header_2.png */; };
 		1874D9DE18699386005743FC /* header_1.png in Resources */ = {isa = PBXBuildFile; fileRef = 1874D9DC18699386005743FC /* header_1.png */; };
@@ -291,6 +298,20 @@
 		18512A321861BE6300282264 /* shot_voice.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = shot_voice.aiff; sourceTree = "<group>"; };
 		1866AD8A1890FC7000DB46E2 /* EZSkinBrighter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZSkinBrighter.h; sourceTree = "<group>"; };
 		1866AD8B1890FC7000DB46E2 /* EZSkinBrighter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZSkinBrighter.m; sourceTree = "<group>"; };
+		1866AD9A18965EF000DB46E2 /* EZCycleTongFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZCycleTongFilter.h; sourceTree = "<group>"; };
+		1866AD9B18965EF000DB46E2 /* EZCycleTongFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZCycleTongFilter.m; sourceTree = "<group>"; };
+		1866ADA018966E7000DB46E2 /* BaseAnimation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseAnimation.h; sourceTree = "<group>"; };
+		1866ADA118966E7000DB46E2 /* BaseAnimation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BaseAnimation.m; sourceTree = "<group>"; };
+		1866ADA218966E7000DB46E2 /* ModalAnimation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ModalAnimation.h; sourceTree = "<group>"; };
+		1866ADA318966E7000DB46E2 /* ModalAnimation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ModalAnimation.m; sourceTree = "<group>"; };
+		1866ADA418966E7000DB46E2 /* SlideAnimation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SlideAnimation.h; sourceTree = "<group>"; };
+		1866ADA518966E7000DB46E2 /* SlideAnimation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SlideAnimation.m; sourceTree = "<group>"; };
+		1866ADA618966E7000DB46E2 /* ShuffleAnimation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShuffleAnimation.h; sourceTree = "<group>"; };
+		1866ADA718966E7000DB46E2 /* ShuffleAnimation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShuffleAnimation.m; sourceTree = "<group>"; };
+		1866ADA818966E7000DB46E2 /* ScaleAnimation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScaleAnimation.h; sourceTree = "<group>"; };
+		1866ADA918966E7000DB46E2 /* ScaleAnimation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScaleAnimation.m; sourceTree = "<group>"; };
+		1866ADAF1897698900DB46E2 /* EZRaiseAnimation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZRaiseAnimation.h; sourceTree = "<group>"; };
+		1866ADB01897698900DB46E2 /* EZRaiseAnimation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZRaiseAnimation.m; sourceTree = "<group>"; };
 		1874D9D51867F57E005743FC /* EZSaturationFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZSaturationFilter.h; sourceTree = "<group>"; };
 		1874D9D61867F57E005743FC /* EZSaturationFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZSaturationFilter.m; sourceTree = "<group>"; };
 		1874D9DB18699385005743FC /* header_2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = header_2.png; sourceTree = "<group>"; };
@@ -650,6 +671,25 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		1866AD9F18966E5200DB46E2 /* animation */ = {
+			isa = PBXGroup;
+			children = (
+				1866ADA018966E7000DB46E2 /* BaseAnimation.h */,
+				1866ADA118966E7000DB46E2 /* BaseAnimation.m */,
+				1866ADA218966E7000DB46E2 /* ModalAnimation.h */,
+				1866ADA318966E7000DB46E2 /* ModalAnimation.m */,
+				1866ADA418966E7000DB46E2 /* SlideAnimation.h */,
+				1866ADA518966E7000DB46E2 /* SlideAnimation.m */,
+				1866ADA618966E7000DB46E2 /* ShuffleAnimation.h */,
+				1866ADA718966E7000DB46E2 /* ShuffleAnimation.m */,
+				1866ADA818966E7000DB46E2 /* ScaleAnimation.h */,
+				1866ADA918966E7000DB46E2 /* ScaleAnimation.m */,
+				1866ADAF1897698900DB46E2 /* EZRaiseAnimation.h */,
+				1866ADB01897698900DB46E2 /* EZRaiseAnimation.m */,
+			);
+			name = animation;
+			sourceTree = "<group>";
+		};
 		1874D9DF1869969C005743FC /* santa */ = {
 			isa = PBXGroup;
 			children = (
@@ -715,6 +755,8 @@
 				18FA52A2188FDDEE00C91D18 /* EZHomeLineBiFilter.m */,
 				1866AD8A1890FC7000DB46E2 /* EZSkinBrighter.h */,
 				1866AD8B1890FC7000DB46E2 /* EZSkinBrighter.m */,
+				1866AD9A18965EF000DB46E2 /* EZCycleTongFilter.h */,
+				1866AD9B18965EF000DB46E2 /* EZCycleTongFilter.m */,
 			);
 			name = camera;
 			sourceTree = "<group>";
@@ -924,6 +966,7 @@
 		18E346D5183DF91500C9D89D /* utility */ = {
 			isa = PBXGroup;
 			children = (
+				1866AD9F18966E5200DB46E2 /* animation */,
 				18F58B55187130E0006CB966 /* UIView+Shadow.h */,
 				18F58B56187130E0006CB966 /* UIView+Shadow.m */,
 				18F58B50186EC0D1006CB966 /* ILTranslucentView.h */,
@@ -1399,12 +1442,16 @@
 				18E347D7183E050B00C9D89D /* ASIInputStream.m in Sources */,
 				18E34747183DFA7300C9D89D /* EZPhoto.m in Sources */,
 				18E3474B183DFA7300C9D89D /* EZLikeSatus.m in Sources */,
+				1866ADAE18966E7000DB46E2 /* ScaleAnimation.m in Sources */,
 				18F58B5A18716C19006CB966 /* EZGradientLayerView.m in Sources */,
+				1866ADAB18966E7000DB46E2 /* ModalAnimation.m in Sources */,
 				18E347F5183E081D00C9D89D /* AFDownloadRequestOperation.m in Sources */,
 				18E34780183DFAA400C9D89D /* EZUploadHandler.m in Sources */,
+				1866ADB11897698900DB46E2 /* EZRaiseAnimation.m in Sources */,
 				18A3703E1859AE850022F0A8 /* EZContactTablePage.m in Sources */,
 				18E34782183DFAA400C9D89D /* EZWeiboUtil.m in Sources */,
 				18E34837183F064200C9D89D /* EZFaceUtil.mm in Sources */,
+				1866ADAD18966E7000DB46E2 /* ShuffleAnimation.m in Sources */,
 				18E347FC183E081D00C9D89D /* AFNetworkActivityIndicatorManager.m in Sources */,
 				18E34781183DFAA400C9D89D /* EZMessageCenter.m in Sources */,
 				18E3472F183DFA3400C9D89D /* EZDummyPage.m in Sources */,
@@ -1428,8 +1475,10 @@
 				18E3468C183DF54400C9D89D /* main.m in Sources */,
 				18E3477A183DFAA400C9D89D /* EZClickView.m in Sources */,
 				181904031885406A001FC370 /* EZBlackAndCropFilter.m in Sources */,
+				1866ADAC18966E7000DB46E2 /* SlideAnimation.m in Sources */,
 				18E34729183DFA3300C9D89D /* EZBaseCollectionPage.m in Sources */,
 				18E34724183DFA3300C9D89D /* EZAlbumTablePage.m in Sources */,
+				1866ADAA18966E7000DB46E2 /* BaseAnimation.m in Sources */,
 				181903FA1881654D001FC370 /* EZFourInputFilter.m in Sources */,
 				182A550D18643141003D4A01 /* EZFaceBlurFilter.m in Sources */,
 				18E3472E183DFA3400C9D89D /* EZContactCell.m in Sources */,
@@ -1451,6 +1500,7 @@
 				18E347DA183E050B00C9D89D /* ASINetworkQueue.m in Sources */,
 				18E347D8183E050B00C9D89D /* ASIFormDataRequest.m in Sources */,
 				18E3474A183DFA7300C9D89D /* EZPerson.m in Sources */,
+				1866AD9C18965EF000DB46E2 /* EZCycleTongFilter.m in Sources */,
 				18E347D6183E050B00C9D89D /* ASIAuthenticationDialog.m in Sources */,
 				18F58B7518796CE9006CB966 /* EZNightBlurFilter.m in Sources */,
 				18F58B72187916F2006CB966 /* EZColorGaussianFilter.m in Sources */,

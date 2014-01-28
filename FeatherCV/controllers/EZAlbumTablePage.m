@@ -18,6 +18,7 @@
 #import "EZUIUtility.h"
 #import "DLCImagePickerController.h"
 #import "EZDataUtil.h"
+#import "SlideAnimation.h"
 
 
 static int photoCount = 1;
@@ -167,7 +168,8 @@ static int photoCount = 1;
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
     __weak EZAlbumTablePage* weakSelf = self;
     //[self.tableView addSubview:[EZTestSuites testResizeMasks]];
-    
+    _slideAnimation = [[SlideAnimation alloc] init];
+    _raiseAnimation = [[EZRaiseAnimation alloc] init];
     EZDEBUG(@"Query block is:%i",(int)_queryBlock);
     /**
     _queryBlock(0, 100, ^(NSArray* arr){
@@ -224,6 +226,7 @@ static int photoCount = 1;
 {
     EZDEBUG(@"View did show");
     [super viewDidAppear:animated];
+    self.navigationController.delegate = self;
     EZUIUtility.sharedEZUIUtility.cameraClickButton.pressedBlock = _cameraClicked;
 }
 
@@ -397,6 +400,50 @@ static int photoCount = 1;
     **/
 }
 
+
+#pragma mark - Transitioning Delegate (Modal)
+-(id<UIViewControllerAnimatedTransitioning>)animationControllerForPresentedController:(UIViewController *)presented presentingController:(UIViewController *)presenting sourceController:(UIViewController *)source {
+    //_modalAnimationController.type = AnimationTypePresent;
+    _raiseAnimation.type = AnimationTypePresent;
+    return _raiseAnimation;
+}
+
+-(id<UIViewControllerAnimatedTransitioning>)animationControllerForDismissedController:(UIViewController *)dismissed {
+    _raiseAnimation.type = AnimationTypeDismiss;
+    return _raiseAnimation;
+}
+
+#pragma mark - Navigation Controller Delegate
+
+-(id<UIViewControllerAnimatedTransitioning>)navigationController:(UINavigationController *)navigationController animationControllerForOperation:(UINavigationControllerOperation)operation fromViewController:(UIViewController *)fromVC toViewController:(UIViewController *)toVC {
+    
+    EZDEBUG(@"Exactly before transition");
+    switch (operation) {
+        case UINavigationControllerOperationPush:
+            _raiseAnimation.type = AnimationTypePresent;
+            return  _raiseAnimation;
+        case UINavigationControllerOperationPop:
+            _raiseAnimation.type = AnimationTypeDismiss;
+            return _raiseAnimation;
+        default: return nil;
+    }
+    
+}
+
+-(id<UIViewControllerInteractiveTransitioning>)navigationController:(UINavigationController *)navigationController interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransitioning>)animationController {
+    
+    EZDEBUG(@"Somebody ask if I am interactive transition or not");
+    /**
+    if ([animationController isKindOfClass:[ScaleAnimation class]]) {
+        ScaleAnimation *controller = (ScaleAnimation *)animationController;
+        if (controller.isInteractive) return controller;
+        else return nil;
+    } else return nil;
+     **/
+    return nil;
+}
+
+
 /*
 // Override to support editing the table view.
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
@@ -438,5 +485,7 @@ static int photoCount = 1;
 }
 
  */
+
+
 
 @end

@@ -9,9 +9,11 @@
 #import <UIKit/UIKit.h>
 #import "EZAppConstants.h"
 #import "DLCImagePickerController.h"
+#import "SlideAnimation.h"
+#import "EZRaiseAnimation.h"
 
 @class EZDisplayPhoto;
-@interface EZAlbumTablePage : UITableViewController<DLCImagePickerDelegate>
+@interface EZAlbumTablePage : UITableViewController<DLCImagePickerDelegate, UINavigationControllerDelegate, UIViewControllerTransitioningDelegate>
 
 
 @property (nonatomic, strong) NSMutableArray* combinedPhotos;
@@ -38,6 +40,9 @@
 
 @property (nonatomic, strong) UIView* menuView;
 
+@property (nonatomic, strong) SlideAnimation* slideAnimation;
+
+@property (nonatomic, strong) EZRaiseAnimation* raiseAnimation;
 //This is a successful pattern I have explored several years ago.
 @property (nonatomic, strong) EZQueryBlock queryBlock;
 
