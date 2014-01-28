@@ -11,6 +11,7 @@
 #import "DLCImagePickerController.h"
 #import "SlideAnimation.h"
 #import "EZRaiseAnimation.h"
+#import "EZModalRaiseAnimation.h"
 
 @class EZDisplayPhoto;
 @interface EZAlbumTablePage : UITableViewController<DLCImagePickerDelegate, UINavigationControllerDelegate, UIViewControllerTransitioningDelegate>
@@ -42,6 +43,8 @@
 
 @property (nonatomic, strong) SlideAnimation* slideAnimation;
 
+@property (nonatomic, strong) EZModalRaiseAnimation* cameraAnimation;
+
 @property (nonatomic, strong) EZRaiseAnimation* raiseAnimation;
 //This is a successful pattern I have explored several years ago.
 @property (nonatomic, strong) EZQueryBlock queryBlock;
@@ -52,9 +55,11 @@
 
 @property (nonatomic, strong) EZEventBlock cameraClicked;
 
+@property (nonatomic, strong) UIButton* moreButton;
+
 
 //Where do we begin
 //It used to save the memory consumption
-
+- (void) raiseCamera;
 
 @end

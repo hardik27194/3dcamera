@@ -114,6 +114,7 @@
     UIImageView* blackView;
     UIView* blackCover;
     CGSize orgFocusSize;
+    UIView* capturingBlack;
 }
 
 @synthesize delegate,
@@ -170,6 +171,7 @@
     _turnStatus = kSelfCaptured;
     _selfShot = true;
     [self captureImageInner:YES];
+    [self removeCaptureView];
 }
 
 //Will adjust the blur level
@@ -319,9 +321,9 @@
 {
     EZCycleTongFilter* resFilter = [[EZCycleTongFilter alloc] init];
     
-    [resFilter setRgbCompositeControlPoints:@[pointValue(0.0, 0.0), pointValue(0.125, 0.120), pointValue(0.25, 0.25), pointValue(0.5, 0.5368), pointValue(0.75, 0.7775), pointValue(1.0, 1.0)]];
-    [resFilter setRedControlPoints:@[pointValue(0.0, 0.0), pointValue(0.25, 0.26), pointValue(0.5, 0.5), pointValue(0.75, 0.75), pointValue(1.0, 0.99)]];
-    [resFilter setGreenControlPoints:@[pointValue(0.0, 0.0),pointValue(0.125, 0.135), pointValue(0.25, 0.25), pointValue(0.5, 0.5), pointValue(0.75, 0.75), pointValue(1.0, 0.995)]];
+    [resFilter setRgbCompositeControlPoints:@[pointValue(0.0, 0.0), pointValue(0.125, 0.125), pointValue(0.25, 0.255), pointValue(0.5, 0.5368), pointValue(0.75, 0.7725), pointValue(1.0, 1.0)]];
+    [resFilter setRedControlPoints:@[pointValue(0.0, 0.0), pointValue(0.25, 0.25), pointValue(0.5, 0.5), pointValue(0.75, 0.75), pointValue(1.0, 0.99)]];
+    [resFilter setGreenControlPoints:@[pointValue(0.0, 0.0),pointValue(0.125, 0.125), pointValue(0.25, 0.25), pointValue(0.5, 0.5), pointValue(0.75, 0.75), pointValue(1.0, 0.995)]];
     [resFilter setBlueControlPoints:@[pointValue(0.0, 0.0), pointValue(0.25, 0.25), pointValue(0.5, 0.5), pointValue(0.75, 0.75), pointValue(1.0, 1.0)]];
     return resFilter;
 }
@@ -376,7 +378,7 @@
 }
 
 -(void)viewDidLoad {
-    
+    [EZUIUtility sharedEZUIUtility].cameraRaised = true;
     [super viewDidLoad];
     
     //self.view.backgroundColor = [UIColor whiteColor];
@@ -518,7 +520,6 @@
         _prevMotion = md.currentMotion;
         return;
     }
-    
     CMAttitude* deltaMotion = [md.currentMotion copy];
     [deltaMotion multiplyByInverseOfAttitude:_prevMotion];
     _prevMotion = md.currentMotion;
@@ -534,7 +535,6 @@
     }
     CMAttitude* prevDelta = [_storedMotionDelta objectAtIndex:_storedMotionDelta.count - 2];
     if(deltaMotion.quaternion.y*prevDelta.quaternion.y >= 0){
-        //EZDEBUG(@"quit for prev delta:%f, current delta:%f", prevDelta.quaternion.y, deltaMotion.quaternion.y);
         return;
     }
     CGFloat totalDelta = [self getAllDifferentSign:_storedMotionDelta current:deltaMotion.quaternion.y limit:50];
@@ -545,38 +545,17 @@
         if(absDelta > 0.3){
             EZDEBUG(@"Will turn the camera, is front:%i", stillCamera.isFrontFacing);
             _turnStatus = kCameraNormal;
-            //[self clearMotionEffects:md attr:md.currentMotion];
-            /**
-             dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC));
-             dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-             EZDEBUG(@"Dormant is timeout");
-             if(_turnStatus == kCameraTurnDormant){
-             _turnStatus = kCameraNormal;
-             }
-             });
-             **/
-            //[md.storedMotion removeAllObjects];
-            //if(!stillCamera.isFrontFacing){
-            //[_pageTurn play];
-            //[self switchCameraInner];
             return;
         }
     }
     if(absDelta > 0.95){
         EZDEBUG(@"Will rotate for %f, _turnStatus:%i", absDelta, _turnStatus);
-        //[stillCamera rotateCamera];
-        
-        //[md.storedMotion removeAllObjects];
-        //[self clearMotionEffects:md attr:md.currentMotion];
-        //So we will just ignore the capturing?
-        //User expecting have another action
         if(_turnStatus == kCameraNormal && stillCamera.isFrontFacing){
-            EZDEBUG(@"I am in half turn now");
+            //EZDEBUG(@"I am in half turn now");
             //if(stillCamera.isFrontFacing){
             EZDEBUG(@"Will start capture now, isFront:%i", stillCamera.isFrontFacing);
             _turnStatus = kSelfShotDormant;
-            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC));
-            dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+            dispatch_later(0.5,  ^(void){
                 EZDEBUG(@"shot started:%i", _turnStatus);
                 if(_turnStatus == kSelfShotDormant){
                     _turnStatus = kCameraCapturing;
@@ -584,19 +563,36 @@
                     if(stillCamera.isFrontFacing){
                         [self switchCameraInner];
                     }
-                    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC));
-                    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-                        [_shotReady play];
-                    });
-                    
-                    [self performSelector:@selector(captureTurnedImage)
-                               withObject:nil
-                               afterDelay:3.0];
                 }
             });
         }
     }
    
+}
+
+- (void) addCaptureView
+{
+    if(!capturingBlack){
+        capturingBlack = [[UIView alloc] initWithFrame:imageView.bounds];
+        capturingBlack.backgroundColor = [UIColor blackColor];
+    }
+    [imageView addSubview:capturingBlack];
+}
+
+- (void) removeCaptureView
+{
+    [capturingBlack removeFromSuperview];
+}
+
+- (void) startTurnCapture
+{
+    [self addCaptureView];
+    dispatch_later(0.3, ^(){
+        [_shotReady play];
+    });
+    [self performSelector:@selector(captureTurnedImage)
+               withObject:nil
+               afterDelay:3.0];
 }
 
 - (void) startMobileMotion
@@ -630,10 +626,11 @@
     //[stillCamera startCameraCapture];
 }
 
-- (void) viewDidDisappear:(BOOL)animated
+- (void) viewWillDisappear:(BOOL)animated
 {
-    [super viewDidDisappear:animated];
+    [super viewWillDisappear:animated];
     [self becomeInvisible];
+    [EZUIUtility sharedEZUIUtility].cameraRaised = false;
 }
 
 
@@ -846,6 +843,10 @@
                 dispatch_main(^(){
                     [self focusCamera:poi frame:fixFrame expose:TRUE];
                     _detectingFace = false;
+                    if(_turnStatus == kCameraCapturing){
+                        _turnStatus = kFaceCaptured;
+                        [self startTurnCapture];
+                    }
                 });
             }else{
                 _detectingFace = false;
@@ -949,7 +950,7 @@
             fobj.orgRegion = CGRectMake(0.1, 0.1, 0.3, 0.3);
             blurCycle = 0.9;
         }
-        CGFloat adjustedFactor = 14.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
+        CGFloat adjustedFactor = 16.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
         finalBlendFilter.blurFilter.distanceNormalizationFactor = adjustedFactor;
         finalBlendFilter.blurFilter.blurSize = blurCycle;
         finalBlendFilter.imageMode = 2;
@@ -1108,6 +1109,8 @@
     //if(!stillCamera.isFrontFacing){
     //    _turnStatus = kSelfShot;
     //}
+    //_selfShot = false;
+    _turnStatus = kCameraNormal;
     [self switchCameraOnly];
 }
 
@@ -1631,9 +1634,9 @@
             [device setFocusPointOfInterest:pointOfInterest];
             [device setFocusMode:AVCaptureFocusModeContinuousAutoFocus];
             if(expose){
-                if([device isExposurePointOfInterestSupported] && [device isExposureModeSupported:AVCaptureExposureModeContinuousAutoExposure]) {
+                if([device isExposurePointOfInterestSupported] && [device isExposureModeSupported:AVCaptureExposureModeAutoExpose]) {
                     [device setExposurePointOfInterest:pointOfInterest];
-                    [device setExposureMode:AVCaptureExposureModeContinuousAutoExposure];
+                    [device setExposureMode:AVCaptureExposureModeAutoExpose];
                 }
             }
             [device unlockForConfiguration];
@@ -1788,11 +1791,6 @@
     //self.focusView = nil;
 }
 
-- (void)viewWillDisappear:(BOOL)animated {
-    //[stillCamera stopCameraCapture];
-    [super viewWillDisappear:animated];
-    
-}
 
 #pragma mark - UIImagePickerDelegate
 

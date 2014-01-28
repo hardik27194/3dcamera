@@ -26,6 +26,9 @@ typedef enum {
     kSelfShot,
     //Mean I am in the turned status
     kCameraCapturing,
+    
+    //When the face detected after turned the camera
+    kFaceCaptured,
     kSelfCaptured,
     kSelfCapturedAgain,
     //Only do the turn for the self captured.

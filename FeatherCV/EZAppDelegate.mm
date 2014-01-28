@@ -56,22 +56,8 @@
     //[self adjustViewsForOrientation:[[UIApplication sharedApplication] statusBarOrientation]];
     if(([UIDevice currentDevice].orientation ==  UIDeviceOrientationLandscapeLeft || [UIDevice currentDevice].orientation == UIDeviceOrientationLandscapeRight)){
         EZDEBUG(@"Will raise camera");
-        
-        //_cameraRaised = true;
-        /**
-        [[EZUIUtility sharedEZUIUtility] raiseCamera:NO controller:[self topViewController] completed:^(UIImage* image){
-            [[EZDataUtil getInstance] uploadPhoto:image success:^(EZCombinedPhoto* cp){
-                EZDEBUG(@"Upload photo success");
-                [[EZMessageCenter getInstance] postEvent:EZPhotoUploadSuccess attached:cp];
-            } failure:^(id error){
-                EZDEBUG("Upload photo failed");
-            }];
-            
-            EZDEBUG(@"Get photo image");
-        }];
-         **/
-        
-    }//EZDEBUG(@"Rotation is:%i", [UIDevice currentDevice].orientation);
+        [[EZMessageCenter getInstance] postEvent:EZTriggerCamera attached:nil];
+    }
     
 }
 
@@ -100,6 +86,8 @@
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(cameraIsReady:)
                                                  name:AVCaptureSessionDidStartRunningNotification object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self  selector:@selector(orientationChanged:)  name:UIDeviceOrientationDidChangeNotification  object:nil];
 }
 
 //Cool, I could have better effects now.

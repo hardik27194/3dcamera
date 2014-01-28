@@ -64,6 +64,20 @@ static int photoCount = 1;
     return  seperate;
 }
 
+- (IBAction) moreClicked:(id)sender
+{
+    EZDEBUG(@"More button clicked");
+    
+}
+
+- (void) createMoreButton
+{
+    _moreButton = [[UIButton alloc] initWithFrame:CGRectMake(110, 0, 100, 44)];
+    _moreButton.titleLabel.textAlignment = NSTextAlignmentCenter;
+    [_moreButton setTitle:@"更多" forState:UIControlStateNormal];
+    [_moreButton addTarget:self action:@selector(moreClicked:) forControlEvents:UIControlEventTouchUpInside];
+}
+
 - (UIView*) createMenuView:(NSArray*)menuNames
 {
     CGFloat itemHight = 40;
@@ -154,6 +168,21 @@ static int photoCount = 1;
 }
 
 
+- (void) raiseCamera
+{
+    if([EZUIUtility sharedEZUIUtility].cameraRaised){
+        return;
+    }
+    DLCImagePickerController* controller = [[DLCImagePickerController alloc] init];
+    //controller.prefersStatusBarHidden = TRUE;
+    controller.transitioningDelegate = _cameraAnimation;
+    controller.delegate = self;
+    [self presentViewController:controller animated:TRUE completion:^(){
+        EZDEBUG(@"Presentation completed");
+    }];
+}
+
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -170,6 +199,7 @@ static int photoCount = 1;
     //[self.tableView addSubview:[EZTestSuites testResizeMasks]];
     _slideAnimation = [[SlideAnimation alloc] init];
     _raiseAnimation = [[EZRaiseAnimation alloc] init];
+    _cameraAnimation = [[EZModalRaiseAnimation alloc] init];
     EZDEBUG(@"Query block is:%i",(int)_queryBlock);
     /**
     _queryBlock(0, 100, ^(NSArray* arr){
@@ -195,6 +225,10 @@ static int photoCount = 1;
         [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
     }];
     
+    [[EZMessageCenter getInstance] registerEvent:EZTriggerCamera block:^(id obj){
+        [weakSelf raiseCamera];
+    }];
+    
     CGRect bound = [UIScreen mainScreen].bounds;
     CGFloat diameter = 70.0;
     EZClickView* clickButton = [[EZClickView alloc] initWithFrame:CGRectMake((320 - diameter)/2, bound.size.height - diameter - 20, diameter, diameter)];
@@ -202,14 +236,8 @@ static int photoCount = 1;
     [self.view addSubview:clickButton];
     clickButton.backgroundColor = RGBACOLOR(255, 255, 255, 128);
     _cameraClicked = ^(id sender){
-        DLCImagePickerController* controller = [[DLCImagePickerController alloc] init];
-        //controller.prefersStatusBarHidden = TRUE;
-        controller.delegate = weakSelf;
-        [weakSelf presentViewController:controller animated:TRUE completion:^(){
-            EZDEBUG(@"Presentation completed");
-        }];
+        [weakSelf raiseCamera];
     };
-
     EZUIUtility.sharedEZUIUtility.cameraClickButton = clickButton;
     dispatch_main(^(){
         EZDEBUG(@"The mainWindow:%i, topView:%i", (int)EZUIUtility.sharedEZUIUtility.mainWindow,(int)TopView);
