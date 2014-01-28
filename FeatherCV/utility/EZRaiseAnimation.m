@@ -16,8 +16,9 @@
     UIViewController *fromViewController = [transitionContext viewControllerForKey:UITransitionContextFromViewControllerKey];
     UIViewController *toViewController = [transitionContext viewControllerForKey:UITransitionContextToViewControllerKey];
     
+    EZDEBUG(@"from:%i, to:%i", (int)fromViewController.view, (int)toViewController.view);
     //Insert 'to' view into the hierarchy
-    [containerView addSubview:toViewController.view];
+    
     
     //90 degree transform away from the user
     CGFloat finalY = fromViewController.view.frame.origin.y;
@@ -27,21 +28,27 @@
     if (self.type == AnimationTypePresent) {
         //[self setAnchorPoint:CGPointMake(1.0, 0.5) forView:toViewController.view];
         //[self setAnchorPoint:CGPointMake(0.0, 0.5) forView:fromViewController.view];
-        
+        [containerView addSubview:toViewController.view];
+        toViewController.view.y = beginY;
     } else if (self.type == AnimationTypeDismiss) {
         //[self setAnchorPoint:CGPointMake(0.0, 0.5) forView:toViewController.view];
         //[self setAnchorPoint:CGPointMake(1.0, 0.5) forView:fromViewController.view];
-        CGFloat tmpBegin = beginY;
-        beginY = finalY;
-        finalY = tmpBegin;
+        //CGFloat tmpBegin = beginY;
+        //beginY = finalY;
+        //finalY = tmpBegin;
+        [containerView insertSubview:toViewController.view belowSubview:fromViewController.view];
     }
-    toViewController.view.y = beginY;
+    //toViewController.view.y = beginY;
     
     //Animate the transition, applying transform to 'from' view and removing it from 'to' view
     [UIView animateWithDuration:[self transitionDuration:transitionContext] animations:^{
         //fromViewController.view.layer.transform = t;
         //toViewController.view.layer.transform = CATransform3DIdentity;
-        toViewController.view.y = finalY;
+        if(self.type == AnimationTypePresent){
+            toViewController.view.y = finalY;
+        }else{
+            fromViewController.view.y = beginY;
+        }
     } completion:^(BOOL finished) {
         //Reset z indexes (otherwise this will affect other transitions)
         //fromViewController.view.layer.zPosition = 0.0;

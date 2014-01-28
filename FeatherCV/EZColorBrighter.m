@@ -112,16 +112,7 @@ NSString *const kGPUImageMyColorFragmentShaderString = SHADER_STRING
          lowp float plusRed = sharpImageColor.b * redBlueRatio;
          fixRedColor.r = min(1.0, sharpImageColor.r + plusRed);
          fixRedColor.b = max(0.0, sharpImageColor.b - plusRed);
-         /**
-         lowp float blueVal = blueLimit * sharpImageColor.b;
-         lowp float minusGreen =  blue2Green * blueRatio;
-         blueVal = min(minusGreen, blueVal);
-         lowp float remindRed = minusGreen - blueVal;
-         fixRedColor.r = min(1.0, sharpImageColor.r + remindRed);
-         fixRedColor.b = min(1.0, sharpImageColor.b + blueVal);
-         fixRedColor.g = max(0.0, sharpImageColor.g - minusGreen);
-         **/
-     }
+    }
      gl_FragColor = fixRedColor;
  }
  );

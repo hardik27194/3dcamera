@@ -333,7 +333,7 @@
     res.redRatio = 0.25;
     
     res.blueEnhanceLevel = 0.6;
-    res.blueRatio = 0.4;
+    res.blueRatio = 0.2;
     return res;
 }
 
@@ -915,7 +915,7 @@
     _detectFace = false;
     
     CGFloat dark = [self getISOSpeedRating];
-    hueFilter.hue = 358.0;
+    hueFilter.hue = 353.0;
     //GPUImageFilter* firstFilter = nil;
     if(dark >= 400){
         //[tongFilter addTarget:darkBlurFilter];
@@ -934,9 +934,9 @@
     if(fobj || stillCamera.isFrontFacing){
         [hueFilter addTarget:finalBlendFilter];
         //[secFixColorFilter addTarget:finalBlendFilter];
-        [finalBlendFilter addTarget:fixColorFilter];
-        [fixColorFilter addTarget:secFixColorFilter];
-        [secFixColorFilter addTarget:redEnhanceFilter];
+        [finalBlendFilter addTarget:redEnhanceFilter];
+        //[fixColorFilter addTarget:secFixColorFilter];
+        //[secFixColorFilter addTarget:redEnhanceFilter];
         [redEnhanceFilter addTarget:filter];
         CGFloat blurCycle = 1.5;
         if(fobj){
@@ -980,9 +980,9 @@
             //weakButton.hidden = TRUE;
         };
     }else{
-        [hueFilter addTarget:fixColorFilter];
-        [fixColorFilter addTarget:secFixColorFilter];
-        [secFixColorFilter addTarget:redEnhanceFilter];
+        [hueFilter addTarget:redEnhanceFilter];
+        //[fixColorFilter addTarget:secFixColorFilter];
+        //[secFixColorFilter addTarget:redEnhanceFilter];
         [redEnhanceFilter addTarget:filter];
     }
     [filter addTarget:self.imageView];
@@ -1731,7 +1731,6 @@
                          self.filtersBackgroundImageView.frame = sliderScrollFrameBackground;
                      } 
                      completion:^(BOOL finished){
-                         
                          self.filtersToggleButton.enabled = YES;
                          self.filterScrollView.hidden = YES;
                          self.filtersBackgroundImageView.hidden = YES;
