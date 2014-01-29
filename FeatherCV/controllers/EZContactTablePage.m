@@ -12,6 +12,7 @@
 #import "EZClickView.h"
 #import "EZClickImage.h"
 #import "EZMessageCenter.h"
+#import "EZUIUtility.h"
 
 @interface EZContactTablePage ()
 
@@ -22,6 +23,7 @@
 - (void) loadView
 {
     self.view = [[UIView alloc] initWithFrame:CGRectZero];
+    self.view.userInteractionEnabled = TRUE;
     self.view.autoresizesSubviews = YES;
     self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
     self.tableView.dataSource = self;
@@ -31,17 +33,32 @@
     [self.view addSubview:self.tableView];
 }
 
-- (id)initWithStyle:(UITableViewStyle)style
+- (id)init
 {
     self = [super init];
     if (self) {
         // Custom initialization
+        self.view.backgroundColor = BlurBackground;
         self.title = @"朋友";
         [self.tableView registerClass:[EZContactTableCell class] forCellReuseIdentifier:@"Cell"];
         //_contacts = [[NSMutableArray alloc] init];
         _contacts = [EZDataUtil getInstance].contacts;
     }
     return self;
+}
+
+
+- (void) viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    //Pervent the camera from raising again
+    [EZUIUtility sharedEZUIUtility].stopRotationRaise = true;
+}
+
+- (void) viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    [EZUIUtility sharedEZUIUtility].stopRotationRaise = false;
 }
 
 - (void)viewDidLoad

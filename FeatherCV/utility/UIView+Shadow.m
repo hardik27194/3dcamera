@@ -17,6 +17,61 @@
 
 @implementation UIView (Shadow)
 
+- (UIImage*) advancedBlurCreation:(CGFloat)blurSize{
+	CGRect visibleRect = self.frame;
+	CGSize bufferSize = self.frame.size;
+	if (bufferSize.width == 0 || bufferSize.height == 0) {
+		return nil;
+	}
+	CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+	
+	CGContextRef effectInContext = CGBitmapContextCreate(NULL, bufferSize.width, bufferSize.height, 8, bufferSize.width * 8, colorSpace, kCGImageAlphaPremultipliedLast | kCGBitmapByteOrder32Big);
+	
+	CGContextRef effectOutContext = CGBitmapContextCreate(NULL, bufferSize.width, bufferSize.height, 8, bufferSize.width * 8, colorSpace, kCGImageAlphaPremultipliedLast | kCGBitmapByteOrder32Big);
+	
+	CGColorSpaceRelease(colorSpace);
+	
+	CGContextConcatCTM(effectInContext, (CGAffineTransform){
+		1, 0, 0, -1, 0, bufferSize.height
+	});
+	CGContextScaleCTM(effectInContext, 1.0, 1.0);
+	CGContextTranslateCTM(effectInContext, -visibleRect.origin.x, -visibleRect.origin.y);
+	
+	
+	vImage_Buffer effectInBuffer = (vImage_Buffer){
+		.data = CGBitmapContextGetData(effectInContext),
+		.width = CGBitmapContextGetWidth(effectInContext),
+		.height = CGBitmapContextGetHeight(effectInContext),
+		.rowBytes = CGBitmapContextGetBytesPerRow(effectInContext)
+	};
+	
+	vImage_Buffer effectOutBuffer = (vImage_Buffer){
+		.data = CGBitmapContextGetData(effectOutContext),
+		.width = CGBitmapContextGetWidth(effectOutContext),
+		.height = CGBitmapContextGetHeight(effectOutContext),
+		.rowBytes = CGBitmapContextGetBytesPerRow(effectOutContext)
+	};
+    
+    [self.layer renderInContext:effectInContext];
+	//self.hidden = NO;
+    uint32_t radius = (uint32_t)floor(blurSize * 3. * sqrt(2 * M_PI) / 4 + 0.5);
+	radius += (radius + 1) % 2;
+	uint32_t blurKernel = radius;
+	
+	vImageBoxConvolve_ARGB8888(&effectInBuffer, &effectOutBuffer, NULL, 0, 0, blurKernel, blurKernel, 0, kvImageEdgeExtend);
+	vImageBoxConvolve_ARGB8888(&effectOutBuffer, &effectInBuffer, NULL, 0, 0, blurKernel, blurKernel, 0, kvImageEdgeExtend);
+	vImageBoxConvolve_ARGB8888(&effectInBuffer, &effectOutBuffer, NULL, 0, 0, blurKernel, blurKernel, 0, kvImageEdgeExtend);
+	
+	CGImageRef outImage = CGBitmapContextCreateImage(effectOutContext);
+	//self.layer.contents = (__bridge id)(outImage);
+	//CGImageRelease(outImage);
+    UIImage* res = [[UIImage alloc] initWithCGImage:outImage];
+    CGImageRelease(outImage);
+	CGContextRelease(effectInContext);
+	CGContextRelease(effectOutContext);
+    return res;
+}
+
 - (UIImageView*) loadBorder:(NSString*)imageFile tag:(NSInteger)tag;
 {
     UIImageView* bottomImage = [[UIImageView alloc] initWithFrame:self.bounds];
@@ -115,10 +170,15 @@
     return [[self contentAsImage] applyBlurWithRadius:18.0 tintColor:RGBA(240, 240, 240, 100) saturationDeltaFactor:0.5 maskImage:nil];
 }
 
+- (UIImage*) createBlurImage:(CGFloat)blurSize tintColor:(UIColor*)tintColor
+{
+    return [[self contentAsImage] applyBlurWithRadius:blurSize tintColor:tintColor saturationDeltaFactor:0.5 maskImage:nil];
+}
+
 - (UIImageView*) createBlurImageView
 {
     UIImageView* blurredView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
-    blurredView.image = [self createBlurImage];
+    blurredView.image = [self advancedBlurCreation:20.0];
     return  blurredView;
 }
 

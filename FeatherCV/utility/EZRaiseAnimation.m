@@ -54,7 +54,7 @@
         //toViewController.view.layer.transform = CATransform3DIdentity;
         if(self.type == AnimationTypePresent){
             toViewController.view.y = finalY;
-            blurredView.y = 0;
+            blurredView.y = 64;
         }else{
             fromViewController.view.y = beginY;
             blurredView.y = - fromViewController.view.frame.size.height;

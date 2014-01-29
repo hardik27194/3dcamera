@@ -105,9 +105,13 @@ static int photoCount = 1;
 - (UIView*) createMenuView:(NSArray*)menuNames
 {
     CGFloat itemHight = 40;
-    UIView* res = [[UIView alloc] initWithFrame:CGRectMake(110, 60, 100, itemHight * menuNames.count)];
+    LFGlassView* res = [[LFGlassView alloc] initWithFrame:CGRectMake(110, 60, 100, itemHight * menuNames.count)];
+    res.userInteractionEnabled = true;
+    //res.backgroundColor = RGBA(230, 230, 230, 100);
+    res.backgroundColor = BlurBackground;
     res.clipsToBounds = YES;
-    res.backgroundColor = RGBA(255, 100, 100, 128);
+    res.layer.cornerRadius = 5;
+    res.backgroundColor = [UIColor whiteColor];//RGBA(255, 100, 100, 128);
     for(int i = 0; i < menuNames.count; i ++){
         NSDictionary* menuItem = [menuNames objectAtIndex:i];
         EZClickView* clickView = [[EZClickView alloc] initWithFrame:CGRectMake(0, 40*i, 100, 40)];
@@ -118,7 +122,8 @@ static int photoCount = 1;
         title.font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
         title.textAlignment = NSTextAlignmentCenter;
         [clickView addSubview:title];
-        clickView.releasedBlock = [menuItem objectForKey:@"block"];
+        EZEventBlock clickedBlock = [menuItem objectForKey:@"block"];
+        clickView.releasedBlock = clickedBlock;
         [res addSubview:clickView];
     }
     return res;
@@ -127,12 +132,17 @@ static int photoCount = 1;
 
 - (void) showMenu:(id)sender
 {
+    int tag = 20140129;
     if(!_menuView){
         _menuView = [self createMenuView:EZUIUtility.sharedEZUIUtility.showMenuItems];
+        //_menuView.clipsToBounds = true;
         _menuHeight = _menuView.frame.size.height;
         [TopView addSubview:_menuView];
         _menuView.height = 0;
+  
     }
+
+    
     if(_menuView.height > 10){
         [UIView animateWithDuration:0.4 delay:0.0 usingSpringWithDamping:0.8 initialSpringVelocity:1.0 options:UIViewAnimationOptionCurveEaseOut animations:^(){
                 _menuView.height = 0;
@@ -196,7 +206,7 @@ static int photoCount = 1;
 
 - (void) raiseCamera
 {
-    if([EZUIUtility sharedEZUIUtility].cameraRaised){
+    if([EZUIUtility sharedEZUIUtility].cameraRaised || [EZUIUtility sharedEZUIUtility].stopRotationRaise){
         return;
     }
     DLCImagePickerController* controller = [[DLCImagePickerController alloc] init];
@@ -215,7 +225,7 @@ static int photoCount = 1;
     
     //self.navigationItem.rightBarButtonItem = [[UINavigationItem alloc] initWithTitle:@""];
     
-    self.navigationItem.leftBarButtonItem  = [[UIBarButtonItem alloc] initWithTitle:@"更多" style:UIBarButtonItemStylePlain target:self action:@selector(showMenu:)];
+    //self.navigationItem.leftBarButtonItem  = [[UIBarButtonItem alloc] initWithTitle:@"更多" style:UIBarButtonItemStylePlain target:self action:@selector(showMenu:)];
     _combinedPhotos = [[NSMutableArray alloc] init];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     //self.tableView.backgroundColor = RGBCOLOR(230, 231, 226);

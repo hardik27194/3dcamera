@@ -128,13 +128,25 @@
     @{@"text":@"最近的",
     @"block":^(id obj){
         //EZDEBUG(@"Switch to recent");
-        UIImageView* blurView = [[UIImageView alloc] initWithFrame:albumPage.view.frame];
+        //UIImageView* blurView = [[UIImageView alloc] initWithFrame:albumPage.view.frame];
         //blurView.image = [[albumPage.view contentAsImage] applyBlurWithRadius:18.0 tintColor:RGBA(220, 220, 220, 100) saturationDeltaFactor:0.5 maskImage:nil];
-        blurView.image = [[albumPage.view contentAsImage] createCIBlurImage:20.0];
+        //blurView.image = [[albumPage.view contentAsImage] createCIBlurImage:20.0];
         //blurView.backgroundColor = [UIColor redColor];
+        [LFDisplayBridge sharedInstance].pauseProcess = ![LFDisplayBridge sharedInstance].pauseProcess;
+        EZDEBUG(@"Current value:%i", [LFDisplayBridge sharedInstance].pauseProcess);
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            LFGlassView* lglass = [[LFGlassView alloc] initWithFrame:CGRectMake(20, 200, 150, 150)];
+            lglass.blurRadius = 5.0;
+            lglass.backgroundColor = RGBA(100, 100, 100, 100);
+            [TopView addSubview:lglass];
+        });
         
-        EZDEBUG(@"image size:%@, frame:%@, view:%@", NSStringFromCGSize(blurView.image.size), NSStringFromCGRect(albumPage.view.frame), NSStringFromCGRect(albumPage.view.frame));
-        [TopView addSubview:blurView];
+        //[albumPage.view insertSubview:lglass atIndex:0];
+        //
+        
+        //EZDEBUG(@"image size:%@, frame:%@, view:%@", NSStringFromCGSize(blurView.image.size), NSStringFromCGRect(albumPage.view.frame), NSStringFromCGRect(albumPage.view.frame));
+        //[TopView addSubview:blurView];
     }
     }]];
     EZDEBUG(@"Translucent is:%i, bar style default:%i", mainNav.navigationBar.translucent, mainNav.navigationBar.barStyle);
@@ -179,7 +191,7 @@
     //UIImage *gradientImage44 = [UIImage imageWithColor:RGBA(0, 0, 0, 128)]; //replace "nil" with your method to programmatically create a UIImage object with transparent colors for portrait orientation
     //UIImage *gradientImage32 = [UIImage imageWithColor:RGBA(0, 0, 0, 128)]; //replace "nil" with your method to programmatically create a UIImage object with transparent colors for landscape orientation
     //mainNav.navigationBar.hidden = true;
-    
+    //[[UINavigationBar appearance]]
     //customize the appearance of UINavigationBar
     //[[UINavigationBar appearance] setBackgroundImage:gradientImage44 forBarMetrics:UIBarMetricsDefault];
     //[[UINavigationBar appearance] setBackgroundImage:gradientImage32 forBarMetrics:UIBarMetricsLandscapePhone];

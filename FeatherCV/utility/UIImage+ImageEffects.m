@@ -143,6 +143,13 @@
     return [self applyBlurWithRadius:10 tintColor:effectColor saturationDeltaFactor:-1.0 maskImage:nil];
 }
 
+//I assumed this image
++ (UIImage*) createBlurredScreenImage:(CGRect)rect
+{
+   UIImage* img = [[[UIScreen mainScreen] snapshotViewAfterScreenUpdates:NO] createBlurImage];
+   return [img croppedImageWithRect:rect];
+}
+
 
 - (UIImage*) createCIBlurImage:(CGFloat)blurSize
 {

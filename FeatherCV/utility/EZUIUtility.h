@@ -19,6 +19,7 @@
 
 @property (nonatomic, assign) BOOL cameraRaised;
 
+@property (nonatomic, assign) BOOL stopRotationRaise;
 
 //The trigger by slide will affect whether I will use the turning functionality or not.
 @property (nonatomic, assign) BOOL triggerBySlide;

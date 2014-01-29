@@ -27,4 +27,5 @@
     #import "UIImage+ResizeMagick.h"
     #import "UIView+Shadow.h"
 #import "UIImage+ImageEffects.h"
+#import "LiveFrost.h"
 #endif

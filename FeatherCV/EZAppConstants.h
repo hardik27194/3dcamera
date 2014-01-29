@@ -13,6 +13,7 @@
 //Will hold the Application related constants.
 #define ContainerWidth 300.0
 
+#define BlurBackground RGBA(240, 240, 240, 128)
 //Interesting.
 #define turningMockPageTag 20070424
 

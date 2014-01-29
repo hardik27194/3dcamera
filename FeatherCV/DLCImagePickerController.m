@@ -332,7 +332,7 @@
 {
     EZColorBrighter* res = [[EZColorBrighter alloc] init];
     res.redEnhanceLevel = 0.85;
-    res.redRatio = 0.20;
+    res.redRatio = 0.15;
     
     res.blueEnhanceLevel = 0.6;
     res.blueRatio = 0.2;

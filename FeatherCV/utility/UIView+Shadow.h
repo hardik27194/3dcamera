@@ -43,6 +43,8 @@ typedef enum {
 
 - (UIImage*) createBlurImage;
 
+- (UIImage*) createBlurImage:(CGFloat)blurSize tintColor:(UIColor*)tintColor;
+
 - (UIImageView*) createBlurImageView;
 
 @end

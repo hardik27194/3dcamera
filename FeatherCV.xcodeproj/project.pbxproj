@@ -28,6 +28,8 @@
 		1866ADB11897698900DB46E2 /* EZRaiseAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = 1866ADB01897698900DB46E2 /* EZRaiseAnimation.m */; };
 		1866ADB418979C7400DB46E2 /* EZModalRaiseAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = 1866ADB318979C7400DB46E2 /* EZModalRaiseAnimation.m */; };
 		1866ADB71897F3D200DB46E2 /* UIImage+ImageEffects.m in Sources */ = {isa = PBXBuildFile; fileRef = 1866ADB61897F3D200DB46E2 /* UIImage+ImageEffects.m */; };
+		1866ADC61898F0DB00DB46E2 /* LFDisplayBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 1866ADC21898F0DB00DB46E2 /* LFDisplayBridge.m */; };
+		1866ADC71898F0DB00DB46E2 /* LFGlassView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1866ADC41898F0DB00DB46E2 /* LFGlassView.m */; };
 		1874D9D71867F57E005743FC /* EZSaturationFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 1874D9D61867F57E005743FC /* EZSaturationFilter.m */; };
 		1874D9DD18699386005743FC /* header_2.png in Resources */ = {isa = PBXBuildFile; fileRef = 1874D9DB18699385005743FC /* header_2.png */; };
 		1874D9DE18699386005743FC /* header_1.png in Resources */ = {isa = PBXBuildFile; fileRef = 1874D9DC18699386005743FC /* header_1.png */; };
@@ -318,6 +320,11 @@
 		1866ADB318979C7400DB46E2 /* EZModalRaiseAnimation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZModalRaiseAnimation.m; sourceTree = "<group>"; };
 		1866ADB51897F3D200DB46E2 /* UIImage+ImageEffects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+ImageEffects.h"; sourceTree = "<group>"; };
 		1866ADB61897F3D200DB46E2 /* UIImage+ImageEffects.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+ImageEffects.m"; sourceTree = "<group>"; };
+		1866ADC11898F0DB00DB46E2 /* LFDisplayBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LFDisplayBridge.h; sourceTree = "<group>"; };
+		1866ADC21898F0DB00DB46E2 /* LFDisplayBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LFDisplayBridge.m; sourceTree = "<group>"; };
+		1866ADC31898F0DB00DB46E2 /* LFGlassView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LFGlassView.h; sourceTree = "<group>"; };
+		1866ADC41898F0DB00DB46E2 /* LFGlassView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LFGlassView.m; sourceTree = "<group>"; };
+		1866ADC51898F0DB00DB46E2 /* LiveFrost.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LiveFrost.h; sourceTree = "<group>"; };
 		1874D9D51867F57E005743FC /* EZSaturationFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZSaturationFilter.h; sourceTree = "<group>"; };
 		1874D9D61867F57E005743FC /* EZSaturationFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZSaturationFilter.m; sourceTree = "<group>"; };
 		1874D9DB18699385005743FC /* header_2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = header_2.png; sourceTree = "<group>"; };
@@ -698,6 +705,18 @@
 			name = animation;
 			sourceTree = "<group>";
 		};
+		1866ADC01898F08500DB46E2 /* liveblur */ = {
+			isa = PBXGroup;
+			children = (
+				1866ADC11898F0DB00DB46E2 /* LFDisplayBridge.h */,
+				1866ADC21898F0DB00DB46E2 /* LFDisplayBridge.m */,
+				1866ADC31898F0DB00DB46E2 /* LFGlassView.h */,
+				1866ADC41898F0DB00DB46E2 /* LFGlassView.m */,
+				1866ADC51898F0DB00DB46E2 /* LiveFrost.h */,
+			);
+			name = liveblur;
+			sourceTree = "<group>";
+		};
 		1874D9DF1869969C005743FC /* santa */ = {
 			isa = PBXGroup;
 			children = (
@@ -974,6 +993,7 @@
 		18E346D5183DF91500C9D89D /* utility */ = {
 			isa = PBXGroup;
 			children = (
+				1866ADC01898F08500DB46E2 /* liveblur */,
 				1866ADB51897F3D200DB46E2 /* UIImage+ImageEffects.h */,
 				1866ADB61897F3D200DB46E2 /* UIImage+ImageEffects.m */,
 				1866AD9F18966E5200DB46E2 /* animation */,
@@ -1452,6 +1472,7 @@
 				18E347D7183E050B00C9D89D /* ASIInputStream.m in Sources */,
 				18E34747183DFA7300C9D89D /* EZPhoto.m in Sources */,
 				18E3474B183DFA7300C9D89D /* EZLikeSatus.m in Sources */,
+				1866ADC61898F0DB00DB46E2 /* LFDisplayBridge.m in Sources */,
 				1866ADAE18966E7000DB46E2 /* ScaleAnimation.m in Sources */,
 				18F58B5A18716C19006CB966 /* EZGradientLayerView.m in Sources */,
 				1866ADAB18966E7000DB46E2 /* ModalAnimation.m in Sources */,
@@ -1489,6 +1510,7 @@
 				181904031885406A001FC370 /* EZBlackAndCropFilter.m in Sources */,
 				1866ADAC18966E7000DB46E2 /* SlideAnimation.m in Sources */,
 				18E34729183DFA3300C9D89D /* EZBaseCollectionPage.m in Sources */,
+				1866ADC71898F0DB00DB46E2 /* LFGlassView.m in Sources */,
 				18E34724183DFA3300C9D89D /* EZAlbumTablePage.m in Sources */,
 				1866ADAA18966E7000DB46E2 /* BaseAnimation.m in Sources */,
 				181903FA1881654D001FC370 /* EZFourInputFilter.m in Sources */,
