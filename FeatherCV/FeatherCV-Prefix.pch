@@ -26,4 +26,5 @@
     #import "EZUIUtility.h"
     #import "UIImage+ResizeMagick.h"
     #import "UIView+Shadow.h"
+#import "UIImage+ImageEffects.h"
 #endif

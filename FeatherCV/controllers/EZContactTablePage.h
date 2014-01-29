@@ -8,10 +8,12 @@
 
 #import <UIKit/UIKit.h>
 
-@interface EZContactTablePage : UITableViewController
+@interface EZContactTablePage : UIViewController<UITableViewDataSource, UITableViewDelegate>
 
 
 @property (nonatomic, strong) NSMutableArray* contacts;
+
+@property (nonatomic, strong) UITableView* tableView;
 
 //Will be called to load all the contacts from the directory.
 - (void) reloadPersons;

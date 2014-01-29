@@ -41,4 +41,8 @@ typedef enum {
 
 - (UIView*) getShadowView;
 
+- (UIImage*) createBlurImage;
+
+- (UIImageView*) createBlurImageView;
+
 @end

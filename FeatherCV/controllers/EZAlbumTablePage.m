@@ -32,8 +32,9 @@ static int photoCount = 1;
 -(id)initWithQueryBlock:(EZQueryBlock)queryBlock
 {
     self = [super initWithStyle:UITableViewStylePlain];
-    self.title = @"羽毛";
+    self.title = @"";
     _queryBlock = queryBlock;
+    [self createMoreButton];
     [self.tableView registerClass:[EZPhotoCell class] forCellReuseIdentifier:@"PhotoCell"];
     return self;
 }
@@ -74,14 +75,37 @@ static int photoCount = 1;
 {
     _moreButton = [[UIButton alloc] initWithFrame:CGRectMake(110, 0, 100, 44)];
     _moreButton.titleLabel.textAlignment = NSTextAlignmentCenter;
+    //_moreButton.titleLabel.textColor = RGBCOLOR(48, 48, 48);
     [_moreButton setTitle:@"更多" forState:UIControlStateNormal];
-    [_moreButton addTarget:self action:@selector(moreClicked:) forControlEvents:UIControlEventTouchUpInside];
+    _moreButton.titleLabel.font = [UIFont boldSystemFontOfSize:15];
+    [_moreButton setTitleColor:RGBCOLOR(48, 48, 48) forState:UIControlStateNormal];
+    [_moreButton addTarget:self action:@selector(showMenu:) forControlEvents:UIControlEventTouchUpInside];
+    
 }
+
+//This method may not get called
+- (void) viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    _moreButton.alpha = 0.0;
+    [self.navigationController.navigationBar addSubview:_moreButton];
+    [UIView animateWithDuration:0.3 animations:^(){
+        _moreButton.alpha = 1.0;
+    }];
+}
+
+- (void) viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    [_moreButton removeFromSuperview];
+    _menuView.height = 0;
+}
+
 
 - (UIView*) createMenuView:(NSArray*)menuNames
 {
     CGFloat itemHight = 40;
-    UIView* res = [[UIView alloc] initWithFrame:CGRectMake(5, 60, 100, itemHight * menuNames.count)];
+    UIView* res = [[UIView alloc] initWithFrame:CGRectMake(110, 60, 100, itemHight * menuNames.count)];
     res.clipsToBounds = YES;
     res.backgroundColor = RGBA(255, 100, 100, 128);
     for(int i = 0; i < menuNames.count; i ++){
@@ -110,13 +134,15 @@ static int photoCount = 1;
         _menuView.height = 0;
     }
     if(_menuView.height > 10){
-        [UIView animateWithDuration:0.3 animations:^(){
-            _menuView.height = 0;
-        }];
+        [UIView animateWithDuration:0.4 delay:0.0 usingSpringWithDamping:0.8 initialSpringVelocity:1.0 options:UIViewAnimationOptionCurveEaseOut animations:^(){
+                _menuView.height = 0;
+
+        } completion:nil];
     }else{
-        [UIView animateWithDuration:0.3 animations:^(){
+        [UIView animateWithDuration:0.4 delay:0.0 usingSpringWithDamping:0.8 initialSpringVelocity:1.0 options:UIViewAnimationOptionCurveEaseOut animations:^(){
             _menuView.height = _menuHeight;
-        }];
+        } completion:nil];
+
     }
 }
 
@@ -245,10 +271,6 @@ static int photoCount = 1;
     });
 }
 
-- (void) viewWillDisappear:(BOOL)animated
-{
-    _menuView.height = 0;
-}
 
 - (void) viewDidAppear:(BOOL)animated
 {
@@ -341,7 +363,7 @@ static int photoCount = 1;
     }else{
     if(cp.isFront){
         EZDEBUG(@"Will display front image");
-        [cell displayImage:[myPhoto getThumbnail]];
+        [cell displayImage:[myPhoto getScreenImage]];
         [cell adjustCellSize:myPhoto.size];
     }else{//Display the back
         UIImage* img = [UIImage imageNamed:cp.randImage];
@@ -370,7 +392,7 @@ static int photoCount = 1;
         };
         if(cp.isFront){
             //[weakCell displayImage:[myPhoto getLocalImage]];
-            [weakCell switchImage:[myPhoto getLocalImage] photo:cp complete:complete tableView:tableView index:indexPath];
+            [weakCell switchImage:[myPhoto getScreenImage] photo:cp complete:complete tableView:tableView index:indexPath];
         }else{
             EZDEBUG(@"The container size:%f, %f", weakCell.container.frame.size.width, weakCell.container.frame.size.height);
             if(!cp.randImage){

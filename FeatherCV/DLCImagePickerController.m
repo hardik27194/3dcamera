@@ -331,8 +331,8 @@
 - (EZColorBrighter*) createRedEnhanceFilter
 {
     EZColorBrighter* res = [[EZColorBrighter alloc] init];
-    res.redEnhanceLevel = 0.6;
-    res.redRatio = 0.25;
+    res.redEnhanceLevel = 0.85;
+    res.redRatio = 0.20;
     
     res.blueEnhanceLevel = 0.6;
     res.blueRatio = 0.2;
@@ -841,7 +841,7 @@
             EZDEBUG(@"Find face at:%@, frame:%@, disP:%f, adjustFocus:%i", NSStringFromCGRect(faceRegion), NSStringFromCGRect(fixFrame), distP, (distP>8));
             if(distP > 8){
                 dispatch_main(^(){
-                    [self focusCamera:poi frame:fixFrame expose:TRUE];
+                    [self focusCamera:poi frame:fixFrame expose:false];
                     _detectingFace = false;
                     if(_turnStatus == kCameraCapturing){
                         _turnStatus = kFaceCaptured;
@@ -933,12 +933,13 @@
     EZDEBUG(@"Prepare new static image get called, flash image:%i, image size:%@, dark:%f", _isImageWithFlash, NSStringFromCGSize(img.size), dark);
     //GPUImageFilter* imageFilter = secFixColorFilter;
     if(fobj || stillCamera.isFrontFacing){
-        [hueFilter addTarget:finalBlendFilter];
+        [hueFilter addTarget:redEnhanceFilter];
+        [redEnhanceFilter addTarget:finalBlendFilter];
         //[secFixColorFilter addTarget:finalBlendFilter];
-        [finalBlendFilter addTarget:redEnhanceFilter];
+        [finalBlendFilter addTarget:filter];
         //[fixColorFilter addTarget:secFixColorFilter];
         //[secFixColorFilter addTarget:redEnhanceFilter];
-        [redEnhanceFilter addTarget:filter];
+        //[redEnhanceFilter addTarget:filter];
         CGFloat blurCycle = 1.5;
         if(fobj){
             blurCycle = 3.25 * fobj.orgRegion.size.width;
@@ -1627,16 +1628,27 @@
 
 - (void) focusCamera:(CGPoint)pointOfInterest frame:(CGRect)focusFrame expose:(BOOL)expose
 {
+    
     AVCaptureDevice *device = stillCamera.inputCamera;
+    EZDEBUG(@"Exposure mode:%i", [device isExposureModeSupported:AVCaptureExposureModeAutoExpose]);
     if ([device isFocusPointOfInterestSupported] && [device isFocusModeSupported:AVCaptureFocusModeAutoFocus]) {
         NSError *error;
         if ([device lockForConfiguration:&error]) {
             [device setFocusPointOfInterest:pointOfInterest];
             [device setFocusMode:AVCaptureFocusModeContinuousAutoFocus];
             if(expose){
-                if([device isExposurePointOfInterestSupported] && [device isExposureModeSupported:AVCaptureExposureModeAutoExpose]) {
+                if([device isExposurePointOfInterestSupported] && [device isExposureModeSupported:AVCaptureExposureModeContinuousAutoExposure]) {
+                    EZDEBUG(@"Expose clicked");
                     [device setExposurePointOfInterest:pointOfInterest];
-                    [device setExposureMode:AVCaptureExposureModeAutoExpose];
+                    [device setExposureMode:AVCaptureExposureModeContinuousAutoExposure];
+                    //[device setExposureMode:AVCaptureExposureModeAutoExpose];
+                    //
+                    dispatch_later(0.2, ^(){
+                        NSError *err;
+                        if ([device lockForConfiguration:&err]) {
+                            [device setExposureMode:AVCaptureExposureModeLocked];
+                        }
+                    });
                 }
             }
             [device unlockForConfiguration];

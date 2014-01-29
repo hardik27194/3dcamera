@@ -110,6 +110,18 @@
     [[self viewWithTag:kShadowViewTag] setSize:size];
 }
 
+- (UIImage*) createBlurImage
+{
+    return [[self contentAsImage] applyBlurWithRadius:18.0 tintColor:RGBA(240, 240, 240, 100) saturationDeltaFactor:0.5 maskImage:nil];
+}
+
+- (UIImageView*) createBlurImageView
+{
+    UIImageView* blurredView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
+    blurredView.image = [self createBlurImage];
+    return  blurredView;
+}
+
 - (UIView*) getShadowView
 {
     return [self viewWithTag:kShadowViewTag];

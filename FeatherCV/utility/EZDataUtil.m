@@ -489,6 +489,7 @@
         __block int groupCount = 1;
         __block int groupPos = 0;
         __block int photoCount = 0;
+        //__block NSMutableArray* loadedPhotos = [[NSMutableArray alloc] init];
         // emumerate through our groups and only add groups that contain photos
         ALAssetsLibraryGroupsEnumerationResultsBlock listGroupBlock = ^(ALAssetsGroup *group, BOOL *stop) {
             

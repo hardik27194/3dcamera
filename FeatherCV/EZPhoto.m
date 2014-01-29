@@ -18,8 +18,22 @@
     return [[UIImage alloc] initWithCGImage:[_asset aspectRatioThumbnail]];
 }
 
-//Even for thumbnail, we also have the memory issue with it. We need to get it done.
-- (UIImage*) getLocalImage
+
+- (UIImage*) getOriginalImage
+{
+    ALAssetRepresentation *assetRepresentation = [_asset defaultRepresentation];
+    
+    UIImage *fullScreenImage = [UIImage imageWithCGImage:[assetRepresentation fullResolutionImage]
+                                                   scale:[assetRepresentation scale]
+                                             orientation:UIImageOrientationUp];
+    
+    ALAssetOrientation orientation = (ALAssetOrientation)[[_asset valueForProperty:ALAssetPropertyOrientation] integerValue];
+    EZDEBUG(@"photo orientation:%i", orientation);
+    return fullScreenImage;
+
+}
+
+- (UIImage*) getScreenImage
 {
     ALAssetRepresentation *assetRepresentation = [_asset defaultRepresentation];
     
@@ -30,12 +44,13 @@
     ALAssetOrientation orientation = (ALAssetOrientation)[[_asset valueForProperty:ALAssetPropertyOrientation] integerValue];
     EZDEBUG(@"photo orientation:%i", orientation);
     return fullScreenImage;
+
 }
 
 - (void) getAsyncImage:(EZEventBlock)block
 {
     [[EZThreadUtility getInstance] executeBlockInQueue:^(){
-        UIImage* img = [self getLocalImage];
+        UIImage* img = [self getScreenImage];
         dispatch_async(dispatch_get_main_queue(), ^(){
             block(img);
         });

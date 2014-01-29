@@ -29,6 +29,8 @@
         _headIcon = [[EZClickImage alloc] initWithFrame:CGRectMake(265, (cellHeight - 40)/2, 40, 40)];
         [_headIcon enableRoundImage];
         [self.contentView addSubview:_headIcon];
+        self.backgroundColor =[UIColor clearColor];
+        self.contentView.backgroundColor = [UIColor clearColor];
     }
     return self;
 }

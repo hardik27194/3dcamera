@@ -15,7 +15,7 @@
     UIView *containerView = [transitionContext containerView];
     UIViewController *fromViewController = [transitionContext viewControllerForKey:UITransitionContextFromViewControllerKey];
     UIViewController *toViewController = [transitionContext viewControllerForKey:UITransitionContextToViewControllerKey];
-    
+    int blurViewTag = 19770611;
     EZDEBUG(@"from:%i, to:%i", (int)fromViewController.view, (int)toViewController.view);
     //Insert 'to' view into the hierarchy
     
@@ -25,9 +25,16 @@
     CGFloat beginY = fromViewController.view.frame.origin.y + fromViewController.view.frame.size.height;
     
     //Set anchor points for the views
+    UIImageView* blurredView = nil;
     if (self.type == AnimationTypePresent) {
+        blurredView = [fromViewController.view createBlurImageView];
+        
         //[self setAnchorPoint:CGPointMake(1.0, 0.5) forView:toViewController.view];
         //[self setAnchorPoint:CGPointMake(0.0, 0.5) forView:fromViewController.view];
+        blurredView.tag = blurViewTag;
+        [toViewController.view insertSubview:blurredView atIndex:0];
+        blurredView.y = - blurredView.height;
+        toViewController.view.clipsToBounds = true;
         [containerView addSubview:toViewController.view];
         toViewController.view.y = beginY;
     } else if (self.type == AnimationTypeDismiss) {
@@ -36,6 +43,7 @@
         //CGFloat tmpBegin = beginY;
         //beginY = finalY;
         //finalY = tmpBegin;
+        blurredView = (UIImageView*)[fromViewController.view viewWithTag:blurViewTag];
         [containerView insertSubview:toViewController.view belowSubview:fromViewController.view];
     }
     //toViewController.view.y = beginY;
@@ -46,8 +54,10 @@
         //toViewController.view.layer.transform = CATransform3DIdentity;
         if(self.type == AnimationTypePresent){
             toViewController.view.y = finalY;
+            blurredView.y = 0;
         }else{
             fromViewController.view.y = beginY;
+            blurredView.y = - fromViewController.view.frame.size.height;
         }
     } completion:^(BOOL finished) {
         //Reset z indexes (otherwise this will affect other transitions)

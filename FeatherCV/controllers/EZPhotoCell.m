@@ -61,14 +61,14 @@
         _container = [[EZClickView alloc] initWithFrame:CGRectMake(10, 10, 300, 300 + ToolRegionHeight)];
         //_container.layer.cornerRadius = 5;
         //_container.clipsToBounds = true;
-        _container.backgroundColor = [UIColor greenColor];
+        //_container.backgroundColor = [UIColor greenColor];
         
         _rotateContainer = [self createRotateContainer:_container.bounds];
         [_container addSubview:_rotateContainer];
-        _rotateContainer.backgroundColor = [UIColor redColor];
+        //_rotateContainer.backgroundColor = [UIColor redColor];
         //[_container makeInsetShadowWithRadius:20 Color:RGBA(255, 255, 255, 128)];
         _frontImage = [self createFrontImage];
-        _frontImage.backgroundColor = RGBCOLOR(255, 255, 0);
+        //_frontImage.backgroundColor = RGBCOLOR(255, 255, 0);
         _toolRegion = [self createToolRegion:ToolRegionRect];
         _photoTalk = (UILabel*)[_toolRegion viewWithTag:MainLabelTag];
         [self.contentView addSubview:_container];
@@ -231,8 +231,9 @@
         _isTurning = true;
         UIView* destView = [self createDupContainer:img];
         destView.tag = animateCoverViewTag;
-        [_container addSubview:destView];
-            //_rotateContainer.hidden = TRUE;
+        [_container insertSubview:destView belowSubview:_rotateContainer];
+        
+        //_rotateContainer.hidden = TRUE;
         [UIView flipTransition:_rotateContainer dest:destView container:_container isLeft:YES duration:2 complete:^(id obj){
             if(blk){
                 blk(nil);

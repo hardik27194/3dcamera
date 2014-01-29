@@ -81,7 +81,9 @@
 //@property (nonatomic, assign) BOOL liked;
 //Fetch the asset image, which is huge, so only do this when we really need it
 //Even for thumbnail, we also have the memory issue with it. We need to get it done.
-- (UIImage*) getLocalImage;
+- (UIImage*) getOriginalImage;
+
+- (UIImage*) getScreenImage;
 
 - (UIImage*) getThumbnail;
 

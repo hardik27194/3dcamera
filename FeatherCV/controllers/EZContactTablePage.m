@@ -19,9 +19,21 @@
 
 @implementation EZContactTablePage
 
+- (void) loadView
+{
+    self.view = [[UIView alloc] initWithFrame:CGRectZero];
+    self.view.autoresizesSubviews = YES;
+    self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
+    self.tableView.dataSource = self;
+    self.tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
+    self.tableView.delegate = self;
+    self.tableView.backgroundColor = [UIColor clearColor];
+    [self.view addSubview:self.tableView];
+}
+
 - (id)initWithStyle:(UITableViewStyle)style
 {
-    self = [super initWithStyle:style];
+    self = [super init];
     if (self) {
         // Custom initialization
         self.title = @"朋友";
@@ -55,7 +67,6 @@
 - (void) reloadPersons
 {
     [[EZDataUtil getInstance] getAllContacts:^(NSArray* persons){
-        
         [_contacts addObjectsFromArray:persons];
         EZDEBUG(@"Loaded person:%i, exist persons:%i", persons.count, _contacts.count);
         [self.tableView reloadData];

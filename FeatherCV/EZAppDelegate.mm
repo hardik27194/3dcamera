@@ -107,31 +107,20 @@
 - (UIViewController*) createScrollView
 {
     [self setupEvent];
-    
-    
-    //EZScrollContainer* scrollContainer = [[EZScrollContainer alloc] initWithNibName:Nil bundle:nil];
-    //UINavigationController* homeNavigationBar = [[UINavigationController alloc] initWithRootViewController:scrollContainer];
-    
     int currentPersonID = [[EZDataUtil getInstance] getCurrentPersonID];
     EZDEBUG(@"Current personID:%i", currentPersonID);
     EZQueryBlock qb = ^(NSInteger start, NSInteger limit, EZEventBlock success, EZEventBlock failure){
         [[EZDataUtil getInstance] loadAlbumPhoto:start limit:limit success:success failure:failure];
     };
-    //EZAlbumCollectionPage* albumPage = [EZAlbumCollectionPage createGridAlbumPage:true ownID:currentPerson queryBlock:qb];
    
     EZAlbumTablePage* albumPage = [[EZAlbumTablePage alloc] initWithQueryBlock:qb];
-    //UIViewController* dummyPage = [[UIViewController alloc] init];
-    
-    //albumPage.queryBlock = qb;
     UINavigationController* mainNav = [[UINavigationController alloc] initWithRootViewController:albumPage];
     EZDEBUG(@"original status bar style:%i, navigationBar style:%i, %@", [UIApplication sharedApplication].statusBarStyle, mainNav.navigationBar.barStyle, mainNav.navigationBar.barTintColor);
-    
-    
     EZUIUtility.sharedEZUIUtility.showMenuItems =[[NSMutableArray alloc] initWithArray:@[
     @{@"text":@"朋友",
     @"block":^(id obj){
         EZDEBUG(@"Friend get clicked");
-        EZContactTablePage* contactPage = [[EZContactTablePage alloc] initWithStyle:UITableViewStylePlain];
+        EZContactTablePage* contactPage = [[EZContactTablePage alloc] init];
         [mainNav pushViewController:contactPage animated:YES];
         
         
@@ -140,62 +129,17 @@
     @"block":^(id obj){
         //EZDEBUG(@"Switch to recent");
         UIImageView* blurView = [[UIImageView alloc] initWithFrame:albumPage.view.frame];
-        blurView.image = [[albumPage.view contentAsImage] createBlurImage:18.0];
+        //blurView.image = [[albumPage.view contentAsImage] applyBlurWithRadius:18.0 tintColor:RGBA(220, 220, 220, 100) saturationDeltaFactor:0.5 maskImage:nil];
+        blurView.image = [[albumPage.view contentAsImage] createCIBlurImage:20.0];
+        //blurView.backgroundColor = [UIColor redColor];
+        
         EZDEBUG(@"image size:%@, frame:%@, view:%@", NSStringFromCGSize(blurView.image.size), NSStringFromCGRect(albumPage.view.frame), NSStringFromCGRect(albumPage.view.frame));
         [TopView addSubview:blurView];
     }
     }]];
-
-    //mainNav.navigationBar.barTintColor = [UIColor whiteColor];
-    
-    //[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleBlackTranslucent];
-    
-    // = true;
-    //mainNav.navigationBar.alpha = 0.5;
-    //mainNav.navigationBar.barStyle = UIBarStyleBlack;
     EZDEBUG(@"Translucent is:%i, bar style default:%i", mainNav.navigationBar.translucent, mainNav.navigationBar.barStyle);
-    //UIImage *gradientImage44 = [UIImage imageWithColor:RGBA(0, 0, 0, 128)]; //replace "nil" with your method to programmatically create a UIImage object with transparent colors for portrait orientation
-    //UIImage *gradientImage32 = [UIImage imageWithColor:RGBA(0, 0, 0, 128)]; //replace "nil" with your method to programmatically create a UIImage object with transparent colors for landscape orientation
-    //mainNav.navigationBar.hidden = true;
-    
-    //customize the appearance of UINavigationBar
-    //[[UINavigationBar appearance] setBackgroundImage:gradientImage44 forBarMetrics:UIBarMetricsDefault];
-    //[[UINavigationBar appearance] setBackgroundImage:gradientImage32 forBarMetrics:UIBarMetricsLandscapePhone];
-    //[[UINavigationBar appearance] setBarStyle:UIBarStyleBlack];
-
-    ///mainNav.navigationBar.barTintColor = [UIColor clearColor];
-    
-    UIViewController* v3 = [[UIViewController alloc] init];
-    //v3.view.backgroundColor = [UIColor redColor];
-    
-    EZStyleImage* coverImage = [EZStyleImage createBlurredImage:CGRectMake(0, 69, 320, 428)];
-    //Will use the white image as cover
-    //[coverImage setImage:[UIImage imageNamed:@"img01.jpg"]];
-    //cv::Mat mat = [EZImageConverter cvMatFromUIImage:[UIImage imageNamed:@"img01.jpg"]];
-    //EZDEBUG(@"The image row:%i, col:%i", mat.rows, mat.cols);
-    [v3.view addSubview:coverImage];
-    
-    [[EZMessageCenter getInstance] registerEvent:EZCoverImageChange block:^(UIImage* img){
-        [coverImage setImage:img];
-    }];
-    
-    //When will this get called?
-    //When the orientation changed. Let's try to get the camera
-    /**
-    [[EZMessageCenter getInstance] registerEvent:EZTriggerCamera block:^(id obj){
-        [scrollContainer setIndex:2 animated:NO slide:NO];
-    }];
-    **/
-    //UIImagePickerController* picker = [[EZUIUtility sharedEZUIUtility] getCamera:NO completed:^(UIImage* img){
-    //    EZDEBUG(@"Picked an image");
-    //}];
-    //[scrollContainer addViewController:v1];
-    //[scrollContainer addViewController:v2];
-    //[scrollContainer addViewController:v3];
-    //EZDEBUG(@"view pointer:%i", (int)scrollContainer.view);
-    //[scrollContainer addChildren:@[contactPage, mainNav, v3]];
-    //scrollContainer.currentIndex = 1;
-    
+  
+ 
     [[EZMessageCenter getInstance] registerEvent:EZCameraCompleted block:^(UIImage* img){
         EZDEBUG(@"I will slide the image back");
         //[scrollContainer setIndex:1 animated:YES slide:YES];
@@ -218,20 +162,8 @@
         }
     }];
     
-    [[EZMessageCenter getInstance] registerEvent:EZScreenSlide block:^(NSNumber* index){
-        EZDEBUG(@"Will switch to:%i", index.intValue);
-        //[scrollContainer setIndex:index.intValue animated:YES slide:YES];
-    }];
     
-    EZDEBUG(@"main thead:%i",(int)[NSThread currentThread]);
-    [[EZMessageCenter getInstance] registerEvent:EZCameraIsReady block:^(id sender){
-        EZDEBUG(@"I will hide the cover view, %i",[NSThread currentThread].isMainThread);
-        [UIView animateWithDuration:0.3 animations:^(){
-            v3.view.alpha = 0;
-        }];
-    }];
-    
-    //[[EZDataUtil getInstance] readAlbumInBackground:5 limit:5];
+    [[EZDataUtil getInstance] readAlbumInBackground:5 limit:5];
     [[EZDataUtil getInstance] loadPhotoBooks];
     return mainNav;
     //return homeNavigationBar;
@@ -243,6 +175,15 @@
     //Remove the drop shadow
     //[[UINavigationBar appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName : [UIColor redColor], NSFontAttributeName:[UIFont boldSystemFontOfSize:14]}];
     [[UINavigationBar appearance] setShadowImage:[[UIImage alloc] init]];
+    
+    //UIImage *gradientImage44 = [UIImage imageWithColor:RGBA(0, 0, 0, 128)]; //replace "nil" with your method to programmatically create a UIImage object with transparent colors for portrait orientation
+    //UIImage *gradientImage32 = [UIImage imageWithColor:RGBA(0, 0, 0, 128)]; //replace "nil" with your method to programmatically create a UIImage object with transparent colors for landscape orientation
+    //mainNav.navigationBar.hidden = true;
+    
+    //customize the appearance of UINavigationBar
+    //[[UINavigationBar appearance] setBackgroundImage:gradientImage44 forBarMetrics:UIBarMetricsDefault];
+    //[[UINavigationBar appearance] setBackgroundImage:gradientImage32 forBarMetrics:UIBarMetricsLandscapePhone];
+    //[[UINavigationBar appearance] setBarStyle:UIBarStyleBlack];
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
