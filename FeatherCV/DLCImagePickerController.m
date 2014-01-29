@@ -311,8 +311,8 @@
     faceBlurBase = 0.3;
     faceBlender.blurFilter.blurSize = globalBlur;//Original value
     faceBlender.blurFilter.distanceNormalizationFactor = 13;
-    faceBlender.smallBlurFilter.blurSize = 0.05;
-    faceBlender.blurRatio = 0.3;
+    faceBlender.smallBlurFilter.blurSize = 0.1;
+    faceBlender.blurRatio = 0.4;
     faceBlender.edgeFilter.threshold = 0.4;
     return faceBlender;
 }
@@ -331,8 +331,8 @@
 - (EZColorBrighter*) createRedEnhanceFilter
 {
     EZColorBrighter* res = [[EZColorBrighter alloc] init];
-    res.redEnhanceLevel = 0.85;
-    res.redRatio = 0.15;
+    res.redEnhanceLevel = 0.725;
+    res.redRatio = 0.80;
     
     res.blueEnhanceLevel = 0.6;
     res.blueRatio = 0.2;
@@ -951,7 +951,7 @@
             fobj.orgRegion = CGRectMake(0.1, 0.1, 0.3, 0.3);
             blurCycle = 0.9;
         }
-        CGFloat adjustedFactor = 16.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
+        CGFloat adjustedFactor = 17.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
         finalBlendFilter.blurFilter.distanceNormalizationFactor = adjustedFactor;
         finalBlendFilter.blurFilter.blurSize = blurCycle;
         finalBlendFilter.imageMode = 2;

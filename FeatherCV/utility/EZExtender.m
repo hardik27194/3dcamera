@@ -505,8 +505,9 @@ NSString* doubleString(NSString* str)
 - (UIImage*) contentAsImage
 {
     UIGraphicsBeginImageContext(self.frame.size);
-    CGContextRef context = UIGraphicsGetCurrentContext();
-    [self.layer renderInContext:context];
+    //CGContextRef context = UIGraphicsGetCurrentContext();
+    //[self.layer renderInContext:context];
+    [self drawViewHierarchyInRect:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height) afterScreenUpdates:YES];
     UIImage *res = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     return res;

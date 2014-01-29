@@ -37,6 +37,16 @@
         toViewController.view.clipsToBounds = true;
         [containerView addSubview:toViewController.view];
         toViewController.view.y = beginY;
+        
+        /**
+        UIImageView* blurTest = (UIImageView*)[TopView viewWithTag:2014];
+        if(blurTest == nil){
+            blurTest = [[UIImageView alloc] initWithFrame:CGRectMake(0, 200, 150, 200)];
+            blurTest.tag = 2014;
+            [TopView addSubview:blurTest];
+        }
+        blurTest.image = blurredView.image;
+        **/
     } else if (self.type == AnimationTypeDismiss) {
         //[self setAnchorPoint:CGPointMake(0.0, 0.5) forView:toViewController.view];
         //[self setAnchorPoint:CGPointMake(1.0, 0.5) forView:fromViewController.view];

@@ -24,9 +24,10 @@
 		return nil;
 	}
 	CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
-	
+    //UIGraphicsBeginImageContextWithOptions(bufferSize, YES, [UIScreen mainScreen].scale);
 	CGContextRef effectInContext = CGBitmapContextCreate(NULL, bufferSize.width, bufferSize.height, 8, bufferSize.width * 8, colorSpace, kCGImageAlphaPremultipliedLast | kCGBitmapByteOrder32Big);
-	
+	UIGraphicsPushContext(effectInContext);
+    
 	CGContextRef effectOutContext = CGBitmapContextCreate(NULL, bufferSize.width, bufferSize.height, 8, bufferSize.width * 8, colorSpace, kCGImageAlphaPremultipliedLast | kCGBitmapByteOrder32Big);
 	
 	CGColorSpaceRelease(colorSpace);
@@ -36,23 +37,21 @@
 	});
 	CGContextScaleCTM(effectInContext, 1.0, 1.0);
 	CGContextTranslateCTM(effectInContext, -visibleRect.origin.x, -visibleRect.origin.y);
-	
-	
 	vImage_Buffer effectInBuffer = (vImage_Buffer){
 		.data = CGBitmapContextGetData(effectInContext),
 		.width = CGBitmapContextGetWidth(effectInContext),
 		.height = CGBitmapContextGetHeight(effectInContext),
 		.rowBytes = CGBitmapContextGetBytesPerRow(effectInContext)
 	};
-	
 	vImage_Buffer effectOutBuffer = (vImage_Buffer){
 		.data = CGBitmapContextGetData(effectOutContext),
 		.width = CGBitmapContextGetWidth(effectOutContext),
 		.height = CGBitmapContextGetHeight(effectOutContext),
 		.rowBytes = CGBitmapContextGetBytesPerRow(effectOutContext)
 	};
+    //[self.layer renderInContext:effectInContext];
     
-    [self.layer renderInContext:effectInContext];
+    [self drawViewHierarchyInRect:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height) afterScreenUpdates:NO];
 	//self.hidden = NO;
     uint32_t radius = (uint32_t)floor(blurSize * 3. * sqrt(2 * M_PI) / 4 + 0.5);
 	radius += (radius + 1) % 2;
@@ -67,8 +66,10 @@
 	//CGImageRelease(outImage);
     UIImage* res = [[UIImage alloc] initWithCGImage:outImage];
     CGImageRelease(outImage);
-	CGContextRelease(effectInContext);
-	CGContextRelease(effectOutContext);
+	//CGContextRelease(effectInContext);
+    UIGraphicsPopContext();
+    CGContextRelease(effectInContext);
+    CGContextRelease(effectOutContext);
     return res;
 }
 
@@ -167,7 +168,9 @@
 
 - (UIImage*) createBlurImage
 {
-    return [[self contentAsImage] applyBlurWithRadius:18.0 tintColor:RGBA(240, 240, 240, 100) saturationDeltaFactor:0.5 maskImage:nil];
+    
+    //UIImage* image = [[self snapshotViewAfterScreenUpdates:YES] contentAsImage];
+    return [self advancedBlurCreation:10.0];
 }
 
 - (UIImage*) createBlurImage:(CGFloat)blurSize tintColor:(UIColor*)tintColor
@@ -178,7 +181,7 @@
 - (UIImageView*) createBlurImageView
 {
     UIImageView* blurredView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
-    blurredView.image = [self advancedBlurCreation:20.0];
+    blurredView.image = [self createBlurImage];
     return  blurredView;
 }
 

@@ -58,7 +58,7 @@
 
 -(NSTimeInterval)transitionDuration:(id<UIViewControllerContextTransitioning>)transitionContext {
     if (self.type == AnimationTypePresent) return 2.0;
-    else if (self.type == AnimationTypeDismiss) return 2.0;
+    else if (self.type == AnimationTypeDismiss) return 0.8;
     else return [super transitionDuration:transitionContext];
 }
 
