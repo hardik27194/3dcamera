@@ -18,4 +18,8 @@
 @property (readwrite, nonatomic) CGFloat blueRatio;
 @property (readwrite, nonatomic) CGFloat blueLimit;
 
+@property (readwrite, nonatomic) CGFloat greenEnhanceLevel;
+@property (readwrite, nonatomic) CGFloat greenRatio;
+
+
 @end

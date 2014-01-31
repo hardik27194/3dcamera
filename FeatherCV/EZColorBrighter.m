@@ -30,6 +30,10 @@ NSString *const kGPUImageMyColorFragmentShaderString = SHADER_STRING
  uniform lowp float blueRatio;
  uniform lowp float blueLimit;
  
+ uniform lowp float greenEnhanceLevel;
+ uniform lowp float greenRatio;
+ uniform lowp float greenLimit;
+ 
  const highp  vec4  kRGBToYPrime = vec4 (0.299, 0.587, 0.114, 0.0);
  const highp  vec4  kRGBToI     = vec4 (0.595716, -0.274453, -0.321263, 0.0);
  const highp  vec4  kRGBToQ     = vec4 (0.211456, -0.522591, 0.31135, 0.0);
@@ -104,15 +108,26 @@ NSString *const kGPUImageMyColorFragmentShaderString = SHADER_STRING
      lowp float blue2Red = sharpImageColor.b - sharpImageColor.r;
      lowp float blue2Green = sharpImageColor.b - sharpImageColor.g;
      lowp float levelDiff = min(red2Green + red2Blue - redEnhanceLevel, 1.0);
+     
+     
+     //lowp float green2Red = sharpImageColor.g - sharpImageColor.r;
+     //lowp float green2Blue = sharpImageColor.g - sharpImageColor.b;
+     lowp float greenLevelDiff = min(-red2Green - blue2Green - greenEnhanceLevel, 1.0);
+     
      if(red2Blue > 0.0 && red2Green > 0.0 && levelDiff > 0.0){
-         fixRedColor.r = min(1.0, sharpImageColor.r + red2Green * red2Green * redRatio * levelDiff);
-         fixRedColor.g = max(0.0, sharpImageColor.g - red2Green * red2Green * redRatio * levelDiff);
+         lowp float deltaRed = red2Green * red2Green * redRatio * levelDiff;
+         fixRedColor.r = min(1.0, sharpImageColor.r + deltaRed);
+         fixRedColor.g = max(0.0, sharpImageColor.g - deltaRed);
      }else if(blue2Red > 0.0 && blue2Green > 0.0 && (blue2Green + blue2Red) > blueEnhanceLevel){
          lowp float redBlueRatio = (sharpImageColor.r/sharpImageColor.b) * blueRatio;
          lowp float plusRed = sharpImageColor.b * redBlueRatio;
          fixRedColor.r = min(1.0, sharpImageColor.r + plusRed);
          fixRedColor.b = max(0.0, sharpImageColor.b - plusRed);
-    }
+     }else if(red2Green < 0.0 && blue2Green < 0.0 && greenLevelDiff > 0.0){
+         lowp float deltaGreen = red2Green * red2Green * greenRatio * greenLevelDiff;
+         fixRedColor.g = min(1.0, sharpImageColor.g + deltaGreen);
+         fixRedColor.r = max(0.0, sharpImageColor.r - deltaGreen);
+     }
      gl_FragColor = fixRedColor;
  }
  );
@@ -203,6 +218,19 @@ NSString *const kGPUImageHueFragmentShaderString = SHADER_STRING
 {
     _redEnhanceLevel = redEnhanceLevel;
     [self setFloat:_redEnhanceLevel forUniformName:@"redEnhanceLevel"];
+}
+
+- (void) setGreenRatio:(CGFloat)greenRatio
+{
+    _greenRatio = greenRatio;
+    [self setFloat:_greenRatio forUniformName:@"greenRatio"];
+    
+}
+
+- (void) setGreenEnhanceLevel:(CGFloat)greenEnhanceLevel
+{
+    _greenEnhanceLevel = greenEnhanceLevel;
+    [self setFloat:_greenEnhanceLevel forUniformName:@"greenEnhanceLevel"];
 }
 
 

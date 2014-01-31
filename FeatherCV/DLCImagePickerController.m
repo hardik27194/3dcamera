@@ -311,8 +311,8 @@
     faceBlurBase = 0.3;
     faceBlender.blurFilter.blurSize = globalBlur;//Original value
     faceBlender.blurFilter.distanceNormalizationFactor = 13;
-    faceBlender.smallBlurFilter.blurSize = 0.1;
-    faceBlender.blurRatio = 0.4;
+    faceBlender.smallBlurFilter.blurSize = 0.10;
+    faceBlender.blurRatio = 0.2;
     faceBlender.edgeFilter.threshold = 0.4;
     return faceBlender;
 }
@@ -321,7 +321,7 @@
 {
     EZCycleTongFilter* resFilter = [[EZCycleTongFilter alloc] init];
     
-    [resFilter setRgbCompositeControlPoints:@[pointValue(0.0, 0.0), pointValue(0.125, 0.125), pointValue(0.25, 0.255), pointValue(0.5, 0.5368), pointValue(0.75, 0.7725), pointValue(1.0, 1.0)]];
+    [resFilter setRgbCompositeControlPoints:@[pointValue(0.0, 0.0), pointValue(0.125, 0.125), pointValue(0.25, 0.255), pointValue(0.5, 0.5268), pointValue(0.75, 0.7675), pointValue(1.0, 1.0)]];
     [resFilter setRedControlPoints:@[pointValue(0.0, 0.0), pointValue(0.25, 0.25), pointValue(0.5, 0.5), pointValue(0.75, 0.75), pointValue(1.0, 0.99)]];
     [resFilter setGreenControlPoints:@[pointValue(0.0, 0.0),pointValue(0.125, 0.125), pointValue(0.25, 0.25), pointValue(0.5, 0.5), pointValue(0.75, 0.75), pointValue(1.0, 0.995)]];
     [resFilter setBlueControlPoints:@[pointValue(0.0, 0.0), pointValue(0.25, 0.25), pointValue(0.5, 0.5), pointValue(0.75, 0.75), pointValue(1.0, 1.0)]];
@@ -336,6 +336,10 @@
     
     res.blueEnhanceLevel = 0.6;
     res.blueRatio = 0.2;
+    
+    res.greenEnhanceLevel = 0.725;
+    res.greenRatio = 0.40;
+    
     return res;
 }
 
@@ -941,8 +945,10 @@
         //[secFixColorFilter addTarget:redEnhanceFilter];
         //[redEnhanceFilter addTarget:filter];
         CGFloat blurCycle = 1.5;
+        CGFloat smallBlurRatio = 0.3;
         if(fobj){
-            blurCycle = 3.25 * fobj.orgRegion.size.width;
+            blurCycle = 2.5 * fobj.orgRegion.size.width;
+            smallBlurRatio = 0.3 * (1.0 - fobj.orgRegion.size.width);
             //if(fobj.orgRegion.size.width > 0.5){
                 //blurCycle = 1.2 * blurCycle;
             //}
@@ -950,10 +956,12 @@
             fobj = [[EZFaceResultObj alloc] init];
             fobj.orgRegion = CGRectMake(0.1, 0.1, 0.3, 0.3);
             blurCycle = 0.9;
+            smallBlurRatio = 0.15;
         }
-        CGFloat adjustedFactor = 17.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
+        CGFloat adjustedFactor = 14.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
         finalBlendFilter.blurFilter.distanceNormalizationFactor = adjustedFactor;
         finalBlendFilter.blurFilter.blurSize = blurCycle;
+        //finalBlendFilter.blurRatio = smallBlurRatio;
         finalBlendFilter.imageMode = 2;
         //finalBlendFilter.smallBlurFilter.blurSize = blurAspectRatio * blurCycle;
         EZDEBUG(@"Will blur face:%@, blurCycle:%f, adjustedColor:%f", NSStringFromCGRect(fobj.orgRegion), blurCycle, adjustedFactor);
@@ -1278,8 +1286,8 @@
             lineWidth = lineHeight;
             lineHeight = tmpWidth;
         }
-        finalBlendFilter.edgeFilter.texelHeight = lineHeight * 2.0;
-        finalBlendFilter.edgeFilter.texelWidth = lineWidth * 2.0;
+        finalBlendFilter.edgeFilter.texelHeight = lineHeight * 2.5;
+        finalBlendFilter.edgeFilter.texelWidth = lineWidth * 2.5;
         EZDEBUG(@"Reprocess width:%f, height:%f, original width:%f, height:%f, image Orientation:%i, calculated width:%f, height:%f",  finalBlendFilter.edgeFilter.texelWidth,  finalBlendFilter.edgeFilter.texelHeight, orgWidth, orgHeight, staticPictureOriginalOrientation, lineWidth, lineHeight);
     }
     [staticPicture processImage];
@@ -1352,7 +1360,7 @@
         void (^fullImageProcess)(UIImage *, NSError *) = ^(UIImage *fullImg, NSError* error) {
             //[weakSelf handleFullImage:fullImg];
             UIImageOrientation prevOrient = fullImg.imageOrientation;
-            fullImg = [fullImg resizedImageWithMinimumSize:CGSizeMake(980.0, 980.0)];
+            fullImg = [fullImg resizedImageWithMinimumSize:CGSizeMake(fullImg.size.width/2.0, fullImg.size.height/2.0)];
             EZDEBUG(@"tailored full size length:%@, prevOrient:%i, current orientation:%i", NSStringFromCGSize(fullImg.size), prevOrient, fullImg.imageOrientation);
             completion(fullImg, nil);
         };
@@ -1643,12 +1651,12 @@
                     [device setExposureMode:AVCaptureExposureModeContinuousAutoExposure];
                     //[device setExposureMode:AVCaptureExposureModeAutoExpose];
                     //
-                    dispatch_later(0.2, ^(){
-                        NSError *err;
-                        if ([device lockForConfiguration:&err]) {
-                            [device setExposureMode:AVCaptureExposureModeLocked];
-                        }
-                    });
+                    //dispatch_later(0.2, ^(){
+                    //    NSError *err;
+                    //    if ([device lockForConfiguration:&err]) {
+                    //        [device setExposureMode:AVCaptureExposureModeLocked];
+                    //    }
+                    //});
                 }
             }
             [device unlockForConfiguration];
