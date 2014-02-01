@@ -881,15 +881,16 @@
     [stillCamera addTarget:orgFiler];
     [orgFiler addTarget:hueFilter];
     [hueFilter addTarget:tongFilter];
-    //[tongFilter addTarget:fixColorFilter];
-    //[fixColorFilter addTarget:secFixColorFilter];
     [tongFilter addTarget:redEnhanceFilter];
+    //[fixColorFilter addTarget:secFixColorFilter];
+    //[tongFilter addTarget:redEnhanceFilter];
     //[orgFiler addTarget:tongFilter];
     //[tongFilter addTarget:fixColorFilter];
     //[orgFiler addTarget:finalBlendFilter];
     //[fixColorFilter addTarget:filter];
     //[finalBlendFilter addTarget:filter];
     [redEnhanceFilter addTarget:filter];
+    //[tongFilter addTarget:filter];
     [filter addTarget:self.imageView];
     [filter prepareForImageCapture];
 }
@@ -1286,8 +1287,8 @@
             lineWidth = lineHeight;
             lineHeight = tmpWidth;
         }
-        finalBlendFilter.edgeFilter.texelHeight = lineHeight * 1.5;
-        finalBlendFilter.edgeFilter.texelWidth = lineWidth * 1.5;
+        finalBlendFilter.edgeFilter.texelHeight = lineHeight * 2.0;
+        finalBlendFilter.edgeFilter.texelWidth = lineWidth * 2.0;
         EZDEBUG(@"Reprocess width:%f, height:%f, original width:%f, height:%f, image Orientation:%i, calculated width:%f, height:%f",  finalBlendFilter.edgeFilter.texelWidth,  finalBlendFilter.edgeFilter.texelHeight, orgWidth, orgHeight, staticPictureOriginalOrientation, lineWidth, lineHeight);
     }
     [staticPicture processImage];
@@ -1563,21 +1564,23 @@
 
 -(IBAction) cancel:(id)sender {
     EZDEBUG(@"Cancel get called");
+   /**
     EZUIUtility.sharedEZUIUtility.cameraClickButton.releasedBlock = nil;
     [self dismissViewControllerAnimated:YES completion:^(){
         EZDEBUG(@"DLCCamera Will get dismissed");
     }];
-
+  **/
+    [self switchDisplayImage];
 }
 
 - (void) switchDisplayImage
 {
-    int imageMode = finalBlendFilter.smallBlurFilter.imageMode + 1;
+    int imageMode = finalBlendFilter.imageMode + 1;
     if(imageMode > 2){
         imageMode = 0;
     }
     //finalBlendFilter.imageMode = imageMode;
-    finalBlendFilter.smallBlurFilter.imageMode = imageMode;
+    finalBlendFilter.imageMode = imageMode;
     EZDEBUG(@"I will store the image mode:%i, texelWidth:%f. texelHeight:%f", finalBlendFilter.imageMode, finalBlendFilter.edgeFilter.texelWidth, finalBlendFilter.edgeFilter.texelHeight);
     finalBlendFilter.edgeFilter.texelWidth = finalBlendFilter.edgeFilter.texelWidth;
     finalBlendFilter.edgeFilter.texelHeight = finalBlendFilter.edgeFilter.texelHeight;

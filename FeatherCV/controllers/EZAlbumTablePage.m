@@ -76,7 +76,7 @@ static int photoCount = 1;
     _moreButton = [[UIButton alloc] initWithFrame:CGRectMake(110, 0, 100, 44)];
     _moreButton.titleLabel.textAlignment = NSTextAlignmentCenter;
     //_moreButton.titleLabel.textColor = RGBCOLOR(48, 48, 48);
-    [_moreButton setTitle:@"更多" forState:UIControlStateNormal];
+    [_moreButton setTitle:@"更多0201.1" forState:UIControlStateNormal];
     _moreButton.titleLabel.font = [UIFont boldSystemFontOfSize:15];
     [_moreButton setTitleColor:RGBCOLOR(48, 48, 48) forState:UIControlStateNormal];
     [_moreButton addTarget:self action:@selector(showMenu:) forControlEvents:UIControlEventTouchUpInside];
