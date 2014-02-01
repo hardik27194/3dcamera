@@ -147,6 +147,8 @@ NSString *const kFaceBlurFragmentShaderString = SHADER_STRING
     
     _skinBrighter = [[EZSkinBrighter alloc] init];
     [_skinBrighter setRgbCompositeControlPoints:@[pointValue(0.0, 0.0),pointValue(0.125, 0.125), pointValue(0.25, 0.285), pointValue(0.5, 0.53), pointValue(0.75, 0.76), pointValue(1.0, 1.0)]];
+    //[_skinBrighter setRedControlPoints:@[pointValue(0.0, 0.0),pointValue(0.125, 0.130), pointValue(0.25, 0.255), pointValue(0.5, 0.505), pointValue(0.75, 0.755), pointValue(1.0, 1.0)]];
+    //[_skinBrighter setBlueControlPoints:@[pointValue(0.0, 0.0),pointValue(0.125, 0.120), pointValue(0.25, 0.245), pointValue(0.5, 0.495), pointValue(0.75, 0.745), pointValue(1.0, 1.0)]];
     //_edgeBlurFilter = [[GPUImageGaussianBlurFilter alloc] init];
     
     //blurFilter.blurSize = 2.0;

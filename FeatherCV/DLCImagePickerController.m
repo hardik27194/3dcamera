@@ -312,7 +312,7 @@
     faceBlender.blurFilter.blurSize = globalBlur;//Original value
     faceBlender.blurFilter.distanceNormalizationFactor = 13;
     faceBlender.smallBlurFilter.blurSize = 0.10;
-    faceBlender.blurRatio = 0.2;
+    faceBlender.blurRatio = 0.10;
     faceBlender.edgeFilter.threshold = 0.4;
     return faceBlender;
 }
@@ -321,10 +321,10 @@
 {
     EZCycleTongFilter* resFilter = [[EZCycleTongFilter alloc] init];
     
-    [resFilter setRgbCompositeControlPoints:@[pointValue(0.0, 0.0), pointValue(0.125, 0.125), pointValue(0.25, 0.255), pointValue(0.5, 0.5268), pointValue(0.75, 0.7675), pointValue(1.0, 1.0)]];
-    [resFilter setRedControlPoints:@[pointValue(0.0, 0.0), pointValue(0.25, 0.25), pointValue(0.5, 0.5), pointValue(0.75, 0.75), pointValue(1.0, 0.99)]];
+    [resFilter setRgbCompositeControlPoints:@[pointValue(0.0, 0.0), pointValue(0.125, 0.125), pointValue(0.25, 0.2625), pointValue(0.5, 0.5298), pointValue(0.75, 0.775), pointValue(1.0, 1.0)]];
+    [resFilter setRedControlPoints:@[pointValue(0.0, 0.0),pointValue(0.125, 0.127), pointValue(0.25, 0.253), pointValue(0.5, 0.503), pointValue(0.75, 0.753), pointValue(1.0, 0.99)]];
     [resFilter setGreenControlPoints:@[pointValue(0.0, 0.0),pointValue(0.125, 0.125), pointValue(0.25, 0.25), pointValue(0.5, 0.5), pointValue(0.75, 0.75), pointValue(1.0, 0.995)]];
-    [resFilter setBlueControlPoints:@[pointValue(0.0, 0.0), pointValue(0.25, 0.25), pointValue(0.5, 0.5), pointValue(0.75, 0.75), pointValue(1.0, 1.0)]];
+    [resFilter setBlueControlPoints:@[pointValue(0.0, 0.0),pointValue(0.125, 0.123), pointValue(0.25, 0.247), pointValue(0.5, 0.497), pointValue(0.75, 0.747), pointValue(1.0, 1.0)]];
     return resFilter;
 }
 
@@ -947,7 +947,7 @@
         CGFloat blurCycle = 1.5;
         CGFloat smallBlurRatio = 0.3;
         if(fobj){
-            blurCycle = 2.5 * fobj.orgRegion.size.width;
+            blurCycle = 2.9 * fobj.orgRegion.size.width;
             smallBlurRatio = 0.3 * (1.0 - fobj.orgRegion.size.width);
             //if(fobj.orgRegion.size.width > 0.5){
                 //blurCycle = 1.2 * blurCycle;
@@ -1360,7 +1360,7 @@
         void (^fullImageProcess)(UIImage *, NSError *) = ^(UIImage *fullImg, NSError* error) {
             //[weakSelf handleFullImage:fullImg];
             UIImageOrientation prevOrient = fullImg.imageOrientation;
-            fullImg = [fullImg resizedImageWithMinimumSize:CGSizeMake(fullImg.size.width/2.0, fullImg.size.height/2.0)];
+            fullImg = [fullImg resizedImageWithMinimumSize:CGSizeMake(980.0, 980.0)];
             EZDEBUG(@"tailored full size length:%@, prevOrient:%i, current orientation:%i", NSStringFromCGSize(fullImg.size), prevOrient, fullImg.imageOrientation);
             completion(fullImg, nil);
         };
