@@ -958,7 +958,7 @@
             blurCycle = 0.9;
             smallBlurRatio = 0.15;
         }
-        CGFloat adjustedFactor = 14.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
+        CGFloat adjustedFactor = 14.5;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
         finalBlendFilter.blurFilter.distanceNormalizationFactor = adjustedFactor;
         finalBlendFilter.blurFilter.blurSize = blurCycle;
         //finalBlendFilter.blurRatio = smallBlurRatio;
@@ -1286,8 +1286,8 @@
             lineWidth = lineHeight;
             lineHeight = tmpWidth;
         }
-        finalBlendFilter.edgeFilter.texelHeight = lineHeight * 2.5;
-        finalBlendFilter.edgeFilter.texelWidth = lineWidth * 2.5;
+        finalBlendFilter.edgeFilter.texelHeight = lineHeight * 1.5;
+        finalBlendFilter.edgeFilter.texelWidth = lineWidth * 1.5;
         EZDEBUG(@"Reprocess width:%f, height:%f, original width:%f, height:%f, image Orientation:%i, calculated width:%f, height:%f",  finalBlendFilter.edgeFilter.texelWidth,  finalBlendFilter.edgeFilter.texelHeight, orgWidth, orgHeight, staticPictureOriginalOrientation, lineWidth, lineHeight);
     }
     [staticPicture processImage];
