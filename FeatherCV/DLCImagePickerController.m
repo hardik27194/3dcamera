@@ -291,6 +291,38 @@
     return stretchFilter;
 }
 
+//Test Monty Hall issue without the host knew about the which door the goat hide
+- (void) executeGame
+{
+    CGFloat winCount = 0;
+    //Why do I have rawCount, because I want to know if I have winning position
+    //When find the host don't get the hit.
+    CGFloat rawCount = 0;
+    CGFloat hostWin = 0;
+    CGFloat gamerWin = 0;
+    for(int i = 0; i < 10000; i ++){
+        int realPos = rand()%3;
+        int gamerPos = rand()%3;
+        //int hostPos = (rand()%2 + gamerPos)%3;
+        int hostPos = rand()%3;
+        while (hostPos == gamerPos) {
+            hostPos = rand()%3;
+        }
+        
+        if(hostPos == realPos){
+            ++hostWin;
+            continue;
+        }else if(gamerPos != realPos){
+            ++rawCount;
+            ++winCount;
+        }else if(gamerPos == realPos){
+            ++gamerWin;
+            ++rawCount;
+        }
+    }
+    EZDEBUG(@"Switch Winning rate:%f, host win:%f, gamer win:%f", winCount/rawCount, hostWin/10000.0, gamerWin/10000.0);
+}
+
 - (EZSaturationFilter*) createBlueStretchFilter
 {
     EZSaturationFilter* stretchFilter = [[EZSaturationFilter alloc] init];
@@ -319,9 +351,9 @@
 
 - (EZCycleTongFilter*) createTongFilter
 {
-    EZCycleTongFilter* resFilter = [[EZCycleTongFilter alloc] init];
+    GPUImageToneCurveFilter* resFilter = [[GPUImageToneCurveFilter alloc] init];
     
-    [resFilter setRgbCompositeControlPoints:@[pointValue(0.0, 0.0), pointValue(0.125, 0.125), pointValue(0.25, 0.2625), pointValue(0.5, 0.5298), pointValue(0.75, 0.775), pointValue(1.0, 1.0)]];
+    [resFilter setRgbCompositeControlPoints:@[pointValue(0.0, 0.0), pointValue(0.125, 0.125), pointValue(0.25, 0.27), pointValue(0.5, 0.5298), pointValue(0.75, 0.775), pointValue(1.0, 1.0)]];
     [resFilter setRedControlPoints:@[pointValue(0.0, 0.0),pointValue(0.125, 0.127), pointValue(0.25, 0.253), pointValue(0.5, 0.503), pointValue(0.75, 0.753), pointValue(1.0, 0.99)]];
     [resFilter setGreenControlPoints:@[pointValue(0.0, 0.0),pointValue(0.125, 0.125), pointValue(0.25, 0.25), pointValue(0.5, 0.5), pointValue(0.75, 0.75), pointValue(1.0, 0.995)]];
     [resFilter setBlueControlPoints:@[pointValue(0.0, 0.0),pointValue(0.125, 0.123), pointValue(0.25, 0.247), pointValue(0.5, 0.497), pointValue(0.75, 0.747), pointValue(1.0, 1.0)]];
@@ -882,6 +914,9 @@
     [orgFiler addTarget:hueFilter];
     [hueFilter addTarget:tongFilter];
     [tongFilter addTarget:redEnhanceFilter];
+    [redEnhanceFilter addTarget:filter];
+    //[hueFilter addTarget:tongFilter];
+    //[tongFilter addTarget:redEnhanceFilter];
     //[fixColorFilter addTarget:secFixColorFilter];
     //[tongFilter addTarget:redEnhanceFilter];
     //[orgFiler addTarget:tongFilter];
@@ -889,7 +924,7 @@
     //[orgFiler addTarget:finalBlendFilter];
     //[fixColorFilter addTarget:filter];
     //[finalBlendFilter addTarget:filter];
-    [redEnhanceFilter addTarget:filter];
+    //[redEnhanceFilter addTarget:filter];
     //[tongFilter addTarget:filter];
     [filter addTarget:self.imageView];
     [filter prepareForImageCapture];
@@ -1565,13 +1600,13 @@
 
 -(IBAction) cancel:(id)sender {
     EZDEBUG(@"Cancel get called");
-   /**
+    //[self executeGame];
+   
     EZUIUtility.sharedEZUIUtility.cameraClickButton.releasedBlock = nil;
     [self dismissViewControllerAnimated:YES completion:^(){
         EZDEBUG(@"DLCCamera Will get dismissed");
     }];
-  **/
-    [self switchDisplayImage];
+    //[self switchDisplayImage];
 }
 
 - (void) switchDisplayImage
