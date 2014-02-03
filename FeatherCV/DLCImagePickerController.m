@@ -1472,7 +1472,7 @@
         CGFloat miniTemp = 2500.0;
         CGFloat maxTemp = 7000.0;
         CGFloat delta = tapPoint.x - prevPanPoint.x;
-        CGFloat change = whiteBalancerFilter.temperature + (delta/320.0) * ((maxTemp - miniTemp)/6.0);
+        CGFloat change = whiteBalancerFilter.temperature + (delta/320.0) * (maxTemp - miniTemp);
         if(change < miniTemp){
             change = miniTemp;
         }else if(change > maxTemp){
@@ -1482,6 +1482,7 @@
         whiteBalancerFilter.temperature = change;
         label.text = int2str(whiteBalancerFilter.temperature);
         [staticPicture processImage];
+        prevPanPoint = tapPoint;
 
     }else
     
