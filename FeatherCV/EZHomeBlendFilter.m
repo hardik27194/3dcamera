@@ -31,11 +31,12 @@ NSString *const kHomeBlendFragmentShaderString = SHADER_STRING
  uniform sampler2D inputImageTexture3;
  uniform sampler2D inputImageTexture4;
  uniform lowp vec3 skinColor;
- 
+ uniform lowp vec4 faceRegion;
  
  uniform lowp float blurRatio;
  uniform lowp float edgeRatio;
  uniform lowp int imageMode;
+ uniform lowp int showFace;
  
  const lowp vec4  kRGBToYPrime = vec4 (0.299, 0.587, 0.114, 0.0);
  const lowp vec4  kRGBToI     = vec4 (0.595716, -0.274453, -0.321263, 0.0);
@@ -76,6 +77,12 @@ NSString *const kHomeBlendFragmentShaderString = SHADER_STRING
      lowp vec4 smallBlurColor = texture2D(inputImageTexture3, textureCoordinate3);
      lowp vec4 detectedEdge = texture2D(inputImageTexture4, textureCoordinate4);
      lowp float finalEdgeRatio = detectedEdge.r;
+     if(showFace == 1 && textureCoordinate.x > faceRegion.x && textureCoordinate.x < faceRegion.y && textureCoordinate.y > faceRegion.z && textureCoordinate.y < faceRegion.w){
+         gl_FragColor = sharpImageColor * 0.3;
+     }else{
+         gl_FragColor = sharpImageColor;
+     }
+     /**
      if(imageMode == 0){
          lowp float colorDist = calcHue(sharpImageColor);
          lowp vec3 darkColor = vec3(0.35);
@@ -95,6 +102,7 @@ NSString *const kHomeBlendFragmentShaderString = SHADER_STRING
      }else if(imageMode == 2){
          gl_FragColor = sharpImageColor;
      }
+      **/
      //gl_FragColor = blurredImageColor;
  }
  );
@@ -206,6 +214,23 @@ NSString *const kFaceBlurFragmentShaderString = SHADER_STRING
     skinColor.three = [[skinColors objectAtIndex:2] floatValue];
     _skinColors = skinColors;
     [_combineFilter setFloatVec3:skinColor forUniformName:@"skinColor"];
+}
+
+- (void) setShowFace:(int)showFace
+{
+    _showFace = showFace;
+    [_combineFilter setInteger:_showFace forUniformName:@"showFace"];
+}
+
+- (void) setFaceRegion:(NSArray *)faceRegion
+{
+
+    GPUVector4 faceVector;
+    faceVector.one = [[faceRegion objectAtIndex:0] floatValue];
+    faceVector.two = [[faceRegion objectAtIndex:1] floatValue];
+    faceVector.three = [[faceRegion objectAtIndex:2] floatValue];
+    faceVector.four = [[faceRegion objectAtIndex:3] floatValue];
+    [_combineFilter setFloatVec4:faceVector forUniform:@"faceRegion"];
 }
 
 //Some issue with this method call?

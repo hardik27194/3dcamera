@@ -33,6 +33,8 @@
 #import "EZUIUtility.h"
 #import "EZColorBrighter.h"
 #import "EZCycleTongFilter.h"
+#import <GPUImageCrosshatchFilter.h>
+#import <GPUImageCrosshairGenerator.h>
 
 //#include <vector>
 
@@ -115,6 +117,11 @@
     UIView* blackCover;
     CGSize orgFocusSize;
     UIView* capturingBlack;
+    
+    
+    //Cross hair experiment
+    //GPUImageCrosshatchFilter* crossHairFilter;
+    GPUImageCrosshairGenerator* crossHairFilter;
 }
 
 @synthesize delegate,
@@ -492,6 +499,8 @@
     //barBackground.backgroundColor = RGBCOLOR(255, 255, 128);
     //[self.view addSubview:barBackground];
     topBar.backgroundColor = RGBA(255, 255, 255, 128);
+    
+    crossHairFilter = [[GPUImageCrosshairGenerator alloc] init];
     
 }
 
@@ -914,6 +923,8 @@
     [orgFiler addTarget:hueFilter];
     [hueFilter addTarget:tongFilter];
     [tongFilter addTarget:redEnhanceFilter];
+    //[redEnhanceFilter addTarget:crossHairFilter];
+    //[crossHairFilter addTarget:filter];
     [redEnhanceFilter addTarget:filter];
     //[hueFilter addTarget:tongFilter];
     //[tongFilter addTarget:redEnhanceFilter];
@@ -1000,6 +1011,8 @@
         finalBlendFilter.blurFilter.blurSize = blurCycle;
         //finalBlendFilter.blurRatio = smallBlurRatio;
         finalBlendFilter.imageMode = 2;
+        finalBlendFilter.showFace = 1;
+        finalBlendFilter.faceRegion = @[@(fobj.orgRegion.origin.x), @(fobj.orgRegion.origin.x + fobj.orgRegion.size.width), @(fobj.orgRegion.origin.y), @(fobj.orgRegion.origin.y + fobj.orgRegion.size.height)];
         //finalBlendFilter.smallBlurFilter.blurSize = blurAspectRatio * blurCycle;
         EZDEBUG(@"Will blur face:%@, blurCycle:%f, adjustedColor:%f", NSStringFromCGRect(fobj.orgRegion), blurCycle, adjustedFactor);
         //finalBlendFilter.imageMode = 0;

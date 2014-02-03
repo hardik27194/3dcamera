@@ -30,6 +30,8 @@
 @property (nonatomic, assign) CGFloat blurRatio;
 @property (nonatomic, assign) CGFloat edgeRatio;
 @property (readwrite, nonatomic) NSArray* skinColors;
+@property (nonatomic, strong) NSArray* faceRegion;
+@property (nonatomic, assign) int showFace;
 
 @property (nonatomic, assign) int imageMode;
 

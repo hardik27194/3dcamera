@@ -30,6 +30,8 @@
 		1866ADB71897F3D200DB46E2 /* UIImage+ImageEffects.m in Sources */ = {isa = PBXBuildFile; fileRef = 1866ADB61897F3D200DB46E2 /* UIImage+ImageEffects.m */; };
 		1866ADC61898F0DB00DB46E2 /* LFDisplayBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 1866ADC21898F0DB00DB46E2 /* LFDisplayBridge.m */; };
 		1866ADC71898F0DB00DB46E2 /* LFGlassView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1866ADC41898F0DB00DB46E2 /* LFGlassView.m */; };
+		1866ADCA189F9F5900DB46E2 /* EZSkinMaskFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 1866ADC9189F9F5900DB46E2 /* EZSkinMaskFilter.m */; };
+		1866ADCD189FA21400DB46E2 /* EZFiveInputFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 1866ADCC189FA21400DB46E2 /* EZFiveInputFilter.m */; };
 		1874D9D71867F57E005743FC /* EZSaturationFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 1874D9D61867F57E005743FC /* EZSaturationFilter.m */; };
 		1874D9DD18699386005743FC /* header_2.png in Resources */ = {isa = PBXBuildFile; fileRef = 1874D9DB18699385005743FC /* header_2.png */; };
 		1874D9DE18699386005743FC /* header_1.png in Resources */ = {isa = PBXBuildFile; fileRef = 1874D9DC18699386005743FC /* header_1.png */; };
@@ -325,6 +327,10 @@
 		1866ADC31898F0DB00DB46E2 /* LFGlassView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LFGlassView.h; sourceTree = "<group>"; };
 		1866ADC41898F0DB00DB46E2 /* LFGlassView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LFGlassView.m; sourceTree = "<group>"; };
 		1866ADC51898F0DB00DB46E2 /* LiveFrost.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LiveFrost.h; sourceTree = "<group>"; };
+		1866ADC8189F9F5900DB46E2 /* EZSkinMaskFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZSkinMaskFilter.h; sourceTree = "<group>"; };
+		1866ADC9189F9F5900DB46E2 /* EZSkinMaskFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZSkinMaskFilter.m; sourceTree = "<group>"; };
+		1866ADCB189FA21400DB46E2 /* EZFiveInputFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZFiveInputFilter.h; sourceTree = "<group>"; };
+		1866ADCC189FA21400DB46E2 /* EZFiveInputFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZFiveInputFilter.m; sourceTree = "<group>"; };
 		1874D9D51867F57E005743FC /* EZSaturationFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZSaturationFilter.h; sourceTree = "<group>"; };
 		1874D9D61867F57E005743FC /* EZSaturationFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZSaturationFilter.m; sourceTree = "<group>"; };
 		1874D9DB18699385005743FC /* header_2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = header_2.png; sourceTree = "<group>"; };
@@ -770,6 +776,8 @@
 				181903F6187FFC64001FC370 /* EZHomeGaussianFilter.m */,
 				181903F81881654D001FC370 /* EZFourInputFilter.h */,
 				181903F91881654D001FC370 /* EZFourInputFilter.m */,
+				1866ADCB189FA21400DB46E2 /* EZFiveInputFilter.h */,
+				1866ADCC189FA21400DB46E2 /* EZFiveInputFilter.m */,
 				181903FB1882980E001FC370 /* EZHomeEdgeFilter.h */,
 				181903FC1882980E001FC370 /* EZHomeEdgeFilter.m */,
 				181903FE18853902001FC370 /* EZDoubleOutFilter.h */,
@@ -784,6 +792,8 @@
 				1866AD8B1890FC7000DB46E2 /* EZSkinBrighter.m */,
 				1866AD9A18965EF000DB46E2 /* EZCycleTongFilter.h */,
 				1866AD9B18965EF000DB46E2 /* EZCycleTongFilter.m */,
+				1866ADC8189F9F5900DB46E2 /* EZSkinMaskFilter.h */,
+				1866ADC9189F9F5900DB46E2 /* EZSkinMaskFilter.m */,
 			);
 			name = camera;
 			sourceTree = "<group>";
@@ -1474,6 +1484,7 @@
 				18E3474B183DFA7300C9D89D /* EZLikeSatus.m in Sources */,
 				1866ADC61898F0DB00DB46E2 /* LFDisplayBridge.m in Sources */,
 				1866ADAE18966E7000DB46E2 /* ScaleAnimation.m in Sources */,
+				1866ADCD189FA21400DB46E2 /* EZFiveInputFilter.m in Sources */,
 				18F58B5A18716C19006CB966 /* EZGradientLayerView.m in Sources */,
 				1866ADAB18966E7000DB46E2 /* ModalAnimation.m in Sources */,
 				18E347F5183E081D00C9D89D /* AFDownloadRequestOperation.m in Sources */,
@@ -1537,6 +1548,7 @@
 				1866AD9C18965EF000DB46E2 /* EZCycleTongFilter.m in Sources */,
 				18E347D6183E050B00C9D89D /* ASIAuthenticationDialog.m in Sources */,
 				18F58B7518796CE9006CB966 /* EZNightBlurFilter.m in Sources */,
+				1866ADCA189F9F5900DB46E2 /* EZSkinMaskFilter.m in Sources */,
 				18F58B72187916F2006CB966 /* EZColorGaussianFilter.m in Sources */,
 				18E347DC183E050B00C9D89D /* ASIDataDecompressor.m in Sources */,
 				18E34785183DFAA400C9D89D /* EZKeyboadUtility.m in Sources */,
