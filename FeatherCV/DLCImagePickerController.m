@@ -311,8 +311,8 @@
     faceBlurBase = 0.3;
     faceBlender.blurFilter.blurSize = globalBlur;//Original value
     faceBlender.blurFilter.distanceNormalizationFactor = 13;
-    faceBlender.smallBlurFilter.blurSize = 0.10;
-    faceBlender.blurRatio = 0.10;
+    faceBlender.smallBlurFilter.blurSize = 0.1;
+    faceBlender.blurRatio = 0.4;
     faceBlender.edgeFilter.threshold = 0.4;
     return faceBlender;
 }
@@ -337,8 +337,8 @@
     res.blueEnhanceLevel = 0.6;
     res.blueRatio = 0.2;
     
-    res.greenEnhanceLevel = 0.725;
-    res.greenRatio = 0.40;
+    res.greenEnhanceLevel = 0.65;
+    res.greenRatio = 0.60;
     
     return res;
 }
@@ -947,8 +947,9 @@
         //[redEnhanceFilter addTarget:filter];
         CGFloat blurCycle = 1.5;
         CGFloat smallBlurRatio = 0.3;
+        
         if(fobj){
-            blurCycle = 2.9 * fobj.orgRegion.size.width;
+            blurCycle = 2.5;// * fobj.orgRegion.size.width;
             smallBlurRatio = 0.3 * (1.0 - fobj.orgRegion.size.width);
             //if(fobj.orgRegion.size.width > 0.5){
                 //blurCycle = 1.2 * blurCycle;
@@ -959,7 +960,7 @@
             blurCycle = 0.9;
             smallBlurRatio = 0.15;
         }
-        CGFloat adjustedFactor = 14.5;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
+        CGFloat adjustedFactor = 14.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
         finalBlendFilter.blurFilter.distanceNormalizationFactor = adjustedFactor;
         finalBlendFilter.blurFilter.blurSize = blurCycle;
         //finalBlendFilter.blurRatio = smallBlurRatio;
