@@ -118,7 +118,7 @@
     CGSize orgFocusSize;
     UIView* capturingBlack;
     
-    
+    CGPoint prevPanPoint;
     //Cross hair experiment
     //GPUImageCrosshatchFilter* crossHairFilter;
     GPUImageCrosshairGenerator* crossHairFilter;
@@ -526,6 +526,9 @@
     //cycleDarken = [[EZCycleDiminish alloc] init];
 
     simpleFilter = [[GPUImageFilter alloc] init];
+    
+    whiteBalancerFilter = [[GPUImageWhiteBalanceFilter alloc] init];
+    
 }
 
 - (void) setupTongFilter
@@ -973,11 +976,16 @@
         //[tongFilter addTarget:darkBlurFilter];
         //firstFilter = (GPUImageFilter*)darkBlurFilter;
         [staticPicture addTarget:darkBlurFilter];
+        //[darkBlurFilter addTarget:whiteBalancerFilter];
         [darkBlurFilter addTarget:tongFilter];
-        [tongFilter addTarget:hueFilter];
+        [tongFilter addTarget:whiteBalancerFilter];
+        [whiteBalancerFilter addTarget:hueFilter];
+        //[tongFilter addTarget:hueFilter];
     }else{
         [staticPicture addTarget:tongFilter];
-        [tongFilter addTarget:hueFilter];
+        [tongFilter addTarget:whiteBalancerFilter];
+        [whiteBalancerFilter addTarget:hueFilter];
+        
     }
     //[tongFilter addTarget:fixColorFilter];
     //[fixColorFilter addTarget:secFixColorFilter];
@@ -995,7 +1003,7 @@
         CGFloat smallBlurRatio = 0.3;
         
         if(fobj){
-            blurCycle = 2.5;// * fobj.orgRegion.size.width;
+            blurCycle = 2.0;// * fobj.orgRegion.size.width;
             smallBlurRatio = 0.3 * (1.0 - fobj.orgRegion.size.width);
             //if(fobj.orgRegion.size.width > 0.5){
                 //blurCycle = 1.2 * blurCycle;
@@ -1077,7 +1085,7 @@
 -(void) removeAllTargets {
     [stillCamera removeAllTargets];
     [staticPicture removeAllTargets];
-    //[whiteBalancerFilter removeAllTargets];
+    [whiteBalancerFilter removeAllTargets];
     [cropFilter removeAllTargets];
     [tongFilter removeAllTargets];
     //[cycleDarken removeAllTargets];
@@ -1426,6 +1434,67 @@
     }
 }
 
+- (UILabel*) createBalanceLabel
+{
+    UILabel* balance = [[UILabel alloc] initWithFrame:CGRectMake(0, 100, 320, 30)];
+    balance.font = [UIFont boldSystemFontOfSize:18];
+    balance.textColor = [UIColor whiteColor];
+    balance.textAlignment = NSTextAlignmentCenter;
+    return  balance;
+}
+
+- (IBAction) panHandler:(id)sender
+{
+    if(!isStatic){
+        return;
+    }
+    CGPoint tapPoint = [sender locationInView:imageView];
+    UILabel* label = (UILabel*)[imageView viewWithTag:20140203];
+    if ([sender state] == UIGestureRecognizerStateBegan) {
+        //[self showBlurOverlay:YES];
+        //[gpu setBlurSize:0.0f];
+        //if (isStatic) {
+        //    [staticPicture processImage];
+        //}
+        
+        if(!label){
+            label = [self createBalanceLabel];
+            label.tag = 20140203;
+            [imageView addSubview:label];
+        }
+        label.alpha = 1.0;
+        label.text = int2str(whiteBalancerFilter.temperature);
+        prevPanPoint = tapPoint;
+        //return;
+    }else
+    
+    if ([sender state] == UIGestureRecognizerStateChanged) {
+        CGFloat miniTemp = 2500.0;
+        CGFloat maxTemp = 7000.0;
+        CGFloat delta = tapPoint.x - prevPanPoint.x;
+        CGFloat change = whiteBalancerFilter.temperature + (delta/320.0) * ((maxTemp - miniTemp)/6.0);
+        if(change < miniTemp){
+            change = miniTemp;
+        }else if(change > maxTemp){
+            change = maxTemp;
+        }
+        EZDEBUG(@"old Value:%i, new Value:%f",whiteBalancerFilter.temperature, change);
+        whiteBalancerFilter.temperature = change;
+        label.text = int2str(whiteBalancerFilter.temperature);
+        [staticPicture processImage];
+
+    }else
+    
+    if([sender state] == UIGestureRecognizerStateEnded){
+        //[gpu setBlurSize:kStaticBlurSize];
+        dispatch_later(0.5, ^(){
+            [UIView animateWithDuration:0.3 animations:^(){
+                label.alpha = 0.0;
+            }];
+        });
+    }
+    
+}
 //This is for process image step wise
 - (NSArray*) prepareImageFilter:(EZFaceResultObj*)fobj imageSize:(CGSize)size
 {

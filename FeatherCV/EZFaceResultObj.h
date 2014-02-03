@@ -12,4 +12,10 @@
 
 @property (nonatomic, assign) CGRect orgRegion;
 
+//Average face color
+@property (nonatomic, strong) NSArray* avgFaceColor;
+
+
+@property (nonatomic, assign) CGFloat skinDistance;
+
 @end

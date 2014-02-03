@@ -53,6 +53,7 @@
                     <connections>
                         <outletCollection property="gestureRecognizers" destination="51" appends="YES" id="52"/>
                         <outletCollection property="gestureRecognizers" destination="89" appends="YES" id="90"/>
+                        <outletCollection property="gestureRecognizers" destination="PKg-eo-d4s" appends="YES" id="SUR-9u-wQy"/>
                     </connections>
                 </view>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" id="36">
@@ -98,6 +99,11 @@
                 <action selector="handleTapToFocus:" destination="-1" id="91"/>
             </connections>
         </tapGestureRecognizer>
+        <panGestureRecognizer minimumNumberOfTouches="1" id="PKg-eo-d4s">
+            <connections>
+                <action selector="panHandler:" destination="-1" id="Ezd-6m-zGh"/>
+            </connections>
+        </panGestureRecognizer>
     </objects>
     <resources>
         <image name="close.png" width="22" height="21"/>

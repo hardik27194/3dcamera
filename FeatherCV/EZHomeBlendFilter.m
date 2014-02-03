@@ -77,12 +77,13 @@ NSString *const kHomeBlendFragmentShaderString = SHADER_STRING
      lowp vec4 smallBlurColor = texture2D(inputImageTexture3, textureCoordinate3);
      lowp vec4 detectedEdge = texture2D(inputImageTexture4, textureCoordinate4);
      lowp float finalEdgeRatio = detectedEdge.r;
+     /**
      if(showFace == 1 && textureCoordinate.x > faceRegion.x && textureCoordinate.x < faceRegion.y && textureCoordinate.y > faceRegion.z && textureCoordinate.y < faceRegion.w){
          gl_FragColor = sharpImageColor * 0.3;
      }else{
          gl_FragColor = sharpImageColor;
      }
-     /**
+      **/
      if(imageMode == 0){
          lowp float colorDist = calcHue(sharpImageColor);
          lowp vec3 darkColor = vec3(0.35);
@@ -102,7 +103,6 @@ NSString *const kHomeBlendFragmentShaderString = SHADER_STRING
      }else if(imageMode == 2){
          gl_FragColor = sharpImageColor;
      }
-      **/
      //gl_FragColor = blurredImageColor;
  }
  );
@@ -168,14 +168,14 @@ NSString *const kFaceBlurFragmentShaderString = SHADER_STRING
     //[_edgeFilter addTarget:_edgeBlurFilter];
     // Second pass: combine the blurred image with the original sharp one
     _combineFilter = [[EZFourInputFilter alloc] initWithFragmentShaderFromString:kHomeBlendFragmentShaderString];
-    [self addFilter:_combineFilter];
+    //[self addFilter:_combineFilter];
     // Texture location 0 needs to be the sharp image for both the blur and the second stage processing
     [self addFilter:_skinBrighter];
     
     [_skinBrighter addTarget:_blurFilter];
     [_skinBrighter addTarget:_smallBlurFilter];
     [_edgeFilter addTarget:_smallBlurFilter atTextureLocation:1];
-    
+    [_skinBrighter addTarget:_combineFilter atTextureLocation:0];
     [_blurFilter addTarget:_combineFilter atTextureLocation:1];
     [_smallBlurFilter addTarget:_combineFilter atTextureLocation:2];
     [_edgeFilter addTarget:_combineFilter atTextureLocation:3];

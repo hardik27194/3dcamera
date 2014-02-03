@@ -143,4 +143,6 @@ typedef enum {
 
 - (IBAction) changeColor:(id)sender;
 
+- (IBAction) panHandler:(id)sender;
+
 @end

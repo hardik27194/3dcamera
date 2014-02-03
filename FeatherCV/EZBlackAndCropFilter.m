@@ -19,8 +19,8 @@ NSString *const kHomeImageCropFragmentShaderString =  SHADER_STRING
  void main()
  {
      lowp vec4 textureColor = texture2D(inputImageTexture, textureCoordinate);
-     lowp float luminance = dot(textureColor.rgb, W);
-     gl_FragColor = vec4(vec3(luminance), textureColor.a);
+     //lowp float luminance = dot(textureColor.rgb, W);
+     gl_FragColor = textureColor;//vec4(vec3(luminance), textureColor.a);
  }
  );
 #else

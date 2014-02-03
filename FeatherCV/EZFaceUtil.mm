@@ -197,7 +197,13 @@ void EZFaceUtil::filterFaces(cv::Mat& inputFrame, std::vector<EZFaceResult*>& in
     }
 }
 
-
+CGFloat calDistance(cv::Scalar color)
+{
+    CGFloat redD = color.val[2] - 160.0;
+    CGFloat greenD = color.val[1] - 130.0;
+    CGFloat blueD = color.val[0] - 70.0;
+    return sqrt(redD * redD + greenD * greenD + blueD * blueD)/255.0;
+}
 
 NSArray* EZFaceUtil::detectFace(UIImage* image, CGFloat miniRatio)
 {
@@ -231,7 +237,15 @@ NSArray* EZFaceUtil::detectFace(UIImage* image, CGFloat miniRatio)
                 EZDEBUG(@"Find a face now");
                 EZFaceResultObj* fobj = [[EZFaceResultObj alloc] init];
                 fobj.orgRegion = CGRectMake(fres->orgRect.x/imageRatio.width, fres->orgRect.y/imageRatio.height, widthRatio, heightRatio);
-                [res addObject:fobj];
+                cv::Scalar skinColor = cv::mean(imageFrame(fres->orgRect));
+                CGFloat dist = calDistance(skinColor);
+                EZDEBUG(@"RGB of the face region is:%f, %f, %f, %f", skinColor.val[0], skinColor.val[1], skinColor.val[2], dist);
+                fobj.avgFaceColor = @[@(skinColor.val[2]/255.0), @(skinColor.val[1]/255.0), @(skinColor.val[0]/255.0)];
+                fobj.skinDistance = dist;
+                CGFloat skinThreshold = 0.5;
+                if(dist < skinThreshold){
+                    [res addObject:fobj];
+                }
             }
         }
     }else{
@@ -241,12 +255,12 @@ NSArray* EZFaceUtil::detectFace(UIImage* image, CGFloat miniRatio)
     return res;
 }
 //EZFaceResult* fr
-void EZFaceUtil::detectSimpleFace(cv::Mat& inputFrame, std::vector<EZFaceResult*>& faces)
+void EZFaceUtil::detectSimpleFace(cv::Mat& inputFrameIn, std::vector<EZFaceResult*>& faces)
 {
     
-    //cv::Mat singleChannel(inputFrame.rows, inputFrame.cols, CV_8UC1);
+    cv::Mat inputFrame(inputFrameIn.rows, inputFrameIn.cols, CV_8UC1);
     EZDEBUG(@"Simply get gray");
-    //getGray(inputFrame, singleChannel);
+    getGray(inputFrameIn, inputFrame);
     
     //clahe->apply(singleChannel, singleChannel);
     //equalizeHist(singleChannel, singleChannel);
