@@ -14,7 +14,7 @@
 #import "EZModalRaiseAnimation.h"
 
 @class EZDisplayPhoto;
-@interface EZAlbumTablePage : UITableViewController<DLCImagePickerDelegate, UINavigationControllerDelegate, UIViewControllerTransitioningDelegate>
+@interface EZAlbumTablePage : UITableViewController<DLCImagePickerDelegate, UINavigationControllerDelegate, UIViewControllerTransitioningDelegate, UIActionSheetDelegate>
 
 
 @property (nonatomic, strong) NSMutableArray* combinedPhotos;
@@ -56,6 +56,8 @@
 @property (nonatomic, strong) EZEventBlock cameraClicked;
 
 @property (nonatomic, strong) UIButton* moreButton;
+
+@property (nonatomic, strong) DLCImagePickerController* picker;
 
 
 //Where do we begin

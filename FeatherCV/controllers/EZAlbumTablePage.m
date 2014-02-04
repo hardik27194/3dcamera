@@ -32,7 +32,7 @@ static int photoCount = 1;
 -(id)initWithQueryBlock:(EZQueryBlock)queryBlock
 {
     self = [super initWithStyle:UITableViewStylePlain];
-    self.title = @"";
+    self.title = @"羽毛";
     _queryBlock = queryBlock;
     [self createMoreButton];
     [self.tableView registerClass:[EZPhotoCell class] forCellReuseIdentifier:@"PhotoCell"];
@@ -76,7 +76,7 @@ static int photoCount = 1;
     _moreButton = [[UIButton alloc] initWithFrame:CGRectMake(110, 0, 100, 44)];
     _moreButton.titleLabel.textAlignment = NSTextAlignmentCenter;
     //_moreButton.titleLabel.textColor = RGBCOLOR(48, 48, 48);
-    [_moreButton setTitle:@"更多0201.2" forState:UIControlStateNormal];
+    [_moreButton setTitle:@"更多" forState:UIControlStateNormal];
     _moreButton.titleLabel.font = [UIFont boldSystemFontOfSize:15];
     [_moreButton setTitleColor:RGBCOLOR(48, 48, 48) forState:UIControlStateNormal];
     [_moreButton addTarget:self action:@selector(showMenu:) forControlEvents:UIControlEventTouchUpInside];
@@ -87,11 +87,11 @@ static int photoCount = 1;
 - (void) viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    _moreButton.alpha = 0.0;
-    [self.navigationController.navigationBar addSubview:_moreButton];
-    [UIView animateWithDuration:0.3 animations:^(){
-        _moreButton.alpha = 1.0;
-    }];
+    //_moreButton.alpha = 0.0;
+    //[self.navigationController.navigationBar addSubview:_moreButton];
+    //[UIView animateWithDuration:0.3 animations:^(){
+    //    _moreButton.alpha = 1.0;
+    //}];
 }
 
 - (void) viewWillDisappear:(BOOL)animated
@@ -209,15 +209,42 @@ static int photoCount = 1;
     if([EZUIUtility sharedEZUIUtility].cameraRaised || [EZUIUtility sharedEZUIUtility].stopRotationRaise){
         return;
     }
-    DLCImagePickerController* controller = [[DLCImagePickerController alloc] init];
+    
+    if(_picker == nil){
+        _picker = [[DLCImagePickerController alloc] init];
+    }
     //controller.prefersStatusBarHidden = TRUE;
-    controller.transitioningDelegate = _cameraAnimation;
-    controller.delegate = self;
-    [self presentViewController:controller animated:TRUE completion:^(){
+    _picker.transitioningDelegate = _cameraAnimation;
+    _picker.delegate = self;
+    if(_picker.isFrontCamera){
+        [_picker switchCamera];
+    }
+    [self presentViewController:_picker animated:TRUE completion:^(){
         EZDEBUG(@"Presentation completed");
     }];
 }
 
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    EZDEBUG(@"button clicked:%i", buttonIndex);
+    if(buttonIndex == 0){
+        //_picker = [[DLCImagePickerController alloc] initWithFront:YES];
+        _picker.frontFacing = true;
+        [self raiseCamera];
+    }else if(buttonIndex == 1){
+        _picker.frontFacing = false;
+        //_picker = [[DLCImagePickerController alloc] initWithFront:NO];
+        [self raiseCamera];
+    }
+    _picker = nil;
+}
+
+- (void) pickPhotoType:(id)sender
+{
+    UIActionSheet* photoSheet = [[UIActionSheet alloc] initWithTitle:@"拍摄类型" delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:nil otherButtonTitles:@"自拍", @"拍摄", nil];
+    [photoSheet showInView:self.view];
+    _picker = [[DLCImagePickerController alloc] init];
+}
 
 - (void)viewDidLoad
 {
@@ -237,18 +264,7 @@ static int photoCount = 1;
     _raiseAnimation = [[EZRaiseAnimation alloc] init];
     _cameraAnimation = [[EZModalRaiseAnimation alloc] init];
     EZDEBUG(@"Query block is:%i",(int)_queryBlock);
-    /**
-    _queryBlock(0, 100, ^(NSArray* arr){
-        EZDEBUG(@"Query completed:%i, I will reload", arr.count);
-        weakSelf.combinedPhotos = [[NSMutableArray alloc] initWithArray:arr];
-        [weakSelf.tableView reloadData];
-    },^(NSError* err){
-        EZDEBUG(@"Error detail:%@", err);
-    });
-    **/
-    //The right thing to do here.
-    //Maybe the whole thing already get triggered.
-    //I can use simple thing to do this.s
+
     [[EZMessageCenter getInstance] registerEvent:EZTakePicture block:^(EZDisplayPhoto* dp){
         EZDEBUG(@"A photo get generated");
         [_combinedPhotos insertObject:dp atIndex:0];
@@ -265,8 +281,13 @@ static int photoCount = 1;
         [weakSelf raiseCamera];
     }];
     
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"更多" style:UIBarButtonItemStylePlain target:self action:@selector(showMenu:)];
+
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(pickPhotoType:)];
+    /**
     CGRect bound = [UIScreen mainScreen].bounds;
     CGFloat diameter = 70.0;
+
     EZClickView* clickButton = [[EZClickView alloc] initWithFrame:CGRectMake((320 - diameter)/2, bound.size.height - diameter - 20, diameter, diameter)];
     [clickButton enableRoundImage];
     [self.view addSubview:clickButton];
@@ -279,6 +300,7 @@ static int photoCount = 1;
         EZDEBUG(@"The mainWindow:%i, topView:%i", (int)EZUIUtility.sharedEZUIUtility.mainWindow,(int)TopView);
         [TopView addSubview:clickButton];
     });
+     **/
 }
 
 

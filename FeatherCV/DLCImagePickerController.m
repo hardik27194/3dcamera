@@ -163,6 +163,12 @@
 	return self;
 }
 
+- (id) initWithFront:(BOOL)frontFacing
+{
+    _frontFacing = frontFacing;
+    return [self initWithNibName:@"DLCImagePicker" bundle:nil];
+}
+
 -(id) init {
     return [self initWithNibName:@"DLCImagePicker" bundle:nil];
 }
@@ -350,8 +356,8 @@
     faceBlurBase = 0.3;
     faceBlender.blurFilter.blurSize = globalBlur;//Original value
     faceBlender.blurFilter.distanceNormalizationFactor = 13;
-    faceBlender.smallBlurFilter.blurSize = 0.1;
-    faceBlender.blurRatio = 0.4;
+    faceBlender.smallBlurFilter.blurSize = 0.05;
+    faceBlender.blurRatio = 0.3;
     faceBlender.edgeFilter.threshold = 0.4;
     return faceBlender;
 }
@@ -420,6 +426,13 @@
     [self startMobileMotion];
 }
 
+- (void) setupButton
+{
+    [self.photoCaptureButton setTitleColor:RGBCOLOR(43, 43, 43) forState:UIControlStateNormal];
+    [self.cancelButton setTitleColor:RGBCOLOR(43, 43, 43) forState:UIControlStateNormal];
+    [self.configButton setTitleColor:RGBCOLOR(43, 43, 43) forState:UIControlStateNormal];
+}
+
 -(void)viewDidLoad {
     [EZUIUtility sharedEZUIUtility].cameraRaised = true;
     [super viewDidLoad];
@@ -430,8 +443,11 @@
     //_recordedMotions = [[NSMutableArray alloc] init];
     _flashView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
     _flashView.backgroundColor = [UIColor whiteColor];
+    _flashMode = 1;
+
     [self setupFlashFilter];
     [self setupDarkFilter];
+    [self setupButton];
     _storedMotionDelta = [[NSMutableArray alloc] init];
     self.wantsFullScreenLayout = YES;
     _pageTurn = [[EZSoundEffect alloc] initWithSoundNamed:@"page_turn.aiff"];
@@ -485,13 +501,6 @@
     CGRect bound = [UIScreen mainScreen].bounds;
     
     
-    cancelImage = [[UIButton alloc] initWithFrame:CGRectMake(30, bound.size.height - 75, 60, 50)];
-    [cancelImage setTitle:@"取消" forState:UIControlStateNormal];
-    //[cancelImage setAttributedTitle: forState:];
-    cancelImage.titleLabel.font = [UIFont boldSystemFontOfSize:17];
-    [self.view addSubview:cancelImage];
-    cancelImage.hidden = YES;
-    [cancelImage addTarget:self action:@selector(retakePhoto:) forControlEvents:UIControlEventTouchUpInside];
     _isFrontCamera = false;
     retakeButton = cancelImage;
     
@@ -700,7 +709,7 @@
     if ([UIImagePickerController isSourceTypeAvailable: UIImagePickerControllerSourceTypeCamera]) {
         // Has camera
         
-        stillCamera = [[GPUImageStillCamera alloc] initWithSessionPreset:AVCaptureSessionPresetPhoto cameraPosition:AVCaptureDevicePositionBack];
+        stillCamera = [[GPUImageStillCamera alloc] initWithSessionPreset:AVCaptureSessionPresetPhoto cameraPosition:(_frontFacing?AVCaptureDevicePositionFront:AVCaptureDevicePositionBack)];
         stillCamera.outputImageOrientation = UIInterfaceOrientationPortrait;
         //stillCamera.horizontallyMirrorFrontFacingCamera = TRUE;
         runOnMainQueueWithoutDeadlocking(^{
@@ -947,7 +956,7 @@
 - (EZClickView*) createSmileButton
 {
     CGRect bound = [UIScreen mainScreen].bounds;
-    EZClickView* smile = [[EZClickView alloc] initWithFrame:CGRectMake(160 + (204.0 - 66.0)/2, bound.size.height-66.0-24, 66.0, 66.0)];
+    EZClickView* smile = [[EZClickView alloc] initWithFrame:CGRectMake(160 + (204.0 - 66.0)/2, bound.size.height-66.0-50, 66.0, 66.0)];
     [smile enableRoundImage];
     smile.backgroundColor = RGBA(200, 100, 20, 128);
     return smile;
@@ -977,21 +986,21 @@
         //firstFilter = (GPUImageFilter*)darkBlurFilter;
         [staticPicture addTarget:darkBlurFilter];
         //[darkBlurFilter addTarget:whiteBalancerFilter];
-        [darkBlurFilter addTarget:tongFilter];
-        [tongFilter addTarget:whiteBalancerFilter];
-        [whiteBalancerFilter addTarget:hueFilter];
+        [darkBlurFilter addTarget:whiteBalancerFilter];
+        [whiteBalancerFilter addTarget:tongFilter];
+        [tongFilter addTarget:hueFilter];
         //[tongFilter addTarget:hueFilter];
     }else{
-        [staticPicture addTarget:tongFilter];
-        [tongFilter addTarget:whiteBalancerFilter];
-        [whiteBalancerFilter addTarget:hueFilter];
+        [staticPicture addTarget:whiteBalancerFilter];
+        [whiteBalancerFilter addTarget:tongFilter];
+        [tongFilter addTarget:hueFilter];
         
     }
     //[tongFilter addTarget:fixColorFilter];
     //[fixColorFilter addTarget:secFixColorFilter];
     EZDEBUG(@"Prepare new static image get called, flash image:%i, image size:%@, dark:%f", _isImageWithFlash, NSStringFromCGSize(img.size), dark);
     //GPUImageFilter* imageFilter = secFixColorFilter;
-    if(fobj || stillCamera.isFrontFacing){
+    if(!_disableFaceBeautify && (fobj || stillCamera.isFrontFacing)){
         [hueFilter addTarget:redEnhanceFilter];
         [redEnhanceFilter addTarget:finalBlendFilter];
         //[secFixColorFilter addTarget:finalBlendFilter];
@@ -1003,7 +1012,7 @@
         CGFloat smallBlurRatio = 0.3;
         
         if(fobj){
-            blurCycle = 2.0;// * fobj.orgRegion.size.width;
+            blurCycle = 2.5;// * fobj.orgRegion.size.width;
             smallBlurRatio = 0.3 * (1.0 - fobj.orgRegion.size.width);
             //if(fobj.orgRegion.size.width > 0.5){
                 //blurCycle = 1.2 * blurCycle;
@@ -1138,7 +1147,7 @@
     }else if(_flashMode == 2){
         flashFile = @"flash-auto";
     }
-    [flashToggleButton setImage:[UIImage imageNamed:flashFile] forState:UIControlStateNormal];
+    //[flashToggleButton setImage:[UIImage imageNamed:flashFile] forState:UIControlStateNormal];
     //[button setSelected:!button.selected];
 }
 
@@ -1187,9 +1196,9 @@
 }
 
 - (void) switchCameraOnly {
-    [self.cameraToggleButton setEnabled:NO];
+    //[self.cameraToggleButton setEnabled:NO];
     [stillCamera rotateCamera];
-    [self.cameraToggleButton setEnabled:YES];
+    //[self.cameraToggleButton setEnabled:YES];
     
     if ([UIImagePickerController isSourceTypeAvailable: UIImagePickerControllerSourceTypeCamera] && stillCamera) {
         if ([stillCamera.inputCamera hasFlash] && [stillCamera.inputCamera hasTorch]) {
@@ -1358,8 +1367,8 @@
     }];
     **/
     [self.retakeButton setHidden:NO];
-    [self.photoCaptureButton setTitle:@"Done" forState:UIControlStateNormal];
-    [self.photoCaptureButton setImage:nil forState:UIControlStateNormal];
+    //[self.photoCaptureButton setTitle:@"Done" forState:UIControlStateNormal];
+    //[self.photoCaptureButton setImage:nil forState:UIControlStateNormal];
     [self.photoCaptureButton setEnabled:YES];
     isStatic = true;
     [blackCover removeFromSuperview];
@@ -1443,6 +1452,33 @@
     return  balance;
 }
 
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    EZDEBUG(@"clicked button:%i", buttonIndex);
+    if(buttonIndex == 0){
+        [self switchCamera];
+    }else if(buttonIndex == 1){
+        [self toggleFlash:nil];
+    }else if(buttonIndex == 2){
+        _disableFaceBeautify = !_disableFaceBeautify;
+    }
+}
+
+- (IBAction) configClicked:(id)sender
+{
+    //NSString* cameraSwitch = @"翻转摄像头";
+    NSString* flashMode = @"闪光灯:自动";
+    if(_flashMode == 0){
+        flashMode = @"闪光灯:关闭";
+    }else if(_flashMode == 2){
+        flashMode = @"闪光灯:打开";
+    }
+    
+    UIActionSheet* actionSheet = [[UIActionSheet alloc] initWithTitle:@"相机设置" delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:nil otherButtonTitles:@"翻转摄像头",flashMode,(_disableFaceBeautify?@"打开美化":@"关闭美化"), nil];
+    [actionSheet showInView:self.view];
+
+}
+
 - (IBAction) panHandler:(id)sender
 {
     if(!isStatic){
@@ -1469,8 +1505,8 @@
     }else
     
     if ([sender state] == UIGestureRecognizerStateChanged) {
-        CGFloat miniTemp = 2500.0;
-        CGFloat maxTemp = 7000.0;
+        CGFloat miniTemp = 4000.0;
+        CGFloat maxTemp = 8000.0;
         CGFloat delta = tapPoint.x - prevPanPoint.x;
         CGFloat change = whiteBalancerFilter.temperature + (delta/320.0) * (maxTemp - miniTemp);
         if(change < miniTemp){
@@ -1542,19 +1578,17 @@
 -(IBAction) takePhoto:(id)sender{
     smileDetected.alpha = 0;
     [self.photoCaptureButton setEnabled:NO];
-    EZDEBUG(@"Take photo get called, is static:%i, before adjust:%f", isStatic, [UIScreen mainScreen].brightness);
-    //[[UIScreen mainScreen]setBrightness:1.0];
-    //EZDEBUG(@"After adjust:%f", [UIScreen mainScreen].brightness);
-    
     if (!isStatic) {
         isStatic = YES;
+        [self changeButtonStatus:YES];
         _isImageWithFlash = NO;
-        [self.libraryToggleButton setHidden:YES];
-        [self.cameraToggleButton setEnabled:NO];
-        [self.flashToggleButton setEnabled:NO];
+        //[self.libraryToggleButton setHidden:YES];
+        //[self.cameraToggleButton setEnabled:NO];
+        //[self.flashToggleButton setEnabled:NO];
         [self prepareForCapture];
         
     } else {
+        [self changeButtonStatus:NO];
         UIImage *currentFilteredVideoFrame = nil;
         if(_highResImageFile){
             [[EZThreadUtility getInstance] executeBlockInQueue:^(){
@@ -1593,19 +1627,19 @@
         }else{
             GPUImageOutput<GPUImageInput> *processUpTo;
             processUpTo = filter;
-            EZDEBUG(@"Before call process image");
+            //EZDEBUG(@"Before call process image");
             [staticPicture processImage];
-            EZDEBUG(@"After call process image");
+            //EZDEBUG(@"After call process image");
             //if(!stillCamera.isFrontFacing){
             
             if(stillCamera.isFrontFacing){
                 currentFilteredVideoFrame = [processUpTo imageFromCurrentlyProcessedOutputWithOrientation:staticPictureOriginalOrientation];
-                EZDEBUG(@"The current orienation:%i, static orientatin:%i", currentFilteredVideoFrame.imageOrientation, staticPictureOriginalOrientation);
+                //EZDEBUG(@"The current orienation:%i, static orientatin:%i", currentFilteredVideoFrame.imageOrientation, staticPictureOriginalOrientation);
                 currentFilteredVideoFrame = [currentFilteredVideoFrame rotateByOrientation:staticPictureOriginalOrientation];
             }else{
                 currentFilteredVideoFrame = [processUpTo imageFromCurrentlyProcessedOutputWithOrientation:UIImageOrientationUp];
                 //currentFilteredVideoFrame = staticPicture
-                EZDEBUG(@"Before shink:%@", NSStringFromCGSize(currentFilteredVideoFrame.size));
+                //EZDEBUG(@"Before shink:%@", NSStringFromCGSize(currentFilteredVideoFrame.size));
             }
         //}
         }
@@ -1648,14 +1682,6 @@
        && [stillCamera.inputCamera hasTorch]) {
         [self.flashToggleButton setEnabled:YES];
     }
-    
-    [self.photoCaptureButton setImage:[UIImage imageNamed:@"camera-icon"] forState:UIControlStateNormal];
-    [self.photoCaptureButton setTitle:nil forState:UIControlStateNormal];
-    
-    if ([self.filtersToggleButton isSelected]) {
-        [self hideFilters];
-    }
-    EZDEBUG(@"The selectedFilter is:%i", selectedFilter);
     //[self setFilter:selectedFilter];
     [self prepareFilter];
 }
@@ -1680,15 +1706,36 @@
     testView2.image = orgImage;
 }
 
+//Only call it when the static
+- (void) changeButtonStatus:(BOOL)staticFlag
+{
+    EZDEBUG(@"The button status:%i", staticFlag);
+    if(staticFlag){
+        [self.cancelButton setTitle:@"重拍" forState:UIControlStateNormal];
+        [self.photoCaptureButton setTitle:@"保存" forState:UIControlStateNormal];
+        self.configButton.hidden = YES;
+    }else{
+        [self.cancelButton setTitle:@"退出" forState:UIControlStateNormal];
+        [self.photoCaptureButton setTitle:@"按这里拍摄" forState:UIControlStateNormal];
+        self.configButton.hidden = NO;
+    }
+    
+}
+
 
 -(IBAction) cancel:(id)sender {
     EZDEBUG(@"Cancel get called");
     //[self executeGame];
    
-    EZUIUtility.sharedEZUIUtility.cameraClickButton.releasedBlock = nil;
-    [self dismissViewControllerAnimated:YES completion:^(){
-        EZDEBUG(@"DLCCamera Will get dismissed");
-    }];
+    if(isStatic){
+        [self retakePhoto:self.cancelButton];
+        [self changeButtonStatus:NO];
+    }else{
+        EZUIUtility.sharedEZUIUtility.cameraClickButton.releasedBlock = nil;
+        [self dismissViewControllerAnimated:YES completion:^(){
+            EZDEBUG(@"DLCCamera Will get dismissed");
+        }];
+    }
     //[self switchDisplayImage];
 }
 

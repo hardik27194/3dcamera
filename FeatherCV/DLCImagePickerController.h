@@ -46,7 +46,7 @@ typedef enum {
 - (void)imagePickerControllerDidCancel:(DLCImagePickerController *)picker;
 @end
 
-@interface DLCImagePickerController : UIViewController <UINavigationControllerDelegate,UIImagePickerControllerDelegate> 
+@interface DLCImagePickerController : UIViewController <UINavigationControllerDelegate,UIImagePickerControllerDelegate, UIActionSheetDelegate>
 
 
 //The job front camera will have to do. 
@@ -68,6 +68,7 @@ typedef enum {
 @property (nonatomic, weak) IBOutlet UILabel* blueGapText;
 @property (nonatomic, weak) IBOutlet UIButton *photoCaptureButton;
 @property (nonatomic, weak) IBOutlet UIButton *cancelButton;
+@property (nonatomic, weak) IBOutlet UIButton *configButton;
 
 @property (nonatomic, weak) IBOutlet UIButton *cameraToggleButton;
 @property (nonatomic, weak) IBOutlet UIButton *blurToggleButton;
@@ -133,16 +134,26 @@ typedef enum {
 
 @property (nonatomic, assign) CGPoint prevFocusPoint;
 
+@property (nonatomic, assign) BOOL frontFacing;
+
+@property (nonatomic, assign) BOOL disableFaceBeautify;
+
 //This method will change the turnStatus
 - (void) captureTurnedImage;
 
 -(void) becomeVisible:(BOOL)isFront;
 - (void) becomeInvisible;
 
+-(IBAction) switchCamera;
+
 - (IBAction) slideChanged:(id)sender;
 
 - (IBAction) changeColor:(id)sender;
 
 - (IBAction) panHandler:(id)sender;
+
+- (IBAction) configClicked:(id)sender;
+
+- (id) initWithFront:(BOOL)frontFacing;
 
 @end

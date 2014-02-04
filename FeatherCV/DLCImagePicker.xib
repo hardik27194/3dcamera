@@ -7,11 +7,10 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="DLCImagePickerController">
             <connections>
-                <outlet property="cameraToggleButton" destination="37" id="48"/>
-                <outlet property="cancelButton" destination="36" id="44"/>
-                <outlet property="flashToggleButton" destination="77" id="78"/>
+                <outlet property="cancelButton" destination="Ygm-rf-oLq" id="3VT-dq-WCV"/>
+                <outlet property="configButton" destination="6HK-aL-pwQ" id="8R3-7Z-bKH"/>
                 <outlet property="imageView" destination="7" id="43"/>
-                <outlet property="topBar" destination="30z-16-j6n" id="PzW-WC-GSB"/>
+                <outlet property="photoCaptureButton" destination="qOc-Gv-WfY" id="3ib-7S-8BW"/>
                 <outlet property="view" destination="4" id="42"/>
             </connections>
         </placeholder>
@@ -20,34 +19,47 @@
             <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <view contentMode="scaleAspectFill" id="7" customClass="GPUImageView">
-                    <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
-                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                <view contentMode="scaleToFill" id="skr-dX-pNa">
+                    <rect key="frame" x="0.0" y="430" width="320" height="50"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <subviews>
-                        <view contentMode="scaleToFill" id="30z-16-j6n">
-                            <rect key="frame" x="0.0" y="0.0" width="320" height="40"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                            <subviews>
-                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" id="77">
-                                    <rect key="frame" x="0.0" y="0.0" width="44" height="44"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
-                                    <state key="normal" image="flash-off.png">
-                                        <color key="titleColor" red="0.19607843459999999" green="0.30980393290000002" blue="0.52156865600000002" alpha="1" colorSpace="calibratedRGB"/>
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                    </state>
-                                    <state key="selected" image="flash.png"/>
-                                    <state key="highlighted">
-                                        <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                    </state>
-                                    <connections>
-                                        <action selector="toggleFlash:" destination="-1" eventType="touchUpInside" id="79"/>
-                                    </connections>
-                                </button>
-                            </subviews>
-                            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                        </view>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="qOc-Gv-WfY">
+                            <rect key="frame" x="0.0" y="0.0" width="320" height="50"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            <state key="normal" title="按这里拍摄">
+                                <color key="titleColor" red="0.39485511000000001" green="0.37407326210000003" blue="0.41563695789999999" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                            </state>
+                            <connections>
+                                <action selector="takePhoto:" destination="-1" eventType="touchDown" id="luY-g6-AHC"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="Ygm-rf-oLq">
+                            <rect key="frame" x="0.0" y="0.0" width="66" height="50"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <state key="normal" title="退出">
+                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                            </state>
+                            <connections>
+                                <action selector="cancel:" destination="-1" eventType="touchUpInside" id="B62-4Y-f9H"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="6HK-aL-pwQ">
+                            <rect key="frame" x="247" y="0.0" width="73" height="50"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <state key="normal" title="设置">
+                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                            </state>
+                            <connections>
+                                <action selector="configClicked:" destination="-1" eventType="touchUpInside" id="YHC-r6-K04"/>
+                            </connections>
+                        </button>
                     </subviews>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                </view>
+                <view contentMode="scaleAspectFill" id="7" customClass="GPUImageView">
+                    <rect key="frame" x="0.0" y="0.0" width="320" height="430"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                     <gestureRecognizers/>
                     <connections>
@@ -56,36 +68,6 @@
                         <outletCollection property="gestureRecognizers" destination="PKg-eo-d4s" appends="YES" id="SUR-9u-wQy"/>
                     </connections>
                 </view>
-                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" id="36">
-                    <rect key="frame" x="277" y="3" width="40" height="37"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
-                    <state key="normal" image="close.png">
-                        <color key="titleColor" red="0.19607843459999999" green="0.30980393290000002" blue="0.52156865600000002" alpha="1" colorSpace="calibratedRGB"/>
-                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                    </state>
-                    <state key="highlighted">
-                        <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                    </state>
-                    <connections>
-                        <action selector="cancel:" destination="-1" eventType="touchUpInside" id="47"/>
-                    </connections>
-                </button>
-                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" id="37">
-                    <rect key="frame" x="136" y="3" width="50" height="41"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
-                    <state key="normal" image="front-camera.png">
-                        <color key="titleColor" red="0.19607843459999999" green="0.30980393290000002" blue="0.52156865600000002" alpha="1" colorSpace="calibratedRGB"/>
-                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                    </state>
-                    <state key="highlighted">
-                        <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                    </state>
-                    <connections>
-                        <action selector="switchCamera" destination="-1" eventType="touchUpInside" id="49"/>
-                    </connections>
-                </button>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
         </view>
@@ -105,10 +87,4 @@
             </connections>
         </panGestureRecognizer>
     </objects>
-    <resources>
-        <image name="close.png" width="22" height="21"/>
-        <image name="flash-off.png" width="22" height="26"/>
-        <image name="flash.png" width="22" height="26"/>
-        <image name="front-camera.png" width="48" height="24"/>
-    </resources>
 </document>
