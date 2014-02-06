@@ -105,7 +105,7 @@ static int photoCount = 1;
 - (UIView*) createMenuView:(NSArray*)menuNames
 {
     CGFloat itemHight = 40;
-    LFGlassView* res = [[LFGlassView alloc] initWithFrame:CGRectMake(110, 60, 100, itemHight * menuNames.count)];
+    LFGlassView* res = [[LFGlassView alloc] initWithFrame:CGRectMake(10, 60, 100, itemHight * menuNames.count)];
     res.userInteractionEnabled = true;
     //res.backgroundColor = RGBA(230, 230, 230, 100);
     res.backgroundColor = BlurBackground;

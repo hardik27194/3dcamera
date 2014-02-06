@@ -91,9 +91,9 @@ NSString *const kHomeBlendFragmentShaderString = SHADER_STRING
          brightness = brightness * brightness;
          finalEdgeRatio = finalEdgeRatio * (1.0 - brightness);
          //colorDist * sharpImageColor +  (1.0 - colorDist) *
-         if(finalEdgeRatio > 0.6){
+         if(finalEdgeRatio > 0.8){
              finalEdgeRatio = 1.0;
-         }else if(finalEdgeRatio < 0.2){
+         }else if(finalEdgeRatio < 0.15){
              finalEdgeRatio = 0.0;
          }
          

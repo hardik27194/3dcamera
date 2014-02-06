@@ -183,8 +183,12 @@
 {
     _turnStatus = kSelfCaptured;
     _selfShot = true;
+    [self.photoCaptureButton setEnabled:NO];
     [self captureImageInner:YES];
     [self removeCaptureView];
+    [self changeButtonStatus:YES];
+
+    //[self setupButton]
 }
 
 //Will adjust the blur level
@@ -443,7 +447,7 @@
     //_recordedMotions = [[NSMutableArray alloc] init];
     _flashView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
     _flashView.backgroundColor = [UIColor whiteColor];
-    _flashMode = 1;
+    _flashMode = 2;
 
     [self setupFlashFilter];
     [self setupDarkFilter];
@@ -890,15 +894,18 @@
         if(result.count > 0){
             EZFaceResultObj* fres = [result objectAtIndex:0];
             CGRect faceRegion = fres.orgRegion;
+            _detectedFaceObj = fres;
             NSArray* res = [self adjustFrameForOrienation:faceRegion orientation:orientation];
             CGPoint poi = [[res objectAtIndex:0] CGPointValue];
             CGFloat distP = [self calDistance:_prevFocusPoint current:poi];
             _prevFocusPoint = poi;
             CGRect fixFrame = [[res objectAtIndex:1] CGRectValue];
-            EZDEBUG(@"Find face at:%@, frame:%@, disP:%f, adjustFocus:%i", NSStringFromCGRect(faceRegion), NSStringFromCGRect(fixFrame), distP, (distP>8));
-            if(distP > 8){
+            EZDEBUG(@"Find face at:%@, frame:%@, disP:%f, adjustFocus:%i", NSStringFromCGRect(faceRegion), NSStringFromCGRect(fixFrame), distP, (distP>20));
+            if(distP > 20){
                 dispatch_main(^(){
-                    [self focusCamera:poi frame:fixFrame expose:false];
+                    if(!isStatic){
+                        [self focusCamera:poi frame:fixFrame expose:false];
+                    }
                     _detectingFace = false;
                     if(_turnStatus == kCameraCapturing){
                         _turnStatus = kFaceCaptured;
@@ -910,6 +917,7 @@
             }
         }else{
             _detectingFace = false;
+            _detectedFaceObj = nil;
         }
 }
 
@@ -1001,6 +1009,7 @@
     EZDEBUG(@"Prepare new static image get called, flash image:%i, image size:%@, dark:%f", _isImageWithFlash, NSStringFromCGSize(img.size), dark);
     //GPUImageFilter* imageFilter = secFixColorFilter;
     if(!_disableFaceBeautify && (fobj || stillCamera.isFrontFacing)){
+        whiteBalancerFilter.temperature = 6000.0;
         [hueFilter addTarget:redEnhanceFilter];
         [redEnhanceFilter addTarget:finalBlendFilter];
         //[secFixColorFilter addTarget:finalBlendFilter];
@@ -1012,7 +1021,7 @@
         CGFloat smallBlurRatio = 0.3;
         
         if(fobj){
-            blurCycle = 2.5;// * fobj.orgRegion.size.width;
+            blurCycle = 2.5 * fobj.orgRegion.size.width;
             smallBlurRatio = 0.3 * (1.0 - fobj.orgRegion.size.width);
             //if(fobj.orgRegion.size.width > 0.5){
                 //blurCycle = 1.2 * blurCycle;
@@ -1211,20 +1220,25 @@
 }
 -(void) prepareForCapture {
     __weak DLCImagePickerController* weakSelf = self;
-    [stillCamera.inputCamera lockForConfiguration:nil];
     if(!stillCamera.isFrontFacing && _flashMode > 0 &&
        [stillCamera.inputCamera hasTorch]){
         EZDEBUG(@"Flash mode is :%i", _flashMode);
         _isImageWithFlash = true;
         if(_flashMode == 1){
             EZDEBUG(@"Manual mode");
-            [stillCamera.inputCamera setTorchMode:AVCaptureTorchModeOn];
+            if ([stillCamera.inputCamera lockForConfiguration:nil]){
+                [stillCamera.inputCamera setTorchMode:AVCaptureTorchModeOn];
+                [stillCamera.inputCamera unlockForConfiguration];
+            }
             [self performSelector:@selector(captureImage)
                    withObject:nil
                    afterDelay:0.8];
         }else{
             EZDEBUG(@"Flash auto mode");
-            [stillCamera.inputCamera setTorchMode:AVCaptureTorchModeAuto];
+            if ([stillCamera.inputCamera lockForConfiguration:nil]){
+                [stillCamera.inputCamera setTorchMode:AVCaptureTorchModeAuto];
+                [stillCamera.inputCamera unlockForConfiguration];
+            }
             [self captureImage];
         }
         
@@ -1246,14 +1260,6 @@
             EZDEBUG(@"Front camera completed");
             [weakSelf.flashView removeFromSuperview];
             [UIScreen mainScreen].brightness = oldBright;
-            /**
-            [UIView animateWithDuration:0.3 animations:^(){
-                weakSelf.flashView.alpha = 0;
-            } completion:^(BOOL finished) {
-                [weakSelf.flashView removeFromSuperview];
-                [UIScreen mainScreen].brightness = oldBright;
-            }];
-             **/
         };
         
     }else{
@@ -1288,8 +1294,7 @@
 - (void) completeImage:(UIImage*)img flip:(BOOL)flip error:(NSError*)error
 {
     photoMeta = stillCamera.currentCaptureMetadata;
-    EZDEBUG(@"Captured meta data:%@", photoMeta);
-    [stillCamera.inputCamera unlockForConfiguration];
+    //EZDEBUG(@"Captured meta data:%@", photoMeta);
     [stillCamera stopCameraCapture];
     [self removeAllTargets];
     if(!stillCamera.isFrontFacing){
@@ -1306,42 +1311,28 @@
 
     staticPicture = [[GPUImagePicture alloc] initWithImage:img smoothlyScaleOutput:NO];
     staticPictureOriginalOrientation = img.imageOrientation;
-    
-    //UIImageView* iview = [[UIImageView alloc] initWithFrame:CGRectMake(0, 400, 100, 100)];
-    //iview.image = flipped;
-    _detectedFaceObj = nil;
-    
-    UIImage* detectImage = img;
-    //if(!stillCamera.isFrontFacing){
-        //detectImage = [img changeOriention:UIImageOrientationUp];
-    //}
-    EZDEBUG(@"Capture the flip is:%i, flipped orientation:%i, orginal:%i, staticOrientation:%i", flip, detectImage.imageOrientation, img.imageOrientation, staticPictureOriginalOrientation);
-    //UIImageView* faceView = [[UIImageView alloc] initWithFrame:CGRectMake(10, 100, 100, 100)];
-    //faceView.image = detectImage;
-    //[imageView addSubview:faceView];
-    NSArray* faces = [EZFaceUtilWrapper detectFace:detectImage ratio:0.01];
-    EZFaceResultObj* firstObj = nil;
-    if(faces.count > 0){
-        for(EZFaceResultObj* fobj in faces){
-            if(fobj.orgRegion.size.width > firstObj.orgRegion.size.width){
-                firstObj = fobj;
+    if(!_detectedFaceObj){
+        UIImage* detectImage = img;
+        //if(!stillCamera.isFrontFacing){
+            //detectImage = [img changeOriention:UIImageOrientationUp];
+        //}
+        EZDEBUG(@"Capture the flip is:%i, flipped orientation:%i, orginal:%i, staticOrientation:%i", flip, detectImage.imageOrientation, img.imageOrientation, staticPictureOriginalOrientation);
+
+        NSArray* faces = [EZFaceUtilWrapper detectFace:detectImage ratio:0.01];
+        EZFaceResultObj* firstObj = nil;
+        if(faces.count > 0){
+            for(EZFaceResultObj* fobj in faces){
+                if(fobj.orgRegion.size.width > firstObj.orgRegion.size.width){
+                    firstObj = fobj;
+                }
             }
-        }
         //firstObj = [faces objectAtIndex:0];
+        }
+        _detectedFaceObj = firstObj;
     }
-    _detectedFaceObj = firstObj;
     [self prepareStaticFilter:_detectedFaceObj image:img];
     CGSize imageSize = img.size;
-    
-    //dispatch_later(0.1, ^(){
-    /**
-    if(firstObj){
-       CGSize textureSize = [self adjustEdgeWidth:imageSize orientation:staticPictureOriginalOrientation];
-        finalBlendFilter.edgeFilter.texelWidth = textureSize.width;
-        finalBlendFilter.edgeFilter.texelHeight = textureSize.height;
-    }
-     **/
-    if(firstObj){
+    if(_detectedFaceObj){
         CGFloat orgWidth = finalBlendFilter.edgeFilter.texelWidth;
         CGFloat orgHeight = finalBlendFilter.edgeFilter.texelHeight;
         CGFloat lineWidth = 1.0/imageSize.width;
@@ -1358,14 +1349,6 @@
         EZDEBUG(@"Reprocess width:%f, height:%f, original width:%f, height:%f, image Orientation:%i, calculated width:%f, height:%f",  finalBlendFilter.edgeFilter.texelWidth,  finalBlendFilter.edgeFilter.texelHeight, orgWidth, orgHeight, staticPictureOriginalOrientation, lineWidth, lineHeight);
     }
     [staticPicture processImage];
-    /**
-    [UIView animateWithDuration:0.2 animations:^(){
-        blackView.alpha = 0;
-    } completion:^(BOOL complete){
-        [blackView removeFromSuperview];
-        blackView.image = nil;
-    }];
-    **/
     [self.retakeButton setHidden:NO];
     //[self.photoCaptureButton setTitle:@"Done" forState:UIControlStateNormal];
     //[self.photoCaptureButton setImage:nil forState:UIControlStateNormal];
@@ -1470,7 +1453,7 @@
     NSString* flashMode = @"闪光灯:自动";
     if(_flashMode == 0){
         flashMode = @"闪光灯:关闭";
-    }else if(_flashMode == 2){
+    }else if(_flashMode == 1){
         flashMode = @"闪光灯:打开";
     }
     
@@ -1713,11 +1696,13 @@
     if(staticFlag){
         [self.cancelButton setTitle:@"重拍" forState:UIControlStateNormal];
         [self.photoCaptureButton setTitle:@"保存" forState:UIControlStateNormal];
+        [self.photoCaptureButton setEnabled:YES];
         self.configButton.hidden = YES;
     }else{
         [self.cancelButton setTitle:@"退出" forState:UIControlStateNormal];
         [self.photoCaptureButton setTitle:@"按这里拍摄" forState:UIControlStateNormal];
         self.configButton.hidden = NO;
+        [self.photoCaptureButton setEnabled:YES];
     }
     
 }
