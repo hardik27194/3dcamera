@@ -30,6 +30,8 @@
 #define currentPerson [[EZDataUtil getInstance] getCurrentPerson] 
 
 #define randBack(color)  [[EZUIUtility sharedEZUIUtility] getBackgroundColor:color]
+
+#define baseUploadURL @"http://192.168.1.104:8080/upload"
 //This is from show hair.
 //Who will manage the session.
 //From Mobile's perspective, I should handle the session.

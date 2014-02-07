@@ -19,6 +19,7 @@
 #import "DLCImagePickerController.h"
 #import "EZDataUtil.h"
 #import "SlideAnimation.h"
+#import "EZNetworkUtility.h"
 
 
 static int photoCount = 1;
@@ -406,39 +407,58 @@ static int photoCount = 1;
     }
     }
     __weak EZPhotoCell* weakCell = cell;
+    __weak EZAlbumTablePage* weakSelf = self;
     cell.container.releasedBlock = ^(id obj){
-        if(cp.isTurning){
-            EZDEBUG(@"Return while turning");
-            return;
-        }
-        if(weakCell.currentPos != indexPath.row){
-            EZDEBUG(@"Turn while cell no more this row:%i, %i", weakCell.currentPos, indexPath.row);
-            return;
-        }
-        EZDEBUG(@"rotateContainer,FrontImage rect:%@, %@, rotatateContainer parent:%i, %i",NSStringFromCGRect(weakCell.rotateContainer.frame), NSStringFromCGRect(weakCell.frontImage.frame), (int)weakCell.rotateContainer.superview, (int)weakCell.container);
-        cp.isTurning = true;
-        cp.isFront = !cp.isFront;
-        EZEventBlock complete = ^(id sender){
-            EZDEBUG(@"Complete get called");
-            [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
-        };
-        if(cp.isFront){
-            //[weakCell displayImage:[myPhoto getLocalImage]];
-            [weakCell switchImage:[myPhoto getScreenImage] photo:cp complete:complete tableView:tableView index:indexPath];
+        if(cp.combineStatus == kEZStartStatus){
+            cp.combineStatus = kEZSendSharedRequest;
+            EZDEBUG(@"Will start upload the image");
+            NSString* storedFile = [EZFileUtil saveImageToCache:[myPhoto getScreenImage]];
+            [[EZNetworkUtility getInstance] upload:baseUploadURL file:storedFile uploadField:@"myfile" headers:nil parameters:@{@"personid":@"coolguy"} complete:^(id obj){
+                EZDEBUG(@"Upload successfully");
+            } error:^(id obj){
+                EZDEBUG(@"Upload failed");
+            } method:nil];
+            
         }else{
-            EZDEBUG(@"The container size:%f, %f", weakCell.container.frame.size.width, weakCell.container.frame.size.height);
-            if(!cp.randImage){
-                int imagePos = rand()%17;
-                ++imagePos;
-                NSString* randFile = [NSString stringWithFormat:@"santa_%i.jpg", imagePos];
-                EZDEBUG(@"Random File name:%@", randFile);
-                cp.randImage = randFile;
-            }
-            [weakCell switchImage:[UIImage imageNamed:cp.randImage] photo:cp complete:complete tableView:tableView index:indexPath];
+            [weakSelf switchAnimation:cp photoCell:weakCell indexPath:indexPath tableView:tableView];
         }
     };
 
     return cell;
+}
+
+- (void) switchAnimation:(EZDisplayPhoto*)cp photoCell:(EZPhotoCell*)weakCell indexPath:(NSIndexPath*)indexPath tableView:(UITableView*)tableView
+{
+    if(cp.isTurning){
+        EZDEBUG(@"Return while turning");
+        return;
+    }
+    if(weakCell.currentPos != indexPath.row){
+        EZDEBUG(@"Turn while cell no more this row:%i, %i", weakCell.currentPos, indexPath.row);
+        return;
+    }
+    EZDEBUG(@"rotateContainer,FrontImage rect:%@, %@, rotatateContainer parent:%i, %i",NSStringFromCGRect(weakCell.rotateContainer.frame), NSStringFromCGRect(weakCell.frontImage.frame), (int)weakCell.rotateContainer.superview, (int)weakCell.container);
+    cp.isTurning = true;
+    cp.isFront = !cp.isFront;
+    EZEventBlock complete = ^(id sender){
+        EZDEBUG(@"Complete get called");
+        [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+    };
+    if(cp.isFront){
+        //[weakCell displayImage:[myPhoto getLocalImage]];
+        [weakCell switchImage:[cp.photo getScreenImage] photo:cp complete:complete tableView:tableView index:indexPath];
+    }else{
+        EZDEBUG(@"The container size:%f, %f", weakCell.container.frame.size.width, weakCell.container.frame.size.height);
+        if(!cp.randImage){
+            int imagePos = rand()%17;
+            ++imagePos;
+            NSString* randFile = [NSString stringWithFormat:@"santa_%i.jpg", imagePos];
+            EZDEBUG(@"Random File name:%@", randFile);
+            cp.randImage = randFile;
+        }
+        [weakCell switchImage:[UIImage imageNamed:cp.randImage] photo:cp complete:complete tableView:tableView index:indexPath];
+    }
+
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
