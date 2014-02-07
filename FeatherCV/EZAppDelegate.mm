@@ -30,6 +30,7 @@
 #import "EZContactTablePage.h"
 #import "ILTranslucentView.h"
 #import "EZUIUtility.h"
+#import "AFNetworkActivityIndicatorManager.h"
 
 @implementation EZAppDelegate
 
@@ -198,14 +199,21 @@
     //[[UINavigationBar appearance] setBarStyle:UIBarStyleBlack];
 }
 
+- (void) setupNetwork
+{
+    NSURLCache *URLCache = [[NSURLCache alloc] initWithMemoryCapacity:4 * 1024 * 1024 diskCapacity:20 * 1024 * 1024 diskPath:nil];
+    [NSURLCache setSharedURLCache:URLCache];
+    
+    [[AFNetworkActivityIndicatorManager sharedManager] setEnabled:YES];
+}
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     _cameraRaised = false;
     [EZTestSuites testAll];
  
     [self setupAppearance];
-    ILTranslucentView* barView = [[ILTranslucentView alloc] initWithFrame:CGRectMake(0, 64, 320, 44)];
-    barView.translucentAlpha = 1.0;
+    [self setupNetwork];
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     
     //self.window.backgroundColor = [UIColor greenColor];

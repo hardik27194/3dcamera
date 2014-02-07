@@ -413,11 +413,34 @@ static int photoCount = 1;
             cp.combineStatus = kEZSendSharedRequest;
             EZDEBUG(@"Will start upload the image");
             NSString* storedFile = [EZFileUtil saveImageToCache:[myPhoto getScreenImage]];
+            /**
             [[EZNetworkUtility getInstance] upload:baseUploadURL file:storedFile uploadField:@"myfile" headers:nil parameters:@{@"personid":@"coolguy"} complete:^(id obj){
                 EZDEBUG(@"Upload successfully");
             } error:^(id obj){
                 EZDEBUG(@"Upload failed");
             } method:nil];
+             **/
+            
+            [[EZNetworkUtility getInstance] upload:baseUploadURL parameters:@{@"personid":@"coolguy"} file:storedFile complete:^(id obj){
+                EZDEBUG(@"Complete call back:%@, is main:%i",obj,[NSThread isMainThread]);
+            } error:^(id err){
+                EZDEBUG(@"Upload error:%@,  is main:%i", err, [NSThread isMainThread]);
+            }];
+            
+            /**
+            [EZNetworkUtility getJson:@"static/handpa.txt" complete:^(id dict){
+                EZDEBUG(@"get upload:%@", dict);
+            } failblk:^(NSError* err){
+                EZDEBUG(@"get upload:%@", err);
+            }];
+            EZDEBUG(@"upload asynchronized");
+             
+            [EZNetworkUtility postJson:@"feather" parameters:@{@"coolguy":@"yaya"} complete:^(id json){
+                EZDEBUG(@"Post response:%@", json);
+            } failblk:^(NSError* err){
+                EZDEBUG(@"Error:%@", err);
+            }];
+             **/
             
         }else{
             [weakSelf switchAnimation:cp photoCell:weakCell indexPath:indexPath tableView:tableView];

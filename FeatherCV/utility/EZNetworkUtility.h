@@ -17,10 +17,11 @@
 //I will use a fixed file name for time being.
 + (void) download:(NSURL*)url complete:(EZEventBlock)complete failblk:(EZEventBlock)block;
 
-+ (void) postJson:(NSURL*)url action:(NSString*)action parameters:(NSDictionary*)dicts complete:(EZEventBlock)complete failblk:(EZEventBlock)block;
++ (void) postJson:(NSString*)url parameters:(NSDictionary*)dicts complete:(EZEventBlock)complete failblk:(EZEventBlock)block;
 
-+ (void) getJson:(NSURL*)url complete:(EZEventBlock)complete failblk:(EZEventBlock)block;
++ (void) getJson:(NSString*)url complete:(EZEventBlock)complete failblk:(EZEventBlock)block;
 
+- (void) upload:(NSString*)uploadURL parameters:(NSDictionary*)parameters file:(NSString*)fullPath complete:(EZEventBlock)completed error:(EZEventBlock)errorBlk;
 
 //The purpose of this method is to move the json combination out of the execution queue
 + (void) postJson:(NSURL*)url action:(NSString*)action parameters:(NSDictionary*)dicts complete:(EZEventBlock)complete failblk:(EZEventBlock)block callbackQueue:(dispatch_queue_t)callbackQueue;
@@ -65,7 +66,7 @@
 
 + (NSString*) getCurrentSession;
 
-- (void) upload:(NSString*)uploadURL file:(NSString*)videoFile complete:(EZEventBlock)completed error:(EZEventBlock)errorBlk;
+
 
 
 - (void) uploadImage:(NSString*)uploadURL file:(NSString*)videoFile parameters:(NSDictionary*)parameters  complete:(EZEventBlock)completed error:(EZEventBlock)errorBlk retry:(BOOL)retry onlyWifi:(BOOL)onlyWifi method:(NSString*)method;

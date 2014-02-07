@@ -14,6 +14,7 @@
 #import "AFNetworking.h"
 #import "EZDataUtil.h"
 #import "EZExtender.h"
+#import "UIImageView+AFNetworking.h"
 
 @interface EZContactsPage ()
 

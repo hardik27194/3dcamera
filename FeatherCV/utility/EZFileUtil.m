@@ -475,8 +475,8 @@
 + (NSString*) saveImageToCache:(UIImage*)img
 {
     static  NSInteger count = 0;
-    NSString* fileName = [EZFileUtil getTempFileName:int2str(count++) postFix:@"png"];
-    NSString* fullPath = [EZFileUtil saveToCache:img.toData filename:fileName];
+    NSString* fileName = [EZFileUtil getTempFileName:int2str(count++) postFix:@"jpg"];
+    NSString* fullPath = [EZFileUtil saveToCache:img.toJpegData filename:fileName];
     return fullPath;
 }
 

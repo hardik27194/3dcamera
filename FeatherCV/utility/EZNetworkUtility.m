@@ -11,12 +11,13 @@
 //#import "AFDownloadRequestOperation.h"
 #import "EZConstants.h"
 #import "EZThreadUtility.h"
-#import "ASIFormDataRequest.h"
+//#import "ASIFormDataRequest.h"
 #import "EZUploadHandler.h"
 #import "EZExtender.h"
 #import "EZReachability.h"
 #import "EZMessageCenter.h"
 #import "EZAppConstants.h"
+#import "EZFeatherAPIClient.h"
 #import <objc/runtime.h>
 
 
@@ -94,6 +95,8 @@ static EZNetworkUtility* instance;
 
 - (void) upload:(NSString*)uploadURL file:(NSString*)videoFile uploadField:(NSString*)fieldName headers:(NSDictionary*)headers parameters:(NSDictionary*)parameters  complete:(EZEventBlock)completed error:(EZEventBlock)errorBlk method:(NSString*)method
 {
+    
+    /**
     __weak EZNetworkUtility* weakSelf = self;
     ASIFormDataRequest* _request = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:uploadURL]];
     
@@ -157,17 +160,133 @@ static EZNetworkUtility* instance;
 	[_request startAsynchronous];
     EZDEBUG(@"Start uploading the video files");
 
+    **/
+}
+
+- (void) upload:(NSString *)uploadURL parameters:(NSDictionary *)parameters file:(NSString *)fullPath complete:(EZEventBlock)completed error:(EZEventBlock)errorBlk
+{
+    // 1. Create `AFHTTPRequestSerializer` which will create your request.
+    AFHTTPRequestSerializer *serializer = [AFHTTPRequestSerializer serializer];
     
+    NSArray* fileNames = [fullPath componentsSeparatedByString:@"/"];
+    
+    NSString* fileName = fileNames.count > 0?[fileNames objectAtIndex:fileNames.count - 1]:fullPath;
+    // 2. Create an `NSMutableURLRequest`.
+    NSData* imageData = [NSData dataWithContentsOfFile:fullPath];
+    NSMutableURLRequest *request =
+    [serializer multipartFormRequestWithMethod:@"POST" URLString:baseUploadURL
+                                    parameters:parameters
+                     constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
+                         [formData appendPartWithFileData:imageData
+                                                     name:@"myfile"
+                                                 fileName:fileName
+                                                 mimeType:@"image/jpeg"];
+                     }];
+    
+    // 3. Create and use `AFHTTPRequestOperationManager` to create an `AFHTTPRequestOperation` from the `NSMutableURLRequest` that we just created.
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    AFHTTPRequestOperation *operation =
+    [manager HTTPRequestOperationWithRequest:request
+                                     success:^(AFHTTPRequestOperation *operation, id responseObject) {
+                                         NSLog(@"Success %@", responseObject);
+                                         if(completed){
+                                             completed(responseObject);
+                                         }
+                                     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+                                         NSLog(@"Failure %@", error.description);
+                                         if(errorBlk){
+                                             errorBlk(error);
+                                         }
+                                     }];
+    
+    // 4. Set the progress block of the operation.
+    [operation setUploadProgressBlock:^(NSUInteger __unused bytesWritten,
+                                        long long totalBytesWritten,
+                                        long long totalBytesExpectedToWrite) {
+        NSLog(@"Wrote %lld/%lld", totalBytesWritten, totalBytesExpectedToWrite);
+    }];
+    
+    // 5. Begin!
+    [operation start];
+}
+
+- (void) uploadWorkable:(NSString *)uploadURL parameters:(NSDictionary *)parameters file:(NSString *)fullPath complete:(EZEventBlock)completed error:(EZEventBlock)errorBlk
+{
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    //NSDictionary *parameters = @{@"foo": @"bar"};
+    NSURL *filePath = [NSURL fileURLWithPath:fullPath];
+    [manager POST:baseUploadURL parameters:parameters constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
+        [formData appendPartWithFileURL:filePath name:@"myfile" error:nil];
+    } success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        EZDEBUG(@"Success: %@", responseObject);
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        EZDEBUG(@"Error: %@", error);
+    }];
+}
+
+- (void) uploadTask:(NSString *)uploadURL parameters:(NSDictionary *)parameters file:(NSString *)fullPath complete:(EZEventBlock)completed error:(EZEventBlock)errorBlk
+{
+    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+    AFURLSessionManager *manager = [[AFURLSessionManager alloc] initWithSessionConfiguration:configuration];
+    
+    NSURL *URL = [NSURL URLWithString:uploadURL];
+    NSURLRequest *request = [NSURLRequest requestWithURL:URL];
+    
+    //NSURL *filePath = [NSURL fileURLWithPath:@"file://path/to/image.png"];
+    
+    NSArray* fileNames = [fullPath componentsSeparatedByString:@"/"];
+    
+    NSString* fileName = fileNames.count > 0?[fileNames objectAtIndex:fileNames.count - 1]:fullPath;
+    NSURL* fileURl = [NSURL fileURLWithPath:fullPath];
+    EZDEBUG(@"The final extracted file name:%@, full file URL:%@", fileName, fileURl.absoluteString);
+
+    NSURLSessionUploadTask *uploadTask = [manager uploadTaskWithRequest:request fromFile:fileURl progress:nil completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
+        if (error) {
+            EZDEBUG(@"Error info: %@", error);
+            if(errorBlk){
+                errorBlk(error);
+            }
+        } else {
+            EZDEBUG(@"Success: %@ %@", response, responseObject);
+            if(completed){
+                completed(responseObject);
+            }
+        }
+    }];
+    [uploadTask resume];
 }
 
 //Once completed, I will start to play the video immediately.
 //Now just print some information that I have completed.
-- (void) upload:(NSString*)uploadURL file:(NSString*)videoFile complete:(EZEventBlock)completed
-error:(EZEventBlock)errorBlk
+- (void) uploadOld:(NSString*)uploadURL parameters:(NSDictionary *)parameters file:(NSString *)fullPath complete:(EZEventBlock)completed error:(EZEventBlock)errorBlk
 {
-    NSString* finalName = [videoFile componentsSeparatedByString:@"/"].lastObject;
-	//[_request setPostValue:finalName forKey:@"name"];
-    [self upload:uploadURL file:finalName uploadField:@"name" headers:nil parameters:nil complete:completed error:errorBlk method:nil];
+    NSArray* fileNames = [fullPath componentsSeparatedByString:@"/"];
+    
+    NSString* fileName = fileNames.count > 0?[fileNames objectAtIndex:fileNames.count - 1]:fullPath;
+    NSURL* fileURl = [NSURL fileURLWithPath:fullPath];
+    EZDEBUG(@"The final extracted file name:%@, full file URL:%@", fileName, fileURl.absoluteString);
+    NSMutableURLRequest *request = [[AFHTTPRequestSerializer serializer] multipartFormRequestWithMethod:@"POST" URLString:uploadURL parameters:parameters constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
+        [formData appendPartWithFileURL:fileURl name:@"myfile" fileName:fileName mimeType:@"image/jpeg" error:nil];
+    } error:nil];
+    
+    AFURLSessionManager *manager = [[AFURLSessionManager alloc] initWithSessionConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
+    NSProgress *progress = nil;
+    
+    NSURLSessionUploadTask *uploadTask = [manager uploadTaskWithStreamedRequest:request progress:&progress completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
+        if (error) {
+            EZDEBUG(@"Error: %@", error);
+            if(errorBlk){
+                errorBlk(error);
+            }
+        } else {
+            EZDEBUG(@"%@ %@", response, responseObject);
+            if(completed){
+                completed(responseObject);
+            }
+        }
+    }];
+    
+    [uploadTask resume];
         
 }
 
@@ -313,16 +432,18 @@ error:(EZEventBlock)errorBlk
 
 + (void) postJson:(NSURL*)url action:(NSString*)action parameters:(NSDictionary*)dicts complete:(EZEventBlock)complete failblk:(EZEventBlock)block callbackQueue:(dispatch_queue_t)callbackQueue method:(NSString *)method
 {
+    /**
+     if(session){
+     [client setDefaultHeader:@"Cookie" value:[NSString stringWithFormat:@"sessionid=%@; Path=/", session]];
+     }
+     **/
+    /**
     
     AFHTTPClient* client = [AFHTTPClient clientWithBaseURL:url];
     NSString* session = [EZNetworkUtility getSessionFromCookie];
     EZDEBUG(@"post url:%@, sessionid:%@, %@", url, session, dicts);
     
-    /**
-    if(session){
-        [client setDefaultHeader:@"Cookie" value:[NSString stringWithFormat:@"sessionid=%@; Path=/", session]];
-    }
-     **/
+   
     [client postPath:action parameters:dicts success:^(AFHTTPRequestOperation* ops, id responseObject){
         EZDEBUG(@"ResponseObject:%@, response string:%@", [responseObject class], ops.responseString);
         id json = [EZNetworkUtility str2json:ops.responseString];
@@ -340,6 +461,8 @@ error:(EZEventBlock)errorBlk
             block(json?json:error);
         }
     } callbackQueue:callbackQueue method:method];
+    **/
+    
 }
 
 + (void) getJson:(NSURL *)url complete:(EZEventBlock)complete failblk:(EZEventBlock)block callbackQueue:(dispatch_queue_t)callbackQueue
@@ -360,6 +483,7 @@ error:(EZEventBlock)errorBlk
 {
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
     
+    /**
     if(method){
         [request setHTTPMethod:method];
     }
@@ -385,17 +509,51 @@ error:(EZEventBlock)errorBlk
         
     } callbackQueue:callbackQueue];
     [operation start];
+     **/
 }
 
-+ (void) postJson:(NSURL*)url action:(NSString*)action parameters:(NSDictionary*)dicts complete:(EZEventBlock)complete failblk:(EZEventBlock)block
++ (void) getJsonTest:(NSString *)url complete:(EZEventBlock)complete failblk:(EZEventBlock)block
 {
-    [self postJson:url action:action parameters:dicts complete:complete failblk:block callbackQueue:nil];
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    [manager GET:[NSString stringWithFormat:@"%@%@", baseServiceURL, url] parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        EZDEBUG(@"JSON: %@", responseObject);
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        EZDEBUG(@"Error: %@", error);
+    }];
 }
 
-+ (void) getJson:(NSURL*)url complete:(EZEventBlock)complete failblk:(EZEventBlock)block
+//Use another method.
++ (void) getJson:(NSString*)url complete:(EZEventBlock)complete failblk:(EZEventBlock)block
 {
-    [self getJson:url complete:complete failblk:block callbackQueue:nil];
+    //[self getJson:url complete:complete failblk:block callbackQueue:nil];
+    EZDEBUG(@"The absolute url is:%@", url);
+    [[EZFeatherAPIClient sharedClient] GET:url parameters:nil success:^(NSURLSessionDataTask * __unused task, id JSON) {
+        if (complete) {
+            complete(JSON);
+        }
+    } failure:^(NSURLSessionDataTask *__unused task, NSError *error) {
+        if (block) {
+            block(error);
+        }
+    }];
+
 }
+
+
++ (void) postJson:(NSString*)url parameters:(NSDictionary*)dicts complete:(EZEventBlock)complete failblk:(EZEventBlock)block
+{
+
+    [[EZFeatherAPIClient sharedClient] POST:url parameters:dicts success:^(NSURLSessionDataTask * __unused task, id JSON) {
+        if (complete) {
+            complete(JSON);
+        }
+    } failure:^(NSURLSessionDataTask *__unused task, NSError *error) {
+        if (block) {
+            block(error);
+        }
+    }];
+}
+
 
 + (id) fillObject:(Class)class1 data:(NSDictionary*)dict fields:(NSArray*)arr
 {
@@ -600,6 +758,7 @@ error:(EZEventBlock)errorBlk
 
 + (void) upload:(NSURL *)file uploadURL:(NSString *)baseURL file:(NSString*)fullName uploadPath:(NSString*)path success:(EZEventBlock)blk failBlk:(EZEventBlock)failBlk
 {
+    /**
    AFHTTPClient* httpClient = [AFHTTPClient clientWithBaseURL:[NSURL URLWithString:baseURL]];
     NSString* uploadedFile = [fullName componentsSeparatedByString:@"/"].lastObject;
     NSData* data = [NSData dataWithContentsOfFile:fullName];
@@ -622,6 +781,7 @@ error:(EZEventBlock)errorBlk
     [operation  setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {NSLog(@"Success");}
                                       failure:^(AFHTTPRequestOperation *operation, NSError *error) {NSLog(@"error: %@",  operation.responseString);}];
     [operation start];
+     **/
 }
 
 + (Class) retIfNotMetaClass:(NSString*)className
