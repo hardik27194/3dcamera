@@ -231,6 +231,7 @@ static int photoCount = 1;
     if(buttonIndex == 0){
         //_picker = [[DLCImagePickerController alloc] initWithFront:YES];
         _picker.frontFacing = true;
+        _picker.shotMode = kSelfShotMode;
         [self raiseCamera];
     }else if(buttonIndex == 1){
         _picker.frontFacing = false;
@@ -360,6 +361,71 @@ static int photoCount = 1;
     //return 0;
 }
 
+- (void) testBackendCommunication
+{
+    //NSString* storedFile = [EZFileUtil saveImageToCache:[myPhoto getScreenImage]];
+    
+    
+    [EZNetworkUtility postParameterAsJson:@"query/contacts" parameters:@[@{@"name":@"coolguy"}, @{@"name":@"hot girl"}] complete:^(id result){
+        EZDEBUG(@"result:%@", result);
+    } failblk:^(NSError* err){
+        EZDEBUG(@"Error:%@", err);
+    }];
+    /**
+    [[EZDataUtil getInstance] registerUser:@{@"email":@"coolguy@gmail.com",
+                                             @"password":@"hahahehe",
+                                             @"mobile":@"15216727142"
+                                             }
+                                   success:^(EZPerson* person){
+                                       EZDEBUG(@"person name:%@", person.name);
+                                   } error:^(NSError* err){
+                                       EZDEBUG(@"err:%@", err);
+                                   }];
+    
+    [[EZDataUtil getInstance] loginUser:@{@"email":@"coolguy@gmail.com",
+                                          @"password":@"hahahehe",
+                                          @"mobile":@"15216727142"
+                                          }
+                                success:^(EZPerson* person){
+                                    EZDEBUG(@"post person name:%@", person.name);
+                                } error:^(NSError* err){
+                                    EZDEBUG(@"post err:%@", err);
+                                }];
+     **/
+    /**
+     [[EZNetworkUtility getInstance] upload:baseUploadURL file:storedFile uploadField:@"myfile" headers:nil parameters:@{@"personid":@"coolguy"} complete:^(id obj){
+     EZDEBUG(@"Upload successfully");
+     } error:^(id obj){
+     EZDEBUG(@"Upload failed");
+     } method:nil];
+     **/
+    
+    /**
+     [[EZNetworkUtility getInstance] upload:baseUploadURL parameters:@{@"personid":@"coolguy"} file:storedFile complete:^(id obj){
+     EZDEBUG(@"Complete call back:%@, is main:%i",obj,[NSThread isMainThread]);
+     } error:^(id err){
+     EZDEBUG(@"Upload error:%@,  is main:%i", err, [NSThread isMainThread]);
+     } progress:^(CGFloat percent){
+     EZDEBUG(@"The upload progress is:%f", percent);
+     }];
+     **/
+    /**
+     [EZNetworkUtility getJson:@"static/handpa.txt" complete:^(id dict){
+     EZDEBUG(@"get upload:%@", dict);
+     } failblk:^(NSError* err){
+     EZDEBUG(@"get upload:%@", err);
+     }];
+     EZDEBUG(@"upload asynchronized");
+     
+     [EZNetworkUtility postJson:@"feather" parameters:@{@"coolguy":@"yaya"} complete:^(id json){
+     EZDEBUG(@"Post response:%@", json);
+     } failblk:^(NSError* err){
+     EZDEBUG(@"Error:%@", err);
+     }];
+     **/
+
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *CellIdentifier = @"PhotoCell";
@@ -412,36 +478,7 @@ static int photoCount = 1;
         if(cp.combineStatus == kEZStartStatus){
             cp.combineStatus = kEZSendSharedRequest;
             EZDEBUG(@"Will start upload the image");
-            NSString* storedFile = [EZFileUtil saveImageToCache:[myPhoto getScreenImage]];
-            /**
-            [[EZNetworkUtility getInstance] upload:baseUploadURL file:storedFile uploadField:@"myfile" headers:nil parameters:@{@"personid":@"coolguy"} complete:^(id obj){
-                EZDEBUG(@"Upload successfully");
-            } error:^(id obj){
-                EZDEBUG(@"Upload failed");
-            } method:nil];
-             **/
-            
-            [[EZNetworkUtility getInstance] upload:baseUploadURL parameters:@{@"personid":@"coolguy"} file:storedFile complete:^(id obj){
-                EZDEBUG(@"Complete call back:%@, is main:%i",obj,[NSThread isMainThread]);
-            } error:^(id err){
-                EZDEBUG(@"Upload error:%@,  is main:%i", err, [NSThread isMainThread]);
-            }];
-            
-            /**
-            [EZNetworkUtility getJson:@"static/handpa.txt" complete:^(id dict){
-                EZDEBUG(@"get upload:%@", dict);
-            } failblk:^(NSError* err){
-                EZDEBUG(@"get upload:%@", err);
-            }];
-            EZDEBUG(@"upload asynchronized");
-             
-            [EZNetworkUtility postJson:@"feather" parameters:@{@"coolguy":@"yaya"} complete:^(id json){
-                EZDEBUG(@"Post response:%@", json);
-            } failblk:^(NSError* err){
-                EZDEBUG(@"Error:%@", err);
-            }];
-             **/
-            
+            [self testBackendCommunication];
         }else{
             [weakSelf switchAnimation:cp photoCell:weakCell indexPath:indexPath tableView:tableView];
         }

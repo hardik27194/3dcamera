@@ -19,9 +19,12 @@
 
 + (void) postJson:(NSString*)url parameters:(NSDictionary*)dicts complete:(EZEventBlock)complete failblk:(EZEventBlock)block;
 
+//Will post the
++ (void) postParameterAsJson:(NSString*)url parameters:(id)params complete:(EZEventBlock)complete failblk:(EZEventBlock)block;
+
 + (void) getJson:(NSString*)url complete:(EZEventBlock)complete failblk:(EZEventBlock)block;
 
-- (void) upload:(NSString*)uploadURL parameters:(NSDictionary*)parameters file:(NSString*)fullPath complete:(EZEventBlock)completed error:(EZEventBlock)errorBlk;
+- (void) upload:(NSString*)uploadURL parameters:(NSDictionary*)parameters file:(NSString*)fullPath complete:(EZEventBlock)completed error:(EZEventBlock)errorBlk progress:(EZProgressCheck)progress;
 
 //The purpose of this method is to move the json combination out of the execution queue
 + (void) postJson:(NSURL*)url action:(NSString*)action parameters:(NSDictionary*)dicts complete:(EZEventBlock)complete failblk:(EZEventBlock)block callbackQueue:(dispatch_queue_t)callbackQueue;

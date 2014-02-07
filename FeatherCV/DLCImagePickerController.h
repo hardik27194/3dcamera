@@ -13,6 +13,12 @@
 #import "EZFaceResultObj.h"
 
 typedef enum {
+    kNormalMode,
+    kSelfShotMode,
+    kQuickShotMode
+} EZShotMode;
+
+typedef enum {
     //This is the initial status
     kCameraNormal,
     //Detect a half turn, we will have another time count
@@ -34,6 +40,8 @@ typedef enum {
     //Only do the turn for the self captured.
     kNormalCaptured
 } EZCameraTurnStatus;
+
+
 
 @class DLCImagePickerController;
 
@@ -97,7 +105,7 @@ typedef enum {
 
 @property (nonatomic, strong) NSMutableArray* storedMotionDelta;
 @property (nonatomic, assign) BOOL quitFaceDetection;
-
+@property (nonatomic, assign) EZShotMode shotMode;
 
 //0 mean off
 //1 mean on

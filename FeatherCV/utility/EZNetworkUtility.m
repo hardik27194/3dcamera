@@ -163,7 +163,7 @@ static EZNetworkUtility* instance;
     **/
 }
 
-- (void) upload:(NSString *)uploadURL parameters:(NSDictionary *)parameters file:(NSString *)fullPath complete:(EZEventBlock)completed error:(EZEventBlock)errorBlk
+- (void) upload:(NSString *)uploadURL parameters:(NSDictionary *)parameters file:(NSString *)fullPath complete:(EZEventBlock)completed error:(EZEventBlock)errorBlk progress:(EZProgressCheck)progress
 {
     // 1. Create `AFHTTPRequestSerializer` which will create your request.
     AFHTTPRequestSerializer *serializer = [AFHTTPRequestSerializer serializer];
@@ -172,15 +172,11 @@ static EZNetworkUtility* instance;
     
     NSString* fileName = fileNames.count > 0?[fileNames objectAtIndex:fileNames.count - 1]:fullPath;
     // 2. Create an `NSMutableURLRequest`.
-    NSData* imageData = [NSData dataWithContentsOfFile:fullPath];
     NSMutableURLRequest *request =
     [serializer multipartFormRequestWithMethod:@"POST" URLString:baseUploadURL
                                     parameters:parameters
                      constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
-                         [formData appendPartWithFileData:imageData
-                                                     name:@"myfile"
-                                                 fileName:fileName
-                                                 mimeType:@"image/jpeg"];
+                         [formData appendPartWithFileURL:[NSURL fileURLWithPath:fullPath] name:@"myfile" fileName:fileName mimeType:@"image/jpeg" error:nil];
                      }];
     
     // 3. Create and use `AFHTTPRequestOperationManager` to create an `AFHTTPRequestOperation` from the `NSMutableURLRequest` that we just created.
@@ -200,12 +196,14 @@ static EZNetworkUtility* instance;
                                      }];
     
     // 4. Set the progress block of the operation.
-    [operation setUploadProgressBlock:^(NSUInteger __unused bytesWritten,
+    if(progress){
+        [operation setUploadProgressBlock:^(NSUInteger __unused bytesWritten,
                                         long long totalBytesWritten,
                                         long long totalBytesExpectedToWrite) {
-        NSLog(@"Wrote %lld/%lld", totalBytesWritten, totalBytesExpectedToWrite);
-    }];
-    
+        //NSLog(@"Wrote %lld/%lld", totalBytesWritten, totalBytesExpectedToWrite);
+            progress((CGFloat)totalBytesWritten/(CGFloat)totalBytesExpectedToWrite);
+        }];
+    }
     // 5. Begin!
     [operation start];
 }
@@ -549,6 +547,33 @@ static EZNetworkUtility* instance;
         }
     } failure:^(NSURLSessionDataTask *__unused task, NSError *error) {
         if (block) {
+            block(error);
+        }
+    }];
+}
+
+
++ (void) postParameterAsJson:(NSString *)url parameters:(id)params complete:(EZEventBlock)complete failblk:(EZEventBlock)block
+{
+    NSMutableURLRequest* request = [[AFJSONRequestSerializer serializer] requestWithMethod:@"POST" URLString:url parameters:params];
+    
+    
+    //[[EZFeatherAPIClient sharedClient] ]
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    //manager.requestSerializer = [AFJSONRequestSerializer serializer];
+
+    
+    //NSURL *filePath = [NSURL fileURLWithPath:@"file://path/to/image.png"];
+    [manager POST:[NSString stringWithFormat:@"%@%@", baseServiceURL, url] parameters:params constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
+        //[formData appendPartWithFileURL:filePath name:@"image" error:nil];
+    } success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        //NSLog(@"Success: %@", responseObject);
+        if(complete){
+            complete(responseObject);
+        }
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        //NSLog(@"Error: %@", error);
+        if(block){
             block(error);
         }
     }];

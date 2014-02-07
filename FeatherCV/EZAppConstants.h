@@ -31,9 +31,9 @@
 
 #define randBack(color)  [[EZUIUtility sharedEZUIUtility] getBackgroundColor:color]
 
-#define baseUploadURL @"http://192.168.1.103:8080/upload"
+#define baseUploadURL @"http://192.168.1.102:8080/upload"
 
-#define baseServiceURL @"http://192.168.1.103:8080/"
+#define baseServiceURL @"http://192.168.1.102:8080/"
 //This is from show hair.
 //Who will manage the session.
 //From Mobile's perspective, I should handle the session.

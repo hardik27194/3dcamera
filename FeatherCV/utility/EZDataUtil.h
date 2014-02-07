@@ -56,6 +56,22 @@
 //Normally, the person is already in the cache by check the photos.
 - (EZPerson*) getPerson:(int)personID;
 
+
+- (void) registerUser:(NSDictionary*)person success:(EZEventBlock)success error:(EZEventBlock)error;
+
+
+- (void) loginUser:(NSDictionary*)loginInfo success:(EZEventBlock)success error:(EZEventBlock)error;
+
+
+//This method will enable the user to upload all it's contacts information to the server.
+//The server will get the uploaded information and return a list which update the current user information.
+//What, I should do?
+//I will have a method to allow the person to check if it need any update or not.
+//Following is the psudo code: if person.changed(), [EZMessageCenter postMessage(updatedPerson, person);
+//The this one could be a periodic update.
+- (void) uploadContacts:(NSArray*)contacts success:(EZEventBlock)succss failure:(EZEventBlock)failure;
+
+
 //Get the person object
 //- (EZPerson*) getPerson:(int)personID;
 - (void) getPersonID:(int)personID success:(EZEventBlock)success failure:(EZEventBlock)failure;
@@ -82,13 +98,6 @@
 //This is small detail, which is poilicy. Let's define this later.
 - (void) getAllContacts:(EZEventBlock)blk;
 
-//This method will enable the user to upload all it's contacts information to the server.
-//The server will get the uploaded information and return a list which update the current user information.
-//What, I should do?
-//I will have a method to allow the person to check if it need any update or not.
-//Following is the psudo code: if person.changed(), [EZMessageCenter postMessage(updatedPerson, person);
-//The this one could be a periodic update.
-- (void) uploadContacts:(NSArray*)contacts success:(EZEventBlock)succss failure:(EZEventBlock)failure;
 
 //When need to call this?
 //When I get the photo album access, I will upload all the extracted photo information

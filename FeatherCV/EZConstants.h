@@ -23,6 +23,8 @@ typedef int (^ EZConditionBlock) (id src, id dest);
 
 typedef int (^ EZTabSelectCheck) (NSInteger tabIndex);
 
+typedef void (^ EZProgressCheck) (CGFloat percent);
+
 //The callback for the picker we used.
 typedef void (^ EZPickerSelected) (int component, id value);
 

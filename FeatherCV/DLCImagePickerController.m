@@ -1008,8 +1008,9 @@
     //[fixColorFilter addTarget:secFixColorFilter];
     EZDEBUG(@"Prepare new static image get called, flash image:%i, image size:%@, dark:%f", _isImageWithFlash, NSStringFromCGSize(img.size), dark);
     //GPUImageFilter* imageFilter = secFixColorFilter;
-    if(!_disableFaceBeautify && (fobj || stillCamera.isFrontFacing)){
-        whiteBalancerFilter.temperature = 6000.0;
+    whiteBalancerFilter.temperature = 5000.0;
+    if(!_disableFaceBeautify && (fobj || stillCamera.isFrontFacing || _shotMode == kSelfShotMode)){
+        whiteBalancerFilter.temperature = 5500.0;
         [hueFilter addTarget:redEnhanceFilter];
         [redEnhanceFilter addTarget:finalBlendFilter];
         //[secFixColorFilter addTarget:finalBlendFilter];
@@ -1020,7 +1021,13 @@
         CGFloat blurCycle = 1.5;
         CGFloat smallBlurRatio = 0.3;
         
-        if(fobj){
+        if(_shotMode == kSelfShotMode){
+            if(stillCamera.isFrontFacing){
+                blurCycle = 2.0;
+            }else{
+                blurCycle = 2.5;
+            }
+        }else if(fobj){
             blurCycle = 2.5 * fobj.orgRegion.size.width;
             smallBlurRatio = 0.3 * (1.0 - fobj.orgRegion.size.width);
             //if(fobj.orgRegion.size.width > 0.5){
@@ -1032,7 +1039,7 @@
             blurCycle = 0.9;
             smallBlurRatio = 0.15;
         }
-        CGFloat adjustedFactor = 14.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
+        CGFloat adjustedFactor = 15.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
         finalBlendFilter.blurFilter.distanceNormalizationFactor = adjustedFactor;
         finalBlendFilter.blurFilter.blurSize = blurCycle;
         //finalBlendFilter.blurRatio = smallBlurRatio;

@@ -25,4 +25,8 @@
 //If this user is already feather client or not
 @property (nonatomic, assign) BOOL joined;
 
+- (NSDictionary*) toMap;
+
+- (id) initFromDict:(NSDictionary*)dict;
+
 @end

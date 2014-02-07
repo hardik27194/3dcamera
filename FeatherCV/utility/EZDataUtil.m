@@ -16,6 +16,7 @@
 #import "EZDisplayPhoto.h"
 #import "EZExtender.h"
 #import "EZMessageCenter.h"
+#import "EZNetworkUtility.h"
 
 @implementation EZAlbumResult
 
@@ -42,6 +43,29 @@
     }
     _contacts = [[NSMutableArray alloc] init];
     return self;
+}
+
+
+- (void) uploadContacts:(NSArray*)contacts success:(EZEventBlock)succss failure:(EZEventBlock)failure
+{
+    //[EZNetworkUtility postJson:@"query/contacts" parameters: complete:<#^(id sender)complete#> failblk:<#^(id sender)block#>]
+}
+
+- (void) registerUser:(NSDictionary*)person success:(EZEventBlock)success error:(EZEventBlock)error
+{
+    [EZNetworkUtility postJson:@"register" parameters:person complete:^(NSDictionary* dict){
+        EZPerson* person = [[EZPerson alloc] initFromDict:dict];
+        success(person);
+    } failblk:error];
+}
+
+
+- (void) loginUser:(NSDictionary*)loginInfo success:(EZEventBlock)success error:(EZEventBlock)error
+{
+    [EZNetworkUtility postJson:@"login" parameters:loginInfo complete:^(NSDictionary* dict){
+        EZPerson* person = [[EZPerson alloc] initFromDict:dict];
+        success(person);
+    } failblk:error];
 }
 
 //Will load Friends
