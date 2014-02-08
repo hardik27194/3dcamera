@@ -152,6 +152,11 @@ static inline CGSize swapWidthAndHeight(CGSize size)
 
 - (UIImage *) resizedImageWithMinimumSize: (CGSize) size
 {
+    return [self resizedImageWithMinimumSize:size antialias:YES];
+}
+
+- (UIImage *) resizedImageWithMinimumSize: (CGSize) size antialias:(BOOL)antialias
+{
     CGImageRef imgRef = [self CGImageWithCorrectOrientation];
     CGFloat original_width  = CGImageGetWidth(imgRef);
     CGFloat original_height = CGImageGetHeight(imgRef);
@@ -159,10 +164,15 @@ static inline CGSize swapWidthAndHeight(CGSize size)
     CGFloat height_ratio = size.height / original_height;
     CGFloat scale_ratio = width_ratio > height_ratio ? width_ratio : height_ratio;
     CGImageRelease(imgRef);
-    return [self drawImageInBounds: CGRectMake(0, 0, round(original_width * scale_ratio), round(original_height * scale_ratio))];
+    return [self drawImageInBounds: CGRectMake(0, 0, round(original_width * scale_ratio), round(original_height * scale_ratio)) antialias:antialias];
 }
 
 - (UIImage *) resizedImageWithMaximumSize: (CGSize) size
+{
+    return [self resizedImageWithMaximumSize:size antialias:YES];
+}
+
+- (UIImage *) resizedImageWithMaximumSize: (CGSize) size antialias:(BOOL)antialias
 {
     CGImageRef imgRef = [self CGImageWithCorrectOrientation];
     CGFloat original_width  = CGImageGetWidth(imgRef);
@@ -171,15 +181,20 @@ static inline CGSize swapWidthAndHeight(CGSize size)
     CGFloat height_ratio = size.height / original_height;
     CGFloat scale_ratio = width_ratio < height_ratio ? width_ratio : height_ratio;
     CGImageRelease(imgRef);
-    return [self drawImageInBounds: CGRectMake(0, 0, round(original_width * scale_ratio), round(original_height * scale_ratio))];
+    return [self drawImageInBounds: CGRectMake(0, 0, round(original_width * scale_ratio), round(original_height * scale_ratio)) antialias:antialias];
 }
 
 - (UIImage *) drawImageInBounds: (CGRect) bounds
 {
+    return [self drawImageInBounds:bounds antialias:YES];
+}
+
+- (UIImage *) drawImageInBounds: (CGRect) bounds antialias:(BOOL)antialias
+{
     UIGraphicsBeginImageContext(bounds.size);
     CGContextRef ctx = UIGraphicsGetCurrentContext();
     CGContextSetInterpolationQuality(ctx, kCGInterpolationHigh);
-    CGContextSetShouldAntialias(ctx, true); //<< default varies by context type
+    CGContextSetShouldAntialias(ctx, antialias); //<< default varies by context type
     [self drawInRect: bounds];
     //UIImage *resizedImage = UIGraphicsGetImageFromCurrentImageContext();
     UIImage *resizedImage = [UIImage imageWithCGImage:UIGraphicsGetImageFromCurrentImageContext().CGImage scale:self.scale orientation:self.imageOrientation];

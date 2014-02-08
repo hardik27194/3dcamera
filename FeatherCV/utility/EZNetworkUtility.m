@@ -553,9 +553,9 @@ static EZNetworkUtility* instance;
 }
 
 
-+ (void) postParameterAsJson:(NSString *)url parameters:(id)params complete:(EZEventBlock)complete failblk:(EZEventBlock)block
++ (void) postParameterAsJson:(NSString *)url parameters:(id)params complete:(EZEventBlock)completed failblk:(EZEventBlock)errorBlk
 {
-    NSMutableURLRequest* request = [[AFJSONRequestSerializer serializer] requestWithMethod:@"POST" URLString:url parameters:params];
+    NSMutableURLRequest* request = [[AFJSONRequestSerializer serializer] requestWithMethod:@"POST" URLString:[NSString stringWithFormat:@"%@%@", baseServiceURL, url] parameters:params error:nil];
     
     
     //[[EZFeatherAPIClient sharedClient] ]
@@ -563,20 +563,21 @@ static EZNetworkUtility* instance;
     //manager.requestSerializer = [AFJSONRequestSerializer serializer];
 
     
-    //NSURL *filePath = [NSURL fileURLWithPath:@"file://path/to/image.png"];
-    [manager POST:[NSString stringWithFormat:@"%@%@", baseServiceURL, url] parameters:params constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
-        //[formData appendPartWithFileURL:filePath name:@"image" error:nil];
-    } success:^(AFHTTPRequestOperation *operation, id responseObject) {
-        //NSLog(@"Success: %@", responseObject);
-        if(complete){
-            complete(responseObject);
-        }
-    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-        //NSLog(@"Error: %@", error);
-        if(block){
-            block(error);
-        }
-    }];
+    //AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    AFHTTPRequestOperation *operation =
+    [manager HTTPRequestOperationWithRequest:request
+                                     success:^(AFHTTPRequestOperation *operation, id responseObject) {
+                                         NSLog(@"Success %@", responseObject);
+                                         if(completed){
+                                             completed(responseObject);
+                                         }
+                                     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+                                         NSLog(@"Failure %@", error.description);
+                                         if(errorBlk){
+                                             errorBlk(error);
+                                         }
+                                     }];
+    [operation start];
 }
 
 

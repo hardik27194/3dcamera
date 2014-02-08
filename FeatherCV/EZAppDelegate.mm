@@ -205,6 +205,11 @@
     [NSURLCache setSharedURLCache:URLCache];
     
     [[AFNetworkActivityIndicatorManager sharedManager] setEnabled:YES];
+    
+    [[AFNetworkReachabilityManager sharedManager] setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
+        //EZDEBUG(@"Reachability: %@", AFStringFromNetworkReachabilityStatus(status));
+        EZDEBUG(@"network status:%i", status);
+    }];
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions

@@ -16,6 +16,9 @@
 - (UIImage *) resizedImageWithMaximumSize: (CGSize) size;
 - (UIImage *) resizedImageWithMinimumSize: (CGSize) size;
 
+- (UIImage *) resizedImageWithMaximumSize: (CGSize) size antialias:(BOOL)antialias;
+- (UIImage *) resizedImageWithMinimumSize: (CGSize) size antialias:(BOOL)antialias;
+
 - (UIImage *) createBlurImage:(CGFloat)blurSize;
 
 

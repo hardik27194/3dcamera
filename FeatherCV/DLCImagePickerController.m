@@ -381,12 +381,12 @@
 {
     EZColorBrighter* res = [[EZColorBrighter alloc] init];
     res.redEnhanceLevel = 0.725;
-    res.redRatio = 0.80;
+    res.redRatio = 0.95;
     
     res.blueEnhanceLevel = 0.6;
     res.blueRatio = 0.2;
     
-    res.greenEnhanceLevel = 0.65;
+    res.greenEnhanceLevel = 0.5;
     res.greenRatio = 0.60;
     
     return res;
@@ -1318,6 +1318,7 @@
 
     staticPicture = [[GPUImagePicture alloc] initWithImage:img smoothlyScaleOutput:NO];
     staticPictureOriginalOrientation = img.imageOrientation;
+    /**
     if(!_detectedFaceObj){
         UIImage* detectImage = img;
         //if(!stillCamera.isFrontFacing){
@@ -1337,6 +1338,7 @@
         }
         _detectedFaceObj = firstObj;
     }
+     **/
     [self prepareStaticFilter:_detectedFaceObj image:img];
     CGSize imageSize = img.size;
     if(_detectedFaceObj){
@@ -1417,7 +1419,11 @@
         void (^fullImageProcess)(UIImage *, NSError *) = ^(UIImage *fullImg, NSError* error) {
             //[weakSelf handleFullImage:fullImg];
             UIImageOrientation prevOrient = fullImg.imageOrientation;
-            fullImg = [fullImg resizedImageWithMinimumSize:CGSizeMake(980.0, 980.0)];
+            BOOL antialias = false;
+            if(!_disableFaceBeautify && (_detectedFaceObj || stillCamera.isFrontFacing || _shotMode == kSelfShotMode)){
+                antialias = true;
+            }
+            fullImg = [fullImg resizedImageWithMinimumSize:CGSizeMake(980.0, 980.0) antialias:antialias];
             EZDEBUG(@"tailored full size length:%@, prevOrient:%i, current orientation:%i", NSStringFromCGSize(fullImg.size), prevOrient, fullImg.imageOrientation);
             completion(fullImg, nil);
         };
