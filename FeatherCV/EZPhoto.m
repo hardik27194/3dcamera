@@ -18,7 +18,7 @@
 {
     return @{
              //@"id":_photoID,
-             @"personID":_owner.personID,
+             @"personID":_owner.personID?_owner.personID:@"",
              @"assetURL":_assetURL?_assetURL:@"",
              @"longtitude":@(_longitude),
              @"latitude":@(_latitude),

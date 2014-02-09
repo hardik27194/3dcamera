@@ -108,8 +108,8 @@
 - (UIViewController*) createScrollView
 {
     [self setupEvent];
-    int currentPersonID = [[EZDataUtil getInstance] getCurrentPersonID];
-    EZDEBUG(@"Current personID:%i", currentPersonID);
+    NSString* currentPersonID = [[EZDataUtil getInstance] getCurrentPersonID];
+    EZDEBUG(@"Current personID:%@", currentPersonID);
     EZQueryBlock qb = ^(NSInteger start, NSInteger limit, EZEventBlock success, EZEventBlock failure){
         [[EZDataUtil getInstance] loadAlbumPhoto:start limit:limit success:success failure:failure];
     };

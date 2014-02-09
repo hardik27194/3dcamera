@@ -54,7 +54,8 @@
 - (void) registerUser:(NSDictionary*)person success:(EZEventBlock)success error:(EZEventBlock)error
 {
     [EZNetworkUtility postJson:@"register" parameters:person complete:^(NSDictionary* dict){
-        EZPerson* person = [[EZPerson alloc] initFromDict:dict];
+        EZPerson* person = [[EZPerson alloc] init];
+        [person fromJson:dict];
         success(person);
     } failblk:error];
 }
@@ -94,6 +95,7 @@
         [EZNetworkUtility upload:baseUploadURL parameters:@{@"photoID":photoID} file:storedFile complete:^(id obj){
             NSString* screenURL = [obj objectForKey:@"screenURL"];
             photo.screenURL = screenURL;
+            photo.uploaded = TRUE;
             EZDEBUG(@"uploaded screenURL:%@", screenURL);
             success(photo);
         } error:failure progress:^(CGFloat percent){
@@ -109,7 +111,8 @@
 - (void) loginUser:(NSDictionary*)loginInfo success:(EZEventBlock)success error:(EZEventBlock)error
 {
     [EZNetworkUtility postJson:@"login" parameters:loginInfo complete:^(NSDictionary* dict){
-        EZPerson* person = [[EZPerson alloc] initFromDict:dict];
+        EZPerson* person = [[EZPerson alloc] init];
+        [person fromJson:dict];
         success(person);
     } failblk:error];
 }
