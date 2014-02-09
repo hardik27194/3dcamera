@@ -56,6 +56,8 @@
     [EZNetworkUtility postJson:@"register" parameters:person complete:^(NSDictionary* dict){
         EZPerson* person = [[EZPerson alloc] init];
         [person fromJson:dict];
+        [EZDataUtil getInstance].currentPersonID  = person.personID;
+        EZDEBUG(@"Returned person id:%@", person.personID);
         success(person);
     } failblk:error];
 }
@@ -113,6 +115,7 @@
     [EZNetworkUtility postJson:@"login" parameters:loginInfo complete:^(NSDictionary* dict){
         EZPerson* person = [[EZPerson alloc] init];
         [person fromJson:dict];
+        [EZDataUtil getInstance].currentPersonID = person.personID;
         success(person);
     } failblk:error];
 }

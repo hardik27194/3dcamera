@@ -18,6 +18,7 @@
 #import "EZMessageCenter.h"
 #import "EZAppConstants.h"
 #import "EZFeatherAPIClient.h"
+#import "EZDataUtil.h"
 #import <objc/runtime.h>
 
 
@@ -524,6 +525,7 @@ static EZNetworkUtility* instance;
 + (void) getJson:(NSString*)url complete:(EZEventBlock)complete failblk:(EZEventBlock)block
 {
     //[self getJson:url complete:complete failblk:block callbackQueue:nil];
+    [[EZFeatherAPIClient sharedClient].requestSerializer setValue:[EZDataUtil getInstance].currentPersonID forHTTPHeaderField:EZSessionHeader];
     EZDEBUG(@"The absolute url is:%@", url);
     [[EZFeatherAPIClient sharedClient] GET:url parameters:nil success:^(NSURLSessionDataTask * __unused task, id JSON) {
         if (complete) {
@@ -540,7 +542,7 @@ static EZNetworkUtility* instance;
 
 + (void) postJson:(NSString*)url parameters:(NSDictionary*)dicts complete:(EZEventBlock)complete failblk:(EZEventBlock)block
 {
-
+    [[EZFeatherAPIClient sharedClient].requestSerializer setValue:[EZDataUtil getInstance].currentPersonID forHTTPHeaderField:EZSessionHeader];
     [[EZFeatherAPIClient sharedClient] POST:url parameters:dicts success:^(NSURLSessionDataTask * __unused task, id JSON) {
         if (complete) {
             complete(JSON);
@@ -555,8 +557,11 @@ static EZNetworkUtility* instance;
 
 + (void) postParameterAsJson:(NSString *)url parameters:(id)params complete:(EZEventBlock)completed failblk:(EZEventBlock)errorBlk
 {
-    NSMutableURLRequest* request = [[AFJSONRequestSerializer serializer] requestWithMethod:@"POST" URLString:[NSString stringWithFormat:@"%@%@", baseServiceURL, url] parameters:params error:nil];
+    //NSMutableURLRequest* request =
     
+    AFJSONRequestSerializer* serializer = [AFJSONRequestSerializer serializer];
+    [serializer setValue:[EZDataUtil getInstance].currentPersonID forHTTPHeaderField:EZSessionHeader];
+    NSMutableURLRequest* request = [serializer requestWithMethod:@"POST" URLString:[NSString stringWithFormat:@"%@%@", baseServiceURL, url] parameters:params error:nil];
     
     //[[EZFeatherAPIClient sharedClient] ]
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];

@@ -41,6 +41,7 @@
 
 #define EZPhotoUploadSuccess @"EZPhotoUploadSuccess"
 
+#define EZSessionHeader @"x-current-personid"
 //Will move screen from one to another.
 #define EZScreenSlide @"EZScreenSlide"
 

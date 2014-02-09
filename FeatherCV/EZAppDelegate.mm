@@ -210,6 +210,7 @@
         //EZDEBUG(@"Reachability: %@", AFStringFromNetworkReachabilityStatus(status));
         EZDEBUG(@"network status:%i", status);
     }];
+    [EZDataUtil getInstance].currentPersonID = @"coolguyMobile";
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions

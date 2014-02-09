@@ -36,6 +36,10 @@
 
 //All the friend
 @property (nonatomic, strong) NSMutableArray* contacts;
+
+//The person are login to the server.
+@property (nonatomic, strong) NSString* currentPersonID;
+
 //@property (nonatomic, strong) NSMutable
 //Phone number will be the unique id?
 //Mean only one id for each phone right?

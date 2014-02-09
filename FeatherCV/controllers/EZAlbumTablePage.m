@@ -363,13 +363,33 @@ static int photoCount = 1;
 
 - (void) testBackendCommunication:(EZPhoto*)photo
 {
+    static int sequence = 0;
+    if((sequence % 2) == 0){
     //NSString* storedFile = [EZFileUtil saveImageToCache:[myPhoto getScreenImage]];
-    
-    [[EZDataUtil getInstance] uploadPhoto:photo success:^(EZPhoto* obj){
-        EZDEBUG(@"Uploaded photoID success:%@", obj.photoID);
-    } failure:^(id err){
-        EZDEBUG(@"upload photo error:%@", err);
+    [[EZDataUtil getInstance] registerUser:@{
+                                             @"name":@"cool",
+                                             @"email":@"unix@gmail.com",
+                                             @"mobile":@"15216727142",
+                                             @"password":@"i love you"
+                                             } success:^(EZPerson* person){
+        EZDEBUG(@"successfully registred:%@, sessionID:%@", person.personID, [EZDataUtil getInstance].currentPersonID);
+        [[EZDataUtil getInstance] uploadPhoto:photo success:^(EZPhoto* obj){
+            EZDEBUG(@"Uploaded photoID success:%@", obj.photoID);
+        } failure:^(id err){
+            EZDEBUG(@"upload photo error:%@", err);
+        }];
+    } error:^(NSError* err){
+        EZDEBUG(@"Register error:%@", err);
     }];
+    
+    }else{
+        [[EZDataUtil getInstance] loginUser:@{@"mobile":@"15216727142",@"password":@"i love you"} success:^(EZPerson* person){
+            EZDEBUG(@"login user:%@, sessionid:%@", person.personID, [EZDataUtil getInstance].currentPersonID);
+        } error:^(NSError* err){
+            EZDEBUG(@"Error detail:%@", err);
+        }];
+    }
+    ++sequence;
     /**
     [EZNetworkUtility postParameterAsJson:@"query/contacts" parameters:@[@{@"name":@"coolguy"}, @{@"name":@"hot girl"}] complete:^(id result){
         EZDEBUG(@"result:%@", result);
