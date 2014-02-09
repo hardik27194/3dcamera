@@ -10,7 +10,7 @@
 
 @interface EZPerson : NSObject
 
-@property (nonatomic, assign) int personID;
+@property (nonatomic, strong) NSString* personID;
 
 @property (nonatomic, strong) NSString* name;
 
@@ -25,8 +25,8 @@
 //If this user is already feather client or not
 @property (nonatomic, assign) BOOL joined;
 
-- (NSDictionary*) toMap;
+- (NSDictionary*) toJson;
 
-- (id) initFromDict:(NSDictionary*)dict;
+- (void) fromJson:(NSDictionary*)dict;
 
 @end

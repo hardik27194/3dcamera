@@ -361,16 +361,22 @@ static int photoCount = 1;
     //return 0;
 }
 
-- (void) testBackendCommunication
+- (void) testBackendCommunication:(EZPhoto*)photo
 {
     //NSString* storedFile = [EZFileUtil saveImageToCache:[myPhoto getScreenImage]];
     
-    
+    [[EZDataUtil getInstance] uploadPhoto:photo success:^(EZPhoto* obj){
+        EZDEBUG(@"Uploaded photoID success:%@", obj.photoID);
+    } failure:^(id err){
+        EZDEBUG(@"upload photo error:%@", err);
+    }];
+    /**
     [EZNetworkUtility postParameterAsJson:@"query/contacts" parameters:@[@{@"name":@"coolguy"}, @{@"name":@"hot girl"}] complete:^(id result){
         EZDEBUG(@"result:%@", result);
     } failblk:^(NSError* err){
         EZDEBUG(@"Error:%@", err);
     }];
+     **/
     /**
     [[EZDataUtil getInstance] registerUser:@{@"email":@"coolguy@gmail.com",
                                              @"password":@"hahahehe",
@@ -478,7 +484,7 @@ static int photoCount = 1;
         if(cp.combineStatus == kEZStartStatus){
             cp.combineStatus = kEZSendSharedRequest;
             EZDEBUG(@"Will start upload the image");
-            [self testBackendCommunication];
+            [self testBackendCommunication:myPhoto];
         }else{
             [weakSelf switchAnimation:cp photoCell:weakCell indexPath:indexPath tableView:tableView];
         }

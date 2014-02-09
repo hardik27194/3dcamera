@@ -18,10 +18,10 @@
     return self;
 }
 
-- (NSDictionary*) toMap
+- (NSDictionary*) toJson
 {
     return @{
-             @"personID":@(_personID),
+             @"personID":_personID,
              @"name":_name?_name:@"",
              @"mobile":_mobile?_mobile:@"",
              @"avatar":_avatar?_avatar:@"",
@@ -31,17 +31,17 @@
              };
 }
 
-- (id) initFromDict:(NSDictionary*)dict
+- (void) fromJson:(NSDictionary*)dict
 {
-    self = [super init];
-    _personID = [[dict objectForKey:@"personID"] integerValue];
+    //self = [super init];
+    _personID = [dict objectForKey:@"personID"];
     _name = [dict objectForKey:@"name"];
     _mobile = [dict objectForKey:@"mobile"];
     _avatar = [dict objectForKey:@"avatar"];
     _email = [dict objectForKey:@"email"];
     _joinedTime = [dict objectForKey:@"joinedTime"];
     _joined = [[dict objectForKey:@"joined"] integerValue];
-    return self;
+    //return self;
 }
 
 @end

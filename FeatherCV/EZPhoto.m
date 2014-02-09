@@ -9,9 +9,40 @@
 #import "EZPhoto.h"
 #import "EZDataUtil.h"
 #import "EZThreadUtility.h"
+#import "EZDataUtil.h"
 
 @implementation EZPhoto
 
+
+- (NSDictionary*) toJson
+{
+    return @{
+             //@"id":_photoID,
+             @"personID":_owner.personID,
+             @"assetURL":_assetURL?_assetURL:@"",
+             @"longtitude":@(_longitude),
+             @"latitude":@(_latitude),
+             @"uploaded":@(_uploaded),
+             @"createdTime":_createdTime?_createdTime:@""
+                 };
+}
+
+- (void) fromJson:(NSDictionary*)dict
+{
+    EZDEBUG(@"json raw string:%@", dict);
+    NSString* personID = [dict objectForKey:@"personID"];
+    [[EZDataUtil getInstance] getPersonID:personID success:^(EZPerson* ps){
+        _owner = ps;
+    } failure:^(NSError* err){
+        EZDEBUG(@"Error to find a person");
+    }];
+    _assetURL = [dict objectForKey:@"assetURL"];
+    _longitude = [[dict objectForKey:@"longitude"] doubleValue];
+    _latitude = [[dict objectForKey:@"latitude"] doubleValue];
+    _uploaded = [[dict objectForKey:@"uploaded"] integerValue];
+    _createdTime = [dict objectForKey:@"createdTime"];
+    EZDEBUG(@"The created date is:%@", _createdTime);
+}
 
 - (UIImage*) getThumbnail
 {

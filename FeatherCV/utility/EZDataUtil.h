@@ -48,7 +48,7 @@
 - (void) likedPhoto:(int)photoID success:(EZEventBlock)success failure:(EZEventBlock)failure;
 
 //Will get current login person id
-- (int) getCurrentPersonID;
+- (NSString*) getCurrentPersonID;
 
 - (EZPerson*) getCurrentPerson;
 
@@ -74,7 +74,8 @@
 
 //Get the person object
 //- (EZPerson*) getPerson:(int)personID;
-- (void) getPersonID:(int)personID success:(EZEventBlock)success failure:(EZEventBlock)failure;
+//Check cache first, if not then will query the person
+- (void) getPersonID:(NSString*)personID success:(EZEventBlock)success failure:(EZEventBlock)failure;
 
 //Get converstaion regarding this photo
 - (void) getConversation:(int)combineID success:(EZEventBlock)success failure:(EZEventBlock)failure;
@@ -83,7 +84,7 @@
 //How about thumbnail.
 //Should we generate it dynamically.
 //Maybe we should.
-- (void) uploadPhoto:(UIImage*)image success:(EZEventBlock)success failure:(EZEventBlock)failure;
+- (void) uploadPhoto:(EZPhoto*)photo success:(EZEventBlock)success failure:(EZEventBlock)failure;
 
 - (void) addConverstaion:(int)combinedID text:(NSString*)text success:(EZEventBlock)success failure:(EZEventBlock)failure;
 

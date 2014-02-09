@@ -13,15 +13,16 @@
 @class EZPerson;
 @interface EZPhoto : NSObject
 
-@property (nonatomic, assign) int photoID;
+//@property (nonatomic, assign) int photoID;
 
+@property (nonatomic, strong) NSString* photoID;
 
 @property (nonatomic, strong) EZPerson* owner;
 //@property (nonatomic, assign) int ownerID;
 
 //@property (nonatomic, assign) int otherID;
 
-@property (nonatomic, strong) NSString* url;
+@property (nonatomic, strong) NSString* screenURL;
 
 //I could use this to compare if I have newly added photo or not.
 //Great, I love this game
@@ -45,6 +46,9 @@
 //Just to keep it temporarily. 
 @property (nonatomic, strong) ALAsset* asset;
 
+@property (nonatomic, strong) NSString* assetURL;
+
+@property (nonatomic, assign) BOOL uploaded;
 //Whether this photo uploaded or not
 //Mean if the photo is local photo or not
 //Who need this?
@@ -88,6 +92,8 @@
 - (UIImage*) getThumbnail;
 
 - (void) getAsyncImage:(EZEventBlock)block;
+
+- (NSDictionary*) toJson;
 
 
 @end

@@ -163,7 +163,7 @@ static EZNetworkUtility* instance;
     **/
 }
 
-- (void) upload:(NSString *)uploadURL parameters:(NSDictionary *)parameters file:(NSString *)fullPath complete:(EZEventBlock)completed error:(EZEventBlock)errorBlk progress:(EZProgressCheck)progress
++ (void) upload:(NSString *)uploadURL parameters:(NSDictionary *)parameters file:(NSString *)fullPath complete:(EZEventBlock)completed error:(EZEventBlock)errorBlk progress:(EZProgressCheck)progress
 {
     // 1. Create `AFHTTPRequestSerializer` which will create your request.
     AFHTTPRequestSerializer *serializer = [AFHTTPRequestSerializer serializer];

@@ -48,7 +48,7 @@
 
 - (void) uploadContacts:(NSArray*)contacts success:(EZEventBlock)succss failure:(EZEventBlock)failure
 {
-    //[EZNetworkUtility postJson:@"query/contacts" parameters: complete:<#^(id sender)complete#> failblk:<#^(id sender)block#>]
+    
 }
 
 - (void) registerUser:(NSDictionary*)person success:(EZEventBlock)success error:(EZEventBlock)error
@@ -57,6 +57,52 @@
         EZPerson* person = [[EZPerson alloc] initFromDict:dict];
         success(person);
     } failblk:error];
+}
+
+//Only upload the photo messsage, without upload the image
+- (void) uploadPhotoInfo:(NSArray *)photoInfo success:(EZEventBlock)success failure:(EZEventBlock)failure
+{
+    NSArray* jsons = [self arrayToJson:photoInfo];
+    [EZNetworkUtility postParameterAsJson:@"photo/info" parameters:jsons complete:^(NSArray* arr){
+        for(int i = 0; i < photoInfo.count; i ++){
+            EZPhoto* photo = [photoInfo objectAtIndex:i];
+            photo.photoID = [arr objectAtIndex:i];
+        }
+    } failblk:^(NSError* err){
+        EZDEBUG(@"Error:%@", err);
+    }];
+}
+
+- (NSArray*) arrayToJson:(NSArray*)arr
+{
+    NSMutableArray* res = [[NSMutableArray alloc] init];
+    for(id obj in arr){
+        [res addObject:[obj toJson]];
+    }
+    return res;
+}
+
+- (void) uploadPhoto:(EZPhoto*)photo success:(EZEventBlock)success failure:(EZEventBlock)failure
+{
+    NSDictionary* jsonInfo = [photo toJson];
+    [EZNetworkUtility postParameterAsJson:@"photo/info" parameters:@[jsonInfo] complete:^(NSArray* arr){
+        NSString* photoID = [[arr objectAtIndex:0] valueForKey:@"photoID"];
+        EZDEBUG(@"returned photoID:%@", photoID);
+        photo.photoID = photoID;
+        //TODO an IO bottleneck here.
+        NSString* storedFile =[EZFileUtil saveImageToCache:[photo getScreenImage]];
+        [EZNetworkUtility upload:baseUploadURL parameters:@{@"photoID":photoID} file:storedFile complete:^(id obj){
+            NSString* screenURL = [obj objectForKey:@"screenURL"];
+            photo.screenURL = screenURL;
+            EZDEBUG(@"uploaded screenURL:%@", screenURL);
+            success(photo);
+        } error:failure progress:^(CGFloat percent){
+            EZDEBUG(@"The uploaded percent:%f", percent);
+        }];
+    } failblk:^(NSError* err){
+        EZDEBUG(@"Error  info:%@", err);
+    }];
+    
 }
 
 
@@ -266,7 +312,7 @@
         EZDEBUG(@"Get photoBook callback called:%i", persons.count);
     for(EZPerson* person in persons){
         //EZPerson* person = [[EZPerson alloc] init];
-        person.personID = rand()/1000;
+        person.personID =int2str(rand()%1000);
         //person.name = [NSString stringWithFormat:@"天哥:%i", i];
         person.avatar = [EZFileUtil fileToURL:@"img02.jpg"].absoluteString;
         if(++i % 2 == 0){
@@ -296,9 +342,9 @@
 }
 
 //Will get current login person id
-- (int) getCurrentPersonID
+- (NSString*) getCurrentPersonID
 {
-    return 167791;
+    return @"167791";
 }
 
 
@@ -313,30 +359,30 @@
 }
 
 
-- (EZPerson*) getPerson:(int)personID
+- (EZPerson*) getPerson:(NSString*)personID
 {
     EZPerson* res = [[EZPerson alloc] init];
     res.personID = personID;
-    res.name = [NSString stringWithFormat:@"天哥:%i", personID];
-    if(personID % 2){
-        res.avatar = [EZFileUtil fileToURL:@"img01.jpg"].absoluteString;
-    }else{
-        res.avatar = [EZFileUtil fileToURL:@"img02.jpg"].absoluteString;
-    }
+    res.name = [NSString stringWithFormat:@"天哥:%@", personID];
+    //if(personID % 2){
+    res.avatar = [EZFileUtil fileToURL:@"img01.jpg"].absoluteString;
+    //}else{
+    //    res.avatar = [EZFileUtil fileToURL:@"img02.jpg"].absoluteString;
+    //}
     res.joined = true;
     return res;
 }
 //Get the person object
-- (void) getPersonID:(int)personID success:(EZEventBlock)success failure:(EZEventBlock)failure;
+- (void) getPersonID:(NSString*)personID success:(EZEventBlock)success failure:(EZEventBlock)failure;
 {
     EZPerson* res = [[EZPerson alloc] init];
     res.personID = personID;
-    res.name = [NSString stringWithFormat:@"天哥:%i", personID];
-    if(personID % 2){
-        res.avatar = [EZFileUtil fileToURL:@"img01.jpg"].absoluteString;
-    }else{
-        res.avatar = [EZFileUtil fileToURL:@"img02.jpg"].absoluteString;
-    }
+    res.name = [NSString stringWithFormat:@"天哥:%@", personID];
+    //if(personID % 2){
+    res.avatar = [EZFileUtil fileToURL:@"img01.jpg"].absoluteString;
+    //}else{
+    //    res.avatar = [EZFileUtil fileToURL:@"img02.jpg"].absoluteString;
+    //}
     res.joined = true;
     dispatch_async(dispatch_get_main_queue(), ^(){
         success(res);
@@ -373,29 +419,7 @@
 //How about thumbnail.
 //Should we generate it dynamically.
 //Maybe we should.
-//Photo here are serve as value object, carry value back and forth. 
-- (void) uploadPhoto:(UIImage*)image success:(EZEventBlock)success failure:(EZEventBlock)failure
-{
-    int currentUserID = [self getCurrentPersonID];
-    EZPhoto* photo = [[EZPhoto alloc] init];
-    photo.photoID = rand()%1000;
-    //photo.ownerID = currentUserID;
-    photo.owner = currentPerson;
-    NSString* fullPath = [EZFileUtil saveImageToCache:image];
-    photo.url = [[NSURL fileURLWithPath:fullPath] absoluteString];
-    EZCombinedPhoto* cp = [[EZCombinedPhoto alloc] init];
-    cp.combinedID = rand()/1000;
-    cp.selfPhoto = photo;
-    cp.otherPhoto = [[EZPhoto alloc] init];
-    cp.otherPhoto.url = [EZFileUtil fileToURL:@"img02.jpg"].absoluteString;
-    //cp.otherPhoto.ownerID = rand()%1000;
-    EZDisplayPhoto* dp = [[EZDisplayPhoto alloc] init];
-    //dp.combinedPhotos = @[cp];
-    
-    dispatch_async(dispatch_get_main_queue(), ^(){
-        success(dp);
-    });
-}
+//Photo here are serve as value object, carry value back and forth.
 
 - (void) fetchImageFromAssetURL:(NSString*)url  success:(EZEventBlock)success failure:(EZEventBlock)failure
 {
