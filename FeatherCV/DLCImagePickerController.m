@@ -35,6 +35,7 @@
 #import "EZCycleTongFilter.h"
 #import <GPUImageCrosshatchFilter.h>
 #import <GPUImageCrosshairGenerator.h>
+#import "EZMessageCenter.h"
 
 //#include <vector>
 
@@ -122,6 +123,8 @@
     //Cross hair experiment
     //GPUImageCrosshatchFilter* crossHairFilter;
     GPUImageCrosshairGenerator* crossHairFilter;
+    //To switch the camera
+    EZEventBlock faceCovered;
 }
 
 @synthesize delegate,
@@ -428,6 +431,7 @@
     };
     _isVisible = TRUE;
     [self startMobileMotion];
+    [[EZMessageCenter getInstance] registerEvent:EZFaceCovered block:faceCovered];
 }
 
 - (void) setupButton
@@ -452,6 +456,7 @@
     [self setupFlashFilter];
     [self setupDarkFilter];
     [self setupButton];
+    
     _storedMotionDelta = [[NSMutableArray alloc] init];
     self.wantsFullScreenLayout = YES;
     _pageTurn = [[EZSoundEffect alloc] initWithSoundNamed:@"page_turn.aiff"];
@@ -480,6 +485,11 @@
     self.blurOverlayView = [[DLCBlurOverlayView alloc] initWithFrame:CGRectMake(0, 0,
 																				self.imageView.frame.size.width,
 																				self.imageView.frame.size.height)];
+    __weak DLCImagePickerController* weakSelf = self;
+    faceCovered = ^(NSNumber* status){
+        EZDEBUG(@"face status:%i", status.intValue);
+        [weakSelf switchCamera];
+    };
     self.blurOverlayView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     self.blurOverlayView.alpha = 0;
     [self.imageView addSubview:self.blurOverlayView];
@@ -705,6 +715,7 @@
     [self removeAllTargets];
     [[EZMotionUtility getInstance] unregisterHandler:@"CameraMotion"];
     _isVisible = false;
+    [[EZMessageCenter getInstance] unregisterEvent:EZFaceCovered forObject:faceCovered];
     [[UIApplication sharedApplication] setStatusBarHidden:false];
 }
 

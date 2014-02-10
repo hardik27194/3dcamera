@@ -63,6 +63,8 @@
 //Just put it on the end of the Array.
 #define EZAlbumImageReaded @"EZAlbumImageReady"
 
+#define EZFaceCovered @"EZFaceCovered"
+
 #define EZTriggerCamera @"EZTriggerCamera"
 
 #define EZZoomoutAlbum @"EZZoomoutAlbum"
