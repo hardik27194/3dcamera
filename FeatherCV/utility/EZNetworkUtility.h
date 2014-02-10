@@ -17,7 +17,7 @@
 //I will use a fixed file name for time being.
 + (void) download:(NSURL*)url complete:(EZEventBlock)complete failblk:(EZEventBlock)block;
 
-+ (void) postJson:(NSString*)url parameters:(NSDictionary*)dicts complete:(EZEventBlock)complete failblk:(EZEventBlock)block;
++ (void) postJson:(NSString*)url parameters:(id)dicts complete:(EZEventBlock)complete failblk:(EZEventBlock)block;
 
 //Will post the
 + (void) postParameterAsJson:(NSString*)url parameters:(id)params complete:(EZEventBlock)complete failblk:(EZEventBlock)block;

@@ -27,6 +27,7 @@
 
 #define pointValue(x,y) [NSValue valueWithCGPoint:CGPointMake(x, y)]
 
+
 #define currentPerson [[EZDataUtil getInstance] getCurrentPerson] 
 
 #define randBack(color)  [[EZUIUtility sharedEZUIUtility] getBackgroundColor:color]

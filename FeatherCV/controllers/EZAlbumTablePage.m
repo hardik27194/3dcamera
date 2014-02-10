@@ -361,33 +361,50 @@ static int photoCount = 1;
     //return 0;
 }
 
-- (void) testBackendCommunication:(EZPhoto*)photo
+- (void) testRegister:(EZPhoto*)photo
 {
-    static int sequence = 0;
-    if((sequence % 2) == 0){
-    //NSString* storedFile = [EZFileUtil saveImageToCache:[myPhoto getScreenImage]];
     [[EZDataUtil getInstance] registerUser:@{
                                              @"name":@"cool",
                                              @"email":@"unix@gmail.com",
                                              @"mobile":@"15216727142",
                                              @"password":@"i love you"
                                              } success:^(EZPerson* person){
-        EZDEBUG(@"successfully registred:%@, sessionID:%@", person.personID, [EZDataUtil getInstance].currentPersonID);
-        [[EZDataUtil getInstance] uploadPhoto:photo success:^(EZPhoto* obj){
-            EZDEBUG(@"Uploaded photoID success:%@", obj.photoID);
-        } failure:^(id err){
-            EZDEBUG(@"upload photo error:%@", err);
-        }];
-    } error:^(NSError* err){
-        EZDEBUG(@"Register error:%@", err);
-    }];
-    
-    }else{
+                                                 EZDEBUG(@"successfully registred:%@, sessionID:%@", person.personID, [EZDataUtil getInstance].currentPersonID);
+                                                 [[EZDataUtil getInstance] uploadPhoto:photo success:^(EZPhoto* obj){
+                                                     EZDEBUG(@"Uploaded photoID success:%@", obj.photoID);
+                                                 } failure:^(id err){
+                                                     EZDEBUG(@"upload photo error:%@", err);
+                                                 }];
+                                             } error:^(NSError* err){
+                                                 EZDEBUG(@"Register error:%@", err);
+                                             }];
+
+}
+
+- (void) testBackendCommunication:(EZPhoto*)photo
+{
+    static int sequence = 0;
+    if((sequence % 2) == 0){
+    //NSString* storedFile = [EZFileUtil saveImageToCache:[myPhoto getScreenImage]];
         [[EZDataUtil getInstance] loginUser:@{@"mobile":@"15216727142",@"password":@"i love you"} success:^(EZPerson* person){
             EZDEBUG(@"login user:%@, sessionid:%@", person.personID, [EZDataUtil getInstance].currentPersonID);
+            [[EZDataUtil getInstance] uploadContacts:[EZDataUtil getInstance].contacts success:^(NSArray* filled){
+                for(int i = 0; i < filled.count; i++){
+                    NSDictionary* dict = [filled objectAtIndex:i];
+                    EZPerson* ep = [[EZDataUtil getInstance].contacts objectAtIndex:i];
+                    EZDEBUG(@"mobile:%@, returned:%@, id:%@", [dict objectForKey:@"mobile"], ep.mobile, [dict objectForKey:@"personID"]);
+                    [ep fromJson:dict];
+                }
+            } failure:^(NSError* err){
+                EZDEBUG(@"Error:%@", err);
+            }];
         } error:^(NSError* err){
             EZDEBUG(@"Error detail:%@", err);
         }];
+        
+
+    }else{
+        
     }
     ++sequence;
     /**

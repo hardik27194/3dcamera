@@ -221,7 +221,7 @@
     [self setupAppearance];
     [self setupNetwork];
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    
+    [[UIDevice currentDevice] setProximityMonitoringEnabled:YES]; 
     //self.window.backgroundColor = [UIColor greenColor];
     //[[EZDataUtil getInstance] loadAlbumPhoto:0 limit:100 success:^(NSArray* phs){
     //    EZDEBUG(@"returned size:%i", phs.count);

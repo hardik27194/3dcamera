@@ -42,13 +42,35 @@
         _assetLibaray = [[ALAssetsLibrary alloc] init];
     }
     _contacts = [[NSMutableArray alloc] init];
+    _isoFormatter = [[NSDateFormatter alloc] init];
+    _isoFormatter.dateFormat = @"yyyy-MM-dd' 'HH:mm:ss.S";
     return self;
 }
 
 
+- (void) populatePersons:(NSArray*)json persons:(NSArray*)persons
+{
+    EZDEBUG(@"Returned json count:%i, person count:%i", json.count, persons.count);
+    for(int i = 0; i < json.count; i++){
+        NSDictionary* dict = [json objectAtIndex:i];
+        EZPerson* ps = [persons objectAtIndex:i];
+        [ps fromJson:dict];
+        EZDEBUG(@"jointed time :%@", ps.joinedTime);
+    }
+}
+
 - (void) uploadContacts:(NSArray*)contacts success:(EZEventBlock)succss failure:(EZEventBlock)failure
 {
     
+    NSMutableArray* arr = [[NSMutableArray alloc] initWithCapacity:contacts.count];
+    for(EZPerson* ps in contacts){
+        [arr addObject:[ps toJson]];
+    }
+    [EZNetworkUtility postJson:@"person/info" parameters:arr complete:^(NSArray* array){
+        [self populatePersons:array persons:contacts];
+    } failblk:^(id err){
+        EZDEBUG(@"error:%@", err);
+    }];
 }
 
 - (void) registerUser:(NSDictionary*)person success:(EZEventBlock)success error:(EZEventBlock)error

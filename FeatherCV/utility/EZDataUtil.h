@@ -40,6 +40,8 @@
 //The person are login to the server.
 @property (nonatomic, strong) NSString* currentPersonID;
 
+@property (nonatomic, strong) NSDateFormatter* isoFormatter;
+
 //@property (nonatomic, strong) NSMutable
 //Phone number will be the unique id?
 //Mean only one id for each phone right?

@@ -540,11 +540,11 @@ static EZNetworkUtility* instance;
 }
 
 
-+ (void) postJson:(NSString*)url parameters:(NSDictionary*)dicts complete:(EZEventBlock)complete failblk:(EZEventBlock)block
++ (void) postJson:(NSString*)url parameters:(id)dicts complete:(EZEventBlock)complete failblk:(EZEventBlock)block
 {
     [[EZFeatherAPIClient sharedClient].requestSerializer setValue:[EZDataUtil getInstance].currentPersonID forHTTPHeaderField:EZSessionHeader];
     [[EZFeatherAPIClient sharedClient] POST:url parameters:dicts success:^(NSURLSessionDataTask * __unused task, id JSON) {
-        if (complete) {
+        if(complete){
             complete(JSON);
         }
     } failure:^(NSURLSessionDataTask *__unused task, NSError *error) {
