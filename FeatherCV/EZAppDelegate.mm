@@ -217,7 +217,14 @@
 {
     _cameraRaised = false;
     [EZTestSuites testAll];
- 
+    [[EZDataUtil getInstance] loginUser:@{
+                                          @"mobile":@"15921942426",
+                                          @"password":@"i love you"
+                                          } success:^(EZPerson* ps){
+                                              EZDEBUG(@"login success");
+                                          } error:^(NSError* err){
+                                          }];
+    
     [self setupAppearance];
     [self setupNetwork];
     [self enableProximate:YES];

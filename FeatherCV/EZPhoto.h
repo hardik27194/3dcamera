@@ -48,6 +48,7 @@
 
 @property (nonatomic, strong) NSString* assetURL;
 
+//If the image uploaded or not?
 @property (nonatomic, assign) BOOL uploaded;
 //Whether this photo uploaded or not
 //Mean if the photo is local photo or not
@@ -95,5 +96,6 @@
 
 - (NSDictionary*) toJson;
 
+- (void) fromJson:(NSDictionary*)dict;
 
 @end

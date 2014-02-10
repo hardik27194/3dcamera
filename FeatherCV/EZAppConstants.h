@@ -32,8 +32,16 @@
 
 #define randBack(color)  [[EZUIUtility sharedEZUIUtility] getBackgroundColor:color]
 
+#define null2Empty(str) str?str:@""
+
+#define isoDateFormat(curDate) [[EZDataUtil getInstance].isoFormatter stringFromDate:curDate]
+
+#define isoStr2Date(curStr) [[EZDataUtil getInstance].isoFormatter dateFromString:curStr]
+
+//#define baseUploadURL @"http://10.0.1.6:8080/upload"
 #define baseUploadURL @"http://192.168.1.102:8080/upload"
 
+//#define baseServiceURL @"http://10.0.1.6:8080/"
 #define baseServiceURL @"http://192.168.1.102:8080/"
 //This is from show hair.
 //Who will manage the session.

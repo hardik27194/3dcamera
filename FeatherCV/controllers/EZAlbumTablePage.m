@@ -20,6 +20,7 @@
 #import "EZDataUtil.h"
 #import "SlideAnimation.h"
 #import "EZNetworkUtility.h"
+#import "UIImageView+AFNetworking.h"
 
 
 static int photoCount = 1;
@@ -381,31 +382,43 @@ static int photoCount = 1;
 
 }
 
-- (void) testBackendCommunication:(EZPhoto*)photo
+
+- (void) uploadAllContacts
+{
+    [[EZDataUtil getInstance] uploadContacts:[EZDataUtil getInstance].contacts success:^(NSArray* filled){
+        EZDEBUG(@"Success uploaded the contacts:%i", filled.count);
+        for(int i = 0; i < filled.count; i++){
+            NSDictionary* dict = [filled objectAtIndex:i];
+            EZPerson* ep = [[EZDataUtil getInstance].contacts objectAtIndex:i];
+            EZDEBUG(@"mobile:%@, returned:%@, id:%@", [dict objectForKey:@"mobile"], ep.mobile, [dict objectForKey:@"personID"]);
+            
+            [ep fromJson:dict];
+        }
+    } failure:^(NSError* err){
+        EZDEBUG(@"Error:%@", err);
+    }];
+
+}
+
+- (void) testBackendCommunication:(EZPhoto*)photo exchanged:(EZEventBlock)block
 {
     static int sequence = 0;
-    if((sequence % 2) == 0){
+    //if((sequence % 2) == 0){
     //NSString* storedFile = [EZFileUtil saveImageToCache:[myPhoto getScreenImage]];
-        [[EZDataUtil getInstance] loginUser:@{@"mobile":@"15216727142",@"password":@"i love you"} success:^(EZPerson* person){
-            EZDEBUG(@"login user:%@, sessionid:%@", person.personID, [EZDataUtil getInstance].currentPersonID);
-            [[EZDataUtil getInstance] uploadContacts:[EZDataUtil getInstance].contacts success:^(NSArray* filled){
-                for(int i = 0; i < filled.count; i++){
-                    NSDictionary* dict = [filled objectAtIndex:i];
-                    EZPerson* ep = [[EZDataUtil getInstance].contacts objectAtIndex:i];
-                    EZDEBUG(@"mobile:%@, returned:%@, id:%@", [dict objectForKey:@"mobile"], ep.mobile, [dict objectForKey:@"personID"]);
-                    [ep fromJson:dict];
-                }
-            } failure:^(NSError* err){
-                EZDEBUG(@"Error:%@", err);
+        [[EZDataUtil getInstance] uploadPhoto:photo success:^(EZPhoto* obj){
+            EZDEBUG(@"Uploaded photoID success:%@", obj.photoID);
+            [[EZDataUtil getInstance] exchangePhoto:obj success:^(EZPhoto* pt){
+                block(pt);
+            } failure:^(id err){
+                EZDEBUG(@"Photo exchange failure:%@", err);
             }];
-        } error:^(NSError* err){
-            EZDEBUG(@"Error detail:%@", err);
+        } failure:^(id err){
+            EZDEBUG(@"upload photo error:%@", err);
         }];
-        
 
-    }else{
+    //}else{
         
-    }
+    //}
     ++sequence;
     /**
     [EZNetworkUtility postParameterAsJson:@"query/contacts" parameters:@[@{@"name":@"coolguy"}, @{@"name":@"hot girl"}] complete:^(id result){
@@ -521,7 +534,11 @@ static int photoCount = 1;
         if(cp.combineStatus == kEZStartStatus){
             cp.combineStatus = kEZSendSharedRequest;
             EZDEBUG(@"Will start upload the image");
-            [self testBackendCommunication:myPhoto];
+            [self testBackendCommunication:myPhoto exchanged:^(EZPhoto* ep){
+                cp.photo.photoRelations = @[ep];
+                EZDEBUG(@"Returned screen image URL:%@", ep.screenURL);
+                [weakCell.frontImage setImageWithURL:str2url(ep.screenURL)];
+            }];
         }else{
             [weakSelf switchAnimation:cp photoCell:weakCell indexPath:indexPath tableView:tableView];
         }
@@ -551,6 +568,8 @@ static int photoCount = 1;
         //[weakCell displayImage:[myPhoto getLocalImage]];
         [weakCell switchImage:[cp.photo getScreenImage] photo:cp complete:complete tableView:tableView index:indexPath];
     }else{
+        
+        /**
         EZDEBUG(@"The container size:%f, %f", weakCell.container.frame.size.width, weakCell.container.frame.size.height);
         if(!cp.randImage){
             int imagePos = rand()%17;
@@ -559,7 +578,9 @@ static int photoCount = 1;
             EZDEBUG(@"Random File name:%@", randFile);
             cp.randImage = randFile;
         }
-        [weakCell switchImage:[UIImage imageNamed:cp.randImage] photo:cp complete:complete tableView:tableView index:indexPath];
+         **/
+        //[weakCell switchImage:[UIImage imageNamed:cp.randImage] photo:cp complete:complete tableView:tableView index:indexPath];
+        //[weakCell.frontImage setI
     }
 
 }

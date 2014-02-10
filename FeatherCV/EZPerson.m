@@ -21,12 +21,12 @@
 - (NSDictionary*) toJson
 {
     return @{
-             @"personID":_personID?_personID:@"",
-             @"name":_name?_name:@"",
-             @"mobile":_mobile?_mobile:@"",
-             @"avatar":_avatar?_avatar:@"",
-             @"email":_email?_email:@"",
-             @"joinedTime":_joinedTime?[[EZDataUtil getInstance].isoFormatter stringFromDate:_joinedTime]:@"",
+             @"personID":null2Empty(_personID),
+             @"name":null2Empty(_name),
+             @"mobile":null2Empty(_mobile),
+             @"avatar":null2Empty(_avatar),
+             @"email":null2Empty(_email),
+             @"joinedTime":_joinedTime?isoDateFormat(_joinedTime):@"",
              @"joined":@(_joined)
              };
 }

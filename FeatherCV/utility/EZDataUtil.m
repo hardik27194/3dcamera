@@ -18,6 +18,7 @@
 #import "EZMessageCenter.h"
 #import "EZNetworkUtility.h"
 
+
 @implementation EZAlbumResult
 
 @end
@@ -44,6 +45,7 @@
     _contacts = [[NSMutableArray alloc] init];
     _isoFormatter = [[NSDateFormatter alloc] init];
     _isoFormatter.dateFormat = @"yyyy-MM-dd' 'HH:mm:ss.S";
+    _localPhotos = [[NSMutableArray alloc] init];
     return self;
 }
 
@@ -68,6 +70,7 @@
     }
     [EZNetworkUtility postJson:@"person/info" parameters:arr complete:^(NSArray* array){
         [self populatePersons:array persons:contacts];
+        succss(array);
     } failblk:^(id err){
         EZDEBUG(@"error:%@", err);
     }];
@@ -93,8 +96,12 @@
             EZPhoto* photo = [photoInfo objectAtIndex:i];
             photo.photoID = [arr objectAtIndex:i];
         }
+        success(photoInfo);
     } failblk:^(NSError* err){
         EZDEBUG(@"Error:%@", err);
+        if(failure){
+            failure(err);
+        }
     }];
 }
 
@@ -107,6 +114,18 @@
     return res;
 }
 
+//I will exchange photo with other user
+- (void) exchangePhoto:(EZPhoto*)photo success:(EZEventBlock)success failure:(EZEventBlock)failure
+{
+    //NSDictionary* dict = [photo toJson];
+    [EZNetworkUtility postJson:@"photo/exchange" parameters:@{@"photoID":photo.photoID} complete:^(id ph){
+        EZPhoto* pt = [[EZPhoto alloc] init];
+        [pt fromJson:ph];
+        EZDEBUG(@"returned photo screen:%@", pt.screenURL);
+        success(pt);
+    } failblk:failure];
+}
+
 - (void) uploadPhoto:(EZPhoto*)photo success:(EZEventBlock)success failure:(EZEventBlock)failure
 {
     NSDictionary* jsonInfo = [photo toJson];
@@ -116,7 +135,7 @@
         photo.photoID = photoID;
         //TODO an IO bottleneck here.
         NSString* storedFile =[EZFileUtil saveImageToCache:[photo getScreenImage]];
-        [EZNetworkUtility upload:baseUploadURL parameters:@{@"photoID":photoID} file:storedFile complete:^(id obj){
+        [EZNetworkUtility upload:baseUploadURL parameters:@{@"photoID":photo.photoID} file:storedFile complete:^(id obj){
             NSString* screenURL = [obj objectForKey:@"screenURL"];
             photo.screenURL = screenURL;
             photo.uploaded = TRUE;
@@ -140,6 +159,29 @@
         [EZDataUtil getInstance].currentPersonID = person.personID;
         success(person);
     } failblk:error];
+}
+
+//called at logout, so that no user trace will left.
+- (void) cleanLogin
+{
+    EZDEBUG(@"Will clean the session");
+    [[NSUserDefaults standardUserDefaults] setObject:nil  forKey:@"CurrentSessionID"];
+}
+
+- (void) setCurrentPersonID:(NSString *)currentPersonID
+{
+    [[NSUserDefaults standardUserDefaults] setObject:currentPersonID forKey:@"CurrentSessionID"];
+    NSString* fetchedBack = [[NSUserDefaults standardUserDefaults] objectForKey:@"CurrentSessionID"];
+    _currentPersonID = currentPersonID;
+    EZDEBUG(@"stored:%@, fetched:%@", currentPersonID, fetchedBack);
+}
+
+- (NSString*) getCurrentPersonID
+{
+    if(!_currentPersonID){
+        _currentPersonID = [[NSUserDefaults standardUserDefaults] objectForKey:@"CurrentSessionID"];
+    }
+    return _currentPersonID;
 }
 
 //Will load Friends
@@ -369,23 +411,6 @@
     });
 }
 
-//Will get current login person id
-- (NSString*) getCurrentPersonID
-{
-    return @"167791";
-}
-
-
-- (EZPerson*) getCurrentPerson
-{
-    EZPerson* res = [[EZPerson alloc] init];
-    res.personID = [self getCurrentPersonID];
-    res.name = @"天哥";
-    res.avatar = [EZFileUtil fileToURL:@"img02.jpg"].absoluteString;
-    res.joined = true;
-    return res;
-}
-
 
 - (EZPerson*) getPerson:(NSString*)personID
 {
@@ -403,18 +428,10 @@
 //Get the person object
 - (void) getPersonID:(NSString*)personID success:(EZEventBlock)success failure:(EZEventBlock)failure;
 {
-    EZPerson* res = [[EZPerson alloc] init];
-    res.personID = personID;
-    res.name = [NSString stringWithFormat:@"天哥:%@", personID];
-    //if(personID % 2){
-    res.avatar = [EZFileUtil fileToURL:@"img01.jpg"].absoluteString;
-    //}else{
-    //    res.avatar = [EZFileUtil fileToURL:@"img02.jpg"].absoluteString;
-    //}
-    res.joined = true;
-    dispatch_async(dispatch_get_main_queue(), ^(){
-        success(res);
-    });
+    [EZNetworkUtility getJson:@"person/info"
+                   parameters:@{@"personID":personID}
+    complete:success failblk:failure];
+
 }
 
 //Invite your friend
@@ -590,18 +607,27 @@
                         EZPhoto* ep = [[EZPhoto alloc] init];
                         ed.pid = ++photoCount;
                         ep.asset = result;
+                        ep.assetURL = ((NSURL*)[result valueForProperty:ALAssetPropertyAssetURL]).absoluteString;
+                        CLLocation* location = [result valueForProperty:ALAssetPropertyLocation];
+                        if(location){
+                            ep.latitude = location.coordinate.latitude;
+                            ep.longitude = location.coordinate.longitude;
+                        }
+                        ep.createdTime = [result valueForProperty:ALAssetPropertyDate];
                         ep.isLocal = true;
                         ed.photo = ep;
                         ed.photo.owner = [[EZPerson alloc] init];
+                        ed.photo.owner.personID = [EZDataUtil getInstance].currentPersonID;
                         ed.photo.owner.name = @"天哥";
                         ed.photo.owner.avatar = [EZFileUtil fileToURL:@"tian_2.jpeg"].absoluteString;
                         //EZDEBUG(@"Before size");
                         ep.size = [result defaultRepresentation].dimensions;
-                        
+                        [_localPhotos addObject:ep];
                         EZDEBUG(@"after size:%f, %f", ep.size.width, ep.size.height);
                         //[res insertObject:ed atIndex:0];
                         [[EZMessageCenter getInstance] postEvent:EZAlbumImageReaded attached:ed];
                         }
+                        
                         //[NSThread sleepForTimeInterval:0.5];
                         if((count - begin) > limit){
                             *stop = true;
@@ -625,6 +651,7 @@
     });
 }
 //Now keep it simple and stupid, only change it at the second iteration
+/**
 - (void) loadAlbumPhoto:(int)start limit:(int)limit success:(EZEventBlock)success failure:(EZEventBlock)failure
 {
     EZDEBUG(@"Try to fetch %i, %i", start, limit);
@@ -697,7 +724,7 @@
     //ALAssetsGroupAlbum | ALAssetsGroupEvent | ALAssetsGroupFaces |
     NSUInteger groupTypes =  ALAssetsGroupSavedPhotos;
     [_assetLibaray enumerateGroupsWithTypes:groupTypes usingBlock:listGroupBlock failureBlock:failureBlock];}
-
+**/
 - (void) checkPhotoAlbum:(EZEventBlock)success failure:(EZEventBlock)failure
 {
     

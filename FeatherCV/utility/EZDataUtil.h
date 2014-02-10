@@ -42,6 +42,8 @@
 
 @property (nonatomic, strong) NSDateFormatter* isoFormatter;
 
+@property (nonatomic, strong) NSMutableArray* localPhotos;
+
 //@property (nonatomic, strong) NSMutable
 //Phone number will be the unique id?
 //Mean only one id for each phone right?
@@ -49,18 +51,21 @@
 //Will load data for user
 - (void) loadFriends:(EZEventBlock)success failure:(EZEventBlock)failure;
 
+//called at logout, so that no user trace will left.
+- (void) cleanLogin;
 //Should I give the person id or what?
 //Let's give it. Expose the parameter make the function status free. More easier to debug
 - (void) likedPhoto:(int)photoID success:(EZEventBlock)success failure:(EZEventBlock)failure;
 
+
+- (void) exchangePhoto:(EZPhoto*)photo success:(EZEventBlock)success failure:(EZEventBlock)failure;
 //Will get current login person id
 - (NSString*) getCurrentPersonID;
 
-- (EZPerson*) getCurrentPerson;
-
 //Why this method?
 //Normally, the person is already in the cache by check the photos.
-- (EZPerson*) getPerson:(int)personID;
+- (EZPerson*) getPerson:(NSString*)personID;
+
 
 
 - (void) registerUser:(NSDictionary*)person success:(EZEventBlock)success error:(EZEventBlock)error;

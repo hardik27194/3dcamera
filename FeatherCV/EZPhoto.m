@@ -16,14 +16,16 @@
 
 - (NSDictionary*) toJson
 {
+
     return @{
              //@"id":_photoID,
-             @"personID":_owner.personID?_owner.personID:@"",
-             @"assetURL":_assetURL?_assetURL:@"",
+             @"personID":null2Empty(_owner.personID),
+             @"assetURL":null2Empty(_assetURL),
              @"longtitude":@(_longitude),
              @"latitude":@(_latitude),
+             @"altitude":@(_altitude),
              @"uploaded":@(_uploaded),
-             @"createdTime":_createdTime?_createdTime:@""
+             @"createdTime":_createdTime?isoDateFormat(_createdTime):@""
                  };
 }
 
@@ -39,8 +41,22 @@
     _assetURL = [dict objectForKey:@"assetURL"];
     _longitude = [[dict objectForKey:@"longitude"] doubleValue];
     _latitude = [[dict objectForKey:@"latitude"] doubleValue];
+    _altitude = [[dict objectForKey:@"altitude"] doubleValue];
     _uploaded = [[dict objectForKey:@"uploaded"] integerValue];
-    _createdTime = [dict objectForKey:@"createdTime"];
+    _createdTime = isoStr2Date([dict objectForKey:@"createdTime"]);
+    _screenURL = [dict objectForKey:@"screenURL"];
+    
+    NSArray* photoRelation = [dict objectForKey:@"photoRelations"];
+    EZDEBUG(@"Photo count:%i", photoRelation.count);
+    if(photoRelation.count > 0){
+        _photoRelations = [[NSMutableArray alloc] initWithCapacity:photoRelation.count];
+        for(int i = 0; i < photoRelation.count; i ++){
+            NSDictionary* dict = [photoRelation objectAtIndex:i];
+            EZPhoto* photo = [[EZPhoto alloc] init];
+            [photo fromJson:dict];
+            [_photoRelations addObject:photo];
+        }
+    }
     EZDEBUG(@"The created date is:%@", _createdTime);
 }
 

@@ -431,7 +431,7 @@
     };
     _isVisible = TRUE;
     [self startMobileMotion];
-    [[EZMessageCenter getInstance] registerEvent:EZFaceCovered block:faceCovered];
+    //[[EZMessageCenter getInstance] registerEvent:EZFaceCovered block:faceCovered];
 }
 
 - (void) setupButton
@@ -1405,6 +1405,11 @@
     } isConcurrent:YES];
 }
 
+//For fix the memory leakage
+- (BOOL) haveDetectedFace
+{
+    return (!_disableFaceBeautify && (_detectedFaceObj || stillCamera.isFrontFacing || _shotMode == kSelfShotMode));
+}
 -(void)captureImageInner:(BOOL)flip {
     _detectFace = false;
     __weak DLCImagePickerController* weakSelf = self;
@@ -1430,10 +1435,7 @@
         void (^fullImageProcess)(UIImage *, NSError *) = ^(UIImage *fullImg, NSError* error) {
             //[weakSelf handleFullImage:fullImg];
             UIImageOrientation prevOrient = fullImg.imageOrientation;
-            BOOL antialias = false;
-            if(!_disableFaceBeautify && (_detectedFaceObj || stillCamera.isFrontFacing || _shotMode == kSelfShotMode)){
-                antialias = true;
-            }
+            BOOL antialias = [weakSelf haveDetectedFace];
             fullImg = [fullImg resizedImageWithMinimumSize:CGSizeMake(980.0, 980.0) antialias:antialias];
             EZDEBUG(@"tailored full size length:%@, prevOrient:%i, current orientation:%i", NSStringFromCGSize(fullImg.size), prevOrient, fullImg.imageOrientation);
             completion(fullImg, nil);

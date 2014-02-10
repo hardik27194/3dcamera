@@ -540,6 +540,21 @@ static EZNetworkUtility* instance;
 }
 
 
++ (void) getJson:(NSString*)url parameters:(id)dicts complete:(EZEventBlock)complete failblk:(EZEventBlock)block
+{
+    [[EZFeatherAPIClient sharedClient].requestSerializer setValue:[EZDataUtil getInstance].currentPersonID forHTTPHeaderField:EZSessionHeader];
+    [[EZFeatherAPIClient sharedClient] GET:url parameters:dicts success:^(NSURLSessionDataTask * __unused task, id JSON) {
+        if(complete){
+            complete(JSON);
+        }
+    } failure:^(NSURLSessionDataTask *__unused task, NSError *error) {
+        if (block) {
+            block(error);
+        }
+    }];
+}
+
+
 + (void) postJson:(NSString*)url parameters:(id)dicts complete:(EZEventBlock)complete failblk:(EZEventBlock)block
 {
     [[EZFeatherAPIClient sharedClient].requestSerializer setValue:[EZDataUtil getInstance].currentPersonID forHTTPHeaderField:EZSessionHeader];
