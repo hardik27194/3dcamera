@@ -35,8 +35,8 @@
 {
     EZDEBUG(@"json raw string:%@", dict);
     NSString* personID = [dict objectForKey:@"personID"];
-    [[EZDataUtil getInstance] getPersonID:personID success:^(EZPerson* ps){
-        _owner = ps;
+    [[EZDataUtil getInstance] getPersonID:personID success:^(NSArray* ps){
+        _owner = [ps objectAtIndex:0];
     } failure:^(NSError* err){
         EZDEBUG(@"Error to find a person");
     }];

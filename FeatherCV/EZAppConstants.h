@@ -43,6 +43,8 @@
 
 //#define baseServiceURL @"http://10.0.1.6:8080/"
 #define baseServiceURL @"http://172.13.1.10:8080/"
+
+#define placeholdImage [UIImage imageNamed:@"user-icon-placeholder-60"] 
 //This is from show hair.
 //Who will manage the session.
 //From Mobile's perspective, I should handle the session.

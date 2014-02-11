@@ -94,7 +94,8 @@
     [EZNetworkUtility postParameterAsJson:@"photo/info" parameters:jsons complete:^(NSArray* arr){
         for(int i = 0; i < photoInfo.count; i ++){
             EZPhoto* photo = [photoInfo objectAtIndex:i];
-            photo.photoID = [arr objectAtIndex:i];
+            //photo.photoID = [arr objectAtIndex:i];
+            [photo fromJson:[arr objectAtIndex:i]];
         }
         success(photoInfo);
     } failblk:^(NSError* err){
@@ -118,7 +119,14 @@
 - (void) exchangePhoto:(EZPhoto*)photo success:(EZEventBlock)success failure:(EZEventBlock)failure
 {
     //NSDictionary* dict = [photo toJson];
-    [EZNetworkUtility postJson:@"photo/exchange" parameters:@{@"photoID":photo.photoID} complete:^(id ph){
+    NSDictionary* dict = nil;
+    if(photo.photoID){
+        dict = @{@"photoID":photo.photoID} ;
+    }else{
+        dict = photo.toJson;
+    }
+    
+    [EZNetworkUtility postJson:@"photo/exchange" parameters:dict complete:^(id ph){
         EZPhoto* pt = [[EZPhoto alloc] init];
         [pt fromJson:ph];
         EZDEBUG(@"returned photo screen:%@", pt.screenURL);
@@ -429,7 +437,7 @@
 - (void) getPersonID:(NSString*)personID success:(EZEventBlock)success failure:(EZEventBlock)failure;
 {
     [EZNetworkUtility getJson:@"person/info"
-                   parameters:@{@"personID":personID}
+                   parameters:@[personID]
     complete:success failblk:failure];
 
 }
@@ -631,7 +639,15 @@
                         //[NSThread sleepForTimeInterval:0.5];
                         if((count - begin) > limit){
                             *stop = true;
+                            EZDEBUG(@"manually quit for the album reading");
                         }
+                    }else{
+                         //EZDEBUG(@"Will quit for the album reading");
+                        [self uploadPhotoInfo:_localPhotos success:^(NSArray* arr){
+                            EZDEBUG(@"Successfully uploaded photo to server");
+                        } failure:^(id err){
+                            EZDEBUG(@"Error to upload photo info:%@", err);
+                        }];
                     }
                     
                 }];

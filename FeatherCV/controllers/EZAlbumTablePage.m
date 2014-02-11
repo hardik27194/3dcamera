@@ -400,19 +400,21 @@ static int photoCount = 1;
     static int sequence = 0;
     //if((sequence % 2) == 0){
     //NSString* storedFile = [EZFileUtil saveImageToCache:[myPhoto getScreenImage]];
+    EZDEBUG(@"Uploaded for photoID:%@, uploaded:%i", photo.photoID, photo.uploaded);
+    if(!photo.uploaded){
         [[EZDataUtil getInstance] uploadPhoto:photo success:^(EZPhoto* obj){
-            EZDEBUG(@"Uploaded photoID success:%@", obj.photoID);
-            [[EZDataUtil getInstance] exchangePhoto:obj success:^(EZPhoto* pt){
-                block(pt);
-            } failure:^(id err){
-                EZDEBUG(@"Photo exchange failure:%@", err);
-            }];
+                EZDEBUG(@"Uploaded photoID success:%@", obj.photoID);
         } failure:^(id err){
-            EZDEBUG(@"upload photo error:%@", err);
+                EZDEBUG(@"upload photo error:%@", err);
         }];
-
+    }
+    [[EZDataUtil getInstance] exchangePhoto:photo success:^(EZPhoto* pt){
+        block(pt);
+    } failure:^(id err){
+        EZDEBUG(@"Photo exchange failure:%@", err);
+    }];
     //}else{
-        
+    
     //}
     ++sequence;
     /**
@@ -475,6 +477,14 @@ static int photoCount = 1;
      }];
      **/
 
+}
+
+- (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if ([tableView.indexPathsForVisibleRows indexOfObject:indexPath] == NSNotFound)
+    {
+        EZDEBUG(@"indexPath no more visible:%i", indexPath.row);
+    }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath

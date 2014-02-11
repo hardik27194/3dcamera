@@ -61,7 +61,7 @@
         // Initialization code
         _container = [[EZClickView alloc] initWithFrame:CGRectMake(10, 10, 300, 300 + ToolRegionHeight)];
         //_container.layer.cornerRadius = 5;
-        _container.clipsToBounds = true;
+        //_container.clipsToBounds = true;
         //_container.backgroundColor = [UIColor greenColor];
         
         _rotateContainer = [self createRotateContainer:_container.bounds];
@@ -145,6 +145,14 @@
 }
 //Newly added method.
 //I will adjust the image size and layout accordingly.
+- (void) adjustInnerSize:(CGSize)size
+{
+    CGFloat adjustedHeight = [self calHeight:size];
+    [_rotateContainer setSize:CGSizeMake(ContainerWidth, adjustedHeight+ToolRegionHeight)];
+    //[_frontNoEffects setSize:CGSizeMake(320, adjustedHeight)];
+    [_frontImage setSize:CGSizeMake(ContainerWidth, adjustedHeight)];
+}
+
 - (void) adjustCellSize:(CGSize)size
 {
     CGFloat adjustedHeight = [self calHeight:size];
@@ -230,7 +238,7 @@
     //dp.isTurning = true;
     if(_frontImage.frame.size.height >= height){
         _isTurning = true;
-        UIView* srcView = [_rotateContainer snapshotViewAfterScreenUpdates:NO];
+        UIView* srcView = [_rotateContainer snapshotViewAfterScreenUpdates:YES];
         srcView.tag = animateCoverViewTag;
         EZDEBUG(@"Will come up with the old animation.src:%i, _rotatePointer:%i, isFront:%i, screenURL:%@",(int)srcView, (int)_rotateContainer, dp.isFront, curPhoto.screenURL);
         [_container addSubview:srcView];
@@ -238,14 +246,17 @@
         if(dp.isFront){
             [_frontImage setImage:curPhoto.getScreenImage];
         }else{
-            [_frontImage setImageWithURL:str2url(curPhoto.screenURL)];
+            [_frontImage setImageWithURL:str2url(curPhoto.screenURL) placeholderImage:placeholdImage];
         }
-        [self adjustCellSize:curPhoto.size];
+        
+        [self adjustInnerSize:CGSizeMake(_frontImage.width, height)];
+        //[_frontImage setSize:CGSizeMake(_frontImage.width, height)];
         [UIView flipTransition:srcView dest:_rotateContainer container:_container isLeft:YES duration:2 complete:^(id obj){
             if(blk){
                 blk(nil);
             }
             [srcView removeFromSuperview];
+            [self adjustCellSize:CGSizeMake(_frontImage.width, height)];
             dp.isTurning = false;
             _isTurning = false;
         }];
@@ -261,7 +272,7 @@
             if(weakPhoto.isFront){
                 [photoCell.frontImage setImage:curPhoto.getScreenImage];
             }else{
-                [photoCell.frontImage setImageWithURL:str2url(curPhoto.screenURL)];
+                [photoCell.frontImage setImageWithURL:str2url(curPhoto.screenURL) placeholderImage:placeholdImage];
             }
             [photoCell adjustCellSize:curPhoto.size];
             [UIView flipTransition:oldView dest:photoCell.rotateContainer container:photoCell.container isLeft:YES duration:2 complete:^(id obj){
