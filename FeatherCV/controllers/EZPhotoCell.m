@@ -12,6 +12,7 @@
 #import "EZExtender.h"
 #import "AFNetworking.h"
 #import "EZExtender.h"
+#import "UIImageView+AFNetworking.h"
 
 
 #define MainLabelTag 20140103
@@ -60,7 +61,7 @@
         // Initialization code
         _container = [[EZClickView alloc] initWithFrame:CGRectMake(10, 10, 300, 300 + ToolRegionHeight)];
         //_container.layer.cornerRadius = 5;
-        //_container.clipsToBounds = true;
+        _container.clipsToBounds = true;
         //_container.backgroundColor = [UIColor greenColor];
         
         _rotateContainer = [self createRotateContainer:_container.bounds];
@@ -216,10 +217,11 @@
 }
 
 
-- (void) switchImage:(UIImage*)img photo:(EZDisplayPhoto*)dp complete:(EZEventBlock)blk tableView:(UITableView*)tableView index:(NSIndexPath*)path
+- (void) switchImage:(EZPhoto*)photo photo:(EZDisplayPhoto*)dp complete:(EZEventBlock)blk tableView:(UITableView*)tableView index:(NSIndexPath*)path
 {
     
-    CGFloat height = [self calHeight:img.size];
+    EZPhoto* curPhoto = photo;
+    CGFloat height = [self calHeight:curPhoto.size];
     
     EZDEBUG(@"_frontImage height:%f, calculated height:%f, isTurnning:%i", _frontImage.frame.size.height, height, dp.isTurning);
     //if(dp.isTurning){
@@ -227,17 +229,23 @@
     //}
     //dp.isTurning = true;
     if(_frontImage.frame.size.height >= height){
-        EZDEBUG(@"Will come up with the old animation.");
         _isTurning = true;
-        UIView* destView = [self createDupContainer:img];
-        destView.tag = animateCoverViewTag;
-        [_container insertSubview:destView belowSubview:_rotateContainer];
-        
+        UIView* srcView = [_rotateContainer snapshotViewAfterScreenUpdates:NO];
+        srcView.tag = animateCoverViewTag;
+        EZDEBUG(@"Will come up with the old animation.src:%i, _rotatePointer:%i, isFront:%i, screenURL:%@",(int)srcView, (int)_rotateContainer, dp.isFront, curPhoto.screenURL);
+        [_container addSubview:srcView];
         //_rotateContainer.hidden = TRUE;
-        [UIView flipTransition:_rotateContainer dest:destView container:_container isLeft:YES duration:2 complete:^(id obj){
+        if(dp.isFront){
+            [_frontImage setImage:curPhoto.getScreenImage];
+        }else{
+            [_frontImage setImageWithURL:str2url(curPhoto.screenURL)];
+        }
+        [self adjustCellSize:curPhoto.size];
+        [UIView flipTransition:srcView dest:_rotateContainer container:_container isLeft:YES duration:2 complete:^(id obj){
             if(blk){
                 blk(nil);
             }
+            [srcView removeFromSuperview];
             dp.isTurning = false;
             _isTurning = false;
         }];
@@ -250,11 +258,15 @@
         dp.oldTurnedImage = oldView;
         dp.turningAnimation = ^(EZPhotoCell* photoCell){
             photoCell.isTurning = true;
-            photoCell.frontImage.image = img;
-            [photoCell adjustCellSize:img.size];
+            if(weakPhoto.isFront){
+                [photoCell.frontImage setImage:curPhoto.getScreenImage];
+            }else{
+                [photoCell.frontImage setImageWithURL:str2url(curPhoto.screenURL)];
+            }
+            [photoCell adjustCellSize:curPhoto.size];
             [UIView flipTransition:oldView dest:photoCell.rotateContainer container:photoCell.container isLeft:YES duration:2 complete:^(id obj){
                     [oldView removeFromSuperview];
-                    EZDEBUG(@"The final assign image size is:%@, frontImage size:%@, parent pointer:%i", NSStringFromCGSize(img.size), NSStringFromCGRect(photoCell.frontImage.frame), (int)photoCell.frontImage.superview);
+                    //EZDEBUG(@"The final assign image size is:%@, frontImage size:%@, parent pointer:%i", NSStringFromCGSize(img.size), NSStringFromCGRect(photoCell.frontImage.frame), (int)photoCell.frontImage.superview);
                     weakPhoto.isTurning = false;
                     //_isTurning = false;
                     photoCell.isTurning = false;

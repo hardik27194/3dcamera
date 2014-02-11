@@ -373,7 +373,7 @@
 {
     GPUImageToneCurveFilter* resFilter = [[GPUImageToneCurveFilter alloc] init];
     
-    [resFilter setRgbCompositeControlPoints:@[pointValue(0.0, 0.0), pointValue(0.125, 0.140), pointValue(0.25, 0.27), pointValue(0.5, 0.5298), pointValue(0.75, 0.775), pointValue(1.0, 1.0)]];
+    [resFilter setRgbCompositeControlPoints:@[pointValue(0.0, 0.0), pointValue(0.125, 0.140), pointValue(0.25, 0.27), pointValue(0.5, 0.525), pointValue(0.75, 0.775), pointValue(1.0, 1.0)]];
     //[resFilter setRedControlPoints:@[pointValue(0.0, 0.0),pointValue(0.125, 0.128), pointValue(0.25, 0.254), pointValue(0.5, 0.504), pointValue(0.75, 0.754), pointValue(1.0, 0.99)]];
     //[resFilter setGreenControlPoints:@[pointValue(0.0, 0.0),pointValue(0.125, 0.125), pointValue(0.25, 0.25), pointValue(0.5, 0.5), pointValue(0.75, 0.75), pointValue(1.0, 0.995)]];
     //[resFilter setBlueControlPoints:@[pointValue(0.0, 0.0),pointValue(0.125, 0.123), pointValue(0.25, 0.247), pointValue(0.5, 0.497), pointValue(0.75, 0.747), pointValue(1.0, 1.0)]];
@@ -389,8 +389,8 @@
     res.blueEnhanceLevel = 0.6;
     res.blueRatio = 0.2;
     
-    res.greenEnhanceLevel = 0.5;
-    res.greenRatio = 0.60;
+    res.greenEnhanceLevel = 0.8;
+    res.greenRatio = 1.2;
     
     return res;
 }
@@ -431,7 +431,7 @@
     };
     _isVisible = TRUE;
     [self startMobileMotion];
-    //[[EZMessageCenter getInstance] registerEvent:EZFaceCovered block:faceCovered];
+    [[EZMessageCenter getInstance] registerEvent:EZFaceCovered block:faceCovered];
 }
 
 - (void) setupButton
@@ -949,14 +949,15 @@
 -(void) prepareLiveFilter {
     _detectFace = true;
     //[self startFaceCapture];
-    hueFilter.hue = 353;
+    hueFilter.hue = 350;
     [stillCamera addTarget:orgFiler];
-    [orgFiler addTarget:hueFilter];
+    [orgFiler addTarget:redEnhanceFilter];
+    [redEnhanceFilter addTarget:hueFilter];
     [hueFilter addTarget:tongFilter];
-    [tongFilter addTarget:redEnhanceFilter];
+    //[tongFilter addTarget:redEnhanceFilter];
     //[redEnhanceFilter addTarget:crossHairFilter];
     //[crossHairFilter addTarget:filter];
-    [redEnhanceFilter addTarget:filter];
+    [tongFilter addTarget:filter];
     //[hueFilter addTarget:tongFilter];
     //[tongFilter addTarget:redEnhanceFilter];
     //[fixColorFilter addTarget:secFixColorFilter];
@@ -1011,7 +1012,8 @@
         //[tongFilter addTarget:hueFilter];
     }else{
         [staticPicture addTarget:whiteBalancerFilter];
-        [whiteBalancerFilter addTarget:tongFilter];
+        [whiteBalancerFilter addTarget:redEnhanceFilter];
+        [redEnhanceFilter addTarget:tongFilter];
         [tongFilter addTarget:hueFilter];
         
     }
@@ -1022,8 +1024,8 @@
     whiteBalancerFilter.temperature = 5000.0;
     if(!_disableFaceBeautify && (fobj || stillCamera.isFrontFacing || _shotMode == kSelfShotMode)){
         whiteBalancerFilter.temperature = 5500.0;
-        [hueFilter addTarget:redEnhanceFilter];
-        [redEnhanceFilter addTarget:finalBlendFilter];
+        [hueFilter addTarget:finalBlendFilter];
+        //[redEnhanceFilter addTarget:finalBlendFilter];
         //[secFixColorFilter addTarget:finalBlendFilter];
         [finalBlendFilter addTarget:filter];
         //[fixColorFilter addTarget:secFixColorFilter];
@@ -1084,10 +1086,10 @@
             //weakButton.hidden = TRUE;
         };
     }else{
-        [hueFilter addTarget:redEnhanceFilter];
+        [hueFilter addTarget:filter];
         //[fixColorFilter addTarget:secFixColorFilter];
         //[secFixColorFilter addTarget:redEnhanceFilter];
-        [redEnhanceFilter addTarget:filter];
+        //[redEnhanceFilter addTarget:filter];
     }
     [filter addTarget:self.imageView];
     GPUImageRotationMode imageViewRotationMode = kGPUImageNoRotation;

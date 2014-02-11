@@ -57,7 +57,7 @@
     //[self adjustViewsForOrientation:[[UIApplication sharedApplication] statusBarOrientation]];
     if(([UIDevice currentDevice].orientation ==  UIDeviceOrientationLandscapeLeft || [UIDevice currentDevice].orientation == UIDeviceOrientationLandscapeRight)){
         EZDEBUG(@"Will raise camera");
-        [[EZMessageCenter getInstance] postEvent:EZTriggerCamera attached:nil];
+        //[[EZMessageCenter getInstance] postEvent:EZTriggerCamera attached:nil];
     }
     
 }
@@ -218,7 +218,7 @@
     _cameraRaised = false;
     [EZTestSuites testAll];
     [[EZDataUtil getInstance] loginUser:@{
-                                          @"mobile":@"15921942426",
+                                          @"mobile":@"15216727142",
                                           @"password":@"i love you"
                                           } success:^(EZPerson* ps){
                                               EZDEBUG(@"login success");
@@ -270,6 +270,7 @@
     //BOOL newProximityState = device.proximityState;
     EZDEBUG(@"state is:%i", device.proximityState);
     if(device.proximityState == 0){
+        [[EZMessageCenter getInstance] postEvent:EZTriggerCamera attached:nil];
         [[EZMessageCenter getInstance] postEvent:EZFaceCovered attached:@(0)];
     }
 }

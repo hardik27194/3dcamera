@@ -117,7 +117,9 @@ NSString *const kGPUImageMyColorFragmentShaderString = SHADER_STRING
      if(red2Blue > 0.0 && red2Green > 0.0 && levelDiff > 0.0){
          lowp float deltaRed = red2Green * red2Green * redRatio * levelDiff;
          fixRedColor.r = min(1.0, sharpImageColor.r + deltaRed);
-         fixRedColor.g = max(0.0, sharpImageColor.g - deltaRed);
+         lowp float halfRed = deltaRed / 2.0;
+         fixRedColor.g = max(0.0, sharpImageColor.g - halfRed);
+         fixRedColor.b = max(0.0, sharpImageColor.b - halfRed);
      }else if(blue2Red > 0.0 && blue2Green > 0.0 && (blue2Green + blue2Red) > blueEnhanceLevel){
          lowp float redBlueRatio = (sharpImageColor.r/sharpImageColor.b) * blueRatio;
          lowp float plusRed = sharpImageColor.b * redBlueRatio;

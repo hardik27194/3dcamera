@@ -25,6 +25,8 @@
              @"latitude":@(_latitude),
              @"altitude":@(_altitude),
              @"uploaded":@(_uploaded),
+             @"width":@(_size.width),
+             @"height":@(_size.height),
              @"createdTime":_createdTime?isoDateFormat(_createdTime):@""
                  };
 }
@@ -46,6 +48,11 @@
     _createdTime = isoStr2Date([dict objectForKey:@"createdTime"]);
     _screenURL = [dict objectForKey:@"screenURL"];
     
+    CGFloat width = [[dict objectForKey:@"width"] floatValue];
+    CGFloat height = [[dict objectForKey:@"height"] floatValue];
+
+    _size = CGSizeMake(width, height);
+    EZDEBUG(@"The serialized size:%@, screenURL:%@", NSStringFromCGSize(_size), _screenURL);
     NSArray* photoRelation = [dict objectForKey:@"photoRelations"];
     EZDEBUG(@"Photo count:%i", photoRelation.count);
     if(photoRelation.count > 0){

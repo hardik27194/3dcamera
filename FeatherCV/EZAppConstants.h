@@ -39,10 +39,10 @@
 #define isoStr2Date(curStr) [[EZDataUtil getInstance].isoFormatter dateFromString:curStr]
 
 //#define baseUploadURL @"http://10.0.1.6:8080/upload"
-#define baseUploadURL @"http://192.168.1.102:8080/upload"
+#define baseUploadURL @"http://172.13.1.10:8080/upload"
 
 //#define baseServiceURL @"http://10.0.1.6:8080/"
-#define baseServiceURL @"http://192.168.1.102:8080/"
+#define baseServiceURL @"http://172.13.1.10:8080/"
 //This is from show hair.
 //Who will manage the session.
 //From Mobile's perspective, I should handle the session.
