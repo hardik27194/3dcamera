@@ -217,6 +217,7 @@
 {
     _cameraRaised = false;
     [EZTestSuites testAll];
+    /**
     [[EZDataUtil getInstance] loginUser:@{
                                           @"mobile":@"15216727142",
                                           @"password":@"i love you"
@@ -224,7 +225,19 @@
                                               EZDEBUG(@"login success");
                                           } error:^(NSError* err){
                                           }];
-    
+    **/
+    //[EZDataUtil getInstance].currentPersonID = nil;
+    if(![EZDataUtil getInstance].currentPersonID){
+        [[EZDataUtil getInstance] registerUser:@{
+                            @"mobile":int2str(rand()),
+                            @"password":@"coolguy",
+                            @"name":@"coolguy"
+                            } success:^(EZPerson* ps){
+                                EZDEBUG(@"successfully registerred:%@, personID:%@", ps.mobile, ps.personID);
+                            } error:^(id err){
+                                EZDEBUG(@"Error detail:%@", err);
+                            }];
+    }
     [self setupAppearance];
     [self setupNetwork];
     [self enableProximate:YES];
