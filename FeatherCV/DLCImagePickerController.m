@@ -364,7 +364,7 @@
     faceBlender.blurFilter.blurSize = globalBlur;//Original value
     faceBlender.blurFilter.distanceNormalizationFactor = 13;
     faceBlender.smallBlurFilter.blurSize = 0.05;
-    faceBlender.blurRatio = 0.2;
+    faceBlender.blurRatio = 0.35;
     faceBlender.edgeFilter.threshold = 0.4;
     return faceBlender;
 }
@@ -373,7 +373,7 @@
 {
     GPUImageToneCurveFilter* resFilter = [[GPUImageToneCurveFilter alloc] init];
     
-    [resFilter setRgbCompositeControlPoints:@[pointValue(0.0, 0.0), pointValue(0.125, 0.140), pointValue(0.25, 0.27), pointValue(0.5, 0.525), pointValue(0.75, 0.775), pointValue(1.0, 1.0)]];
+    [resFilter setRgbCompositeControlPoints:@[pointValue(0.0, 0.0), pointValue(0.125, 0.140), pointValue(0.25, 0.27), pointValue(0.5, 0.525), pointValue(0.75, 0.770), pointValue(1.0, 1.0)]];
     //[resFilter setRedControlPoints:@[pointValue(0.0, 0.0),pointValue(0.125, 0.128), pointValue(0.25, 0.254), pointValue(0.5, 0.504), pointValue(0.75, 0.754), pointValue(1.0, 0.99)]];
     //[resFilter setGreenControlPoints:@[pointValue(0.0, 0.0),pointValue(0.125, 0.125), pointValue(0.25, 0.25), pointValue(0.5, 0.5), pointValue(0.75, 0.75), pointValue(1.0, 0.995)]];
     //[resFilter setBlueControlPoints:@[pointValue(0.0, 0.0),pointValue(0.125, 0.123), pointValue(0.25, 0.247), pointValue(0.5, 0.497), pointValue(0.75, 0.747), pointValue(1.0, 1.0)]];
@@ -383,14 +383,14 @@
 - (EZColorBrighter*) createRedEnhanceFilter
 {
     EZColorBrighter* res = [[EZColorBrighter alloc] init];
-    res.redEnhanceLevel = 0.725;
+    res.redEnhanceLevel = 0.65; //0.725
     res.redRatio = 0.95;
     
     res.blueEnhanceLevel = 0.6;
     res.blueRatio = 0.2;
     
-    res.greenEnhanceLevel = 0.8;
-    res.greenRatio = 1.2;
+    res.greenEnhanceLevel = 0.6;//0.8
+    res.greenRatio = 1.3;
     
     return res;
 }
@@ -999,20 +999,22 @@
     _detectFace = false;
     
     CGFloat dark = [self getISOSpeedRating];
-    hueFilter.hue = 353.0;
+    hueFilter.hue = 350.0;
     //GPUImageFilter* firstFilter = nil;
     if(dark >= 400){
         //[tongFilter addTarget:darkBlurFilter];
         //firstFilter = (GPUImageFilter*)darkBlurFilter;
         [staticPicture addTarget:darkBlurFilter];
         //[darkBlurFilter addTarget:whiteBalancerFilter];
-        [darkBlurFilter addTarget:whiteBalancerFilter];
-        [whiteBalancerFilter addTarget:tongFilter];
+        //[darkBlurFilter addTarget:whiteBalancerFilter];
+        //[whiteBalancerFilter addTarget:tongFilter];
+        [darkBlurFilter addTarget:redEnhanceFilter];
+        [redEnhanceFilter addTarget:tongFilter];
         [tongFilter addTarget:hueFilter];
         //[tongFilter addTarget:hueFilter];
     }else{
-        [staticPicture addTarget:whiteBalancerFilter];
-        [whiteBalancerFilter addTarget:redEnhanceFilter];
+        [staticPicture addTarget:redEnhanceFilter];
+        //[whiteBalancerFilter addTarget:redEnhanceFilter];
         [redEnhanceFilter addTarget:tongFilter];
         [tongFilter addTarget:hueFilter];
         
@@ -1052,7 +1054,7 @@
             blurCycle = 0.9;
             smallBlurRatio = 0.15;
         }
-        CGFloat adjustedFactor = 15.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
+        CGFloat adjustedFactor = 13.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
         finalBlendFilter.blurFilter.distanceNormalizationFactor = adjustedFactor;
         finalBlendFilter.blurFilter.blurSize = blurCycle;
         //finalBlendFilter.blurRatio = smallBlurRatio;
@@ -1571,7 +1573,7 @@
         CGFloat blurCycle = 3.0 * fobj.orgRegion.size.width;
         CGFloat adjustedFactor = 13.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
         faceBlur.blurFilter.distanceNormalizationFactor = adjustedFactor;
-        faceBlur.blurFilter.blurSize = blurCycle;
+        faceBlur.blurFilter.blurSize = 2.0;/// blurCycle;
         //CGSize edgeSize = [self adjustEdgeWidth:_imageSize orientation:staticPictureOriginalOrientation];
         //faceBlur.edgeFilter.texelWidth = edgeSize.width;
         //faceBlur.edgeFilter.texelHeight = edgeSize.height;

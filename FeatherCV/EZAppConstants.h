@@ -25,6 +25,10 @@
 
 #define functionalBarTitleColor RGBCOLOR(79,79,79)
 
+#define defaultDarkColor RGBCOLOR(40, 40, 40)
+
+#define lightTextColor  RGBCOLOR(140, 140, 140)
+
 #define pointValue(x,y) [NSValue valueWithCGPoint:CGPointMake(x, y)]
 
 

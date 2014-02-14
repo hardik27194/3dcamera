@@ -60,7 +60,7 @@ NSString *const kHomeBlendFragmentShaderString = SHADER_STRING
  lowp float calcHue(lowp vec4 rawcolor)
  {
      highp float fd = distance(rawcolor.rgb, skinColor);
-     if(fd < 0.7){
+     if(fd < 0.72){
          fd = fd * fd * fd;
      }else{
          fd = 1.0/(exp(-fd * 2.5) + 1.0);
@@ -72,10 +72,10 @@ NSString *const kHomeBlendFragmentShaderString = SHADER_STRING
  lowp float calcLineDist(lowp vec4 rawcolor)
  {
      highp float fd = distance(rawcolor.rgb, skinColor);
-     if(fd < 0.5){
-         fd = fd*0.6;
+     if(fd < 0.72){
+         fd = fd * 2.5;
      }else{
-         fd = fd * 5.0;//1.0/(exp(-fd * 8.0) + 1.0);
+         fd = fd * 2.0;//1.0/(exp(-fd * 8.0) + 1.0);
      }
      return fd;
      //return 1.0/(exp((1.5 - distance(rawcolor.rgb, skinColor))) + 1.0);
@@ -108,7 +108,7 @@ NSString *const kHomeBlendFragmentShaderString = SHADER_STRING
          //if(finalEdgeRatio > 0.08){
          //    finalEdgeRatio = 1.0;
          //}
-         finalEdgeRatio = finalEdgeRatio * 3.0;
+         finalEdgeRatio = finalEdgeRatio * 2.0;
          
          //else if(finalEdgeRatio < 0.2){
          //    finalEdgeRatio = 0.0;

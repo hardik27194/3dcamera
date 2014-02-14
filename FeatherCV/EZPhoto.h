@@ -9,6 +9,12 @@
 #import <Foundation/Foundation.h>
 #include "EZAppConstants.h"
 
+typedef enum {
+    kPrivatePhoto,
+    kFriendOnly,
+    kSeenByAll
+} EZShareStatus;
+
 @class ALAsset;
 @class EZPerson;
 @interface EZPhoto : NSObject
@@ -40,6 +46,8 @@
 @property (nonatomic, assign) double longitude;
 
 @property (nonatomic, assign) double altitude;
+
+@property (nonatomic, assign) EZShareStatus shareStatus;
 
 @property (nonatomic, strong) NSString* address;
 

@@ -288,6 +288,7 @@ static int photoCount = 1;
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"更多" style:UIBarButtonItemStylePlain target:self action:@selector(showMenu:)];
 
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(pickPhotoType:)];
+    //[self.navigationItem.rightBarButtonItem setTintColor:[UIColor whiteColor]];
     /**
     CGRect bound = [UIScreen mainScreen].bounds;
     CGFloat diameter = 70.0;
@@ -348,7 +349,7 @@ static int photoCount = 1;
     }
     }
     
-    return imageHeight + 20 + 40;
+    return imageHeight + 20 + ToolRegionHeight;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -392,6 +393,27 @@ static int photoCount = 1;
     } failure:^(NSError* err){
         EZDEBUG(@"Error:%@", err);
     }];
+
+}
+
+- (void) changePhotoStatus:(EZPhoto*)photo success:(EZEventBlock)success failed:(EZEventBlock)failed
+{
+    
+}
+
+- (void) uploadAndExchange:(EZPhoto*)photo sucess:(EZEventBlock)block failed:(EZEventBlock)failed
+{
+    EZDEBUG(@"Uploaded for photoID:%@, uploaded:%i", photo.photoID, photo.uploaded);
+    if(!photo.uploaded){
+        [[EZDataUtil getInstance] uploadPhoto:photo success:^(EZPhoto* obj){
+            EZDEBUG(@"Uploaded photoID success:%@", obj.photoID);
+        } failure:^(id failed){
+            EZDEBUG(@"Photo upload failed, will try it again later");
+        }];
+    }
+    [[EZDataUtil getInstance] exchangePhoto:photo success:^(EZPhoto* pt){
+        block(pt);
+    } failure:failed];
 
 }
 
@@ -487,6 +509,37 @@ static int photoCount = 1;
     }
 }
 
+- (void) customeFlip:(CGFloat)duration srcView:(UIView*)srcView destView:(UIView*)destView completed:(EZOperationBlock)completed
+{
+    CGFloat halfTime = duration/2.0;
+    CATransform3D rotationAndPerspective = CATransform3DIdentity;
+    rotationAndPerspective.m34 = 1.0 / 3000.0;
+    CATransform3D trans = CATransform3DRotate(rotationAndPerspective, -M_PI/2.0, 0.0, 1.0, 0.0);
+    CATransform3D halfTrans = CATransform3DRotate(rotationAndPerspective, M_PI/2.0, 0.0, 1.0, 0.0);
+    CATransform3D identity = CATransform3DIdentity;
+    destView.layer.transform = trans;
+    [UIView animateWithDuration:halfTime animations:^(){
+        srcView.layer.transform = halfTrans;
+    } completion:^(BOOL compl){
+        [UIView animateWithDuration:halfTime delay:0.0 options:UIViewAnimationOptionCurveEaseOut  animations:^(){
+            destView.layer.transform = identity;
+        } completion:^(BOOL compl){
+            completed();
+        }];
+    }];
+}
+
+//Make sure to understand the different index.
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    EZDEBUG(@"Altert clicked:%i", buttonIndex);
+    if(_alertClicked){
+        _alertClicked(@(buttonIndex));
+    }
+    _alertClicked = nil;
+}
+
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *CellIdentifier = @"PhotoCell";
@@ -538,7 +591,51 @@ static int photoCount = 1;
     }
     __weak EZPhotoCell* weakCell = cell;
     __weak EZAlbumTablePage* weakSelf = self;
+    if(cp.combineStatus == kEZStartStatus){
+        [cell.toolRegion.unlockButton setTitle:@"私人" forState:UIControlStateNormal];
+    }else{
+        [cell.toolRegion.unlockButton setTitle:@"公开" forState:UIControlStateNormal];
+    }
+    cell.toolRegion.buttonClicked = ^(UIButton* button){
+        if(cp.combineStatus == kEZStartStatus){
+            //UIActionSheet* asheet = [[UIActionSheet alloc] initWithTitle:@"公开照片" delegate:weakSelf cancelButtonTitle:@"取消" destructiveButtonTitle:nil otherButtonTitles:@"公开", nil];
+            //[asheet showInView:weakSelf.view];
+            UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:@"公开照片"  message:@"照片公开后可以被你的朋友和羽毛用户发现" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"所有人",@"只限朋友", nil];
+            [alertView show];
+            weakSelf.alertClicked = ^(NSNumber* num){
+                //EZDEBUG(@"number pass to me is:%i", num.intValue);
+                //[[EZDataUtil getInstance]
+            };
+        }else{
+            UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:@"取消公开" message:@"取消公开后你的朋友和羽毛好友将不再能看见这张照片" delegate:self cancelButtonTitle:nil  otherButtonTitles:@"确认", nil];
+            [alertView show];
+            weakSelf.alertClicked = ^(NSNumber* num){
+                EZDEBUG(@"number pass to me is:%i", num.intValue);
+            };
+        }
+    };
+    
+    
     cell.container.releasedBlock = ^(id obj){
+        /**
+        [UIView animateWithDuration:0.6 animations:^(){
+            CATransform3D transform = CATransform3DRotate(weakCell.rotateContainer.layer.transform, M_PI, 0.0, 1.0,0.0);
+        //[UIView setAnimationRepeatCount:100];
+            weakCell.rotateContainer.layer.transform = transform;
+        }];
+        **/
+        
+        /**
+        UIView* destView = [[UIView alloc] initWithFrame:weakCell.rotateContainer.frame];
+        destView.backgroundColor = [UIColor grayColor];
+        [weakCell.container addSubview:destView];
+        [self customeFlip:3.0 srcView:weakCell.rotateContainer destView:destView completed:^(){
+            EZDEBUG(@"Completed");
+            weakCell.rotateContainer.layer.transform = CATransform3DIdentity;
+            [destView removeFromSuperview];
+        }];
+         **/
+        
         if(cp.combineStatus == kEZStartStatus){
             cp.combineStatus = kEZSendSharedRequest;
             EZDEBUG(@"Will start upload the image");

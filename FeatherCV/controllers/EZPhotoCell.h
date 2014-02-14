@@ -13,6 +13,7 @@
 #import "EZStyleImage.h"
 #import "ILTranslucentView.h"
 #import "EZDisplayPhoto.h"
+#import "EZBarRegion.h"
 /**
  What's the purpose of this class?
  I will display a cell on the screen. 
@@ -26,6 +27,17 @@
  **/
 @class EZClickImage;
 @class EZClickView;
+
+
+#define MainLabelTag 20140103
+
+#define ToolRegionHeight 80
+#define InitialFeedbackRegion 60
+
+#define ToolRegionRect CGRectMake(0, 300, 300, ToolRegionHeight)
+
+#define FeedbackRegionRect CGRectMake(0,380, 300, 40)
+
 @interface EZPhotoCell : UITableViewCell
 
 @property (nonatomic, assign) int currentPos;
@@ -39,7 +51,7 @@
 //This view will in charge of the whole rotate, because I need to rotate the whole thing.
 @property (nonatomic, strong) UIView* rotateContainer;
 
-@property (nonatomic, strong) UIView* toolRegion;
+@property (nonatomic, strong) EZBarRegion* toolRegion;
 
 @property (nonatomic, strong) UIView* feedbackRegion;
 

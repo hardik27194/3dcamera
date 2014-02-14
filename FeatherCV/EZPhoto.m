@@ -25,6 +25,7 @@
              @"latitude":@(_latitude),
              @"altitude":@(_altitude),
              @"uploaded":@(_uploaded),
+             @"shareStatus":@(_shareStatus),
              @"width":@(_size.width),
              @"height":@(_size.height),
              @"createdTime":_createdTime?isoDateFormat(_createdTime):@""
@@ -45,6 +46,7 @@
     _latitude = [[dict objectForKey:@"latitude"] doubleValue];
     _altitude = [[dict objectForKey:@"altitude"] doubleValue];
     _uploaded = [[dict objectForKey:@"uploaded"] integerValue];
+    _shareStatus = [[dict objectForKey:@"shareStatus"] intValue];
     _createdTime = isoStr2Date([dict objectForKey:@"createdTime"]);
     _screenURL = [dict objectForKey:@"screenURL"];
     

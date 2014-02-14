@@ -230,6 +230,7 @@
 		18E746F818A4A26A0023967B /* UIProgressView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E746E718A4A26A0023967B /* UIProgressView+AFNetworking.m */; };
 		18E746F918A4A26A0023967B /* UIWebView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E746E918A4A26A0023967B /* UIWebView+AFNetworking.m */; };
 		18E746FC18A4BBBC0023967B /* EZFeatherAPIClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E746FB18A4BBBC0023967B /* EZFeatherAPIClient.m */; };
+		18E746FF18AC704F0023967B /* EZBarRegion.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E746FE18AC704E0023967B /* EZBarRegion.m */; };
 		18F58B49186D5F9C006CB966 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18F58B48186D5F9C006CB966 /* ImageIO.framework */; };
 		18F58B4D186D8824006CB966 /* shot.wav in Resources */ = {isa = PBXBuildFile; fileRef = 18F58B4C186D8824006CB966 /* shot.wav */; };
 		18F58B52186EC0D1006CB966 /* ILTranslucentView.m in Sources */ = {isa = PBXBuildFile; fileRef = 18F58B51186EC0D1006CB966 /* ILTranslucentView.m */; };
@@ -607,6 +608,8 @@
 		18E746E918A4A26A0023967B /* UIWebView+AFNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIWebView+AFNetworking.m"; sourceTree = "<group>"; };
 		18E746FA18A4BBBC0023967B /* EZFeatherAPIClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZFeatherAPIClient.h; sourceTree = "<group>"; };
 		18E746FB18A4BBBC0023967B /* EZFeatherAPIClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZFeatherAPIClient.m; sourceTree = "<group>"; };
+		18E746FD18AC704E0023967B /* EZBarRegion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZBarRegion.h; sourceTree = "<group>"; };
+		18E746FE18AC704E0023967B /* EZBarRegion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZBarRegion.m; sourceTree = "<group>"; };
 		18F58B48186D5F9C006CB966 /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
 		18F58B4C186D8824006CB966 /* shot.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = shot.wav; sourceTree = "<group>"; };
 		18F58B50186EC0D1006CB966 /* ILTranslucentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ILTranslucentView.h; sourceTree = "<group>"; };
@@ -967,6 +970,8 @@
 				18A3703D1859AE850022F0A8 /* EZContactTablePage.m */,
 				18A3703F1859B7C20022F0A8 /* EZContactTableCell.h */,
 				18A370401859B7C20022F0A8 /* EZContactTableCell.m */,
+				18E746FD18AC704E0023967B /* EZBarRegion.h */,
+				18E746FE18AC704E0023967B /* EZBarRegion.m */,
 			);
 			path = controllers;
 			sourceTree = "<group>";
@@ -1510,6 +1515,7 @@
 				181903FA1881654D001FC370 /* EZFourInputFilter.m in Sources */,
 				182A550D18643141003D4A01 /* EZFaceBlurFilter.m in Sources */,
 				18E3472E183DFA3400C9D89D /* EZContactCell.m in Sources */,
+				18E746FF18AC704F0023967B /* EZBarRegion.m in Sources */,
 				1866AD8C1890FC7000DB46E2 /* EZSkinBrighter.m in Sources */,
 				18A36FEF1855C1DB0022F0A8 /* DLCImagePickerController.m in Sources */,
 				18E746EB18A4A26A0023967B /* AFHTTPRequestOperationManager.m in Sources */,

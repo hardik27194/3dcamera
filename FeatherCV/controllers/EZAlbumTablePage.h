@@ -14,7 +14,7 @@
 #import "EZModalRaiseAnimation.h"
 
 @class EZDisplayPhoto;
-@interface EZAlbumTablePage : UITableViewController<DLCImagePickerDelegate, UINavigationControllerDelegate, UIViewControllerTransitioningDelegate, UIActionSheetDelegate>
+@interface EZAlbumTablePage : UITableViewController<DLCImagePickerDelegate, UINavigationControllerDelegate, UIViewControllerTransitioningDelegate, UIActionSheetDelegate, UIAlertViewDelegate>
 
 
 @property (nonatomic, strong) NSMutableArray* combinedPhotos;
@@ -54,6 +54,8 @@
 @property (nonatomic, assign) BOOL isScrolling;
 
 @property (nonatomic, strong) EZEventBlock cameraClicked;
+
+@property (nonatomic, strong) EZEventBlock alertClicked;
 
 @property (nonatomic, strong) UIButton* moreButton;
 

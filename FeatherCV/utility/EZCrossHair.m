@@ -30,7 +30,7 @@
         __weak EZCrossHair* weakSelf = self;
         [[EZMotionUtility getInstance] registerHandler:^(EZMotionData* md){
             CGFloat angle = atan2f(md.y, md.x);
-            angle += 3.1415926/2;
+            angle += M_PI/2;
             angle = -angle;
             [weakSelf adjustAngle:angle];
         } key:[NSString stringWithFormat:@"CrossHair:%i",(int)self] type:kEZGravity];

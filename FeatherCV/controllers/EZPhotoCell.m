@@ -15,14 +15,6 @@
 #import "UIImageView+AFNetworking.h"
 
 
-#define MainLabelTag 20140103
-
-#define ToolRegionHeight 40
-#define InitialFeedbackRegion 60
-
-#define ToolRegionRect CGRectMake(0, 300, 300, ToolRegionHeight)
-
-#define FeedbackRegionRect CGRectMake(0,380, 300, 40)
 
 @implementation EZPhotoCell
 
@@ -90,7 +82,7 @@
     UIView* rotateContainer = [[UIView alloc] initWithFrame:rect];
     rotateContainer.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
     rotateContainer.clipsToBounds = true;
-    rotateContainer.layer.cornerRadius = 5;
+    rotateContainer.layer.cornerRadius = 3;
     return rotateContainer;
 }
 
@@ -102,8 +94,14 @@
     return frontImage;
 }
 
-- (UIView*) createToolRegion:(CGRect)rect
+- (EZBarRegion*) createToolRegion:(CGRect)rect
 {
+    
+    EZBarRegion* res = [[EZBarRegion alloc] initWithFrame:rect];
+    res.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin|UIViewAutoresizingFlexibleTopMargin;
+    res.location.text = @"上海, 张江";
+    res.time.text = @"10:20";
+    /**
     UIView* toolRegion = [[UIView alloc] initWithFrame:rect];
     toolRegion.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin|UIViewAutoresizingFlexibleTopMargin;
     toolRegion.backgroundColor = [UIColor whiteColor];//randBack(nil);
@@ -118,7 +116,8 @@
     photoTalk.backgroundColor = [UIColor clearColor];
     photoTalk.text = @"I love you 我爱大萝卜 哈哈 1234";
     [toolRegion addSubview:photoTalk];
-    return toolRegion;
+     **/
+    return res;
 }
 
 - (UIView*) createDupContainerTest:(UIImage *)img

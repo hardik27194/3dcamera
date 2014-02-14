@@ -186,9 +186,25 @@
 - (void) setupAppearance
 {
     //Remove the drop shadow
-    //[[UINavigationBar appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName : [UIColor redColor], NSFontAttributeName:[UIFont boldSystemFontOfSize:14]}];
+    [[UINavigationBar appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName : [UIColor whiteColor]}];
+    [[UIBarButtonItem appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName : [UIColor whiteColor]} forState:UIControlStateNormal];
     [[UINavigationBar appearance] setShadowImage:[[UIImage alloc] init]];
-    
+    //[[UINavigationBar appearance] set]
+    [[UINavigationBar appearance] setBarTintColor:RGBCOLOR(0, 197, 213)];
+    [[UIBarButtonItem appearance] setTintColor:[UIColor whiteColor]];
+    /**
+    [[UINavigationBar appearance] setTitleTextAttributes:
+     [NSDictionary dictionaryWithObjectsAndKeys:
+      [UIColor whiteColor],
+      NSForegroundColorAttributeName,
+      [UIColor whiteColor],
+      NSForegroundColorAttributeName,
+      [NSValue valueWithUIOffset:UIOffsetMake(0, -1)],
+      NSForegroundColorAttributeName,
+      //[UIFont fontWithName:@"Arial-Bold" size:0.0],
+      //NSFontAttributeName,
+      nil]];
+     **/
     //UIImage *gradientImage44 = [UIImage imageWithColor:RGBA(0, 0, 0, 128)]; //replace "nil" with your method to programmatically create a UIImage object with transparent colors for portrait orientation
     //UIImage *gradientImage32 = [UIImage imageWithColor:RGBA(0, 0, 0, 128)]; //replace "nil" with your method to programmatically create a UIImage object with transparent colors for landscape orientation
     //mainNav.navigationBar.hidden = true;
