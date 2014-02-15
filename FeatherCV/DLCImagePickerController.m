@@ -35,7 +35,11 @@
 #import "EZCycleTongFilter.h"
 #import <GPUImageCrosshatchFilter.h>
 #import <GPUImageCrosshairGenerator.h>
+#import "EZPhoto.h"
+#import "EZDataUtil.h"
+#import "UIImageView+AFNetworking.h"
 #import "EZMessageCenter.h"
+#import "EZDisplayPhoto.h"
 
 //#include <vector>
 
@@ -282,6 +286,31 @@
 }
 
 
+//Will match the photo
+- (void) preMatchPhoto
+{
+    __weak DLCImagePickerController* weakSelf = self;
+    [[EZDataUtil getInstance] exchangePhoto:nil success:^(EZPhoto* pt){
+        EZDEBUG("Find prematched photo:%@, srcID:%@", pt.screenURL, pt.srcPhotoID);
+        weakSelf.matchedPhoto = pt;
+        [UIImageView preloadImageURL:str2url(pt.screenURL) success:^(id obj){
+            EZDEBUG(@"preload success");
+        } failed:^(id err){}];
+    } failure:^(NSError* err){
+        EZDEBUG(@"Prematch error:%@", err);
+    }];
+}
+
+- (void) cancelPrematchPhoto
+{
+    EZDEBUG(@"Start cancel call,%@", _matchedPhoto.photoID);
+    [[EZDataUtil getInstance] cancelPrematchPhoto:_matchedPhoto success:^(id success){
+        EZDEBUG(@"cancel:%@ success", _matchedPhoto.photoID);
+    } failure:^(id err){
+        EZDEBUG(@"Failure:%@", err);
+    }];
+}
+
 - (EZNightBlurFilter*) createNightFilter
 {
     EZNightBlurFilter* nightFt =  [[EZNightBlurFilter alloc] init];
@@ -432,6 +461,7 @@
     _isVisible = TRUE;
     [self startMobileMotion];
     [[EZMessageCenter getInstance] registerEvent:EZFaceCovered block:faceCovered];
+    [self preMatchPhoto];
 }
 
 - (void) setupButton
@@ -700,7 +730,9 @@
 - (void) viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
+    EZDEBUG(@"Becaming invisible");
     [self becomeInvisible];
+    EZDEBUG(@"invisible now");
     [EZUIUtility sharedEZUIUtility].cameraRaised = false;
 }
 
@@ -1665,17 +1697,63 @@
         //EZFaceUtil faceUtil = singleton<EZFaceUtil>();
         //NSArray* faces = [EZFaceUtilWrapper detectFace:currentFilteredVideoFrame ratio:0.25];
         //EZDEBUG(@"detected face:%i", faces.count);
-        NSDictionary *info = @{@"image":currentFilteredVideoFrame};
-        if(photoMeta){
-            info = @{@"image":currentFilteredVideoFrame, @"metadata":photoMeta};
-        }
+        //NSDictionary *info = @{@"image":currentFilteredVideoFrame};
+        //if(photoMeta){
+        //    info = @{@"image":currentFilteredVideoFrame, @"metadata":photoMeta};
+       // }
         //[info setValue:currentFilteredVideoFrame forKey:@"image"];
         EZDEBUG(@"image size:%f, %f", currentFilteredVideoFrame.size.width, currentFilteredVideoFrame.size.height);
-        [self.delegate imagePickerController:self didFinishPickingMediaWithInfo:info];
+        [self createPhoto:currentFilteredVideoFrame orgData:photoMeta success:^(EZDisplayPhoto* dp){
+            [self.delegate imagePickerController:self didFinishPickingMediaWithInfo:@{@"displayPhoto":dp}];
+        }];
+        
         [self retakePhoto:retakeButton];
         [self.photoCaptureButton setEnabled:YES];
 
     }
+}
+
+- (void) createPhoto:(UIImage*)img orgData:(NSDictionary*)orgdata success:(EZEventBlock)success
+{
+    EZDEBUG(@"Store image get called");
+    ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
+    NSMutableDictionary* metadata =[[NSMutableDictionary alloc] init];
+    if(metadata){
+        [metadata setDictionary:orgdata];
+    }
+    EZDEBUG(@"Recived metadata:%@, actual orientation:%i", metadata, img.imageOrientation);
+    [metadata setValue:@(img.imageOrientation) forKey:@"Orientation"];
+    [library writeImageToSavedPhotosAlbum:img.CGImage metadata:metadata completionBlock:^(NSURL *assetURL, NSError *error2)
+     {
+         //             report_memory(@"After writing to library");
+         if (error2) {
+             EZDEBUG(@"ERROR: the image failed to be written");
+         }
+         else {
+             EZDEBUG(@"Stored image to album assetURL: %@", assetURL);
+             [[EZDataUtil getInstance] assetURLToAsset:assetURL success:^(ALAsset* result){
+                 EZDEBUG(@"Transfer the image to EZDisplayPhoto successfully");
+                 EZDisplayPhoto* ed = [[EZDisplayPhoto alloc] init];
+                 ed.isFront = true;
+                 EZPhoto* ep = [[EZPhoto alloc] init];
+                 //ed.pid = ++[EZDataUtil getInstance].photoCount;
+                 ep.photoID = _matchedPhoto.srcPhotoID;
+                 ep.photoRelations = @[_matchedPhoto];
+                 ep.asset = result;
+                 ep.isLocal = true;
+                 ed.photo = ep;
+                 ed.photo.owner = [EZDataUtil getInstance].currentLoginPerson;
+                 //EZDEBUG(@"Before size");
+                 ep.size = [result defaultRepresentation].dimensions;
+                 
+                 [self preMatchPhoto];
+                 [[EZMessageCenter getInstance]postEvent:EZTakePicture attached:ed];
+                 EZDEBUG(@"after size:%f, %f", ep.size.width, ep.size.height);
+                 success(ed);
+             }];
+         }
+     }];
+
 }
 
 -(IBAction) retakePhoto:(UIButton *)button {
@@ -1755,7 +1833,10 @@
         [self dismissViewControllerAnimated:YES completion:^(){
             EZDEBUG(@"DLCCamera Will get dismissed");
         }];
+        [self cancelPrematchPhoto];
+        [self.delegate imagePickerControllerDidCancel:self];
     }
+    
     //[self switchDisplayImage];
 }
 

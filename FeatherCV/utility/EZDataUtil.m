@@ -81,7 +81,8 @@
     [EZNetworkUtility postJson:@"register" parameters:person complete:^(NSDictionary* dict){
         EZPerson* person = [[EZPerson alloc] init];
         [person fromJson:dict];
-        [EZDataUtil getInstance].currentPersonID  = person.personID;
+        self.currentPersonID  = person.personID;
+        self.currentLoginPerson = person;
         EZDEBUG(@"Returned person id:%@", person.personID);
         success(person);
     } failblk:error];
@@ -92,7 +93,7 @@
 - (void) queryPhotos:(int)page pageSize:(int)pageSize  success:(EZEventBlock)success failure:(EZEventBlock)failure
 {
     [EZNetworkUtility postParameterAsJson:@"photo/info" parameters:@{@"cmd":@"query",
-                                                         @"pageStart":@(page),
+                                                         @"startPage":@(page),
                                                          @"pageSize":@(pageSize)
                                                          }
                      complete:^(NSArray* photos){
@@ -159,6 +160,21 @@
     } failblk:failure];
 }
 
+- (void) cancelPrematchPhoto:(EZPhoto*)photo success:(EZEventBlock)success failure:(EZEventBlock)failure
+{
+    if(!photo.photoID)
+        return;
+    NSDictionary* dict = @{
+                           @"cmd":@"removeMatch",
+                           @"photoID":photo.photoID
+                           };
+    [EZNetworkUtility postJson:@"photo/info" parameters:dict complete:^(id queryRes){
+        EZDEBUG(@"canel Prematch Result:%@", queryRes);
+        success(queryRes);
+    } failblk:failure];
+
+}
+
 - (void) uploadPhoto:(EZPhoto*)photo success:(EZEventBlock)success failure:(EZEventBlock)failure
 {
     NSDictionary* jsonInfo = [photo toJson];
@@ -189,7 +205,8 @@
     [EZNetworkUtility postJson:@"login" parameters:loginInfo complete:^(NSDictionary* dict){
         EZPerson* person = [[EZPerson alloc] init];
         [person fromJson:dict];
-        [EZDataUtil getInstance].currentPersonID = person.personID;
+        self.currentPersonID = person.personID;
+        self.currentLoginPerson = person;
         success(person);
     } failblk:error];
 }

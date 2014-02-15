@@ -160,49 +160,39 @@ static int photoCount = 1;
 
 - (void)imagePickerController:(DLCImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
-    EZDEBUG(@"Store image get called");
-    ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
-    UIImage* img = [info objectForKey:@"image"];
-    NSDictionary* orgdata = [info objectForKey:@"metadata"];
-    NSMutableDictionary* metadata =[[NSMutableDictionary alloc] init];
-    if(metadata){
-        [metadata setDictionary:orgdata];
-    }
-    EZDEBUG(@"Recived metadata:%@, actual orientation:%i", metadata, img.imageOrientation);
-    [metadata setValue:@(img.imageOrientation) forKey:@"Orientation"];
-    [library writeImageToSavedPhotosAlbum:img.CGImage metadata:metadata completionBlock:^(NSURL *assetURL, NSError *error2)
-     {
-         //             report_memory(@"After writing to library");
-         if (error2) {
-             EZDEBUG(@"ERROR: the image failed to be written");
-         }
-         else {
-             EZDEBUG(@"Stored image to album assetURL: %@", assetURL);
-             [[EZDataUtil getInstance] assetURLToAsset:assetURL success:^(ALAsset* result){
-                 EZDEBUG(@"Transfer the image to EZDisplayPhoto successfully");
-                 EZDisplayPhoto* ed = [[EZDisplayPhoto alloc] init];
-                 ed.isFront = true;
-                 EZPhoto* ep = [[EZPhoto alloc] init];
-                 ed.pid = ++[EZDataUtil getInstance].photoCount;
-                 ep.asset = result;
-                 ep.isLocal = true;
-                 ed.photo = ep;
-                 ed.photo.owner = [[EZPerson alloc] init];
-                 ed.photo.owner.name = @"天哥";
-                 ed.photo.owner.avatar = [EZFileUtil fileToURL:@"tian_2.jpeg"].absoluteString;
-                 //EZDEBUG(@"Before size");
-                 ep.size = [result defaultRepresentation].dimensions;
-                 [[EZMessageCenter getInstance]postEvent:EZTakePicture attached:ed];
-                 EZDEBUG(@"after size:%f, %f", ep.size.width, ep.size.height);
-             }];
-         }
-     }];
+    EZDEBUG(@"Store image get called:%i", _newlyCreated);
+    ++_newlyCreated;
     
+}
+
+//Will animate the newly create image to flip to another side
+- (void) animateFlip
+{
+    //[self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
+    EZDEBUG(@"I will start flip the image:%i", _newlyCreated);
+    for(int i = 0; i < _newlyCreated; i++){
+        NSIndexPath* path = [NSIndexPath indexPathForRow:i inSection:0];
+        UITableViewCell* cell = [self.tableView cellForRowAtIndexPath:path];
+        EZDisplayPhoto* cp = [_combinedPhotos objectAtIndex:i];
+        if(!cp.isFront){
+            EZDEBUG(@"flipped manually");
+            continue;
+        }
+        EZPhoto* switchPhoto = [cp.photo.photoRelations objectAtIndex:0];
+        cp.isFront = !cp.isFront;
+        [self switchAnimation:cp photoCell:cell indexPath:path tableView:self.tableView photo:cp.isFront?cp.photo:switchPhoto];
+    }
 }
 
 - (void)imagePickerControllerDidCancel:(DLCImagePickerController *)picker
 {
-    
+    EZDEBUG(@"cancel get called:%i", _newlyCreated);
+    if(_newlyCreated){
+        [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
+        dispatch_later(1.5, ^(){
+            [self animateFlip];
+        });
+    }
 }
 
 
@@ -211,6 +201,7 @@ static int photoCount = 1;
     if([EZUIUtility sharedEZUIUtility].cameraRaised || [EZUIUtility sharedEZUIUtility].stopRotationRaise){
         return;
     }
+    _newlyCreated = 0;
     
     //if(_picker == nil){
     DLCImagePickerController* camera = [[DLCImagePickerController alloc] init];
@@ -315,10 +306,15 @@ static int photoCount = 1;
     [super viewDidAppear:animated];
     self.navigationController.delegate = self;
     EZUIUtility.sharedEZUIUtility.cameraClickButton.pressedBlock = _cameraClicked;
-    [UIImageView preloadImageURL:str2url(@"http://www.enjoyxue.com:8080/static/fcf46bcaff14211c36433c3cefac0d3e.jpg") success:^(UIImage* image){
+    [UIImageView preloadImageURL:str2url(@"http://192.168.1.102:8080/static/79661d8d26c00668ac4c215373fdf12e.jpg") success:^(UIImage* image){
         EZDEBUG(@"view loaded");
         EZClickImage* view = [[EZClickImage alloc] initWithFrame:CGRectMake(0, 200, 100, 100)];
         view.image = image;
+        [UIImageView preloadImageURL:str2url(@"http://192.168.1.102:8080/static/79661d8d26c00668ac4c215373fdf12e.jpg") success:^(UIImage* img){
+            EZDEBUG(@"success immediately");
+        } failed:^(NSError* err){
+        
+        }];
         [self.view addSubview:view];
         view.releasedBlock = ^(id obj){
             [[EZDataUtil getInstance] queryPhotos:0 pageSize:5 success:^(NSArray* photos){
@@ -614,6 +610,7 @@ static int photoCount = 1;
         [cell.toolRegion.unlockButton setTitle:@"公开" forState:UIControlStateNormal];
     }
     cell.toolRegion.buttonClicked = ^(UIButton* button){
+        /**
         if(cp.combineStatus == kEZStartStatus){
             //UIActionSheet* asheet = [[UIActionSheet alloc] initWithTitle:@"公开照片" delegate:weakSelf cancelButtonTitle:@"取消" destructiveButtonTitle:nil otherButtonTitles:@"公开", nil];
             //[asheet showInView:weakSelf.view];
@@ -630,6 +627,7 @@ static int photoCount = 1;
                 EZDEBUG(@"number pass to me is:%i", num.intValue);
             };
         }
+         **/
     };
     
     
@@ -653,6 +651,7 @@ static int photoCount = 1;
         }];
          **/
         
+        /**
         if(cp.combineStatus == kEZStartStatus){
             cp.combineStatus = kEZSendSharedRequest;
             EZDEBUG(@"Will start upload the image");
@@ -664,12 +663,13 @@ static int photoCount = 1;
                 [weakSelf switchAnimation:cp photoCell:weakCell indexPath:indexPath tableView:tableView photo:ep];
             }];
         }else{
+         **/
             //If the photo not returned, then why bothering to flip it?
-            if(switchPhoto){
-                cp.isFront = !cp.isFront;
-                [weakSelf switchAnimation:cp photoCell:weakCell indexPath:indexPath tableView:tableView photo:cp.isFront?cp.photo:switchPhoto];
-            }
+        if(switchPhoto){
+            cp.isFront = !cp.isFront;
+            [weakSelf switchAnimation:cp photoCell:weakCell indexPath:indexPath tableView:tableView photo:cp.isFront?cp.photo:switchPhoto];
         }
+        //}
     };
 
     return cell;

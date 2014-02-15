@@ -44,6 +44,8 @@
 
 @property (nonatomic, strong) NSMutableArray* localPhotos;
 
+@property (nonatomic, strong) EZPerson* currentLoginPerson;
+
 //@property (nonatomic, strong) NSMutable
 //Phone number will be the unique id?
 //Mean only one id for each phone right?
@@ -121,6 +123,7 @@
 //Next time I will use file name hash to check if any new photo insert into the album.
 - (void) uploadPhotoInfo:(NSArray*)photoInfo success:(EZEventBlock)success failure:(EZEventBlock)failure;
 
+- (void) cancelPrematchPhoto:(EZPhoto*)photo success:(EZEventBlock)success failure:(EZEventBlock)failure;
 
 - (void) queryPhotos:(int)page pageSize:(int)pageSize  success:(EZEventBlock)success failure:(EZEventBlock)failure;
 

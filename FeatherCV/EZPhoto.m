@@ -69,6 +69,7 @@
     } failure:^(NSError* err){
         EZDEBUG(@"Error to find a person");
     }];
+    _photoID = [dict objectForKey:@"photoID"];
     _srcPhotoID = [dict objectForKey:@"srcPhotoID"];
     _assetURL = [dict objectForKey:@"assetURL"];
     _longitude = [[dict objectForKey:@"longitude"] doubleValue];

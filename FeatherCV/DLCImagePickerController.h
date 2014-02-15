@@ -42,7 +42,7 @@ typedef enum {
 } EZCameraTurnStatus;
 
 
-
+@class EZPhoto;
 @class DLCImagePickerController;
 
 @protocol DLCImagePickerDelegate <NSObject>
@@ -106,6 +106,8 @@ typedef enum {
 @property (nonatomic, strong) NSMutableArray* storedMotionDelta;
 @property (nonatomic, assign) BOOL quitFaceDetection;
 @property (nonatomic, assign) EZShotMode shotMode;
+
+@property (nonatomic, strong) EZPhoto* matchedPhoto;
 
 //0 mean off
 //1 mean on

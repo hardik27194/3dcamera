@@ -61,6 +61,9 @@
 
 @property (nonatomic, strong) DLCImagePickerController* picker;
 
+//How many photos are taken.
+@property (nonatomic, assign) int newlyCreated;
+
 
 //Where do we begin
 //It used to save the memory consumption
