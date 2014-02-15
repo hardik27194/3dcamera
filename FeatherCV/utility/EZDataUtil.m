@@ -87,6 +87,29 @@
     } failblk:error];
 }
 
+
+//
+- (void) queryPhotos:(int)page pageSize:(int)pageSize  success:(EZEventBlock)success failure:(EZEventBlock)failure
+{
+    [EZNetworkUtility postParameterAsJson:@"photo/info" parameters:@{@"cmd":@"query",
+                                                         @"pageStart":@(page),
+                                                         @"pageSize":@(pageSize)
+                                                         }
+                     complete:^(NSArray* photos){
+                         EZDEBUG(@"Photo size:%i",photos.count);
+                         NSMutableArray* res = [[NSMutableArray alloc] initWithCapacity:photos.count];
+                         for(NSDictionary* dict in photos){
+                             EZPhoto* photo = [[EZPhoto alloc] init];
+                             [photo fromJson:dict];
+                             [res addObject:photo];
+                         }
+                         if(success){
+                             success(res);
+                         }
+    
+    } failblk:failure];
+}
+
 //Only upload the photo messsage, without upload the image
 - (void) uploadPhotoInfo:(NSArray *)photoInfo success:(EZEventBlock)success failure:(EZEventBlock)failure
 {
@@ -122,8 +145,10 @@
     NSDictionary* dict = nil;
     if(photo.photoID){
         dict = @{@"photoID":photo.photoID} ;
-    }else{
+    }else if(photo){
         dict = photo.toJson;
+    }else{
+        dict = @{};
     }
     
     [EZNetworkUtility postJson:@"photo/exchange" parameters:dict complete:^(id ph){

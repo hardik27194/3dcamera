@@ -364,7 +364,7 @@
     faceBlender.blurFilter.blurSize = globalBlur;//Original value
     faceBlender.blurFilter.distanceNormalizationFactor = 13;
     faceBlender.smallBlurFilter.blurSize = 0.05;
-    faceBlender.blurRatio = 0.35;
+    faceBlender.blurRatio = 0.0;
     faceBlender.edgeFilter.threshold = 0.4;
     return faceBlender;
 }
@@ -1009,14 +1009,13 @@
         //[darkBlurFilter addTarget:whiteBalancerFilter];
         //[whiteBalancerFilter addTarget:tongFilter];
         [darkBlurFilter addTarget:redEnhanceFilter];
-        [redEnhanceFilter addTarget:tongFilter];
-        [tongFilter addTarget:hueFilter];
+        
         //[tongFilter addTarget:hueFilter];
     }else{
         [staticPicture addTarget:redEnhanceFilter];
         //[whiteBalancerFilter addTarget:redEnhanceFilter];
-        [redEnhanceFilter addTarget:tongFilter];
-        [tongFilter addTarget:hueFilter];
+        //[redEnhanceFilter addTarget:tongFilter];
+        //[tongFilter addTarget:hueFilter];
         
     }
     //[tongFilter addTarget:fixColorFilter];
@@ -1026,6 +1025,8 @@
     whiteBalancerFilter.temperature = 5000.0;
     if(!_disableFaceBeautify && (fobj || stillCamera.isFrontFacing || _shotMode == kSelfShotMode)){
         whiteBalancerFilter.temperature = 5500.0;
+        //[redEnhanceFilter addTarget:tongFilter];
+        [redEnhanceFilter addTarget:hueFilter];
         [hueFilter addTarget:finalBlendFilter];
         //[redEnhanceFilter addTarget:finalBlendFilter];
         //[secFixColorFilter addTarget:finalBlendFilter];
@@ -1043,7 +1044,7 @@
                 blurCycle = 2.5;
             }
         }else if(fobj){
-            blurCycle = 2.5 * fobj.orgRegion.size.width;
+            blurCycle = 2.0;//2.5 * fobj.orgRegion.size.width;
             smallBlurRatio = 0.3 * (1.0 - fobj.orgRegion.size.width);
             //if(fobj.orgRegion.size.width > 0.5){
                 //blurCycle = 1.2 * blurCycle;
@@ -1054,16 +1055,17 @@
             blurCycle = 0.9;
             smallBlurRatio = 0.15;
         }
-        CGFloat adjustedFactor = 13.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
+        CGFloat adjustedFactor = 14.5;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
         finalBlendFilter.blurFilter.distanceNormalizationFactor = adjustedFactor;
         finalBlendFilter.blurFilter.blurSize = blurCycle;
         //finalBlendFilter.blurRatio = smallBlurRatio;
-        finalBlendFilter.imageMode = 2;
+        //finalBlendFilter.imageMode = 0;
         finalBlendFilter.showFace = 1;
         finalBlendFilter.faceRegion = @[@(fobj.orgRegion.origin.x), @(fobj.orgRegion.origin.x + fobj.orgRegion.size.width), @(fobj.orgRegion.origin.y), @(fobj.orgRegion.origin.y + fobj.orgRegion.size.height)];
         //finalBlendFilter.smallBlurFilter.blurSize = blurAspectRatio * blurCycle;
         EZDEBUG(@"Will blur face:%@, blurCycle:%f, adjustedColor:%f", NSStringFromCGRect(fobj.orgRegion), blurCycle, adjustedFactor);
         //finalBlendFilter.imageMode = 0;
+        /**
         if(!smileDetected){
             smileDetected = [self createSmileButton];
             [self.view addSubview:smileDetected];
@@ -1087,7 +1089,10 @@
             //weakSelf.detectedFaceObj = nil;
             //weakButton.hidden = TRUE;
         };
+         **/
     }else{
+        [redEnhanceFilter addTarget:tongFilter];
+        [tongFilter addTarget:hueFilter];
         [hueFilter addTarget:filter];
         //[fixColorFilter addTarget:secFixColorFilter];
         //[secFixColorFilter addTarget:redEnhanceFilter];

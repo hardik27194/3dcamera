@@ -57,7 +57,12 @@ typedef enum {
 @property (nonatomic, strong) NSString* assetURL;
 
 //If the image uploaded or not?
+//If not will retry.
 @property (nonatomic, assign) BOOL uploaded;
+
+//What's the purpose for this field?
+//Don't know. left as a reminder.
+@property (nonatomic, assign) BOOL findMatched;
 //Whether this photo uploaded or not
 //Mean if the photo is local photo or not
 //Who need this?
@@ -86,6 +91,9 @@ typedef enum {
 @property (nonatomic, strong) NSArray* photoRelations;
 
 @property (nonatomic, strong) NSArray* conversations;
+
+//Secret match, will remove the photo relations when user didn't store the image.
+@property (nonatomic, strong) NSString* srcPhotoID;
 
 //@property (nonatomic, strong) NSString* otherURL;
 

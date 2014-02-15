@@ -315,6 +315,23 @@ static int photoCount = 1;
     [super viewDidAppear:animated];
     self.navigationController.delegate = self;
     EZUIUtility.sharedEZUIUtility.cameraClickButton.pressedBlock = _cameraClicked;
+    [UIImageView preloadImageURL:str2url(@"http://www.enjoyxue.com:8080/static/fcf46bcaff14211c36433c3cefac0d3e.jpg") success:^(UIImage* image){
+        EZDEBUG(@"view loaded");
+        EZClickImage* view = [[EZClickImage alloc] initWithFrame:CGRectMake(0, 200, 100, 100)];
+        view.image = image;
+        [self.view addSubview:view];
+        view.releasedBlock = ^(id obj){
+            [[EZDataUtil getInstance] queryPhotos:0 pageSize:5 success:^(NSArray* photos){
+                EZDEBUG(@"fetch back count:%i", photos.count);
+            } failure:^(id err){
+                EZDEBUG(@"query photo error:%@", err);
+            }];
+        };
+    } failed:^(id err){
+        EZDEBUG(@"encounter error:%@", err);
+    }];
+    
+    
 }
 
 - (void)didReceiveMemoryWarning

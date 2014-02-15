@@ -42,10 +42,10 @@
 
 #define isoStr2Date(curStr) [[EZDataUtil getInstance].isoFormatter dateFromString:curStr]
 
-//#define baseUploadURL @"http://10.0.1.6:8080/upload"
+//#define baseUploadURL @"http://172.13.0.70:8080/upload"
 #define baseUploadURL @"http://www.enjoyxue.com:8080/upload"
 
-//#define baseServiceURL @"http://10.0.1.6:8080/"
+//#define baseServiceURL @"http://172.13.0.70:8080/"
 #define baseServiceURL @"http://www.enjoyxue.com:8080/"
 
 #define placeholdImage [UIImage imageNamed:@"user-icon-placeholder-60"] 

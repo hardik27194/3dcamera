@@ -121,6 +121,9 @@
 //Next time I will use file name hash to check if any new photo insert into the album.
 - (void) uploadPhotoInfo:(NSArray*)photoInfo success:(EZEventBlock)success failure:(EZEventBlock)failure;
 
+
+- (void) queryPhotos:(int)page pageSize:(int)pageSize  success:(EZEventBlock)success failure:(EZEventBlock)failure;
+
 //Will check if any new photo in the album.
 //I will use the filename as hash?
 //Could I get any of that?

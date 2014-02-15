@@ -14,9 +14,36 @@
 @implementation EZPhoto
 
 
+- (NSArray*) conversationToJson
+{
+    //if(!_conversations)
+    //    return nil;
+    NSMutableArray* res = [[NSMutableArray alloc] init];
+    for(NSDictionary* dict in _conversations){
+        [res addObject:@{
+                         @"text":[dict objectForKey:@"text"],
+                         @"date":isoDateFormat([dict objectForKey:@"date"])
+                         }];
+    }
+    return res;
+}
+
+- (NSArray*) conversationFromJson:(NSArray*)jsons
+{
+    NSMutableArray* res = [[NSMutableArray alloc] init];
+    for(NSDictionary* dict in jsons){
+        [res addObject:@{
+                         @"text":[dict objectForKey:@"text"],
+                         @"date":isoStr2Date([dict objectForKey:@"date"])
+                         }];
+    }
+    return res;
+}
+
 - (NSDictionary*) toJson
 {
 
+    
     return @{
              //@"id":_photoID,
              @"personID":null2Empty(_owner.personID),
@@ -28,7 +55,8 @@
              @"shareStatus":@(_shareStatus),
              @"width":@(_size.width),
              @"height":@(_size.height),
-             @"createdTime":_createdTime?isoDateFormat(_createdTime):@""
+             @"createdTime":_createdTime?isoDateFormat(_createdTime):@"",
+             @"conversations":[self conversationToJson]
                  };
 }
 
@@ -41,6 +69,7 @@
     } failure:^(NSError* err){
         EZDEBUG(@"Error to find a person");
     }];
+    _srcPhotoID = [dict objectForKey:@"srcPhotoID"];
     _assetURL = [dict objectForKey:@"assetURL"];
     _longitude = [[dict objectForKey:@"longitude"] doubleValue];
     _latitude = [[dict objectForKey:@"latitude"] doubleValue];
@@ -49,6 +78,7 @@
     _shareStatus = [[dict objectForKey:@"shareStatus"] intValue];
     _createdTime = isoStr2Date([dict objectForKey:@"createdTime"]);
     _screenURL = [dict objectForKey:@"screenURL"];
+    _conversations = [self conversationFromJson:[dict objectForKey:@"conversations"]];
     
     CGFloat width = [[dict objectForKey:@"width"] floatValue];
     CGFloat height = [[dict objectForKey:@"height"] floatValue];

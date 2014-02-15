@@ -122,6 +122,41 @@ static char kAFResponseSerializerKey;
     [self setImageWithURLRequest:request placeholderImage:placeholderImage success:nil failure:nil];
 }
 
+//Load image before user notice anything
++ (void) preloadImageURL:(NSURL *)url success:(EZEventBlock)success failed:(EZEventBlock)failed
+{
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
+    [request addValue:@"image/*" forHTTPHeaderField:@"Accept"];
+    UIImage *cachedImage = [[[self class] sharedImageCache] cachedImageForRequest:request];
+    if (cachedImage) {
+        if (success) {
+            success(cachedImage);
+        }
+        //self.af_imageRequestOperation = nil;
+    } else {
+        //self.image = placeholderImage;
+        //__weak __typeof(self)weakSelf = self;
+        AFHTTPRequestOperation* imageRequestOperation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
+        imageRequestOperation.responseSerializer = [AFImageResponseSerializer serializer];
+        [imageRequestOperation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
+            if ([[request URL] isEqual:[operation.request URL]]) {
+                if (success) {
+                    success(responseObject);
+                }
+            }
+            
+            [[[self class] sharedImageCache] cacheImage:responseObject forRequest:request];
+        } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+            if ([[request URL] isEqual:[operation.request URL]]) {
+                if (failed) {
+                    failed(error);
+                }
+            }
+        }];
+        [[[self class] af_sharedImageRequestOperationQueue] addOperation:imageRequestOperation];
+    }
+}
+
 - (void)setImageWithURLRequest:(NSURLRequest *)urlRequest
               placeholderImage:(UIImage *)placeholderImage
                        success:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image))success
