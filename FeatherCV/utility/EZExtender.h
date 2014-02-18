@@ -159,6 +159,10 @@ typedef void  (^ IterateOperation)(id obj);
 - (void) setLeft:(CGFloat)distance;
 - (CGFloat) left;
 
+- (CGFloat) getY;
+
+- (CGFloat) getX;
+
 - (void) setX:(CGFloat)x;
 
 - (void) setY:(CGFloat)y;

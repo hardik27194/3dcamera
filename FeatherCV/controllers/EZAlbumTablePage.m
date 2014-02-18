@@ -22,7 +22,7 @@
 #import "EZNetworkUtility.h"
 #import "UIImageView+AFNetworking.h"
 #import "EZExtender.h"
-
+#import "EZChatRegion.h"
 
 static int photoCount = 1;
 @interface EZAlbumTablePage ()
@@ -268,11 +268,56 @@ static int photoCount = 1;
     });
 }
 
+- (void) testTextInput
+{
+    EZChatRegion* chatRegion = [[EZChatRegion alloc] initWithFrame:CGRectMake(0, 200, 300, 200)];
+    chatRegion.ownerID = @"2231";
+    EZPerson* otherPerson = [[EZPerson alloc] init];
+    EZPerson* currentPs = [[EZPerson alloc] init];
+    currentPs.personID = @"2231";
+    otherPerson.personID = @"1123";
+    chatRegion.conversations = @[
+                                 @{
+                                     @"text":@"这是一段从来没有人经历过的旅程，很多时候我们都认为自己是神经病，其实我们是网络节点",
+                                     @"person":otherPerson
+                                     
+                                     },
+                                 @{
+                                     @"text":@"这是一段从来没有人经历过的旅程",
+                                     @"person":currentPs
+                                     
+                                     },
+                                 @{
+                                     @"text":@"这是一段从来没有人经历过的旅程",
+                                     @"person":currentPs
+                                     
+                                     }
+                                 
+                                 ];
+    chatRegion.otherClicked = ^(id obj){
+        EZDEBUG(@"Other clicked");
+    };
+    chatRegion.ownerClicked = ^(id obj){
+        EZDEBUG(@"Owner clicked");
+    };
+    chatRegion.chatCompleted = ^(NSString* text){
+        EZDEBUG(@"Chat text:%@", text);
+        [chatRegion insertChat:@{
+                                 @"text":text,
+                                 @"person":otherPerson
+                                 }];
+        
+    };
+    chatRegion.backgroundColor = RGBCOLOR(220, 220, 220);
+    [chatRegion render];
+    [self.tableView addSubview:chatRegion];
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     
-    //self.navigationItem.rightBarButtonItem = [[UINavigationItem alloc] initWithTitle:@""];
+   //self.navigationItem.rightBarButtonItem = [[UINavigationItem alloc] initWithTitle:@""];
     
     //self.navigationItem.leftBarButtonItem  = [[UIBarButtonItem alloc] initWithTitle:@"更多" style:UIBarButtonItemStylePlain target:self action:@selector(showMenu:)];
     _combinedPhotos = [[NSMutableArray alloc] init];
@@ -280,6 +325,10 @@ static int photoCount = 1;
     self.refreshControl = [[UIRefreshControl alloc] init];
     [self.refreshControl addTarget:self action:@selector(refreshInvoked:forState:)forControlEvents:UIControlEventValueChanged];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    
+    
+    
+    
     //self.tableView.backgroundColor = RGBCOLOR(230, 231, 226);
     self.tableView.backgroundColor = VinesGray;
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
@@ -708,6 +757,7 @@ static int photoCount = 1;
     
     
     cell.container.releasedBlock = ^(id obj){
+        
         /**
         [UIView animateWithDuration:0.6 animations:^(){
             CATransform3D transform = CATransform3DRotate(weakCell.rotateContainer.layer.transform, M_PI, 0.0, 1.0,0.0);

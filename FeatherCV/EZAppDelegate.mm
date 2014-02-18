@@ -263,7 +263,7 @@
                                           } error:^(NSError* err){
                                           }];
     **/
-    //[EZDataUtil getInstance].currentPersonID = nil;
+    [EZDataUtil getInstance].currentPersonID = nil;
     if(![[EZDataUtil getInstance] getCurrentPersonID]){
         [[EZDataUtil getInstance] registerUser:@{
                             @"mobile":int2str(rand()),

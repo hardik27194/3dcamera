@@ -554,6 +554,17 @@ NSString* doubleString(NSString* str)
     self.frame = CGRectMake(self.frame.origin.x, self.frame.origin.y, size.width, size.height);
 }
 
+- (CGFloat) getY
+{
+    return self.frame.origin.y;
+}
+
+- (CGFloat) getX
+{
+    return self.frame.origin.x;
+}
+
+
 - (void) setX:(CGFloat)x
 {
     self.frame = CGRectMake(x, self.frame.origin.y, self.frame.size.width, self.frame.size.height);
