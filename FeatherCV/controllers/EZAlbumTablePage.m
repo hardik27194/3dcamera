@@ -173,6 +173,9 @@ static int photoCount = 1;
     for(int i = 0; i < _newlyCreated; i++){
         NSIndexPath* path = [NSIndexPath indexPathForRow:i inSection:0];
         UITableViewCell* cell = [self.tableView cellForRowAtIndexPath:path];
+        if(!cell){
+            continue;
+        }
         EZDisplayPhoto* cp = [_combinedPhotos objectAtIndex:i];
         if(!cp.isFront){
             EZDEBUG(@"flipped manually");
@@ -180,7 +183,19 @@ static int photoCount = 1;
         }
         EZPhoto* switchPhoto = [cp.photo.photoRelations objectAtIndex:0];
         cp.isFront = !cp.isFront;
-        [self switchAnimation:cp photoCell:cell indexPath:path tableView:self.tableView photo:cp.isFront?cp.photo:switchPhoto];
+        EZDEBUG(@"prefetchDone:%i", switchPhoto.prefetchDone);
+        if(switchPhoto.prefetchDone){
+            [self switchAnimation:cp photoCell:cell indexPath:path tableView:self.tableView photo:cp.isFront?cp.photo:switchPhoto];
+        }else{
+            dispatch_later(1.0,
+                           ^(){
+                               EZDEBUG(@"after dispatch prefetch done:%i", switchPhoto.prefetchDone);
+                                [self switchAnimation:cp photoCell:cell indexPath:path tableView:self.tableView photo:cp.isFront?cp.photo:switchPhoto];
+                           }
+                           );
+        }
+        
+        
     }
 }
 
@@ -276,29 +291,53 @@ static int photoCount = 1;
         [weakSelf raiseCamera];
     }];
     
+    
+    EZDEBUG(@"The login personID:%@, getID:%@", [EZDataUtil getInstance].currentPersonID, [[EZDataUtil getInstance] getCurrentPersonID]);
+    [[EZDataUtil getInstance] queryPhotos:0 pageSize:10 success:^(NSArray* arr){
+        EZDEBUG(@"returned length:%i", arr.count);
+        //[_combinedPhotos addObjectsFromArray:arr];
+        [self reloadRows:arr];
+        //[self.tableView reloadData];
+    } failure:^(NSError* err){
+        EZDEBUG(@"Error detail:%@", err);
+    }];
+    
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"更多" style:UIBarButtonItemStylePlain target:self action:@selector(showMenu:)];
 
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(pickPhotoType:)];
-    //[self.navigationItem.rightBarButtonItem setTintColor:[UIColor whiteColor]];
-    /**
-    CGRect bound = [UIScreen mainScreen].bounds;
-    CGFloat diameter = 70.0;
 
-    EZClickView* clickButton = [[EZClickView alloc] initWithFrame:CGRectMake((320 - diameter)/2, bound.size.height - diameter - 20, diameter, diameter)];
-    [clickButton enableRoundImage];
-    [self.view addSubview:clickButton];
-    clickButton.backgroundColor = RGBACOLOR(255, 255, 255, 128);
-    _cameraClicked = ^(id sender){
-        [weakSelf raiseCamera];
-    };
-    EZUIUtility.sharedEZUIUtility.cameraClickButton = clickButton;
-    dispatch_main(^(){
-        EZDEBUG(@"The mainWindow:%i, topView:%i", (int)EZUIUtility.sharedEZUIUtility.mainWindow,(int)TopView);
-        [TopView addSubview:clickButton];
-    });
-     **/
 }
-
+- (void) reloadRows:(NSArray*)photos
+{
+    for(EZPhoto* pt in photos){
+        [[EZDataUtil getInstance] assetURLToAsset:str2url(pt.assetURL) success:^(ALAsset* result){
+            EZDEBUG(@"Transfer the image to EZDisplayPhoto successfully");
+            EZDisplayPhoto* ed = [[EZDisplayPhoto alloc] init];
+            ed.isFront = true;
+            ed.photo = pt;
+            //EZPhoto* ep = [[EZPhoto alloc] init];
+            //ed.pid = ++[EZDataUtil getInstance].photoCount;
+            //ep.photoID = _matchedPhoto.srcPhotoID;
+            //ep.photoRelations = @[_matchedPhoto];
+            pt.asset = result;
+            //ep.assetURL = assetURL.absoluteString;
+            pt.isLocal = true;
+            //ed.photo = ep;
+            ed.photo.owner = [EZDataUtil getInstance].currentLoginPerson;
+            //EZDEBUG(@"Before size");
+            //ep.size = [result defaultRepresentation].dimensions;
+            
+            //[self preMatchPhoto];
+            //[[EZMessageCenter getInstance]postEvent:EZTakePicture attached:ed];
+            //EZDEBUG(@"after size:%f, %f", ep.size.width, ep.size.height);
+            //success(ed);
+            [_combinedPhotos addObject:ed];
+            //[self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationTop];
+            [self.tableView reloadData];
+        }];
+        
+    }
+}
 
 - (void) viewDidAppear:(BOOL)animated
 {
@@ -306,6 +345,7 @@ static int photoCount = 1;
     [super viewDidAppear:animated];
     self.navigationController.delegate = self;
     EZUIUtility.sharedEZUIUtility.cameraClickButton.pressedBlock = _cameraClicked;
+    /**
     [UIImageView preloadImageURL:str2url(@"http://192.168.1.102:8080/static/79661d8d26c00668ac4c215373fdf12e.jpg") success:^(UIImage* image){
         EZDEBUG(@"view loaded");
         EZClickImage* view = [[EZClickImage alloc] initWithFrame:CGRectMake(0, 200, 100, 100)];
@@ -315,10 +355,14 @@ static int photoCount = 1;
         } failed:^(NSError* err){
         
         }];
-        [self.view addSubview:view];
+        //[self.view addSubview:view];
         view.releasedBlock = ^(id obj){
             [[EZDataUtil getInstance] queryPhotos:0 pageSize:5 success:^(NSArray* photos){
                 EZDEBUG(@"fetch back count:%i", photos.count);
+                EZPhoto* first = [photos objectAtIndex:0];
+                EZDEBUG(@"PhotoID:%@, relationsSize:%i", first.photoID, first.photoRelations.count);
+                EZPhoto* matchedPhoto = [first.photoRelations objectAtIndex:0];
+                EZDEBUG(@"Matched photo:%@, screenURL:%@", matchedPhoto.photoID, matchedPhoto.screenURL);
             } failure:^(id err){
                 EZDEBUG(@"query photo error:%@", err);
             }];
@@ -326,7 +370,7 @@ static int photoCount = 1;
     } failed:^(id err){
         EZDEBUG(@"encounter error:%@", err);
     }];
-    
+    **/
     
 }
 
@@ -452,66 +496,7 @@ static int photoCount = 1;
     
     //}
     ++sequence;
-    /**
-    [EZNetworkUtility postParameterAsJson:@"query/contacts" parameters:@[@{@"name":@"coolguy"}, @{@"name":@"hot girl"}] complete:^(id result){
-        EZDEBUG(@"result:%@", result);
-    } failblk:^(NSError* err){
-        EZDEBUG(@"Error:%@", err);
-    }];
-     **/
-    /**
-    [[EZDataUtil getInstance] registerUser:@{@"email":@"coolguy@gmail.com",
-                                             @"password":@"hahahehe",
-                                             @"mobile":@"15216727142"
-                                             }
-                                   success:^(EZPerson* person){
-                                       EZDEBUG(@"person name:%@", person.name);
-                                   } error:^(NSError* err){
-                                       EZDEBUG(@"err:%@", err);
-                                   }];
     
-    [[EZDataUtil getInstance] loginUser:@{@"email":@"coolguy@gmail.com",
-                                          @"password":@"hahahehe",
-                                          @"mobile":@"15216727142"
-                                          }
-                                success:^(EZPerson* person){
-                                    EZDEBUG(@"post person name:%@", person.name);
-                                } error:^(NSError* err){
-                                    EZDEBUG(@"post err:%@", err);
-                                }];
-     **/
-    /**
-     [[EZNetworkUtility getInstance] upload:baseUploadURL file:storedFile uploadField:@"myfile" headers:nil parameters:@{@"personid":@"coolguy"} complete:^(id obj){
-     EZDEBUG(@"Upload successfully");
-     } error:^(id obj){
-     EZDEBUG(@"Upload failed");
-     } method:nil];
-     **/
-    
-    /**
-     [[EZNetworkUtility getInstance] upload:baseUploadURL parameters:@{@"personid":@"coolguy"} file:storedFile complete:^(id obj){
-     EZDEBUG(@"Complete call back:%@, is main:%i",obj,[NSThread isMainThread]);
-     } error:^(id err){
-     EZDEBUG(@"Upload error:%@,  is main:%i", err, [NSThread isMainThread]);
-     } progress:^(CGFloat percent){
-     EZDEBUG(@"The upload progress is:%f", percent);
-     }];
-     **/
-    /**
-     [EZNetworkUtility getJson:@"static/handpa.txt" complete:^(id dict){
-     EZDEBUG(@"get upload:%@", dict);
-     } failblk:^(NSError* err){
-     EZDEBUG(@"get upload:%@", err);
-     }];
-     EZDEBUG(@"upload asynchronized");
-     
-     [EZNetworkUtility postJson:@"feather" parameters:@{@"coolguy":@"yaya"} complete:^(id json){
-     EZDEBUG(@"Post response:%@", json);
-     } failblk:^(NSError* err){
-     EZDEBUG(@"Error:%@", err);
-     }];
-     **/
-
 }
 
 - (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
@@ -519,6 +504,10 @@ static int photoCount = 1;
     if ([tableView.indexPathsForVisibleRows indexOfObject:indexPath] == NSNotFound)
     {
         EZDEBUG(@"indexPath no more visible:%i", indexPath.row);
+        EZPhotoCell* pc  = (EZPhotoCell*)[tableView cellForRowAtIndexPath:indexPath];
+        EZDEBUG(@"before release image size:%@", NSStringFromCGSize(pc.frontImage.image.size));
+        pc.frontImage.image = nil;
+        
     }
 }
 

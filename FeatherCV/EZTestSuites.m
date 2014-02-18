@@ -29,7 +29,7 @@
     //[EZTestSuites testGetNumberFromString];
     //[EZTestSuites testSoundEffects];
     //[self testImageProcess];
-    [self testImageStore];
+    //[self testImageStore];
 }
 
 + (void) testImageStore

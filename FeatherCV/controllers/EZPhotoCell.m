@@ -245,7 +245,8 @@
         if(dp.isFront){
             [_frontImage setImage:curPhoto.getScreenImage];
         }else{
-            [_frontImage setImageWithURL:str2url(curPhoto.screenURL) placeholderImage:placeholdImage];
+            //[_frontImage setImageWithURL:str2url(curPhoto.screenURL) placeholderImage:placeholdImage];
+            [_frontImage setImageWithURL:str2url(curPhoto.screenURL)];
         }
         
         [self adjustInnerSize:CGSizeMake(_frontImage.width, height)];
@@ -271,7 +272,8 @@
             if(weakPhoto.isFront){
                 [photoCell.frontImage setImage:curPhoto.getScreenImage];
             }else{
-                [photoCell.frontImage setImageWithURL:str2url(curPhoto.screenURL) placeholderImage:placeholdImage];
+                //[photoCell.frontImage setImageWithURL:str2url(curPhoto.screenURL) placeholderImage:placeholdImage];
+                [photoCell.frontImage setImageWithURL:str2url(curPhoto.screenURL)];
             }
             [photoCell adjustCellSize:curPhoto.size];
             [UIView flipTransition:oldView dest:photoCell.rotateContainer container:photoCell.container isLeft:YES duration:2 complete:^(id obj){

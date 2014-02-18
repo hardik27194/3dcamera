@@ -46,9 +46,24 @@
     _isoFormatter = [[NSDateFormatter alloc] init];
     _isoFormatter.dateFormat = @"yyyy-MM-dd' 'HH:mm:ss.S";
     _localPhotos = [[NSMutableArray alloc] init];
+    _pendingPhotos = [[NSMutableArray alloc] init];
+    //Move to the persistent later.
+    //Now keep it simple and stupid
+    _pendingUploads = [[NSMutableArray alloc] init];
     return self;
 }
 
+
+//Check the current status
+- (BOOL) canUpload
+{
+    return true;
+    if(!_wifiOnly){
+        return _networkAvailable;
+    }
+    return _networkAvailable && (_networkStatus == AFNetworkReachabilityStatusReachableViaWiFi);
+    
+}
 
 - (void) populatePersons:(NSArray*)json persons:(NSArray*)persons
 {
@@ -102,7 +117,11 @@
                          for(NSDictionary* dict in photos){
                              EZPhoto* photo = [[EZPhoto alloc] init];
                              [photo fromJson:dict];
-                             [res addObject:photo];
+                             if(photo.uploaded && photo.size.width > 0){
+                                 [res addObject:photo];
+                             }else{
+                                 EZDEBUG(@"Photo is broken:%@", photo.photoID);
+                             }
                          }
                          if(success){
                              success(res);
@@ -112,16 +131,21 @@
 }
 
 //Only upload the photo messsage, without upload the image
+//Make sure this is upload messgae function call.
+//Don't return anything, but the photoID
 - (void) uploadPhotoInfo:(NSArray *)photoInfo success:(EZEventBlock)success failure:(EZEventBlock)failure
 {
-    NSArray* jsons = [self arrayToJson:photoInfo];
+    NSDictionary* jsons =@{@"cmd":@"update",@"photos":[self arrayToJson:photoInfo]};
     [EZNetworkUtility postParameterAsJson:@"photo/info" parameters:jsons complete:^(NSArray* arr){
-        for(int i = 0; i < photoInfo.count; i ++){
-            EZPhoto* photo = [photoInfo objectAtIndex:i];
+        NSMutableArray* res = [[NSMutableArray alloc] init];
+        for(int i = 0; i < arr.count; i ++){
+            NSDictionary* dict = [arr objectAtIndex:i];
+            EZDEBUG(@"dictionary:%@", dict);
             //photo.photoID = [arr objectAtIndex:i];
-            [photo fromJson:[arr objectAtIndex:i]];
+            //[photo fromJson:[arr objectAtIndex:i]];
+            [res addObject:[dict objectForKey:@"photoID"]];
         }
-        success(photoInfo);
+        success(res);
     } failblk:^(NSError* err){
         EZDEBUG(@"Error:%@", err);
         if(failure){
@@ -177,13 +201,9 @@
 
 - (void) uploadPhoto:(EZPhoto*)photo success:(EZEventBlock)success failure:(EZEventBlock)failure
 {
-    NSDictionary* jsonInfo = [photo toJson];
-    [EZNetworkUtility postParameterAsJson:@"photo/info" parameters:@[jsonInfo] complete:^(NSArray* arr){
-        NSString* photoID = [[arr objectAtIndex:0] valueForKey:@"photoID"];
-        EZDEBUG(@"returned photoID:%@", photoID);
-        photo.photoID = photoID;
-        //TODO an IO bottleneck here.
-        NSString* storedFile =[EZFileUtil saveImageToCache:[photo getScreenImage]];
+    //NSDictionary* jsonInfo = [photo toJson];
+    NSString* storedFile =[EZFileUtil saveImageToCache:[photo getScreenImage]];
+    if(photo.photoID){
         [EZNetworkUtility upload:baseUploadURL parameters:@{@"photoID":photo.photoID} file:storedFile complete:^(id obj){
             NSString* screenURL = [obj objectForKey:@"screenURL"];
             photo.screenURL = screenURL;
@@ -193,10 +213,10 @@
         } error:failure progress:^(CGFloat percent){
             EZDEBUG(@"The uploaded percent:%f", percent);
         }];
-    } failblk:^(NSError* err){
-        EZDEBUG(@"Error  info:%@", err);
-    }];
-    
+    }else{
+        EZDEBUG(@"photo have no id, waiting for id");
+        failure(@"Need id to upload");
+    }
 }
 
 
@@ -231,6 +251,16 @@
     if(!_currentPersonID){
         _currentPersonID = [[NSUserDefaults standardUserDefaults] objectForKey:@"CurrentSessionID"];
     }
+    if(_currentPersonID && !_currentLoginPerson){
+        [self getPersonID:_currentPersonID success:^(EZPerson* ps){
+            //EZDEBUG(@"loaded person count:%i", ps.count);
+            _currentLoginPerson = ps;
+            
+        } failure:^(id err){
+            EZDEBUG(@"failed to load person:%@", err);
+        }];
+    }
+    EZDEBUG(@"Current PersonID:%@", _currentPersonID);
     return _currentPersonID;
 }
 
@@ -478,9 +508,12 @@
 //Get the person object
 - (void) getPersonID:(NSString*)personID success:(EZEventBlock)success failure:(EZEventBlock)failure;
 {
-    [EZNetworkUtility getJson:@"person/info"
-                   parameters:@[personID]
-    complete:success failblk:failure];
+    [EZNetworkUtility postParameterAsJson:@"person/info" parameters:@{@"cmd":@"personID", @"personIDs":@[personID]}
+                                 complete:^(NSArray* arr){
+                                     EZPerson* ps = [[EZPerson alloc] init];
+                                     [ps fromJson:[arr objectAtIndex:0]];
+                                     success(ps);
+                                 } failblk:failure];
 
 }
 
@@ -783,6 +816,69 @@
     NSUInteger groupTypes =  ALAssetsGroupSavedPhotos;
     [_assetLibaray enumerateGroupsWithTypes:groupTypes usingBlock:listGroupBlock failureBlock:failureBlock];}
 **/
+
+//Will upload each pending photo
+//Remove the photo from the array, once it is successfuls
+//Should we differentitate uploaded information and uploaded file itself?
+//Let's this method call on a time out fash.
+- (void) uploadPendingPhoto
+{
+    if(_uploadingTasks > 0){
+        EZDEBUG(@"Quit for uploading, pending Task:%i", _uploadingTasks);
+    }
+    
+    if(!self.canUpload){
+        EZDEBUG(@"Quit for network not available, status:%i", _networkStatus);
+    }
+    for(int i = 0; i < _pendingUploads.count; i++){
+        EZPhoto* photo = [_pendingUploads objectAtIndex:i];
+        if(!photo.uploadInfoSuccess){
+            EZDEBUG(@"Will start upload info for:%@", photo.photoID);
+            ++_uploadingTasks;
+            [[EZDataUtil getInstance] uploadPhotoInfo:@[photo] success:^(id info){
+                EZDEBUG(@"Update photo info:%@", info);
+                NSString* photoID = [info objectAtIndex:0];
+                EZDEBUG(@"Recieved photoID:%@, currnet photoID:%@", photoID, photo.photoID);
+                photo.uploadInfoSuccess = TRUE;
+                photo.photoID = photoID;
+                --_uploadingTasks;
+            } failure:^(id err){
+                EZDEBUG(@"failed to upload info for photoID:%@, :%@",photo.photoID, err);
+                --_uploadingTasks;
+            }];
+        }
+        if(!photo.uploadPhotoSuccess && photo.photoID){
+            ++_uploadingTasks;
+            EZDEBUG(@"Will start upload photo content for:%@", photo.photoID);
+            [[EZDataUtil getInstance] uploadPhoto:photo success:^(id info){
+                EZDEBUG(@"uploaded success:%@", info);
+                photo.uploadPhotoSuccess = TRUE;
+                photo.uploaded = TRUE;
+                --_uploadingTasks;
+            } failure:^(id err){
+                EZDEBUG(@"failed to upload content:%@", err);
+                --_uploadingTasks;
+            }];
+        }
+    }
+}
+
+- (void) uploadPhoto:(EZPhoto*) photo
+{
+    [[EZDataUtil getInstance] uploadPhotoInfo:@[photo] success:^(id info){
+        EZDEBUG(@"Update photo info:%@", info);
+    } failure:^(id err){
+        EZDEBUG(@"failed to upload info for photoID:%@, :%@",photo.photoID, err);
+    }];
+    
+    [[EZDataUtil getInstance] uploadPhoto:photo success:^(id info){
+        EZDEBUG(@"uploaded success:%@", info);
+    } failure:^(id err){
+        EZDEBUG(@"failed to upload content:%@", err);
+    }];
+    
+}
+
 - (void) checkPhotoAlbum:(EZEventBlock)success failure:(EZEventBlock)failure
 {
     

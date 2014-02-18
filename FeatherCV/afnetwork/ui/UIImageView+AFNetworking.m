@@ -123,7 +123,7 @@ static char kAFResponseSerializerKey;
 }
 
 //Load image before user notice anything
-+ (void) preloadImageURL:(NSURL *)url success:(EZEventBlock)success failed:(EZEventBlock)failed
+- (void) preloadImageURL:(NSURL *)url success:(EZEventBlock)success failed:(EZEventBlock)failed
 {
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
     [request addValue:@"image/*" forHTTPHeaderField:@"Accept"];
@@ -139,13 +139,15 @@ static char kAFResponseSerializerKey;
         AFHTTPRequestOperation* imageRequestOperation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
         imageRequestOperation.responseSerializer = [AFImageResponseSerializer serializer];
         [imageRequestOperation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
+            [[[self class] sharedImageCache] cacheImage:responseObject forRequest:request];
+            
+            //UIImage *fetchBack = [[[self class] sharedImageCache] cachedImageForRequest:request];
+            //EZDEBUG(@"Prefetch immediate fetch back:%@, %i, sharedCache:%i", url.absoluteString, (int)fetchBack, (int)[[self class] sharedImageCache]);
             if ([[request URL] isEqual:[operation.request URL]]) {
                 if (success) {
                     success(responseObject);
                 }
             }
-            
-            [[[self class] sharedImageCache] cacheImage:responseObject forRequest:request];
         } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
             if ([[request URL] isEqual:[operation.request URL]]) {
                 if (failed) {
@@ -165,6 +167,7 @@ static char kAFResponseSerializerKey;
     [self cancelImageRequestOperation];
 
     UIImage *cachedImage = [[[self class] sharedImageCache] cachedImageForRequest:urlRequest];
+    EZDEBUG(@"load image from url:%@, %i, cache pointer:%i",urlRequest.URL.absoluteString, (int)cachedImage, (int) [[self class] sharedImageCache]);
     if (cachedImage) {
         if (success) {
             success(nil, nil, cachedImage);
@@ -174,6 +177,7 @@ static char kAFResponseSerializerKey;
 
         self.af_imageRequestOperation = nil;
     } else {
+        
         self.image = placeholderImage;
 
         __weak __typeof(self)weakSelf = self;

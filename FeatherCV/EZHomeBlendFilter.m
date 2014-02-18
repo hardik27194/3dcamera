@@ -60,8 +60,8 @@ NSString *const kHomeBlendFragmentShaderString = SHADER_STRING
  lowp float calcHue(lowp vec4 rawcolor)
  {
      highp float fd = distance(rawcolor.rgb, skinColor);
-     if(fd < 0.675){
-         fd = fd * fd * fd;
+     if(fd < 0.44){
+         fd = fd * fd;
      }else{
          fd = 1.0/(exp(-fd * 2.5) + 1.0);
      }
@@ -72,10 +72,10 @@ NSString *const kHomeBlendFragmentShaderString = SHADER_STRING
  lowp float calcLineDist(lowp vec4 rawcolor)
  {
      highp float fd = distance(rawcolor.rgb, skinColor);
-     if(fd < 0.675){
-         fd = fd * 2.5;
+     if(fd < 0.4){
+         fd = fd * 3.0;
      }else{
-         fd = fd * 2.0;//1.0/(exp(-fd * 8.0) + 1.0);
+         fd = fd * 1.5;//1.0/(exp(-fd * 8.0) + 1.0);
      }
      return fd;
      //return 1.0/(exp((1.5 - distance(rawcolor.rgb, skinColor))) + 1.0);
@@ -171,9 +171,9 @@ NSString *const kFaceBlurFragmentShaderString = SHADER_STRING
     _smallBlurFilter.blurSize = 1.0;
     
     _skinBrighter = [[EZSkinBrighter alloc] init];
-    [_skinBrighter setRgbCompositeControlPoints:@[pointValue(0.0, 0.0),pointValue(0.125, 0.125), pointValue(0.25, 0.25), pointValue(0.5, 0.55), pointValue(0.75, 0.785), pointValue(1.0, 1.0)]];
-    [_skinBrighter setRedControlPoints:@[pointValue(0.0, 0.0),pointValue(0.125, 0.128), pointValue(0.25, 0.254), pointValue(0.5, 0.504), pointValue(0.75, 0.754), pointValue(1.0, 1.0)]];
-    [_skinBrighter setBlueControlPoints:@[pointValue(0.0, 0.0),pointValue(0.125, 0.123), pointValue(0.25, 0.247), pointValue(0.5, 0.497), pointValue(0.75, 0.747), pointValue(1.0, 1.0)]];
+    [_skinBrighter setRgbCompositeControlPoints:@[pointValue(0.0, 0.0),pointValue(0.125, 0.125), pointValue(0.25, 0.32), pointValue(0.5, 0.545), pointValue(0.75, 0.785), pointValue(1.0, 1.0)]];
+    [_skinBrighter setRedControlPoints:@[pointValue(0.0, 0.0),pointValue(0.125, 0.13), pointValue(0.25, 0.26), pointValue(0.5, 0.51), pointValue(0.75, 0.76), pointValue(1.0, 0.99)]];
+    [_skinBrighter setBlueControlPoints:@[pointValue(0.0, 0.0),pointValue(0.125, 0.118), pointValue(0.25, 0.243), pointValue(0.5, 0.493), pointValue(0.75, 0.743), pointValue(1.0, 0.995)]];
     //[_skinBrighter setRedControlPoints:@[pointValue(0.0, 0.0),pointValue(0.125, 0.130), pointValue(0.25, 0.255), pointValue(0.5, 0.505), pointValue(0.75, 0.755), pointValue(1.0, 1.0)]];
     //[_skinBrighter setBlueControlPoints:@[pointValue(0.0, 0.0),pointValue(0.125, 0.120), pointValue(0.25, 0.245), pointValue(0.5, 0.495), pointValue(0.75, 0.745), pointValue(1.0, 1.0)]];
     //_edgeBlurFilter = [[GPUImageGaussianBlurFilter alloc] init];
@@ -202,7 +202,7 @@ NSString *const kFaceBlurFragmentShaderString = SHADER_STRING
     // To prevent double updating of this filter, disable updates from the sharp image side
     //[_combineFilter disableSecondFrameCheck];
     self.initialFilters = [NSArray arrayWithObjects:_edgeFilter,_skinBrighter, _combineFilter, nil];
-    self.skinColors = @[@(0.753),@(0.473),@(0.332)];
+    self.skinColors = @[@(0.9),@(0.55),@(0.38)];
     self.terminalFilter = _combineFilter;
     //self.edgeRatio =
     self.imageMode = 0;

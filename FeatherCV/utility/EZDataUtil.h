@@ -34,6 +34,12 @@
 //For test purpose only
 @property (nonatomic, assign) NSInteger photoCount;
 
+@property (nonatomic, assign) AFNetworkReachabilityStatus networkStatus;
+
+@property (nonatomic, assign) BOOL networkAvailable;
+
+@property (nonatomic, assign) BOOL wifiOnly;
+
 //All the friend
 @property (nonatomic, strong) NSMutableArray* contacts;
 
@@ -46,6 +52,18 @@
 
 @property (nonatomic, strong) EZPerson* currentLoginPerson;
 
+//Photos that are waiting to be uploaded
+@property (nonatomic, strong) NSMutableArray* pendingUploads;
+
+//Shot photo waiting to get the matched photo.
+//A good change to use the KV listener.
+@property (nonatomic, strong) NSMutableArray* pendingPhotos;
+
+
+//Check the current status
+- (BOOL) canUpload;
+
+- (NSString*) getCurrentPersonID;
 //@property (nonatomic, strong) NSMutable
 //Phone number will be the unique id?
 //Mean only one id for each phone right?
@@ -61,13 +79,9 @@
 
 
 - (void) exchangePhoto:(EZPhoto*)photo success:(EZEventBlock)success failure:(EZEventBlock)failure;
-//Will get current login person id
-- (NSString*) getCurrentPersonID;
-
 //Why this method?
 //Normally, the person is already in the cache by check the photos.
 - (EZPerson*) getPerson:(NSString*)personID;
-
 
 
 - (void) registerUser:(NSDictionary*)person success:(EZEventBlock)success error:(EZEventBlock)error;
@@ -157,5 +171,11 @@
 - (void) readAlbumInBackground:(int)start limit:(int)limit;
 
 - (void) loadPhotoBooks;
+
+//Will upload each pending photo
+//Remove the photo from the array, once it is successfuls
+
+@property (nonatomic, assign) int uploadingTasks;
+- (void) uploadPendingPhoto;
 
 @end

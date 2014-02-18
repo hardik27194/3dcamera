@@ -107,7 +107,9 @@ typedef enum {
 @property (nonatomic, assign) BOOL quitFaceDetection;
 @property (nonatomic, assign) EZShotMode shotMode;
 
-@property (nonatomic, strong) EZPhoto* matchedPhoto;
+//@property (nonatomic, strong) EZPhoto* matchedPhoto;
+//The purpose is to carry all the remote operation result
+@property (nonatomic, strong) EZPhoto* shotPhoto;
 
 //0 mean off
 //1 mean on

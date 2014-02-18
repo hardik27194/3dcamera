@@ -40,12 +40,21 @@
     return res;
 }
 
+- (NSArray*) relationsToJson
+{
+    NSMutableArray* res = [[NSMutableArray alloc] init];
+    for(EZPhoto* pt in _photoRelations){
+        [res addObject:pt.photoID];
+    }
+    return res;
+}
+
 - (NSDictionary*) toJson
 {
-
-    
-    return @{
+    if(_photoID){
+        return @{
              //@"id":_photoID,
+             @"photoID":null2Empty(_photoID),
              @"personID":null2Empty(_owner.personID),
              @"assetURL":null2Empty(_assetURL),
              @"longtitude":@(_longitude),
@@ -56,19 +65,39 @@
              @"width":@(_size.width),
              @"height":@(_size.height),
              @"createdTime":_createdTime?isoDateFormat(_createdTime):@"",
-             @"conversations":[self conversationToJson]
+             @"conversations":[self conversationToJson],
+             @"photoRelations":[self relationsToJson]
+             
                  };
+    }else{
+        return @{
+                 //@"id":_photoID,
+                 @"personID":null2Empty(_owner.personID),
+                 @"assetURL":null2Empty(_assetURL),
+                 @"longtitude":@(_longitude),
+                 @"latitude":@(_latitude),
+                 @"altitude":@(_altitude),
+                 @"uploaded":@(_uploaded),
+                 @"shareStatus":@(_shareStatus),
+                 @"width":@(_size.width),
+                 @"height":@(_size.height),
+                 @"createdTime":_createdTime?isoDateFormat(_createdTime):@"",
+                 @"conversations":[self conversationToJson],
+                 @"photoRelations":[self relationsToJson]
+                 };
+
+    }
 }
 
 - (void) fromJson:(NSDictionary*)dict
 {
     EZDEBUG(@"json raw string:%@", dict);
     NSString* personID = [dict objectForKey:@"personID"];
-    [[EZDataUtil getInstance] getPersonID:personID success:^(NSArray* ps){
-        _owner = [ps objectAtIndex:0];
-    } failure:^(NSError* err){
-        EZDEBUG(@"Error to find a person");
-    }];
+    //[[EZDataUtil getInstance] getPersonID:personID success:^(NSArray* ps){
+    //    _owner = [ps objectAtIndex:0];
+    //} failure:^(NSError* err){
+    //    EZDEBUG(@"Error to find a person");
+    //}];
     _photoID = [dict objectForKey:@"photoID"];
     _srcPhotoID = [dict objectForKey:@"srcPhotoID"];
     _assetURL = [dict objectForKey:@"assetURL"];

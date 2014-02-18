@@ -15,6 +15,7 @@ typedef enum {
     kSeenByAll
 } EZShareStatus;
 
+
 @class ALAsset;
 @class EZPerson;
 @interface EZPhoto : NSObject
@@ -63,6 +64,10 @@ typedef enum {
 //What's the purpose for this field?
 //Don't know. left as a reminder.
 @property (nonatomic, assign) BOOL findMatched;
+
+
+//Only when the prefetch is ready, I will try to rotate the image.
+@property (nonatomic, assign) BOOL prefetchDone;
 //Whether this photo uploaded or not
 //Mean if the photo is local photo or not
 //Who need this?
@@ -95,6 +100,19 @@ typedef enum {
 //Secret match, will remove the photo relations when user didn't store the image.
 @property (nonatomic, strong) NSString* srcPhotoID;
 
+//Get called when the match remote call failed
+//Will trigger the upload once the call successful.
+//It is a flag to coordinate the local and remote operation 
+@property (nonatomic, assign) BOOL matchCompleted;
+
+//Have successfully uploaded the photo information
+@property (nonatomic, assign) BOOL uploadInfoSuccess;
+
+//Upload the photo file itself success
+@property (nonatomic, assign) BOOL uploadPhotoSuccess;
+
+//@property (nonatomic, assign) BOOL pendingMatch;
+
 //@property (nonatomic, strong) NSString* otherURL;
 
 //@property (nonatomic, assign) BOOL likedByOther;
@@ -113,5 +131,6 @@ typedef enum {
 - (NSDictionary*) toJson;
 
 - (void) fromJson:(NSDictionary*)dict;
+
 
 @end

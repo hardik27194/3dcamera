@@ -108,7 +108,7 @@
 - (UIViewController*) createScrollView
 {
     [self setupEvent];
-    NSString* currentPersonID = [[EZDataUtil getInstance] getCurrentPersonID];
+    NSString* currentPersonID = [EZDataUtil getInstance].currentPersonID;
     EZDEBUG(@"Current personID:%@", currentPersonID);
     EZQueryBlock qb = ^(NSInteger start, NSInteger limit, EZEventBlock success, EZEventBlock failure){
         [[EZDataUtil getInstance] loadAlbumPhoto:start limit:limit success:success failure:failure];
@@ -220,13 +220,34 @@
     NSURLCache *URLCache = [[NSURLCache alloc] initWithMemoryCapacity:4 * 1024 * 1024 diskCapacity:20 * 1024 * 1024 diskPath:nil];
     [NSURLCache setSharedURLCache:URLCache];
     
+    
+    AFNetworkReachabilityManager* manager = [AFNetworkReachabilityManager managerForDomain:reachableDomain];
     [[AFNetworkActivityIndicatorManager sharedManager] setEnabled:YES];
     
-    [[AFNetworkReachabilityManager sharedManager] setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
+    [manager setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
         //EZDEBUG(@"Reachability: %@", AFStringFromNetworkReachabilityStatus(status));
         EZDEBUG(@"network status:%i", status);
+        if(status == AFNetworkReachabilityStatusReachableViaWWAN || status == AFNetworkReachabilityStatusReachableViaWiFi){
+            [EZDataUtil getInstance].networkAvailable = TRUE;
+            [EZDataUtil getInstance].networkStatus = status;
+        }else{
+            [EZDataUtil getInstance].networkStatus = status;
+            [EZDataUtil getInstance].networkAvailable = FALSE;
+        }
     }];
-    [EZDataUtil getInstance].currentPersonID = @"coolguyMobile";
+    
+    
+    [NSTimer scheduledTimerWithTimeInterval:15.0
+                                     target:self
+                                   selector:@selector(uploadPendingImages:)
+                                   userInfo:nil
+                                    repeats:YES];
+    //[EZDataUtil getInstance].currentPersonID = @"coolguyMobile";
+}
+
+- (void) uploadPendingImages:(id)obj
+{
+    [[EZDataUtil getInstance] uploadPendingPhoto];
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
@@ -243,7 +264,7 @@
                                           }];
     **/
     //[EZDataUtil getInstance].currentPersonID = nil;
-    if(![EZDataUtil getInstance].currentPersonID){
+    if(![[EZDataUtil getInstance] getCurrentPersonID]){
         [[EZDataUtil getInstance] registerUser:@{
                             @"mobile":int2str(rand()),
                             @"password":@"coolguy",

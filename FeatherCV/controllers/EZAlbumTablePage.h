@@ -65,6 +65,8 @@
 @property (nonatomic, assign) int newlyCreated;
 
 
+
+
 //Where do we begin
 //It used to save the memory consumption
 - (void) raiseCamera;

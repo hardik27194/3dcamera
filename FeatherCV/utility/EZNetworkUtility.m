@@ -173,13 +173,13 @@ static EZNetworkUtility* instance;
     
     NSString* fileName = fileNames.count > 0?[fileNames objectAtIndex:fileNames.count - 1]:fullPath;
     // 2. Create an `NSMutableURLRequest`.
+    [serializer setValue:[EZDataUtil getInstance].currentPersonID forHTTPHeaderField:EZSessionHeader];
     NSMutableURLRequest *request =
     [serializer multipartFormRequestWithMethod:@"POST" URLString:baseUploadURL
                                     parameters:parameters
                      constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
                          [formData appendPartWithFileURL:[NSURL fileURLWithPath:fullPath] name:@"myfile" fileName:fileName mimeType:@"image/jpeg" error:nil];
                      }];
-    
     // 3. Create and use `AFHTTPRequestOperationManager` to create an `AFHTTPRequestOperation` from the `NSMutableURLRequest` that we just created.
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     AFHTTPRequestOperation *operation =

@@ -286,29 +286,74 @@
 }
 
 
+//Temporary strategy, Will change it later.
+
 //Will match the photo
 - (void) preMatchPhoto
 {
-    __weak DLCImagePickerController* weakSelf = self;
+    //__weak DLCImagePickerController* weakSelf = self;
+    _shotPhoto = [[EZPhoto alloc] init];
+    //Why do this?
+    //Create a closure.
+    EZPhoto* localPhoto = _shotPhoto;
     [[EZDataUtil getInstance] exchangePhoto:nil success:^(EZPhoto* pt){
-        EZDEBUG("Find prematched photo:%@, srcID:%@", pt.screenURL, pt.srcPhotoID);
-        weakSelf.matchedPhoto = pt;
-        [UIImageView preloadImageURL:str2url(pt.screenURL) success:^(id obj){
-            EZDEBUG(@"preload success");
-        } failed:^(id err){}];
+        EZDEBUG("Find prematched photo:%@, srcID:%@, uploaded flag:%i", pt.screenURL, pt.srcPhotoID, pt.uploaded);
+        //weakSelf.matchedPhoto = pt;
+        /**
+        if([EZDataUtil getInstance].pendingPhotos.count > 0){
+            EZPhoto* storedPt = [[EZDataUtil getInstance].pendingPhotos objectAtIndex:0];
+            storedPt.photoID = pt.srcPhotoID;
+            storedPt.photoRelations = @[pt];
+            [[EZDataUtil getInstance].pendingPhotos removeObjectAtIndex:0];
+        }
+         **/
+        if(!localPhoto.matchCompleted){
+            localPhoto.matchCompleted = TRUE;
+            
+            UIImageView* uw = [UIImageView new];
+            [uw preloadImageURL:str2url(pt.screenURL) success:^(id obj){
+                EZDEBUG(@"preload success:%@", pt.screenURL);
+                    //UIImageView* immd = [UIImageView new];
+                    //[weakRef setImageWithURL:str2url(pt.screenURL)];
+                    //[immd setImageWithURL:str2url(pt.screenURL)];
+                localPhoto.prefetchDone = YES;
+                EZDEBUG(@"test preload result");
+            } failed:^(id err){
+                EZDEBUG(@"Prefetch failure:%@", err);
+                localPhoto.prefetchDone = YES;
+            }];
+            localPhoto.photoRelations = @[pt];
+            
+        }else{
+            if(pt.uploaded){
+                [[EZDataUtil getInstance] cancelPrematchPhoto:pt success:^(id json){
+                    EZDEBUG(@"successfully canceled the matched Photo %@", pt.photoID);
+                } failure:^(id err){
+                    EZDEBUG(@"Will cancel the match for already move ahead");
+                }];
+            }
+        }
+        //s__weak UIImageView* weakRef = uw;
     } failure:^(NSError* err){
         EZDEBUG(@"Prematch error:%@", err);
+        //if(!localPhoto.matchCompleted)
+        localPhoto.matchCompleted = TRUE;
+                
     }];
 }
 
+//This method is no more necessary.
 - (void) cancelPrematchPhoto
 {
-    EZDEBUG(@"Start cancel call,%@", _matchedPhoto.photoID);
-    [[EZDataUtil getInstance] cancelPrematchPhoto:_matchedPhoto success:^(id success){
-        EZDEBUG(@"cancel:%@ success", _matchedPhoto.photoID);
-    } failure:^(id err){
-        EZDEBUG(@"Failure:%@", err);
-    }];
+    EZDEBUG(@"Start cancel call,%i", _shotPhoto.matchCompleted);
+    if(_shotPhoto.photoRelations.count){
+        EZPhoto* matched = [_shotPhoto.photoRelations objectAtIndex:0];
+        [[EZDataUtil getInstance] cancelPrematchPhoto:matched success:^(id success){
+            EZDEBUG(@"cancel:%@ success", matched.photoID);
+        } failure:^(id err){
+            EZDEBUG(@"Cancel Failure:%@", err);
+        }];
+    }
 }
 
 - (EZNightBlurFilter*) createNightFilter
@@ -393,7 +438,7 @@
     faceBlender.blurFilter.blurSize = globalBlur;//Original value
     faceBlender.blurFilter.distanceNormalizationFactor = 13;
     faceBlender.smallBlurFilter.blurSize = 0.05;
-    faceBlender.blurRatio = 0.0;
+    faceBlender.blurRatio = 0.1;
     faceBlender.edgeFilter.threshold = 0.4;
     return faceBlender;
 }
@@ -1030,7 +1075,7 @@
 -(void) prepareStaticFilter:(EZFaceResultObj*)fobj image:(UIImage*)img{
     _detectFace = false;
     
-    CGFloat dark = [self getISOSpeedRating];
+    CGFloat dark = 100;//[self getISOSpeedRating];
     hueFilter.hue = 350.0;
     //GPUImageFilter* firstFilter = nil;
     if(dark >= 400){
@@ -1076,7 +1121,7 @@
                 blurCycle = 2.5;
             }
         }else if(fobj){
-            blurCycle = 2.0;//2.5 * fobj.orgRegion.size.width;
+            blurCycle = 1.7;//2.5 * fobj.orgRegion.size.width;
             smallBlurRatio = 0.3 * (1.0 - fobj.orgRegion.size.width);
             //if(fobj.orgRegion.size.width > 0.5){
                 //blurCycle = 1.2 * blurCycle;
@@ -1087,9 +1132,9 @@
             blurCycle = 0.9;
             smallBlurRatio = 0.15;
         }
-        CGFloat adjustedFactor = 14.5;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
+        CGFloat adjustedFactor = 14.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
         finalBlendFilter.blurFilter.distanceNormalizationFactor = adjustedFactor;
-        finalBlendFilter.blurFilter.blurSize = blurCycle;
+        finalBlendFilter.blurFilter.blurSize = 1.7;
         //finalBlendFilter.blurRatio = smallBlurRatio;
         //finalBlendFilter.imageMode = 0;
         finalBlendFilter.showFace = 1;
@@ -1165,26 +1210,16 @@
     [whiteBalancerFilter removeAllTargets];
     [cropFilter removeAllTargets];
     [tongFilter removeAllTargets];
-    //[cycleDarken removeAllTargets];
-    //[biBlurFilter removeAllTargets];
-    [fixColorFilter removeAllTargets];
-    //[dynamicBlurFilter removeAllTargets];
-    //[edgeFilter removeAllTargets];
-    //edgeFilter.hasOverriddenImageSizeFactor = false;
-    //regular filter
-    [filter removeAllTargets];
+
     [darkBlurFilter removeAllTargets];
-    //[contrastfilter removeAllTargets];
-    //[faceBlurFilter removeAllTargets];
     [simpleFilter removeAllTargets];
-    //[darkFilter removeAllTargets];
-    [secFixColorFilter removeAllTargets];
     [redEnhanceFilter removeAllTargets];
     //blur
     [blurFilter removeAllTargets];
     [hueFilter removeAllTargets];
     [finalBlendFilter removeAllTargets];
     [orgFiler removeAllTargets];
+    [filter removeAllTargets];
 }
 
 -(IBAction)switchToLibrary:(id)sender {
@@ -1678,7 +1713,7 @@
             GPUImageOutput<GPUImageInput> *processUpTo;
             processUpTo = filter;
             //EZDEBUG(@"Before call process image");
-            [staticPicture processImage];
+            //[staticPicture processImage];
             //EZDEBUG(@"After call process image");
             //if(!stillCamera.isFrontFacing){
             
@@ -1693,27 +1728,23 @@
             }
         //}
         }
-        //std::vector<EZFaceResult*> faces;
-        //EZFaceUtil faceUtil = singleton<EZFaceUtil>();
-        //NSArray* faces = [EZFaceUtilWrapper detectFace:currentFilteredVideoFrame ratio:0.25];
-        //EZDEBUG(@"detected face:%i", faces.count);
-        //NSDictionary *info = @{@"image":currentFilteredVideoFrame};
-        //if(photoMeta){
-        //    info = @{@"image":currentFilteredVideoFrame, @"metadata":photoMeta};
-       // }
-        //[info setValue:currentFilteredVideoFrame forKey:@"image"];
-        EZDEBUG(@"image size:%f, %f", currentFilteredVideoFrame.size.width, currentFilteredVideoFrame.size.height);
-        [self createPhoto:currentFilteredVideoFrame orgData:photoMeta success:^(EZDisplayPhoto* dp){
+        EZDEBUG(@"image size:%f, %f, matchPhotoID:%@", currentFilteredVideoFrame.size.width, currentFilteredVideoFrame.size.height, _shotPhoto.photoID);
+        //EZPhoto* tmpMatch = _matchedPhoto;
+        [self createPhoto:currentFilteredVideoFrame orgData:photoMeta shotPhoto:_shotPhoto success:^(EZDisplayPhoto* dp){
             [self.delegate imagePickerController:self didFinishPickingMediaWithInfo:@{@"displayPhoto":dp}];
+            EZDEBUG(@"The photoID to update is:%@", dp.photo.photoID);
+            [[EZDataUtil getInstance].pendingUploads addObject:dp.photo];
+            [[EZDataUtil getInstance] uploadPendingPhoto];
+            //[self preMatchPhoto];
         }];
-        
+        //_matchedPhoto = nil;
+        [self preMatchPhoto];
         [self retakePhoto:retakeButton];
         [self.photoCaptureButton setEnabled:YES];
-
     }
 }
 
-- (void) createPhoto:(UIImage*)img orgData:(NSDictionary*)orgdata success:(EZEventBlock)success
+- (void) createPhoto:(UIImage*)img orgData:(NSDictionary*)orgdata shotPhoto:(EZPhoto*)shotPhoto success:(EZEventBlock)success
 {
     EZDEBUG(@"Store image get called");
     ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
@@ -1725,7 +1756,7 @@
     [metadata setValue:@(img.imageOrientation) forKey:@"Orientation"];
     [library writeImageToSavedPhotosAlbum:img.CGImage metadata:metadata completionBlock:^(NSURL *assetURL, NSError *error2)
      {
-         //             report_memory(@"After writing to library");
+         //report_memory(@"After writing to library");
          if (error2) {
              EZDEBUG(@"ERROR: the image failed to be written");
          }
@@ -1733,23 +1764,26 @@
              EZDEBUG(@"Stored image to album assetURL: %@", assetURL);
              [[EZDataUtil getInstance] assetURLToAsset:assetURL success:^(ALAsset* result){
                  EZDEBUG(@"Transfer the image to EZDisplayPhoto successfully");
-                 EZDisplayPhoto* ed = [[EZDisplayPhoto alloc] init];
-                 ed.isFront = true;
-                 EZPhoto* ep = [[EZPhoto alloc] init];
+                 EZDisplayPhoto* displayPhoto = [[EZDisplayPhoto alloc] init];
+                 displayPhoto.isFront = true;
+                 //EZPhoto* ep = [[EZPhoto alloc] init];
                  //ed.pid = ++[EZDataUtil getInstance].photoCount;
-                 ep.photoID = _matchedPhoto.srcPhotoID;
-                 ep.photoRelations = @[_matchedPhoto];
+                 EZPhoto* ep = shotPhoto;
                  ep.asset = result;
+                 ep.assetURL = assetURL.absoluteString;
                  ep.isLocal = true;
-                 ed.photo = ep;
-                 ed.photo.owner = [EZDataUtil getInstance].currentLoginPerson;
+                 ep.createdTime = [NSDate date];
+                 displayPhoto.photo = ep;
+                 displayPhoto.photo.owner = [EZDataUtil getInstance].currentLoginPerson;
                  //EZDEBUG(@"Before size");
                  ep.size = [result defaultRepresentation].dimensions;
+                 //Why setup the flag here?
+                 //Because the user will interact with the photo from now on
+                 ep.matchCompleted = TRUE;
                  
-                 [self preMatchPhoto];
-                 [[EZMessageCenter getInstance]postEvent:EZTakePicture attached:ed];
+                 [[EZMessageCenter getInstance]postEvent:EZTakePicture attached:displayPhoto];
                  EZDEBUG(@"after size:%f, %f", ep.size.width, ep.size.height);
-                 success(ed);
+                 success(displayPhoto);
              }];
          }
      }];
