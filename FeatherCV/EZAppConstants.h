@@ -13,6 +13,8 @@
 //Will hold the Application related constants.
 #define ContainerWidth 300.0
 
+#define photoPageSize 5
+
 #define BlurBackground RGBA(240, 240, 240, 128)
 //Interesting.
 #define turningMockPageTag 20070424
@@ -26,6 +28,8 @@
 #define functionalBarTitleColor RGBCOLOR(79,79,79)
 
 #define defaultDarkColor RGBCOLOR(40, 40, 40)
+
+#define darkTextColor RGBCOLOR(80, 80, 80)
 
 #define lightTextColor  RGBCOLOR(140, 140, 140)
 

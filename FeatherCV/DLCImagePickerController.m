@@ -1134,7 +1134,7 @@
         }
         CGFloat adjustedFactor = 14.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
         finalBlendFilter.blurFilter.distanceNormalizationFactor = adjustedFactor;
-        finalBlendFilter.blurFilter.blurSize = 1.7;
+        finalBlendFilter.blurFilter.blurSize = 1.5;
         //finalBlendFilter.blurRatio = smallBlurRatio;
         //finalBlendFilter.imageMode = 0;
         finalBlendFilter.showFace = 1;

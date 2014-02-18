@@ -13,6 +13,7 @@
 #import "EZRaiseAnimation.h"
 #import "EZModalRaiseAnimation.h"
 
+
 @class EZDisplayPhoto;
 @interface EZAlbumTablePage : UITableViewController<DLCImagePickerDelegate, UINavigationControllerDelegate, UIViewControllerTransitioningDelegate, UIActionSheetDelegate, UIAlertViewDelegate>
 
@@ -64,6 +65,11 @@
 //How many photos are taken.
 @property (nonatomic, assign) int newlyCreated;
 
+@property (nonatomic, strong) EZPhoto* observedTarget;
+
+@property (nonatomic, assign) BOOL isLoadingMoreData;
+
+@property (nonatomic, assign) BOOL isFirstCompleted;
 
 
 

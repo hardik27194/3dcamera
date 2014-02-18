@@ -21,6 +21,7 @@
 #import "SlideAnimation.h"
 #import "EZNetworkUtility.h"
 #import "UIImageView+AFNetworking.h"
+#import "EZExtender.h"
 
 
 static int photoCount = 1;
@@ -256,6 +257,17 @@ static int photoCount = 1;
     [self raiseCamera];
 }
 
+-(void) refreshInvoked:(id)sender forState:(UIControlState)state {
+    // Refresh table here...
+    //[_allEntries removeAllObjects];
+    //[self.tableView reloadData];
+    //[self refresh];
+    EZDEBUG(@"Refreshed get called:%i", state);
+    dispatch_later(1.0, ^(){
+        [self.refreshControl endRefreshing];
+    });
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -264,6 +276,9 @@ static int photoCount = 1;
     
     //self.navigationItem.leftBarButtonItem  = [[UIBarButtonItem alloc] initWithTitle:@"更多" style:UIBarButtonItemStylePlain target:self action:@selector(showMenu:)];
     _combinedPhotos = [[NSMutableArray alloc] init];
+    
+    self.refreshControl = [[UIRefreshControl alloc] init];
+    [self.refreshControl addTarget:self action:@selector(refreshInvoked:forState:)forControlEvents:UIControlEventValueChanged];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     //self.tableView.backgroundColor = RGBCOLOR(230, 231, 226);
     self.tableView.backgroundColor = VinesGray;
@@ -293,7 +308,7 @@ static int photoCount = 1;
     
     
     EZDEBUG(@"The login personID:%@, getID:%@", [EZDataUtil getInstance].currentPersonID, [[EZDataUtil getInstance] getCurrentPersonID]);
-    [[EZDataUtil getInstance] queryPhotos:0 pageSize:10 success:^(NSArray* arr){
+    [[EZDataUtil getInstance] queryPhotos:0 pageSize:photoPageSize success:^(NSArray* arr){
         EZDEBUG(@"returned length:%i", arr.count);
         //[_combinedPhotos addObjectsFromArray:arr];
         [self reloadRows:arr];
@@ -305,8 +320,33 @@ static int photoCount = 1;
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"更多" style:UIBarButtonItemStylePlain target:self action:@selector(showMenu:)];
 
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(pickPhotoType:)];
+    
+    
+    //_observedTarget = [[EZPhoto alloc] init];
+    //observeTarget.uploaded
+    //EZClickView* clickView = [[EZClickView alloc] initWithFrame:CGRectMake(0, 200, 100, 100)];
+    //clickView.backgroundColor = RGBCOLOR(128, 128, 255);
+    //[self.view addSubview:clickView];
+    
+    //clickView.pressedBlock = ^(id obj){
+     //   EZDEBUG(@"clicked");
+     //   _observedTarget.uploaded = !_observedTarget.uploaded;
+    //};
+    
+    //[_observedTarget addObserver:self forKeyPath:@"uploaded" options:NSKeyValueObservingOptionNew context:nil];
 
 }
+
+- (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context {
+    EZDEBUG(@"Key path get called %@, object type:%@", keyPath, object);
+    if ([keyPath isEqual:@"uploaded"]) {
+        NSNumber* changedName = [change objectForKey:NSKeyValueChangeNewKey];
+        EZDEBUG(@"changed value:%i", changedName.intValue);
+        //do something with the changedName - call a method or update the UI here
+        //self.nameLabel.text = changedName;
+    }
+}
+
 - (void) reloadRows:(NSArray*)photos
 {
     for(EZPhoto* pt in photos){
@@ -332,10 +372,57 @@ static int photoCount = 1;
             //EZDEBUG(@"after size:%f, %f", ep.size.width, ep.size.height);
             //success(ed);
             [_combinedPhotos addObject:ed];
-            //[self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationTop];
-            [self.tableView reloadData];
+            [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:_combinedPhotos.count - 1 inSection:0]] withRowAnimation:UITableViewRowAnimationBottom];
+            //[self.tableView reloadData];
         }];
         
+    }
+}
+
+//Pull and refresh will help to check if we have more photo to match.
+//This really make sense
+//Refresh to get more
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    if(!_isFirstCompleted){
+        _isFirstCompleted = TRUE;
+        return;
+    }
+        
+    if ((scrollView.contentOffset.y + scrollView.frame.size.height) >= scrollView.contentSize.height + 30)
+    {
+        if (!_isLoadingMoreData)
+        {
+            EZDEBUG(@"I will load more data");
+            _isLoadingMoreData = true;
+            UIActivityIndicatorView* activity = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+            //[activity startAnimating];
+            [activity setPosition:CGPointMake((320.0 - activity.width)/2.0, self.tableView.contentSize.height)];
+            [self.tableView addSubview:activity];
+            [activity startAnimating];
+            UIEdgeInsets oldInset = self.tableView.contentInset;
+            [UIView animateWithDuration:0.2 animations:^(){
+                self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 44, 0);
+            }];
+            EZOperationBlock animBlock = ^(){
+                [UIView animateWithDuration:0.3 animations:^(){
+                    self.tableView.contentInset = oldInset;//UIEdgeInsetsMake(0, 0, 0, 0);
+                } completion:^(BOOL completed){
+                    [activity removeFromSuperview];
+                }];
+                _isLoadingMoreData = false;
+            };
+            int pageStart = _combinedPhotos.count/photoPageSize;
+            EZDEBUG(@"Will load from %i", pageStart);
+            [[EZDataUtil getInstance] queryPhotos:pageStart pageSize:photoPageSize success:^(NSArray* arr){
+                EZDEBUG(@"Reloaded about %i rows of data", arr.count);
+                [self reloadRows:arr];
+                animBlock();
+            } failure:^(id err){
+                animBlock();
+            }];
+            // proceed with the loading of more data
+        }
     }
 }
 
@@ -642,7 +729,7 @@ static int photoCount = 1;
         
         /**
         if(cp.combineStatus == kEZStartStatus){
-            cp.combineStatus = kEZSendSharedRequest;
+            Photo is broken:5302d6c3e7b5b9d3bacbdaf7 = kEZSendSharedRequest;
             EZDEBUG(@"Will start upload the image");
             [self testBackendCommunication:myPhoto exchanged:^(EZPhoto* ep){
                 cp.photo.photoRelations = @[ep];

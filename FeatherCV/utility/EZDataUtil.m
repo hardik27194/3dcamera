@@ -117,7 +117,7 @@
                          for(NSDictionary* dict in photos){
                              EZPhoto* photo = [[EZPhoto alloc] init];
                              [photo fromJson:dict];
-                             if(photo.uploaded && photo.size.width > 0){
+                             if(photo.size.width > 0){
                                  [res addObject:photo];
                              }else{
                                  EZDEBUG(@"Photo is broken:%@", photo.photoID);

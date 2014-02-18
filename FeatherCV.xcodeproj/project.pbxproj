@@ -96,6 +96,7 @@
 		18A37044185BF97E0022F0A8 /* EZPhotoRelation.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A37043185BF97E0022F0A8 /* EZPhotoRelation.m */; };
 		18C0E76B1861A08700D694CE /* page_turn.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 18C0E76A1861A08700D694CE /* page_turn.aiff */; };
 		18C0E76E1861A0FF00D694CE /* EZSoundEffect.m in Sources */ = {isa = PBXBuildFile; fileRef = 18C0E76D1861A0FF00D694CE /* EZSoundEffect.m */; };
+		18D384CB18B34D8C00CB5BF1 /* EZChatRegion.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D384CA18B34D8C00CB5BF1 /* EZChatRegion.m */; };
 		18E3467E183DF54400C9D89D /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18E3467D183DF54400C9D89D /* Foundation.framework */; };
 		18E34680183DF54400C9D89D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18E3467F183DF54400C9D89D /* CoreGraphics.framework */; };
 		18E34682183DF54400C9D89D /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18E34681183DF54400C9D89D /* UIKit.framework */; };
@@ -402,6 +403,8 @@
 		18C0E76A1861A08700D694CE /* page_turn.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = page_turn.aiff; sourceTree = "<group>"; };
 		18C0E76C1861A0FF00D694CE /* EZSoundEffect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZSoundEffect.h; sourceTree = "<group>"; };
 		18C0E76D1861A0FF00D694CE /* EZSoundEffect.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZSoundEffect.m; sourceTree = "<group>"; };
+		18D384C918B34D8C00CB5BF1 /* EZChatRegion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZChatRegion.h; sourceTree = "<group>"; };
+		18D384CA18B34D8C00CB5BF1 /* EZChatRegion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZChatRegion.m; sourceTree = "<group>"; };
 		18E3467A183DF54400C9D89D /* FeatherCV.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FeatherCV.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		18E3467D183DF54400C9D89D /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		18E3467F183DF54400C9D89D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -972,6 +975,8 @@
 				18A370401859B7C20022F0A8 /* EZContactTableCell.m */,
 				18E746FD18AC704E0023967B /* EZBarRegion.h */,
 				18E746FE18AC704E0023967B /* EZBarRegion.m */,
+				18D384C918B34D8C00CB5BF1 /* EZChatRegion.h */,
+				18D384CA18B34D8C00CB5BF1 /* EZChatRegion.m */,
 			);
 			path = controllers;
 			sourceTree = "<group>";
@@ -1512,6 +1517,7 @@
 				1866ADC71898F0DB00DB46E2 /* LFGlassView.m in Sources */,
 				18E34724183DFA3300C9D89D /* EZAlbumTablePage.m in Sources */,
 				1866ADAA18966E7000DB46E2 /* BaseAnimation.m in Sources */,
+				18D384CB18B34D8C00CB5BF1 /* EZChatRegion.m in Sources */,
 				181903FA1881654D001FC370 /* EZFourInputFilter.m in Sources */,
 				182A550D18643141003D4A01 /* EZFaceBlurFilter.m in Sources */,
 				18E3472E183DFA3400C9D89D /* EZContactCell.m in Sources */,

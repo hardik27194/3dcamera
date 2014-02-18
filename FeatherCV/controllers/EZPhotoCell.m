@@ -91,6 +91,7 @@
     UIImageView* frontImage = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 300, 300)];
     frontImage.contentMode = UIViewContentModeScaleAspectFit;
     frontImage.clipsToBounds = true;
+    frontImage.backgroundColor = [UIColor whiteColor];
     return frontImage;
 }
 
