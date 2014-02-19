@@ -516,7 +516,7 @@
         [weakSelf takePhoto:nil];
     };
     _isVisible = TRUE;
-    [self startMobileMotion];
+    //[self startMobileMotion];
     [[EZMessageCenter getInstance] registerEvent:EZFaceCovered block:faceCovered];
     [self preMatchPhoto];
 }
@@ -591,6 +591,8 @@
     [self setupOtherFilters];
     [self setupTongFilter];
     skinBrighter = [self createSkinBrighter];
+   
+    /**
     EZClickView* clickView = [[EZClickView alloc] initWithFrame:CGRectMake(0, 100, 100, 100)];
     clickView.backgroundColor = RGBCOLOR(128, 64, 0);
     [self.view addSubview:clickView];
@@ -599,14 +601,14 @@
         [staticPicture processImage];
     
     };
-    
+    **/
     imageView.fillMode = kGPUImageFillModePreserveAspectRatioAndFill;
     EZDEBUG(@"The imageView frame:%@", NSStringFromCGRect(imageView.frame));
     //[self setupEdgeDetector];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         [self setupCamera];
     });
-    [self startFaceCapture];
+    //[self startFaceCapture];
     CGRect bound = [UIScreen mainScreen].bounds;
     
     
@@ -1430,7 +1432,7 @@
 
     staticPicture = [[GPUImagePicture alloc] initWithImage:img smoothlyScaleOutput:NO];
     staticPictureOriginalOrientation = img.imageOrientation;
-    /**
+    
     if(!_detectedFaceObj){
         UIImage* detectImage = img;
         //if(!stillCamera.isFrontFacing){
@@ -1450,7 +1452,6 @@
         }
         _detectedFaceObj = firstObj;
     }
-     **/
     [self prepareStaticFilter:_detectedFaceObj image:img];
     CGSize imageSize = img.size;
     if(_detectedFaceObj){

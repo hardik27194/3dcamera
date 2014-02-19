@@ -63,7 +63,7 @@ NSString *const kHomeBlendFragmentShaderString = SHADER_STRING
      if(fd < 0.42){
          fd = fd * fd;
      }else{
-         fd = 1.0/(exp(-fd * 2.5) + 1.0);
+         fd = fd * fd + (fd - 0.42) * 1.2;
      }
      return min(1.0, fd);
      //return 1.0/(exp((1.5 - distance(rawcolor.rgb, skinColor))) + 1.0);
