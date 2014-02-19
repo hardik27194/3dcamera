@@ -602,6 +602,8 @@
     
     };
     **/
+    CGRect bound = [UIScreen mainScreen].bounds;
+    CGFloat middlePos = (bound.size.height - 320.0 - 44.0)/2.0;
     imageView.fillMode = kGPUImageFillModePreserveAspectRatioAndFill;
     EZDEBUG(@"The imageView frame:%@", NSStringFromCGRect(imageView.frame));
     //[self setupEdgeDetector];
@@ -609,8 +611,7 @@
         [self setupCamera];
     });
     //[self startFaceCapture];
-    CGRect bound = [UIScreen mainScreen].bounds;
-    
+   
     
     _isFrontCamera = false;
     retakeButton = cancelImage;
@@ -619,7 +620,6 @@
     //barBackground.backgroundColor = RGBCOLOR(255, 255, 128);
     //[self.view addSubview:barBackground];
     topBar.backgroundColor = RGBA(255, 255, 255, 128);
-    
     crossHairFilter = [[GPUImageCrosshairGenerator alloc] init];
     
 }
