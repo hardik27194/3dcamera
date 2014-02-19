@@ -86,6 +86,7 @@
     UIImageOrientation currentOrientation;
     EZSaturationFilter* fixColorFilter;
     EZSaturationFilter* secFixColorFilter;
+    GPUImageFilter* skinBrighter;
     GPUImagePicture *staticPicture;
     NSMutableArray* tongParameters;
     NSMutableArray* redAdjustments;
@@ -428,6 +429,17 @@
     return stretchFilter;
 }
 
+- (GPUImageFilter*) createSkinBrighter
+{
+    EZSkinBrighter* res =  [[EZSkinBrighter alloc] init];
+    [res setRgbCompositeControlPoints:@[pointValue(0.0, 0.0),pointValue(0.125, 0.125), pointValue(0.25, 0.31), pointValue(0.5, 0.545), pointValue(0.75, 0.785), pointValue(1.0, 1.0)]];
+    [res setRedControlPoints:@[pointValue(0.0, 0.0),pointValue(0.125, 0.13), pointValue(0.25, 0.26), pointValue(0.5, 0.51), pointValue(0.75, 0.76), pointValue(1.0, 0.99)]];
+    [res setBlueControlPoints:@[pointValue(0.0, 0.0),pointValue(0.125, 0.118), pointValue(0.25, 0.243), pointValue(0.5, 0.493), pointValue(0.75, 0.743), pointValue(1.0, 0.995)]];
+    //[_skinBrighter setRedControlPoints:@[pointValue(0.0, 0.0),pointValue(0.125, 0.130), pointValue(0.25, 0.255), pointValue(0.5, 0.505), pointValue(0.75, 0.755), pointValue(1.0, 1.0)]];
+    //[_skinBrighter setBlueControlPoints:@[pointValue(0.0, 0.0),pointValue(0.125, 0.120), pointValue(0.25, 0.245), pointValue(0.5, 0.495), pointValue(0.75, 0.745), pointValue(1.0, 1.0)]];
+    return res;
+}
+
 - (EZHomeBlendFilter*) createFaceBlurFilter
 {
     EZHomeBlendFilter* faceBlender = [[EZHomeBlendFilter alloc] init];
@@ -578,7 +590,15 @@
     EZDEBUG(@"The width aspect ratio is:%f", widthAspect);
     [self setupOtherFilters];
     [self setupTongFilter];
-
+    skinBrighter = [self createSkinBrighter];
+    EZClickView* clickView = [[EZClickView alloc] initWithFrame:CGRectMake(0, 100, 100, 100)];
+    clickView.backgroundColor = RGBCOLOR(128, 64, 0);
+    [self.view addSubview:clickView];
+    clickView.releasedBlock = ^(id obj){
+        EZDEBUG(@"Clicked to process image");
+        [staticPicture processImage];
+    
+    };
     
     imageView.fillMode = kGPUImageFillModePreserveAspectRatioAndFill;
     EZDEBUG(@"The imageView frame:%@", NSStringFromCGRect(imageView.frame));
@@ -1104,10 +1124,12 @@
         whiteBalancerFilter.temperature = 5500.0;
         //[redEnhanceFilter addTarget:tongFilter];
         [redEnhanceFilter addTarget:hueFilter];
-        [hueFilter addTarget:finalBlendFilter];
+        [hueFilter addTarget:skinBrighter];
+        [skinBrighter addTarget:finalBlendFilter];
+        [finalBlendFilter addTarget:filter];
         //[redEnhanceFilter addTarget:finalBlendFilter];
         //[secFixColorFilter addTarget:finalBlendFilter];
-        [finalBlendFilter addTarget:filter];
+        //[hueFilter addTarget:filter];
         //[fixColorFilter addTarget:secFixColorFilter];
         //[secFixColorFilter addTarget:redEnhanceFilter];
         //[redEnhanceFilter addTarget:filter];
@@ -1171,6 +1193,9 @@
         [redEnhanceFilter addTarget:tongFilter];
         [tongFilter addTarget:hueFilter];
         [hueFilter addTarget:filter];
+        EZDEBUG(@"No face find out");
+        //[tongFilter addTarget:hueFilter];
+        //[hueFilter addTarget:filter];
         //[fixColorFilter addTarget:secFixColorFilter];
         //[secFixColorFilter addTarget:redEnhanceFilter];
         //[redEnhanceFilter addTarget:filter];
@@ -1210,7 +1235,7 @@
     [whiteBalancerFilter removeAllTargets];
     [cropFilter removeAllTargets];
     [tongFilter removeAllTargets];
-
+    [skinBrighter removeAllTargets];
     [darkBlurFilter removeAllTargets];
     [simpleFilter removeAllTargets];
     [redEnhanceFilter removeAllTargets];
@@ -1566,6 +1591,11 @@
 
 - (IBAction) panHandler:(id)sender
 {
+    
+}
+
+- (IBAction) panHandlerOld:(id)sender
+{
     if(!isStatic){
         return;
     }
@@ -1738,9 +1768,11 @@
             //[self preMatchPhoto];
         }];
         //_matchedPhoto = nil;
-        [self preMatchPhoto];
-        [self retakePhoto:retakeButton];
-        [self.photoCaptureButton setEnabled:YES];
+        //[self preMatchPhoto];
+        //[self retakePhoto:retakeButton];
+        //[self.photoCaptureButton setEnabled:YES];
+        ++_imageCount;
+        [self innserCancel];
     }
 }
 
@@ -1854,6 +1886,15 @@
     
 }
 
+- (void) innserCancel
+{
+    EZUIUtility.sharedEZUIUtility.cameraClickButton.releasedBlock = nil;
+    [self dismissViewControllerAnimated:YES completion:^(){
+        EZDEBUG(@"DLCCamera Will get dismissed");
+    }];
+    //[self cancelPrematchPhoto];
+    [self.delegate imagePickerControllerDidCancel:self imageCount:_imageCount];
+}
 
 -(IBAction) cancel:(id)sender {
     EZDEBUG(@"Cancel get called");
@@ -1863,12 +1904,7 @@
         [self retakePhoto:self.cancelButton];
         [self changeButtonStatus:NO];
     }else{
-        EZUIUtility.sharedEZUIUtility.cameraClickButton.releasedBlock = nil;
-        [self dismissViewControllerAnimated:YES completion:^(){
-            EZDEBUG(@"DLCCamera Will get dismissed");
-        }];
-        [self cancelPrematchPhoto];
-        [self.delegate imagePickerControllerDidCancel:self];
+        [self innserCancel];
     }
     
     //[self switchDisplayImage];

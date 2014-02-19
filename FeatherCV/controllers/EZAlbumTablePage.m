@@ -200,10 +200,10 @@ static int photoCount = 1;
     }
 }
 
-- (void)imagePickerControllerDidCancel:(DLCImagePickerController *)picker
+- (void)imagePickerControllerDidCancel:(DLCImagePickerController *)picker imageCount:(int)imageCount
 {
     EZDEBUG(@"cancel get called:%i", _newlyCreated);
-    if(_newlyCreated){
+    if(imageCount){
         [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
         dispatch_later(1.5, ^(){
             [self animateFlip];
@@ -449,13 +449,13 @@ static int photoCount = 1;
             [activity setPosition:CGPointMake((320.0 - activity.width)/2.0, self.tableView.contentSize.height)];
             [self.tableView addSubview:activity];
             [activity startAnimating];
-            UIEdgeInsets oldInset = self.tableView.contentInset;
+            //UIEdgeInsets oldInset = self.tableView.contentInset;
             [UIView animateWithDuration:0.2 animations:^(){
                 self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 44, 0);
             }];
             EZOperationBlock animBlock = ^(){
                 [UIView animateWithDuration:0.3 animations:^(){
-                    self.tableView.contentInset = oldInset;//UIEdgeInsetsMake(0, 0, 0, 0);
+                    self.tableView.contentInset = UIEdgeInsetsMake(64, 0, 0, 0);
                 } completion:^(BOOL completed){
                     [activity removeFromSuperview];
                 }];

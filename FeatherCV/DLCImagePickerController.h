@@ -51,7 +51,7 @@ typedef enum {
 //This method will get called when user take a image.
 - (void)takePicture:(DLCImagePickerController*)picker imageInfo:(NSDictionary*)info;
 - (void)imagePickerController:(DLCImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info;
-- (void)imagePickerControllerDidCancel:(DLCImagePickerController *)picker;
+- (void)imagePickerControllerDidCancel:(DLCImagePickerController *)picker imageCount:(int)imageCount;
 @end
 
 @interface DLCImagePickerController : UIViewController <UINavigationControllerDelegate,UIImagePickerControllerDelegate, UIActionSheetDelegate>
@@ -106,6 +106,8 @@ typedef enum {
 @property (nonatomic, strong) NSMutableArray* storedMotionDelta;
 @property (nonatomic, assign) BOOL quitFaceDetection;
 @property (nonatomic, assign) EZShotMode shotMode;
+
+@property (nonatomic, assign) int imageCount;
 
 //@property (nonatomic, strong) EZPhoto* matchedPhoto;
 //The purpose is to carry all the remote operation result
