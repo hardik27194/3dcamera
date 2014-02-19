@@ -55,11 +55,11 @@ void LF_refreshAllSubscribedViewsApplierFunction(const void *value, void *contex
 	return self;
 }
 
-- (void) addSubscribedViewsObject:(UIView<LFDisplayBridgeTriggering> *)object {
+- (void) addSubscribedViewsObject:(NSObject<LFDisplayBridgeTriggering> *)object {
 	CFSetAddValue(_subscribedViews, (__bridge const void*)object);
 }
 
-- (void) removeSubscribedViewsObject:(UIView<LFDisplayBridgeTriggering> *)object {
+- (void) removeSubscribedViewsObject:(NSObject<LFDisplayBridgeTriggering> *)object {
 	CFSetRemoveValue(_subscribedViews, (__bridge const void*)object);
 }
 

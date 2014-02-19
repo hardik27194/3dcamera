@@ -32,7 +32,7 @@
 
 @property (nonatomic, assign) BOOL pauseProcess;
 @property (nonatomic, readonly, assign) CFMutableSetRef subscribedViews;
-- (void) addSubscribedViewsObject:(UIView<LFDisplayBridgeTriggering> *)object;
-- (void) removeSubscribedViewsObject:(UIView<LFDisplayBridgeTriggering> *)object;
+- (void) addSubscribedViewsObject:(NSObject<LFDisplayBridgeTriggering> *)object;
+- (void) removeSubscribedViewsObject:(NSObject<LFDisplayBridgeTriggering> *)object;
 
 @end

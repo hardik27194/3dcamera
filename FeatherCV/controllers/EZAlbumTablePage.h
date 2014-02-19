@@ -71,6 +71,8 @@
 
 @property (nonatomic, assign) BOOL isFirstCompleted;
 
+@property (nonatomic, strong) id holder;
+
 
 
 //Where do we begin

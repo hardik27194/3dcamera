@@ -23,7 +23,8 @@
 #import "UIImageView+AFNetworking.h"
 #import "EZExtender.h"
 #import "EZChatRegion.h"
-
+#import "EZAnimationUtil.h"
+#import "EZRotateAnimation.h"
 static int photoCount = 1;
 @interface EZAlbumTablePage ()
 
@@ -371,6 +372,19 @@ static int photoCount = 1;
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(pickPhotoType:)];
     
     
+    EZClickView* clickView = [[EZClickView alloc] initWithFrame:CGRectMake(0, 100, 200, 200)];
+    static int type = 0;
+    clickView.backgroundColor = RGBCOLOR(255, 128, 128);
+    //[self.tableView addSubview:clickView];
+    clickView.releasedBlock = ^(id obj){
+        EZRotateAnimation* rotateAnim = [[EZRotateAnimation alloc] init:clickView interval:3.0 rad:3.0 repeat:type];
+        _holder = rotateAnim;
+        [[EZAnimationUtil sharedEZAnimationUtil] addAnimation:rotateAnim];
+        EZDEBUG(@"start animate:%i", type);
+        ++type;
+    };
+
+    
     //_observedTarget = [[EZPhoto alloc] init];
     //observeTarget.uploaded
     //EZClickView* clickView = [[EZClickView alloc] initWithFrame:CGRectMake(0, 200, 100, 100)];
@@ -481,6 +495,8 @@ static int photoCount = 1;
     [super viewDidAppear:animated];
     self.navigationController.delegate = self;
     EZUIUtility.sharedEZUIUtility.cameraClickButton.pressedBlock = _cameraClicked;
+    
+    
     /**
     [UIImageView preloadImageURL:str2url(@"http://192.168.1.102:8080/static/79661d8d26c00668ac4c215373fdf12e.jpg") success:^(UIImage* image){
         EZDEBUG(@"view loaded");

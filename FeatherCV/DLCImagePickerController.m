@@ -605,6 +605,8 @@
     CGRect bound = [UIScreen mainScreen].bounds;
     CGFloat middlePos = (bound.size.height - 320.0 - 44.0)/2.0;
     imageView.fillMode = kGPUImageFillModePreserveAspectRatioAndFill;
+    imageView.y = middlePos;
+    [imageView enableRoundImage];
     EZDEBUG(@"The imageView frame:%@", NSStringFromCGRect(imageView.frame));
     //[self setupEdgeDetector];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
@@ -1702,7 +1704,10 @@
         //[self.cameraToggleButton setEnabled:NO];
         //[self.flashToggleButton setEnabled:NO];
         [self prepareForCapture];
-        
+        dispatch_later(1.0, ^(){
+            
+            
+        });
     } else {
         [self changeButtonStatus:NO];
         UIImage *currentFilteredVideoFrame = nil;

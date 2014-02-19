@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		181608C718B4E38600DD5995 /* EZAnimationUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 181608C618B4E38600DD5995 /* EZAnimationUtil.m */; };
+		181608CC18B4EA9F00DD5995 /* EZRotateAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = 181608CB18B4EA9F00DD5995 /* EZRotateAnimation.m */; };
 		181903EE187FD4E5001FC370 /* EZHomeBiBlur.m in Sources */ = {isa = PBXBuildFile; fileRef = 181903ED187FD4E5001FC370 /* EZHomeBiBlur.m */; };
 		181903F4187FF49C001FC370 /* EZHomeBlendFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 181903F3187FF49C001FC370 /* EZHomeBlendFilter.m */; };
 		181903F7187FFC64001FC370 /* EZHomeGaussianFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 181903F6187FFC64001FC370 /* EZHomeGaussianFilter.m */; };
@@ -265,6 +267,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		181608C518B4E38600DD5995 /* EZAnimationUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZAnimationUtil.h; sourceTree = "<group>"; };
+		181608C618B4E38600DD5995 /* EZAnimationUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZAnimationUtil.m; sourceTree = "<group>"; };
+		181608CA18B4EA9F00DD5995 /* EZRotateAnimation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZRotateAnimation.h; sourceTree = "<group>"; };
+		181608CB18B4EA9F00DD5995 /* EZRotateAnimation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZRotateAnimation.m; sourceTree = "<group>"; };
 		181903EC187FD4E5001FC370 /* EZHomeBiBlur.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZHomeBiBlur.h; sourceTree = "<group>"; };
 		181903ED187FD4E5001FC370 /* EZHomeBiBlur.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZHomeBiBlur.m; sourceTree = "<group>"; };
 		181903F2187FF49C001FC370 /* EZHomeBlendFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZHomeBlendFilter.h; sourceTree = "<group>"; };
@@ -1003,6 +1009,10 @@
 				18C0E76D1861A0FF00D694CE /* EZSoundEffect.m */,
 				18F58B5818716C19006CB966 /* EZGradientLayerView.h */,
 				18F58B5918716C19006CB966 /* EZGradientLayerView.m */,
+				181608C518B4E38600DD5995 /* EZAnimationUtil.h */,
+				181608C618B4E38600DD5995 /* EZAnimationUtil.m */,
+				181608CA18B4EA9F00DD5995 /* EZRotateAnimation.h */,
+				181608CB18B4EA9F00DD5995 /* EZRotateAnimation.m */,
 			);
 			path = utility;
 			sourceTree = "<group>";
@@ -1420,6 +1430,7 @@
 				181903F7187FFC64001FC370 /* EZHomeGaussianFilter.m in Sources */,
 				18E34693183DF54400C9D89D /* FeatherCV.xcdatamodeld in Sources */,
 				18E746F718A4A26A0023967B /* UIImageView+AFNetworking.m in Sources */,
+				181608C718B4E38600DD5995 /* EZAnimationUtil.m in Sources */,
 				18E746F118A4A26A0023967B /* AFURLResponseSerialization.m in Sources */,
 				18E746F418A4A26A0023967B /* UIActivityIndicatorView+AFNetworking.m in Sources */,
 				18E746F318A4A26A0023967B /* AFNetworkActivityIndicatorManager.m in Sources */,
@@ -1488,6 +1499,7 @@
 				18E34787183DFAA400C9D89D /* EZDataUtil.m in Sources */,
 				18E3477F183DFAA400C9D89D /* EZReachability.m in Sources */,
 				18E3474C183DFA7300C9D89D /* EZDisplayPhoto.m in Sources */,
+				181608CC18B4EA9F00DD5995 /* EZRotateAnimation.m in Sources */,
 				18C0E76E1861A0FF00D694CE /* EZSoundEffect.m in Sources */,
 				18E746F218A4A26A0023967B /* AFURLSessionManager.m in Sources */,
 				18E34784183DFAA400C9D89D /* EZGeoUtility.m in Sources */,

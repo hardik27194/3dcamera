@@ -7,8 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "EZAnimationUtil.h"
 
-@interface EZAppDelegate : UIResponder<UIApplicationDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate>
+@interface EZAppDelegate : UIResponder<UIApplicationDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, EZAnimInterface>
 
 @property (strong, nonatomic) UIWindow *window;
 

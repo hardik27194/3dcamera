@@ -31,6 +31,8 @@
 #import "ILTranslucentView.h"
 #import "EZUIUtility.h"
 #import "AFNetworkActivityIndicatorManager.h"
+#import "LFDisplayBridge.h"
+#import "EZAnimationUtil.h"
 
 @implementation EZAppDelegate
 
@@ -51,6 +53,13 @@
     return res;
 }
 
+//Test the refresh functionality.
+- (BOOL) animate
+{
+    EZDEBUG(@"Refresh once");
+    return TRUE;
+}
+
 - (void)orientationChanged:(NSNotification *)notification
 {
     EZDEBUG(@"Orientation changed:%i", [UIDevice currentDevice].orientation);
@@ -61,6 +70,7 @@
     }
     
 }
+
 
 - (UIViewController*)topViewController {
     return [self topViewControllerWithRootViewController:[UIApplication sharedApplication].keyWindow.rootViewController];
@@ -275,6 +285,7 @@
                                 EZDEBUG(@"Error detail:%@", err);
                             }];
     }
+    //[[EZAnimationUtil sharedEZAnimationUtil] addAnimation:self];
     [self setupAppearance];
     [self setupNetwork];
     [self enableProximate:YES];
