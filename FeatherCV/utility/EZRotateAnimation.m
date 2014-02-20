@@ -13,6 +13,7 @@
 - (id) init:(UIView*)view interval:(CGFloat)interval rad:(CGFloat)rad repeat:(BOOL)repeat
 {
     self = [super init];
+    _rotateView = view;
     _interval = interval;
     _totalSteps = interval * 60;
     _repeat = repeat;
@@ -23,7 +24,7 @@
 
 - (double) easyFunction:(double)stage
 {
-    return (3 - 2*stage)*stage*stage;
+    return (3.0 - 2.0*stage)*stage*stage;
 }
 
 //Yes mean stop.
@@ -42,7 +43,11 @@
         _previousGress = progress;
     }
     double deltaAngle = delta * _totalAngle;
-    CATransform3D trans = CATransform3DRotate(_rotateView.layer.transform, -deltaAngle, 0.0, 1.0, 0.0);
+    
+    EZDEBUG(@"progress:%f, deltaAngle:%f, ratio:%f", progress,deltaAngle, currentRatio);
+    //_rotateView.layer.anchorPoint = CGPointMake(0.5, 0.5);
+    CATransform3D trans = CATransform3DRotate(_rotateView.layer.transform, deltaAngle, 0.0, 1.0, 0.0);
+    trans.m34 = 1/3000.0;
     _rotateView.layer.transform = trans;
     return currentRatio >= 1.0;
 }

@@ -230,7 +230,13 @@
     NSURLCache *URLCache = [[NSURLCache alloc] initWithMemoryCapacity:4 * 1024 * 1024 diskCapacity:20 * 1024 * 1024 diskPath:nil];
     [NSURLCache setSharedURLCache:URLCache];
     
-    
+    NSMutableArray* muArr = [[NSMutableArray alloc] initWithArray:@[@(1),@(2),@(3),@(4)]];
+    for(int i = 0; i < muArr.count; i ++){
+        EZDEBUG(@"remove:%i", [[muArr objectAtIndex:i] integerValue]);
+        [muArr removeObjectAtIndex:i];
+        --i;
+    }
+                             
     AFNetworkReachabilityManager* manager = [AFNetworkReachabilityManager managerForDomain:reachableDomain];
     [[AFNetworkActivityIndicatorManager sharedManager] setEnabled:YES];
     

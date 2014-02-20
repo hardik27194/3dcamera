@@ -372,14 +372,20 @@ static int photoCount = 1;
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(pickPhotoType:)];
     
     
-    EZClickView* clickView = [[EZClickView alloc] initWithFrame:CGRectMake(0, 100, 200, 200)];
+    EZClickImage* clickView = [[EZClickImage alloc] initWithFrame:CGRectMake(0, 100, 200, 200)];
     static int type = 0;
+    clickView.image = [UIImage imageNamed:@"header_1"];
     clickView.backgroundColor = RGBCOLOR(255, 128, 128);
-    //[self.tableView addSubview:clickView];
+    [self.tableView addSubview:clickView];
+    //clickView.layer.anchorPoint = CGPointMake(0.5, 0.5);
     clickView.releasedBlock = ^(id obj){
-        EZRotateAnimation* rotateAnim = [[EZRotateAnimation alloc] init:clickView interval:3.0 rad:3.0 repeat:type];
-        _holder = rotateAnim;
-        [[EZAnimationUtil sharedEZAnimationUtil] addAnimation:rotateAnim];
+        EZRotateAnimation* rotateAnim = [[EZRotateAnimation alloc] init:clickView interval:3.0 rad:1.0 repeat:type];
+        //_holder = rotateAnim;
+        //[[EZAnimationUtil sharedEZAnimationUtil] addAnimation:rotateAnim];
+        [UIView animateWithDuration:0.3 animations:^(){
+            
+            
+        }];
         EZDEBUG(@"start animate:%i", type);
         ++type;
     };
