@@ -18,6 +18,13 @@ typedef enum {
     kQuickShotMode
 } EZShotMode;
 
+
+typedef enum {
+    kTakingPhoto,
+    kTakedPhoto,
+    kMatchAgain,
+} EZFlipStatus;
+
 typedef enum {
     //This is the initial status
     kCameraNormal,
@@ -95,6 +102,10 @@ typedef enum {
 @property (nonatomic, strong) DLCBlurOverlayView *blurOverlayView;
 @property (nonatomic, strong) UIImageView *focusView;
 
+//@property (nonatomic, strong) UIImageView *rotateView;
+
+@property (nonatomic, strong) UIView* cycleView;
+
 @property (nonatomic, assign) CGFloat outputJPEGQuality;
 @property (nonatomic, assign) CGSize requestedImageSize;
 @property (nonatomic, assign) BOOL senseRotate;
@@ -108,6 +119,7 @@ typedef enum {
 @property (nonatomic, assign) EZShotMode shotMode;
 
 @property (nonatomic, assign) int imageCount;
+@property (nonatomic, assign) EZFlipStatus flipStatus;
 
 //@property (nonatomic, strong) EZPhoto* matchedPhoto;
 //The purpose is to carry all the remote operation result

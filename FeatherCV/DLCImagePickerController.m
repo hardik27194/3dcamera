@@ -40,10 +40,16 @@
 #import "UIImageView+AFNetworking.h"
 #import "EZMessageCenter.h"
 #import "EZDisplayPhoto.h"
+#import "EZShapeCover.h"
+#import "EZExtender.h"
+#import "EZClickImage.h"
 
 //#include <vector>
 
 #define kStaticBlurSize 2.0f
+
+#define RotateBackground [UIColor blackColor]
+
 @interface EZMotionRecord : NSObject 
 
 @property (nonatomic, strong) CMAttitude* attitude;
@@ -76,6 +82,10 @@
     
     EZColorBrighter* redEnhanceFilter;
     
+    
+    //Store the matchedPhoto so that I can remove the unmatched later.
+    NSMutableArray* matchedPhotos;
+    
     //GPUImagePrewittEdgeDetectionFilter * edgeFilter;
     //EZFaceBlurFilter2* dynamicBlurFilter;
     //EZHomeGaussianFilter* biBlurFilter;
@@ -92,7 +102,11 @@
     NSMutableArray* redAdjustments;
     NSMutableArray* greenAdjustments;
     NSMutableArray* blueAdjustments;
+    EZShapeCover* shapeCover;
+    EZClickImage* rotateView;
+    UIView* roundBackground;
     
+    EZDisplayPhoto* disPhoto;
     //For the edge detectors
     NSArray* edgeDectectors;
     NSArray* edgeDectectorNames;
@@ -290,71 +304,57 @@
 //Temporary strategy, Will change it later.
 
 //Will match the photo
+- (void) startPreFetch:(EZPhoto*)localPhoto imageSuccess:(EZEventBlock)imageSuccess
+{
+    [[EZDataUtil getInstance] exchangePhoto:nil success:^(EZPhoto* pt){
+        EZDEBUG("Find prematched photo:%@, srcID:%@, uploaded flag:%i", pt.screenURL, pt.srcPhotoID, pt.uploaded);
+        UIImageView* uw = [UIImageView new];
+        [uw preloadImageURL:str2url(pt.screenURL) success:^(UIImage* obj){
+            EZDEBUG(@"preload success:%@", pt.screenURL);
+                //UIImageView* immd = [UIImageView new];
+                //[weakRef setImageWithURL:str2url(pt.screenURL)];
+                //[immd setImageWithURL:str2url(pt.screenURL)];
+            localPhoto.prefetchDone = YES;
+            EZDEBUG(@"test preload result");
+            if(imageSuccess){
+                imageSuccess(obj);
+            }
+        } failed:^(id err){
+                EZDEBUG(@"Prefetch failure:%@", err);
+                localPhoto.prefetchDone = YES;
+        }];
+        if(localPhoto.photoRelations.count > 0){
+            [matchedPhotos addObjectsFromArray:localPhoto.photoRelations];
+        }
+        localPhoto.photoRelations = @[pt];
+    } failure:^(NSError* err){
+        EZDEBUG(@"Prematch error:%@", err);
+    }];
+
+}
+
+
 - (void) preMatchPhoto
 {
     //__weak DLCImagePickerController* weakSelf = self;
-    _shotPhoto = [[EZPhoto alloc] init];
     //Why do this?
     //Create a closure.
+    _shotPhoto = [[EZPhoto alloc] init];
     EZPhoto* localPhoto = _shotPhoto;
-    [[EZDataUtil getInstance] exchangePhoto:nil success:^(EZPhoto* pt){
-        EZDEBUG("Find prematched photo:%@, srcID:%@, uploaded flag:%i", pt.screenURL, pt.srcPhotoID, pt.uploaded);
-        //weakSelf.matchedPhoto = pt;
-        /**
-        if([EZDataUtil getInstance].pendingPhotos.count > 0){
-            EZPhoto* storedPt = [[EZDataUtil getInstance].pendingPhotos objectAtIndex:0];
-            storedPt.photoID = pt.srcPhotoID;
-            storedPt.photoRelations = @[pt];
-            [[EZDataUtil getInstance].pendingPhotos removeObjectAtIndex:0];
-        }
-         **/
-        if(!localPhoto.matchCompleted){
-            localPhoto.matchCompleted = TRUE;
-            
-            UIImageView* uw = [UIImageView new];
-            [uw preloadImageURL:str2url(pt.screenURL) success:^(id obj){
-                EZDEBUG(@"preload success:%@", pt.screenURL);
-                    //UIImageView* immd = [UIImageView new];
-                    //[weakRef setImageWithURL:str2url(pt.screenURL)];
-                    //[immd setImageWithURL:str2url(pt.screenURL)];
-                localPhoto.prefetchDone = YES;
-                EZDEBUG(@"test preload result");
-            } failed:^(id err){
-                EZDEBUG(@"Prefetch failure:%@", err);
-                localPhoto.prefetchDone = YES;
-            }];
-            localPhoto.photoRelations = @[pt];
-            
-        }else{
-            if(pt.uploaded){
-                [[EZDataUtil getInstance] cancelPrematchPhoto:pt success:^(id json){
-                    EZDEBUG(@"successfully canceled the matched Photo %@", pt.photoID);
-                } failure:^(id err){
-                    EZDEBUG(@"Will cancel the match for already move ahead");
-                }];
-            }
-        }
-        //s__weak UIImageView* weakRef = uw;
-    } failure:^(NSError* err){
-        EZDEBUG(@"Prematch error:%@", err);
-        //if(!localPhoto.matchCompleted)
-        localPhoto.matchCompleted = TRUE;
-                
-    }];
+    [self startPreFetch:localPhoto imageSuccess:nil];
 }
 
 //This method is no more necessary.
-- (void) cancelPrematchPhoto
+- (void) cancelPrematchPhoto:(EZPhoto*)matchedPt
 {
-    EZDEBUG(@"Start cancel call,%i", _shotPhoto.matchCompleted);
-    if(_shotPhoto.photoRelations.count){
-        EZPhoto* matched = [_shotPhoto.photoRelations objectAtIndex:0];
-        [[EZDataUtil getInstance] cancelPrematchPhoto:matched success:^(id success){
-            EZDEBUG(@"cancel:%@ success", matched.photoID);
-        } failure:^(id err){
-            EZDEBUG(@"Cancel Failure:%@", err);
-        }];
-    }
+    //EZDEBUG(@"Start cancel prev match call:%@", matchedPt.photoID);
+    //if(_shotPhoto.photoRelations.count){
+    //    EZPhoto* matched = [_shotPhoto.photoRelations objectAtIndex:0];
+    [[EZDataUtil getInstance] cancelPrematchPhoto:matchedPt success:^(id success){
+        EZDEBUG(@"cancel:%@ success", matchedPt.photoID);
+    } failure:^(id err){
+        EZDEBUG(@"Cancel Failure:%@", err);
+    }];
 }
 
 - (EZNightBlurFilter*) createNightFilter
@@ -543,7 +543,7 @@
     [self setupFlashFilter];
     [self setupDarkFilter];
     [self setupButton];
-    
+    matchedPhotos = [[NSMutableArray alloc] init];
     _storedMotionDelta = [[NSMutableArray alloc] init];
     self.wantsFullScreenLayout = YES;
     _pageTurn = [[EZSoundEffect alloc] initWithSoundNamed:@"page_turn.aiff"];
@@ -602,18 +602,36 @@
     
     };
     **/
-    CGRect bound = [UIScreen mainScreen].bounds;
-    CGFloat middlePos = (bound.size.height - 320.0 - 44.0)/2.0;
     imageView.fillMode = kGPUImageFillModePreserveAspectRatioAndFill;
-    imageView.y = middlePos;
-    [imageView enableRoundImage];
     EZDEBUG(@"The imageView frame:%@", NSStringFromCGRect(imageView.frame));
     //[self setupEdgeDetector];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         [self setupCamera];
     });
     //[self startFaceCapture];
-   
+    CGRect bound = [UIScreen mainScreen].bounds;
+    
+    shapeCover = [[EZShapeCover alloc] initWithFrame:imageView.frame];
+    EZDEBUG(@"initial frame:%@", NSStringFromCGRect(imageView.frame));
+    [self.view addSubview:shapeCover];
+    
+    //roundBackground = [[UIView alloc] initWithFrame:imageView.frame];
+    //roundBackground.backgroundColor = [UIColor blackColor];
+    //[roundBackground enableRoundImage];
+    //roundBackground.alpha = 0.0;
+    //__weak DLCImagePickerController* weakSelf = self;
+    rotateView = [[EZClickImage alloc] initWithFrame:CGRectMake(5, 0, 310, 310)];
+    rotateView.contentMode = UIViewContentModeScaleAspectFill;
+    [rotateView enableRoundImage];
+    rotateView.alpha = 0.0;
+    rotateView.pressedBlock = ^(id obj){
+        [weakSelf changePhoto];
+    };
+    //[self.view addSubview:roundBackground];
+    [self.view addSubview:rotateView];
+    
+    
+    
     
     _isFrontCamera = false;
     retakeButton = cancelImage;
@@ -622,7 +640,21 @@
     //barBackground.backgroundColor = RGBCOLOR(255, 255, 128);
     //[self.view addSubview:barBackground];
     topBar.backgroundColor = RGBA(255, 255, 255, 128);
+    
     crossHairFilter = [[GPUImageCrosshairGenerator alloc] init];
+    
+}
+
+- (void) viewWillLayoutSubviews
+{
+    [super viewWillLayoutSubviews];
+    EZDEBUG(@"imageView.bounds:%@", NSStringFromCGRect(imageView.frame));
+    shapeCover.frame = imageView.frame;
+    //shapeCover.backgroundColor = [UIColor blackColor];
+    [shapeCover digHole];
+    CGFloat adjustedY = (imageView.frame.size.height - 310)/2.0;
+    //roundBackground.frame = imageView.frame;
+    rotateView.y = adjustedY;
     
 }
 
@@ -1473,6 +1505,24 @@
         EZDEBUG(@"Reprocess width:%f, height:%f, original width:%f, height:%f, image Orientation:%i, calculated width:%f, height:%f",  finalBlendFilter.edgeFilter.texelWidth,  finalBlendFilter.edgeFilter.texelHeight, orgWidth, orgHeight, staticPictureOriginalOrientation, lineWidth, lineHeight);
     }
     [staticPicture processImage];
+    
+    UIImage* currentImage = [self getPhotoAndUpload];
+    [self startRotateImage:currentImage];
+    
+    if(_shotPhoto.photoRelations.count){
+        EZPhoto* matched = [_shotPhoto.photoRelations objectAtIndex:0];
+        [[EZDataUtil getInstance] prefetchImage:matched.screenURL success:^(UIImage* image){
+            //[rotateView.layer removeAllAnimations];
+            [self stopRotateImage:image];
+            _flipStatus = kTakedPhoto;
+        } failure:^(id err){
+            //EZDEBUG(@"Failed to get image:%@, url:%@", err, matched.screenURL);
+            [self hideRotateImage];
+            _flipStatus = kTakedPhoto;
+        }];
+    }
+    EZDEBUG(@"started spin animation");
+    
     [self.retakeButton setHidden:NO];
     //[self.photoCaptureButton setTitle:@"Done" forState:UIControlStateNormal];
     //[self.photoCaptureButton setImage:nil forState:UIControlStateNormal];
@@ -1577,19 +1627,65 @@
     }
 }
 
+
+
+
 - (IBAction) configClicked:(id)sender
 {
+    //if(_flipStatus == kTakingPhoto){
     //NSString* cameraSwitch = @"翻转摄像头";
-    NSString* flashMode = @"闪光灯:自动";
-    if(_flashMode == 0){
-        flashMode = @"闪光灯:关闭";
-    }else if(_flashMode == 1){
-        flashMode = @"闪光灯:打开";
-    }
+        NSString* flashMode = @"闪光灯:自动";
+        if(_flashMode == 0){
+            flashMode = @"闪光灯:关闭";
+        }else if(_flashMode == 1){
+            flashMode = @"闪光灯:打开";
+        }
     
-    UIActionSheet* actionSheet = [[UIActionSheet alloc] initWithTitle:@"相机设置" delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:nil otherButtonTitles:@"翻转摄像头",flashMode,(_disableFaceBeautify?@"打开美化":@"关闭美化"), nil];
-    [actionSheet showInView:self.view];
+        UIActionSheet* actionSheet = [[UIActionSheet alloc] initWithTitle:@"相机设置" delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:nil otherButtonTitles:@"翻转摄像头",flashMode,(_disableFaceBeautify?@"打开美化":@"关闭美化"), nil];
+        [actionSheet showInView:self.view];
+    //}
+    
+    //else if(_flipStatus == kTakedPhoto){
+    //    [self c]
+   // }
 
+}
+
+- (void) changePhoto
+{
+    if(_flipStatus == kTakedPhoto){
+        [self startRotateImage:nil];
+        [self startPreFetch:_shotPhoto imageSuccess:^(UIImage* img){
+            [self stopRotateImage:img];
+        }];
+    }
+}
+
+- (void) startRotateImage:(UIImage*)image
+{
+    //roundBackground.alpha = 1.0;
+    shapeCover.backgroundColor = RotateBackground;
+    rotateView.alpha = 1.0;
+    if(image){
+        rotateView.image = image;
+    }
+    [rotateView runSpinAnimation:2.0 rotations:2.0 repeat:1000.0];
+
+}
+
+- (void) stopRotateImage:(UIImage*)image;
+{
+    if(image){
+        rotateView.image = image;
+    }
+    [rotateView.layer removeAllAnimations];
+}
+
+- (void) hideRotateImage
+{
+    //roundBackground.alpha = 0.0;
+    shapeCover.backgroundColor = [UIColor clearColor];
+    rotateView.alpha = 0.0;
 }
 
 - (IBAction) panHandler:(id)sender
@@ -1704,82 +1800,63 @@
         //[self.cameraToggleButton setEnabled:NO];
         //[self.flashToggleButton setEnabled:NO];
         [self prepareForCapture];
-        dispatch_later(1.0, ^(){
-            
-            
-        });
+        
     } else {
-        [self changeButtonStatus:NO];
-        UIImage *currentFilteredVideoFrame = nil;
-        if(_highResImageFile){
-            [[EZThreadUtility getInstance] executeBlockInQueue:^(){
-            NSArray* filters = [self prepareImageFilter:_detectedFaceObj imageSize:_imageSize];
-            UIImage* orgImage = [UIImage imageWithContentsOfFile:_highResImageFile];
-            //orgImage = [orgImage resizedImageWithMaximumSize:CGSizeMake(orgImage.size.width, orgImage.size.height/2.0)];//[orgImage resizedImageWithMaximumSize:CGSizeMake(orgImage.size.width/2.0,orgImage.size.height/2.0)] ;
-            //orgImage = [orgImage croppedImageWithRect:CGRectMake(0, 0, orgImage.size.width/2.0, orgImage.size.height/2.0)];
-            EZDEBUG(@"stored file:%@,The org size file:%@",_highResImageFile, NSStringFromCGSize(orgImage.size));
-            //finalBlendFilter.imageMode = 0;
-            //[EZFileUtil deleteFile:_highResImageFile];
-            UIImage* processed = [EZFileUtil saveEffectsImage:orgImage effects:filters piece:9 orientation:currentOrientation];
-            //[EZFileUtil deleteFile:_highResImageFile];
-            
-            EZDEBUG(@"background processed size:%@", NSStringFromCGSize(processed.size));
-            NSDictionary *info = @{@"image":processed};
-                if(photoMeta){
-                    info = @{@"image":processed, @"metadata":photoMeta};
-                }
-                //[info setValue:currentFilteredVideoFrame forKey:@"image"];
-                EZDEBUG(@"image size:%f, %f", processed.size.width, processed.size.height);
-                [self.delegate imagePickerController:self didFinishPickingMediaWithInfo:info];
-                
-            /**
-            if(!testView){
-                testView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 100, 150, 200)];
-                testView.contentMode = UIViewContentModeScaleAspectFit;
-                [self.view addSubview:testView];
-            }
-            testView.image = currentFilteredVideoFrame;
-            **/
-            orgImage = nil;
-            } isConcurrent:YES];
-            [self retakePhoto:retakeButton];
-            [self.photoCaptureButton setEnabled:YES];
-            return;
-        }else{
-            GPUImageOutput<GPUImageInput> *processUpTo;
-            processUpTo = filter;
-            //EZDEBUG(@"Before call process image");
-            //[staticPicture processImage];
-            //EZDEBUG(@"After call process image");
-            //if(!stillCamera.isFrontFacing){
-            
-            if(stillCamera.isFrontFacing){
-                currentFilteredVideoFrame = [processUpTo imageFromCurrentlyProcessedOutputWithOrientation:staticPictureOriginalOrientation];
-                //EZDEBUG(@"The current orienation:%i, static orientatin:%i", currentFilteredVideoFrame.imageOrientation, staticPictureOriginalOrientation);
-                currentFilteredVideoFrame = [currentFilteredVideoFrame rotateByOrientation:staticPictureOriginalOrientation];
-            }else{
-                currentFilteredVideoFrame = [processUpTo imageFromCurrentlyProcessedOutputWithOrientation:UIImageOrientationUp];
-                //currentFilteredVideoFrame = staticPicture
-                //EZDEBUG(@"Before shink:%@", NSStringFromCGSize(currentFilteredVideoFrame.size));
-            }
-        //}
-        }
-        EZDEBUG(@"image size:%f, %f, matchPhotoID:%@", currentFilteredVideoFrame.size.width, currentFilteredVideoFrame.size.height, _shotPhoto.photoID);
-        //EZPhoto* tmpMatch = _matchedPhoto;
-        [self createPhoto:currentFilteredVideoFrame orgData:photoMeta shotPhoto:_shotPhoto success:^(EZDisplayPhoto* dp){
-            [self.delegate imagePickerController:self didFinishPickingMediaWithInfo:@{@"displayPhoto":dp}];
-            EZDEBUG(@"The photoID to update is:%@", dp.photo.photoID);
-            [[EZDataUtil getInstance].pendingUploads addObject:dp.photo];
-            [[EZDataUtil getInstance] uploadPendingPhoto];
-            //[self preMatchPhoto];
-        }];
-        //_matchedPhoto = nil;
-        //[self preMatchPhoto];
-        //[self retakePhoto:retakeButton];
-        //[self.photoCaptureButton setEnabled:YES];
+        _flipStatus = kTakedPhoto;
         ++_imageCount;
-        [self innserCancel];
+        [self changeButtonStatus:NO];
+        [self confirmCurrentMatch];
     }
+}
+
+- (void) cancelAll
+{
+    for(EZPhoto* ph in _shotPhoto.photoRelations){
+        [self cancelPrematchPhoto:ph];
+    }
+    
+    for(EZPhoto* ph in matchedPhotos){
+        [self cancelPrematchPhoto:ph];
+    }
+
+}
+
+//Mean I accept current image with a match
+- (void) confirmCurrentMatch
+{
+    [self.delegate imagePickerController:self didFinishPickingMediaWithInfo:@{@"displayPhoto":disPhoto}];
+    [[EZDataUtil getInstance].pendingUploads addObject:disPhoto.photo];
+    [[EZDataUtil getInstance] uploadPendingPhoto];
+    [self innserCancel];
+     EZDEBUG(@"The photoID to update is:%@, prevMatched count:%i", disPhoto.photo.photoID, matchedPhotos.count);
+    for(EZPhoto* ph in matchedPhotos){
+        [self cancelPrematchPhoto:ph];
+    }
+}
+
+- (UIImage*) getPhotoAndUpload
+{
+    UIImage *currentFilteredVideoFrame = nil;
+    GPUImageOutput<GPUImageInput> *processUpTo;
+    processUpTo = filter;
+    if(stillCamera.isFrontFacing){
+        currentFilteredVideoFrame = [processUpTo imageFromCurrentlyProcessedOutputWithOrientation:staticPictureOriginalOrientation];
+        //EZDEBUG(@"The current orienation:%i, static orientatin:%i", currentFilteredVideoFrame.imageOrientation, staticPictureOriginalOrientation);
+        currentFilteredVideoFrame = [currentFilteredVideoFrame rotateByOrientation:staticPictureOriginalOrientation];
+    }else{
+        currentFilteredVideoFrame = [processUpTo imageFromCurrentlyProcessedOutputWithOrientation:UIImageOrientationUp];
+        
+    }
+    
+    EZDEBUG(@"image size:%f, %f, matchPhotoID:%@", currentFilteredVideoFrame.size.width, currentFilteredVideoFrame.size.height, _shotPhoto.photoID);
+    //EZPhoto* tmpMatch = _matchedPhoto;
+    [self createPhoto:currentFilteredVideoFrame orgData:photoMeta shotPhoto:_shotPhoto success:^(EZDisplayPhoto* dp){
+        
+        //[self preMatchPhoto];
+        disPhoto = dp;
+    }];
+    
+    return currentFilteredVideoFrame;
 }
 
 - (void) createPhoto:(UIImage*)img orgData:(NSDictionary*)orgdata shotPhoto:(EZPhoto*)shotPhoto success:(EZEventBlock)success
@@ -1881,12 +1958,14 @@
     if(staticFlag){
         [self.cancelButton setTitle:@"重拍" forState:UIControlStateNormal];
         [self.photoCaptureButton setTitle:@"保存" forState:UIControlStateNormal];
+        //[self.configButton setTitle:@"换照片" forState:UIControlStateNormal];
         [self.photoCaptureButton setEnabled:YES];
         self.configButton.hidden = YES;
     }else{
         [self.cancelButton setTitle:@"退出" forState:UIControlStateNormal];
         [self.photoCaptureButton setTitle:@"按这里拍摄" forState:UIControlStateNormal];
-        self.configButton.hidden = NO;
+        //self.configButton.hidden = NO;
+        //[self.configButton setTitle:@"设置" forState:UIControlStateNormal];
         [self.photoCaptureButton setEnabled:YES];
     }
     
@@ -1906,13 +1985,17 @@
     EZDEBUG(@"Cancel get called");
     //[self executeGame];
    
+    //[self cancelAll];
     if(isStatic){
         [self retakePhoto:self.cancelButton];
         [self changeButtonStatus:NO];
+        [self stopRotateImage:nil];
+        [self hideRotateImage];
+        _flipStatus = kTakingPhoto;
     }else{
         [self innserCancel];
+        [self cancelAll];
     }
-    
     //[self switchDisplayImage];
 }
 

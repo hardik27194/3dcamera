@@ -17,6 +17,8 @@
 #import "EZExtender.h"
 #import "EZMessageCenter.h"
 #import "EZNetworkUtility.h"
+#import "EZExtender.h"
+#import "UIImageView+AFNetworking.h"
 
 
 @implementation EZAlbumResult
@@ -50,6 +52,7 @@
     //Move to the persistent later.
     //Now keep it simple and stupid
     _pendingUploads = [[NSMutableArray alloc] init];
+    _prefetchImage = [[UIImageView alloc] init];
     return self;
 }
 
@@ -491,6 +494,11 @@
     });
 }
 
+
+- (void) prefetchImage:(NSString*) url success:(EZEventBlock)success failure:(EZEventBlock)failure
+{
+    [_prefetchImage preloadImageURL:str2url(url) success:success failed:failure];
+}
 
 - (EZPerson*) getPerson:(NSString*)personID
 {

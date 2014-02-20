@@ -137,6 +137,9 @@ typedef void  (^ IterateOperation)(id obj);
 
 @interface UIView(EZPrivate)
 
+
+- (void) runSpinAnimation:(CGFloat)duration rotations:(CGFloat)rotations repeat:(float)repeat;
+
 + (void) sequenceAnimation:(NSArray*)animation completion:(EZOperationBlock)complete;
 
 + (void) flipTransition:(UIView*)src dest:(UIView*)dest container:(UIView*)container isLeft:(BOOL)isLeft duration:(float)duration complete:(EZEventBlock)complete;

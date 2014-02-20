@@ -372,6 +372,25 @@ static int photoCount = 1;
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(pickPhotoType:)];
     
     
+    
+    //_observedTarget = [[EZPhoto alloc] init];
+    //observeTarget.uploaded
+    //EZClickView* clickView = [[EZClickView alloc] initWithFrame:CGRectMake(0, 200, 100, 100)];
+    //clickView.backgroundColor = RGBCOLOR(128, 128, 255);
+    //[self.view addSubview:clickView];
+    
+    //clickView.pressedBlock = ^(id obj){
+     //   EZDEBUG(@"clicked");
+     //   _observedTarget.uploaded = !_observedTarget.uploaded;
+    //};
+    
+    //[_observedTarget addObserver:self forKeyPath:@"uploaded" options:NSKeyValueObservingOptionNew context:nil];
+
+}
+
+- (void) testHomeMadeRotation
+{
+    
     EZClickImage* clickView = [[EZClickImage alloc] initWithFrame:CGRectMake(0, 100, 200, 200)];
     static int type = 0;
     clickView.image = [UIImage imageNamed:@"header_1"];
@@ -389,21 +408,6 @@ static int photoCount = 1;
         EZDEBUG(@"start animate:%i", type);
         ++type;
     };
-
-    
-    //_observedTarget = [[EZPhoto alloc] init];
-    //observeTarget.uploaded
-    //EZClickView* clickView = [[EZClickView alloc] initWithFrame:CGRectMake(0, 200, 100, 100)];
-    //clickView.backgroundColor = RGBCOLOR(128, 128, 255);
-    //[self.view addSubview:clickView];
-    
-    //clickView.pressedBlock = ^(id obj){
-     //   EZDEBUG(@"clicked");
-     //   _observedTarget.uploaded = !_observedTarget.uploaded;
-    //};
-    
-    //[_observedTarget addObserver:self forKeyPath:@"uploaded" options:NSKeyValueObservingOptionNew context:nil];
-
 }
 
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context {

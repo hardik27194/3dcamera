@@ -59,6 +59,8 @@
 //A good change to use the KV listener.
 @property (nonatomic, strong) NSMutableArray* pendingPhotos;
 
+@property (nonatomic, strong) UIImageView* prefetchImage;
+
 
 //Check the current status
 - (BOOL) canUpload;
@@ -77,6 +79,7 @@
 //Let's give it. Expose the parameter make the function status free. More easier to debug
 - (void) likedPhoto:(int)photoID success:(EZEventBlock)success failure:(EZEventBlock)failure;
 
+- (void) prefetchImage:(NSString*) url success:(EZEventBlock)success failure:(EZEventBlock)failure;
 
 - (void) exchangePhoto:(EZPhoto*)photo success:(EZEventBlock)success failure:(EZEventBlock)failure;
 //Why this method?

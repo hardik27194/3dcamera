@@ -478,6 +478,20 @@ NSString* doubleString(NSString* str)
     self.transform = CGAffineTransformMakeRotation(angle);
 }
 
+- (void) runSpinAnimation:(CGFloat)duration rotations:(CGFloat)rotations repeat:(float)repeat
+{
+    self.layer.zPosition = 400;
+    CABasicAnimation* rotationAnimation;
+    rotationAnimation = [CABasicAnimation animationWithKeyPath:@"transform.rotation.y"];
+    rotationAnimation.toValue = [NSNumber numberWithFloat: M_PI * 2.0 /* full rotation*/ * rotations * duration ];
+    rotationAnimation.duration = duration;
+    rotationAnimation.cumulative = YES;
+    rotationAnimation.repeatCount = repeat;
+    [self.layer addAnimation:rotationAnimation forKey:@"rotationAnimation"];
+}
+
+
+
 + (void) sequenceAnimation:(NSArray*)animations completion:(EZOperationBlock)complete
 {
     if(animations.count > 0){

@@ -62,14 +62,14 @@
         //[_container makeInsetShadowWithRadius:20 Color:RGBA(255, 255, 255, 128)];
         _frontImage = [self createFrontImage];
         //_frontImage.backgroundColor = RGBCOLOR(255, 255, 0);
-        _toolRegion = [self createToolRegion:ToolRegionRect];
+        //_toolRegion = [self createToolRegion:ToolRegionRect];
         _photoTalk = (UILabel*)[_toolRegion viewWithTag:MainLabelTag];
         [self.contentView addSubview:_container];
         //[self.contentView addSubview:_toolRegion];
         //[self.contentView addSubview:_feedbackRegion];
         [_rotateContainer addSubview:_frontImage];
         //[_frontImage addSubview:_toolRegion];
-        [_rotateContainer addSubview:_toolRegion];
+        //[_rotateContainer addSubview:_toolRegion];
         _container.enableTouchEffects = NO;
         [self setupIcon];
         
@@ -92,6 +92,7 @@
     frontImage.contentMode = UIViewContentModeScaleAspectFit;
     frontImage.clipsToBounds = true;
     frontImage.backgroundColor = [UIColor whiteColor];
+    [frontImage enableRoundImage];
     return frontImage;
 }
 
