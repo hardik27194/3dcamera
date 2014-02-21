@@ -14,18 +14,20 @@
 #import "EZHomeLineBiFilter.h"
 #import "EZSkinBrighter.h"
 
+
+
 @class EZFourInputFilter;
 @interface EZHomeBlendFilter : GPUImageFilterGroup
 {
     BOOL hasOverriddenAspectRatio;
 }
 
-@property (nonatomic, strong) EZSkinBrighter* skinBrighter;
+//@property (nonatomic, strong) EZSkinBrighter* skinBrighter;
 @property (nonatomic, strong) EZHomeBiBlur* blurFilter;
-@property (nonatomic, strong) EZHomeLineBiFilter* smallBlurFilter;
+//@property (nonatomic, strong) EZHomeLineBiFilter* smallBlurFilter;
 @property (nonatomic, strong) EZHomeEdgeFilter* edgeFilter;
-@property (nonatomic, strong) GPUImageGaussianBlurFilter* edgeBlurFilter;
-@property (nonatomic, strong) EZFourInputFilter* combineFilter;
+//@property (nonatomic, strong) GPUImageGaussianBlurFilter* edgeBlurFilter;
+@property (nonatomic, strong) GPUImageThreeInputFilter* combineFilter;
 
 @property (nonatomic, assign) CGFloat blurRatio;
 @property (nonatomic, assign) CGFloat edgeRatio;

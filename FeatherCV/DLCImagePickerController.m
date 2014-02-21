@@ -253,7 +253,7 @@
         
         //dynamicBlurFilter.realRatio = _blurRate.value;
         finalBlendFilter.blurFilter.blurSize = _redPoint.value*5;
-        finalBlendFilter.smallBlurFilter.blurSize = blurAspectRatio * _redPoint.value * 5;
+        //finalBlendFilter.smallBlurFilter.blurSize = blurAspectRatio * _redPoint.value * 5;
         _redText.text = [NSString stringWithFormat:@"%f",_redPoint.value * 5];
     }else if(sender == _yellowPoint){
         //finalBlendFilter.blurFilter.distanceNormalizationFactor = _yellowPoint.value * 50;
@@ -350,6 +350,7 @@
     //EZDEBUG(@"Start cancel prev match call:%@", matchedPt.photoID);
     //if(_shotPhoto.photoRelations.count){
     //    EZPhoto* matched = [_shotPhoto.photoRelations objectAtIndex:0];
+    EZDEBUG(@"Cancle prefetch");
     [[EZDataUtil getInstance] cancelPrematchPhoto:matchedPt success:^(id success){
         EZDEBUG(@"cancel:%@ success", matchedPt.photoID);
     } failure:^(id err){
@@ -449,7 +450,7 @@
     faceBlurBase = 0.3;
     faceBlender.blurFilter.blurSize = globalBlur;//Original value
     faceBlender.blurFilter.distanceNormalizationFactor = 13;
-    faceBlender.smallBlurFilter.blurSize = 0.05;
+    //faceBlender.smallBlurFilter.blurSize = 0.05;
     faceBlender.blurRatio = 0.1;
     faceBlender.edgeFilter.threshold = 0.4;
     return faceBlender;
@@ -1515,6 +1516,7 @@
     
     if(_shotPhoto.photoRelations.count){
         EZPhoto* matched = [_shotPhoto.photoRelations objectAtIndex:0];
+        EZDEBUG(@"prefetch image:%@", matched.screenURL);
         [[EZDataUtil getInstance] prefetchImage:matched.screenURL success:^(UIImage* image){
             //[rotateView.layer removeAllAnimations];
             dispatch_later(0.5,
@@ -1524,7 +1526,7 @@
             });
             
         } failure:^(id err){
-            //EZDEBUG(@"Failed to get image:%@, url:%@", err, matched.screenURL);
+            EZDEBUG(@"Failed to get image:%@, url:%@", err, matched.screenURL);
             [self hideRotateImage];
             _flipStatus = kTakedPhoto;
         }];

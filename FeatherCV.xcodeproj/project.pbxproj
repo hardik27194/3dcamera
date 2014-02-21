@@ -10,6 +10,8 @@
 		181608C718B4E38600DD5995 /* EZAnimationUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 181608C618B4E38600DD5995 /* EZAnimationUtil.m */; };
 		181608CC18B4EA9F00DD5995 /* EZRotateAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = 181608CB18B4EA9F00DD5995 /* EZRotateAnimation.m */; };
 		181608D218B5B1A300DD5995 /* EZShapeCover.m in Sources */ = {isa = PBXBuildFile; fileRef = 181608D118B5B1A300DD5995 /* EZShapeCover.m */; };
+		181608D718B70C0900DD5995 /* EZScrollController.m in Sources */ = {isa = PBXBuildFile; fileRef = 181608D618B70C0900DD5995 /* EZScrollController.m */; };
+		181608DA18B714B900DD5995 /* EZModalDissolveAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = 181608D918B714B900DD5995 /* EZModalDissolveAnimation.m */; };
 		181903EE187FD4E5001FC370 /* EZHomeBiBlur.m in Sources */ = {isa = PBXBuildFile; fileRef = 181903ED187FD4E5001FC370 /* EZHomeBiBlur.m */; };
 		181903F4187FF49C001FC370 /* EZHomeBlendFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 181903F3187FF49C001FC370 /* EZHomeBlendFilter.m */; };
 		181903F7187FFC64001FC370 /* EZHomeGaussianFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 181903F6187FFC64001FC370 /* EZHomeGaussianFilter.m */; };
@@ -274,6 +276,10 @@
 		181608CB18B4EA9F00DD5995 /* EZRotateAnimation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZRotateAnimation.m; sourceTree = "<group>"; };
 		181608D018B5B1A300DD5995 /* EZShapeCover.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZShapeCover.h; sourceTree = "<group>"; };
 		181608D118B5B1A300DD5995 /* EZShapeCover.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZShapeCover.m; sourceTree = "<group>"; };
+		181608D518B70C0800DD5995 /* EZScrollController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZScrollController.h; sourceTree = "<group>"; };
+		181608D618B70C0900DD5995 /* EZScrollController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZScrollController.m; sourceTree = "<group>"; };
+		181608D818B714B900DD5995 /* EZModalDissolveAnimation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZModalDissolveAnimation.h; sourceTree = "<group>"; };
+		181608D918B714B900DD5995 /* EZModalDissolveAnimation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZModalDissolveAnimation.m; sourceTree = "<group>"; };
 		181903EC187FD4E5001FC370 /* EZHomeBiBlur.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZHomeBiBlur.h; sourceTree = "<group>"; };
 		181903ED187FD4E5001FC370 /* EZHomeBiBlur.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZHomeBiBlur.m; sourceTree = "<group>"; };
 		181903F2187FF49C001FC370 /* EZHomeBlendFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZHomeBlendFilter.h; sourceTree = "<group>"; };
@@ -679,6 +685,8 @@
 				1866ADB01897698900DB46E2 /* EZRaiseAnimation.m */,
 				1866ADB218979C7400DB46E2 /* EZModalRaiseAnimation.h */,
 				1866ADB318979C7400DB46E2 /* EZModalRaiseAnimation.m */,
+				181608D818B714B900DD5995 /* EZModalDissolveAnimation.h */,
+				181608D918B714B900DD5995 /* EZModalDissolveAnimation.m */,
 			);
 			name = animation;
 			sourceTree = "<group>";
@@ -930,6 +938,8 @@
 				18E746FE18AC704E0023967B /* EZBarRegion.m */,
 				18D384C918B34D8C00CB5BF1 /* EZChatRegion.h */,
 				18D384CA18B34D8C00CB5BF1 /* EZChatRegion.m */,
+				181608D518B70C0800DD5995 /* EZScrollController.h */,
+				181608D618B70C0900DD5995 /* EZScrollController.m */,
 			);
 			path = controllers;
 			sourceTree = "<group>";
@@ -1457,6 +1467,8 @@
 				1866ADC71898F0DB00DB46E2 /* LFGlassView.m in Sources */,
 				18E34724183DFA3300C9D89D /* EZAlbumTablePage.m in Sources */,
 				1866ADAA18966E7000DB46E2 /* BaseAnimation.m in Sources */,
+				181608DA18B714B900DD5995 /* EZModalDissolveAnimation.m in Sources */,
+				181608D718B70C0900DD5995 /* EZScrollController.m in Sources */,
 				18D384CB18B34D8C00CB5BF1 /* EZChatRegion.m in Sources */,
 				181903FA1881654D001FC370 /* EZFourInputFilter.m in Sources */,
 				182A550D18643141003D4A01 /* EZFaceBlurFilter.m in Sources */,

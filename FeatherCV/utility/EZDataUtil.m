@@ -169,6 +169,7 @@
 //I will exchange photo with other user
 - (void) exchangePhoto:(EZPhoto*)photo success:(EZEventBlock)success failure:(EZEventBlock)failure
 {
+    EZDEBUG(@"Begin call exchange photo");
     //NSDictionary* dict = [photo toJson];
     NSDictionary* dict = nil;
     if(photo.photoID){

@@ -25,6 +25,7 @@
 #import "EZChatRegion.h"
 #import "EZAnimationUtil.h"
 #import "EZRotateAnimation.h"
+#import "EZScrollController.h"
 static int photoCount = 1;
 @interface EZAlbumTablePage ()
 
@@ -334,6 +335,8 @@ static int photoCount = 1;
     _slideAnimation = [[SlideAnimation alloc] init];
     _raiseAnimation = [[EZRaiseAnimation alloc] init];
     _cameraAnimation = [[EZModalRaiseAnimation alloc] init];
+    
+    _detailAnimation = [[EZModalDissolveAnimation alloc] init];
     EZDEBUG(@"Query block is:%i",(int)_queryBlock);
 
     [[EZMessageCenter getInstance] registerEvent:EZTakePicture block:^(EZDisplayPhoto* dp){
@@ -745,10 +748,48 @@ static int photoCount = 1;
             [self switchImage:weakCell displayPhoto:cp front:myPhoto back:switchPhoto];
         }
     };
+    
+    cell.frontImage.longPressBlock = ^(id obj){
+        UIImageView* fullView = [[UIImageView alloc] initWithImage:weakCell.frontImage.image];
+        EZDEBUG(@"Long press called %@", NSStringFromCGRect(fullView.bounds));
+        EZScrollController* sc = [[EZScrollController alloc] initWithDetail:fullView];
+        sc.transitioningDelegate = self.detailAnimation;
+        [self.navigationController presentViewController:sc animated:YES completion:nil];
+        //fullView.pressedBlock = ^(id obj){
+        //    EZDEBUG(@"presssed");
+        //    [sc dismissViewControllerAnimated:YES completion:nil];
+        //};
+        sc.tappedBlock = ^(UIViewController* obj){
+            EZDEBUG(@"dismiss current view");
+            [obj dismissViewControllerAnimated:YES completion:nil];
+        };
+        
+    };
     return cell;
 }
 
 
+- (void) presentNaiveView:(EZPhotoCell*)weakCell
+{
+    EZClickImage* fullView = [[EZClickImage alloc] initWithFrame:[UIScreen mainScreen].applicationFrame];
+    fullView.contentMode = UIViewContentModeScaleAspectFill;
+    fullView.image = weakCell.frontImage.image;
+    fullView.backgroundColor = [UIColor blackColor];
+    [TopView insertSubview:fullView belowSubview:self.view];
+    [UIView transitionFromView:self.navigationController.view toView:fullView duration:0.5 options:UIViewAnimationOptionTransitionCrossDissolve completion:^(BOOL completed){
+        EZDEBUG(@"Complelted presentation");
+        [TopView bringSubviewToFront:fullView];
+    }];
+    __weak UIView* weakView = fullView;
+    fullView.pressedBlock = ^(id obj){
+        EZDEBUG(@"Pressed block");
+        [UIView transitionFromView:weakView  toView:self.navigationController.view duration:0.5 options:UIViewAnimationOptionTransitionCrossDissolve completion:^(BOOL completed){
+            EZDEBUG(@"Complelted presentation");
+            [weakView removeFromSuperview];
+        }];
+    };
+
+}
 - (void) switchImage:(EZPhotoCell*)weakCell displayPhoto:(EZDisplayPhoto*)cp front:(EZPhoto*)front back:(EZPhoto*)back
 {
     UIView* snapShot = [weakCell.frontImage snapshotViewAfterScreenUpdates:YES];

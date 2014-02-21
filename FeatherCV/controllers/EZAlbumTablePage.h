@@ -12,6 +12,7 @@
 #import "SlideAnimation.h"
 #import "EZRaiseAnimation.h"
 #import "EZModalRaiseAnimation.h"
+#import "EZModalDissolveAnimation.h"
 
 
 @class EZDisplayPhoto;
@@ -45,6 +46,8 @@
 @property (nonatomic, strong) SlideAnimation* slideAnimation;
 
 @property (nonatomic, strong) EZModalRaiseAnimation* cameraAnimation;
+
+@property (nonatomic, strong) EZModalDissolveAnimation* detailAnimation;
 
 @property (nonatomic, strong) EZRaiseAnimation* raiseAnimation;
 //This is a successful pattern I have explored several years ago.
