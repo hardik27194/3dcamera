@@ -1519,6 +1519,7 @@
         EZDEBUG(@"prefetch image:%@", matched.screenURL);
         [[EZDataUtil getInstance] prefetchImage:matched.screenURL success:^(UIImage* image){
             //[rotateView.layer removeAllAnimations];
+            EZDEBUG(@"image fetched back");
             dispatch_later(0.5,
             ^(){
                 [self stopRotateImage:image];

@@ -67,23 +67,39 @@
 	// Do any additional setup after loading the view.
 }
 
-- (void)layoutScrollView
+- (void) viewWillAppear:(BOOL)animated
 {
+    [super viewWillAppear:animated];
     if (!_detail.image) return;
     UIImage* image = _detail.image;
     
     CGFloat heightScale = _scrollView.frame.size.height / image.size.height;
     CGFloat widthScale = _scrollView.frame.size.width / image.size.width;
+    
+    EZDEBUG(@"layout scroll height:%f, width:%f, image.height:%f, width:%f", _scrollView.frame.size.height, _scrollView.frame.size.width, image.size.height, image.size.width);
     CGFloat scale = MIN(widthScale, heightScale);
+    //_detail.width = _detail.width * scale;
+    //_detail.height = _detail.height * scale;
     self.scrollView.minimumZoomScale = scale;
     self.scrollView.maximumZoomScale = MAX(1.0f ,scale * 2.0f);
     [self.scrollView setZoomScale:self.scrollView.minimumZoomScale animated:NO];
     [self centerImage];
+
+}
+
+- (void)viewDidLayoutSubviews
+{
 }
 
 
+- (void)scrollViewWillBeginZooming:(UIScrollView *)scrollView withView:(UIView *)view
+{
+    EZDEBUG(@"begin scale");
+}
+
 - (void)scrollViewDidEndZooming:(UIScrollView *)scrollView withView:(UIView *)view atScale:(float)scale
 {
+    EZDEBUG(@"scale:%f, actual scale:%f", scale, _scrollView.zoomScale);
     [self centerImage];
 }
 
@@ -99,6 +115,8 @@
     CGFloat imageScaleWidth = image.size.width * _scrollView.zoomScale;
     CGFloat imageScaleHeight = image.size.height * _scrollView.zoomScale;
     
+    EZDEBUG(@"centered image size:%f, %f, scale:%f",imageScaleHeight, imageScaleWidth, _scrollView.zoomScale );
+    
     CGFloat hOffset = (_scrollView.frame.size.width - imageScaleWidth) * 0.5f;
     CGFloat vOffset = (_scrollView.frame.size.height - imageScaleHeight) * 0.5f;
     
@@ -106,6 +124,9 @@
     if (vOffset < 0) vOffset = 0;
     
     self.scrollView.contentInset = UIEdgeInsetsMake(vOffset, hOffset, 0, 0);
+    if(_scrollView.zoomScale < _scrollView.minimumZoomScale * 0.8){
+        [self tapped:nil];
+    }
 }
 
 - (void)didReceiveMemoryWarning

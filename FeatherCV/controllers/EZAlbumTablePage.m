@@ -751,6 +751,7 @@ static int photoCount = 1;
     
     cell.frontImage.longPressBlock = ^(id obj){
         UIImageView* fullView = [[UIImageView alloc] initWithImage:weakCell.frontImage.image];
+        fullView.contentMode = UIViewContentModeScaleToFill;
         EZDEBUG(@"Long press called %@", NSStringFromCGRect(fullView.bounds));
         EZScrollController* sc = [[EZScrollController alloc] initWithDetail:fullView];
         sc.transitioningDelegate = self.detailAnimation;

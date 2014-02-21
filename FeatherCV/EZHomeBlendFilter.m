@@ -60,11 +60,13 @@ NSString *const kHomeBlendFragmentShaderString = SHADER_STRING
  lowp float calcHue(lowp vec4 rawcolor)
  {
      highp float fd = distance(rawcolor.rgb, skinColor);
+     /**
      if(fd < 0.42){
          fd = fd * fd;
      }else{
          fd = fd * fd + (fd - 0.42) * 1.2;
      }
+      **/
      return min(1.0, fd);
      //return 1.0/(exp((1.5 - distance(rawcolor.rgb, skinColor))) + 1.0);
  }
@@ -115,7 +117,9 @@ NSString *const kHomeBlendFragmentShaderString = SHADER_STRING
          //    finalEdgeRatio = 0.0;
          //}
          finalEdgeRatio = min(finalEdgeRatio * lineDist, 1.0);
-         gl_FragColor = colorDist * sharpImageColor +  (1.0 - colorDist) * (sharpImageColor * finalEdgeRatio + (1.0 - finalEdgeRatio) * (sharpImageColor*blurRatio + (1.0 - blurRatio)*blurredImageColor));// finalEdgeRatio + (1.0 - finalEdgeRatio) * vec4(0.5);
+         //gl_FragColor = colorDist * sharpImageColor +  (1.0 - colorDist) * (sharpImageColor * finalEdgeRatio + (1.0 - finalEdgeRatio) * (sharpImageColor*blurRatio + (1.0 - blurRatio)*blurredImageColor));// finalEdgeRatio + (1.0 - finalEdgeRatio) * vec4(0.5);
+         gl_FragColor = colorDist * sharpImageColor +  (1.0 - colorDist) * (sharpImageColor*blurRatio + (1.0 - blurRatio)*blurredImageColor);
+         
      }else if(imageMode == 1){
          gl_FragColor = detectedEdge;
      }else if(imageMode == 2){
