@@ -46,7 +46,7 @@
 
 //The purpose of the container is to limit the scope of the flip animation.
 //Otherwise the whole thing rotate together, this is not what I expected.
-@property (nonatomic, strong) EZClickView* container;
+@property (nonatomic, strong) UIView* container;
 
 //This view will in charge of the whole rotate, because I need to rotate the whole thing.
 @property (nonatomic, strong) UIView* rotateContainer;
@@ -58,7 +58,7 @@
 //The UIImage which have no effects
 //@property (nonatomic, strong) UIImageView* frontNoEffects;
 
-@property (nonatomic, strong) UIImageView* frontImage;
+@property (nonatomic, strong) EZClickImage* frontImage;
 
 @property (nonatomic, strong) UIImageView* backImage;
 

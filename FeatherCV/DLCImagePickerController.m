@@ -71,7 +71,7 @@
     EZCycleTongFilter* tongFilter;
     GPUImageToneCurveFilter* flashFilter;
     //GPUImageToneCurveFilter* darkFilter;
-    
+    UIGestureRecognizer* tapRecognizer;
     GPUImageHueFilter* hueFilter;
     GPUImageOutput<GPUImageInput> *blurFilter;
     GPUImageCropFilter *cropFilter;
@@ -613,6 +613,10 @@
     
     shapeCover = [[EZShapeCover alloc] initWithFrame:imageView.frame];
     EZDEBUG(@"initial frame:%@", NSStringFromCGRect(imageView.frame));
+    shapeCover.userInteractionEnabled = TRUE;
+    tapRecognizer = [[UITapGestureRecognizer alloc] init];
+    [tapRecognizer addTarget:self action:@selector(handleTapToFocus:)];
+    [shapeCover addGestureRecognizer:tapRecognizer];
     [self.view addSubview:shapeCover];
     
     //roundBackground = [[UIView alloc] initWithFrame:imageView.frame];
@@ -1513,8 +1517,12 @@
         EZPhoto* matched = [_shotPhoto.photoRelations objectAtIndex:0];
         [[EZDataUtil getInstance] prefetchImage:matched.screenURL success:^(UIImage* image){
             //[rotateView.layer removeAllAnimations];
-            [self stopRotateImage:image];
-            _flipStatus = kTakedPhoto;
+            dispatch_later(0.5,
+            ^(){
+                [self stopRotateImage:image];
+                _flipStatus = kTakedPhoto;
+            });
+            
         } failure:^(id err){
             //EZDEBUG(@"Failed to get image:%@, url:%@", err, matched.screenURL);
             [self hideRotateImage];

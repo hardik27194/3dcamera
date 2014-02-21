@@ -174,30 +174,27 @@ static int photoCount = 1;
     EZDEBUG(@"I will start flip the image:%i", _newlyCreated);
     for(int i = 0; i < _newlyCreated; i++){
         NSIndexPath* path = [NSIndexPath indexPathForRow:i inSection:0];
-        UITableViewCell* cell = [self.tableView cellForRowAtIndexPath:path];
+        EZPhotoCell* cell = (EZPhotoCell*)[self.tableView cellForRowAtIndexPath:path];
         if(!cell){
             continue;
         }
         EZDisplayPhoto* cp = [_combinedPhotos objectAtIndex:i];
+        if(cell.currentPos != path.row){
+            EZDEBUG(@"Turn while cell no more this row:%i, %i", cell.currentPos, path.row);
+            return;
+        }
         if(!cp.isFront){
             EZDEBUG(@"flipped manually");
             continue;
         }
         EZPhoto* switchPhoto = [cp.photo.photoRelations objectAtIndex:0];
-        cp.isFront = !cp.isFront;
+        //cp.isFront = !cp.isFront;
         EZDEBUG(@"prefetchDone:%i", switchPhoto.prefetchDone);
-        if(switchPhoto.prefetchDone){
-            [self switchAnimation:cp photoCell:cell indexPath:path tableView:self.tableView photo:cp.isFront?cp.photo:switchPhoto];
-        }else{
-            dispatch_later(1.0,
-                           ^(){
-                               EZDEBUG(@"after dispatch prefetch done:%i", switchPhoto.prefetchDone);
-                                [self switchAnimation:cp photoCell:cell indexPath:path tableView:self.tableView photo:cp.isFront?cp.photo:switchPhoto];
-                           }
-                           );
-        }
         
-        
+        [[EZDataUtil getInstance] prefetchImage:switchPhoto.screenURL success:^(UIImage* img){
+            //[self switchAnimation:cp photoCell:cell indexPath:path tableView:self.tableView];
+            [self switchImage:cell displayPhoto:cp front:cp.photo back:switchPhoto];
+        } failure:nil];
     }
 }
 
@@ -329,7 +326,6 @@ static int photoCount = 1;
     
     
     
-    
     //self.tableView.backgroundColor = RGBCOLOR(230, 231, 226);
     self.tableView.backgroundColor = VinesGray;
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
@@ -420,9 +416,21 @@ static int photoCount = 1;
     }
 }
 
+- (BOOL) existed:(NSString*)pid
+{
+    for(int i = 0; i < _combinedPhotos.count; i ++){
+        EZDisplayPhoto* dp = [_combinedPhotos objectAtIndex:i];
+        if([dp.photo.photoID isEqualToString:pid]){
+            return true;
+        }
+    }
+    return false;
+}
+
 - (void) reloadRows:(NSArray*)photos
 {
     for(EZPhoto* pt in photos){
+        if(! [self existed:pt.photoID]){
         [[EZDataUtil getInstance] assetURLToAsset:str2url(pt.assetURL) success:^(ALAsset* result){
             EZDEBUG(@"Transfer the image to EZDisplayPhoto successfully");
             EZDisplayPhoto* ed = [[EZDisplayPhoto alloc] init];
@@ -448,7 +456,7 @@ static int photoCount = 1;
             [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:_combinedPhotos.count - 1 inSection:0]] withRowAnimation:UITableViewRowAnimationBottom];
             //[self.tableView reloadData];
         }];
-        
+        }
     }
 }
 
@@ -552,11 +560,13 @@ static int photoCount = 1;
 
 - (CGFloat) tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    /**
     EZDisplayPhoto* cp = [_combinedPhotos objectAtIndex:indexPath.row];
     CGFloat imageHeight;
     if(cp.turningAnimation){
         imageHeight = cp.turningImageSize.height;
     }else{
+    
     if(cp.isFront){
         imageHeight = floorf((cp.photo.size.height/cp.photo.size.width) * ContainerWidth);
         //EZDEBUG(@"The row height is:%f, width:%f, %f", imageHeight, cp.photo.size.width, cp.photo.size.height);
@@ -567,8 +577,9 @@ static int photoCount = 1;
         //EZDEBUG(@"Column count is:%f, width:%f, %f", imageHeight, cp.photo.size.width, cp.photo.size.height);
     }
     }
+    **/
     
-    return imageHeight + 20 + ToolRegionHeight;
+    return 320 + 40;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -708,143 +719,57 @@ static int photoCount = 1;
 {
     static NSString *CellIdentifier = @"PhotoCell";
     EZPhotoCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    if(cell.isTurning){
-        EZDEBUG(@"Recieved a rotating cell.");
-        cell = [[EZPhotoCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
-    }
-    //[cell backToOriginSize];
-    
-    cell.isLarge = false;
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
     EZDisplayPhoto* cp = [_combinedPhotos objectAtIndex:indexPath.row];
-    
+    cell.backgroundColor = VinesGray;
     //This is for later update purpose. great, let's get whole thing up and run.
     cell.currentPos = indexPath.row;
     //EZCombinedPhoto* curPhoto = [cp.combinedPhotos objectAtIndex:cp.selectedCombinePhoto];
     EZPhoto* myPhoto = cp.photo;
     EZPhoto* switchPhoto = [cp.photo.photoRelations objectAtIndex:0];
-    if(!cp.isFront){
-        EZPhoto* tmpPhoto = myPhoto;
-        myPhoto = switchPhoto;
-        switchPhoto = tmpPhoto;
-    }
+    
     EZDEBUG(@"myPhoto image size:%@, screenURL:%@, isFront:%i", NSStringFromCGSize(myPhoto.size), myPhoto.screenURL, cp.isFront);
     // Configure the cell...
     //[cell displayImage:[myPhoto getLocalImage]];
     [[cell viewWithTag:animateCoverViewTag] removeFromSuperview];
-    if(cell.rotateContainer.superview == nil){
-        EZDEBUG(@"encounter nil rotateContainer");
-        [cell.container addSubview:cell.rotateContainer];
-    }
-    if(cp.turningAnimation){
-        EZDEBUG(@"Turning animation get called");
-        //[cell adjustCellSize:cp.turningImageSize];
-        //[cell displayImage:cp.oldTurnedImage];
-        [cell.container addSubview:cp.oldTurnedImage];
-        EZEventBlock animBlock = cp.turningAnimation;
-        cp.turningAnimation = nil;
-        animBlock(cell);
-        //cp.oldTurnedImage = nil;
+    EZDEBUG(@"Will display front image");
+    if(cp.isFront){
+        [cell.frontImage setImage:[myPhoto getScreenImage]];
     }else{
-        EZDEBUG(@"Will display front image");
-        if(cp.isFront){
-            [cell.frontImage setImage:[myPhoto getScreenImage]];
-        }else{
-            [cell.frontImage setImageWithURL:str2url(myPhoto.screenURL)];
-        }
-        [cell adjustCellSize:myPhoto.size];
+        [cell.frontImage setImageWithURL:str2url(switchPhoto.screenURL)];
     }
     __weak EZPhotoCell* weakCell = cell;
-    __weak EZAlbumTablePage* weakSelf = self;
-    if(cp.combineStatus == kEZStartStatus){
-        [cell.toolRegion.unlockButton setTitle:@"私人" forState:UIControlStateNormal];
-    }else{
-        [cell.toolRegion.unlockButton setTitle:@"公开" forState:UIControlStateNormal];
-    }
-    cell.toolRegion.buttonClicked = ^(UIButton* button){
-        /**
-        if(cp.combineStatus == kEZStartStatus){
-            //UIActionSheet* asheet = [[UIActionSheet alloc] initWithTitle:@"公开照片" delegate:weakSelf cancelButtonTitle:@"取消" destructiveButtonTitle:nil otherButtonTitles:@"公开", nil];
-            //[asheet showInView:weakSelf.view];
-            UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:@"公开照片"  message:@"照片公开后可以被你的朋友和羽毛用户发现" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"所有人",@"只限朋友", nil];
-            [alertView show];
-            weakSelf.alertClicked = ^(NSNumber* num){
-                //EZDEBUG(@"number pass to me is:%i", num.intValue);
-                //[[EZDataUtil getInstance]
-            };
-        }else{
-            UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:@"取消公开" message:@"取消公开后你的朋友和羽毛好友将不再能看见这张照片" delegate:self cancelButtonTitle:nil  otherButtonTitles:@"确认", nil];
-            [alertView show];
-            weakSelf.alertClicked = ^(NSNumber* num){
-                EZDEBUG(@"number pass to me is:%i", num.intValue);
-            };
-        }
-         **/
-    };
-    
-    
-    cell.container.releasedBlock = ^(id obj){
-        
-        /**
-        [UIView animateWithDuration:0.6 animations:^(){
-            CATransform3D transform = CATransform3DRotate(weakCell.rotateContainer.layer.transform, M_PI, 0.0, 1.0,0.0);
-        //[UIView setAnimationRepeatCount:100];
-            weakCell.rotateContainer.layer.transform = transform;
-        }];
-        **/
-        
-        /**
-        UIView* destView = [[UIView alloc] initWithFrame:weakCell.rotateContainer.frame];
-        destView.backgroundColor = [UIColor grayColor];
-        [weakCell.container addSubview:destView];
-        [self customeFlip:3.0 srcView:weakCell.rotateContainer destView:destView completed:^(){
-            EZDEBUG(@"Completed");
-            weakCell.rotateContainer.layer.transform = CATransform3DIdentity;
-            [destView removeFromSuperview];
-        }];
-         **/
-        
-        /**
-        if(cp.combineStatus == kEZStartStatus){
-            Photo is broken:5302d6c3e7b5b9d3bacbdaf7 = kEZSendSharedRequest;
-            EZDEBUG(@"Will start upload the image");
-            [self testBackendCommunication:myPhoto exchanged:^(EZPhoto* ep){
-                cp.photo.photoRelations = @[ep];
-                EZDEBUG(@"Returned screen image URL:%@", ep.screenURL);
-                //[weakCell.frontImage setImageWithURL:str2url(ep.screenURL)];
-                cp.isFront = false;
-                [weakSelf switchAnimation:cp photoCell:weakCell indexPath:indexPath tableView:tableView photo:ep];
-            }];
-        }else{
-         **/
-            //If the photo not returned, then why bothering to flip it?
+    cell.frontImage.releasedBlock = ^(id obj){
+        EZDEBUG(@"Cell Released clicked");
         if(switchPhoto){
-            cp.isFront = !cp.isFront;
-            [weakSelf switchAnimation:cp photoCell:weakCell indexPath:indexPath tableView:tableView photo:cp.isFront?cp.photo:switchPhoto];
+            [self switchImage:weakCell displayPhoto:cp front:myPhoto back:switchPhoto];
         }
-        //}
     };
-
     return cell;
 }
 
-- (void) switchAnimation:(EZDisplayPhoto*)cp photoCell:(EZPhotoCell*)weakCell indexPath:(NSIndexPath*)indexPath tableView:(UITableView*)tableView photo:(EZPhoto*)photo
+
+- (void) switchImage:(EZPhotoCell*)weakCell displayPhoto:(EZDisplayPhoto*)cp front:(EZPhoto*)front back:(EZPhoto*)back
 {
-    if(cp.isTurning){
-        EZDEBUG(@"Return while turning");
-        return;
+    UIView* snapShot = [weakCell.frontImage snapshotViewAfterScreenUpdates:YES];
+    snapShot.frame = weakCell.frontImage.frame;
+    [weakCell.rotateContainer addSubview:snapShot];
+    if(cp.isFront){
+        [weakCell.frontImage setImageWithURL:str2url(back.screenURL)];
+    }else{
+        [weakCell.frontImage setImage:[front getScreenImage]];
     }
-    if(weakCell.currentPos != indexPath.row){
-        EZDEBUG(@"Turn while cell no more this row:%i, %i", weakCell.currentPos, indexPath.row);
-        return;
-    }
-    EZDEBUG(@"rotateContainer,FrontImage rect:%@, %@, rotatateContainer parent:%i, %i",NSStringFromCGRect(weakCell.rotateContainer.frame), NSStringFromCGRect(weakCell.frontImage.frame), (int)weakCell.rotateContainer.superview, (int)weakCell.container);
-    cp.isTurning = true;
-    EZEventBlock complete = ^(id sender){
-        EZDEBUG(@"Complete get called");
-        [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
-    };
-     [weakCell switchImage:photo photo:cp complete:complete tableView:tableView index:indexPath];
+    
+    
+    [UIView flipTransition:snapShot dest:weakCell.frontImage container:weakCell.rotateContainer isLeft:YES duration:2 complete:^(id obj){
+        [snapShot removeFromSuperview];
+        //EZDEBUG(@"rotation completed:%i", (int)[snapShot superview]);
+    }];
+    cp.isFront = !cp.isFront;
+
 }
+
+
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
 {

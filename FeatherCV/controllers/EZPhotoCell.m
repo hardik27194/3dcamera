@@ -51,12 +51,14 @@
     if (self) {
         self.contentView.backgroundColor = VinesGray;
         // Initialization code
-        _container = [[EZClickView alloc] initWithFrame:CGRectMake(10, 10, 300, 300 + ToolRegionHeight)];
+        _container = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 310 + ToolRegionHeight)];
+        _container.backgroundColor = VinesGray;
         //_container.layer.cornerRadius = 5;
         //_container.clipsToBounds = true;
         //_container.backgroundColor = [UIColor greenColor];
         
-        _rotateContainer = [self createRotateContainer:_container.bounds];
+        _rotateContainer = [self createRotateContainer:CGRectMake(5, 5, 310, 310)];
+        _rotateContainer.backgroundColor = VinesGray;
         [_container addSubview:_rotateContainer];
         //_rotateContainer.backgroundColor = [UIColor redColor];
         //[_container makeInsetShadowWithRadius:20 Color:RGBA(255, 255, 255, 128)];
@@ -70,7 +72,7 @@
         [_rotateContainer addSubview:_frontImage];
         //[_frontImage addSubview:_toolRegion];
         //[_rotateContainer addSubview:_toolRegion];
-        _container.enableTouchEffects = NO;
+        //_container.enableTouchEffects = NO;
         [self setupIcon];
         
     }
@@ -82,13 +84,13 @@
     UIView* rotateContainer = [[UIView alloc] initWithFrame:rect];
     rotateContainer.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
     rotateContainer.clipsToBounds = true;
-    rotateContainer.layer.cornerRadius = 3;
+    [rotateContainer enableRoundImage];
     return rotateContainer;
 }
 
-- (UIImageView*) createFrontImage
+- (EZClickImage*) createFrontImage
 {
-    UIImageView* frontImage = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 300, 300)];
+    EZClickImage* frontImage = [[EZClickImage alloc] initWithFrame:CGRectMake(0, 0, 310, 310)];
     frontImage.contentMode = UIViewContentModeScaleAspectFit;
     frontImage.clipsToBounds = true;
     frontImage.backgroundColor = [UIColor whiteColor];
@@ -229,65 +231,24 @@
 - (void) switchImage:(EZPhoto*)photo photo:(EZDisplayPhoto*)dp complete:(EZEventBlock)blk tableView:(UITableView*)tableView index:(NSIndexPath*)path
 {
     
-    EZPhoto* curPhoto = photo;
-    CGFloat height = [self calHeight:curPhoto.size];
-    
-    EZDEBUG(@"_frontImage height:%f, calculated height:%f, isTurnning:%i", _frontImage.frame.size.height, height, dp.isTurning);
-    //if(dp.isTurning){
-    //    return;
-    //}
-    //dp.isTurning = true;
-    if(_frontImage.frame.size.height >= height){
-        _isTurning = true;
+        EZPhoto* curPhoto = photo;
+  
         UIView* srcView = [_rotateContainer snapshotViewAfterScreenUpdates:YES];
         srcView.tag = animateCoverViewTag;
         EZDEBUG(@"Will come up with the old animation.src:%i, _rotatePointer:%i, isFront:%i, screenURL:%@",(int)srcView, (int)_rotateContainer, dp.isFront, curPhoto.screenURL);
         [_container addSubview:srcView];
         //_rotateContainer.hidden = TRUE;
+        EZDEBUG(@"Assume the switch is ready");
         if(dp.isFront){
             [_frontImage setImage:curPhoto.getScreenImage];
         }else{
             //[_frontImage setImageWithURL:str2url(curPhoto.screenURL) placeholderImage:placeholdImage];
             [_frontImage setImageWithURL:str2url(curPhoto.screenURL)];
         }
-        
-        [self adjustInnerSize:CGSizeMake(_frontImage.width, height)];
-        //[_frontImage setSize:CGSizeMake(_frontImage.width, height)];
         [UIView flipTransition:srcView dest:_rotateContainer container:_container isLeft:YES duration:2 complete:^(id obj){
-            if(blk){
-                blk(nil);
-            }
             [srcView removeFromSuperview];
-            [self adjustCellSize:CGSizeMake(_frontImage.width, height)];
-            dp.isTurning = false;
-            _isTurning = false;
         }];
       
-    }else{
-        dp.turningImageSize = CGSizeMake(ContainerWidth, height);
-        __weak EZDisplayPhoto* weakPhoto = dp;
-        UIView* oldView = [_rotateContainer snapshotViewAfterScreenUpdates:YES];
-         EZDEBUG(@"Will start the new animation, oldView:%i", ((int)oldView == (int)_rotateContainer));
-        dp.oldTurnedImage = oldView;
-        dp.turningAnimation = ^(EZPhotoCell* photoCell){
-            photoCell.isTurning = true;
-            if(weakPhoto.isFront){
-                [photoCell.frontImage setImage:curPhoto.getScreenImage];
-            }else{
-                //[photoCell.frontImage setImageWithURL:str2url(curPhoto.screenURL) placeholderImage:placeholdImage];
-                [photoCell.frontImage setImageWithURL:str2url(curPhoto.screenURL)];
-            }
-            [photoCell adjustCellSize:curPhoto.size];
-            [UIView flipTransition:oldView dest:photoCell.rotateContainer container:photoCell.container isLeft:YES duration:2 complete:^(id obj){
-                    [oldView removeFromSuperview];
-                    //EZDEBUG(@"The final assign image size is:%@, frontImage size:%@, parent pointer:%i", NSStringFromCGSize(img.size), NSStringFromCGRect(photoCell.frontImage.frame), (int)photoCell.frontImage.superview);
-                    weakPhoto.isTurning = false;
-                    //_isTurning = false;
-                    photoCell.isTurning = false;
-            }];
-        };
-        blk(nil);
-    }
 }
 
 //I am happy that define a good interface to handle the image switch action
