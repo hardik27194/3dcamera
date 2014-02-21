@@ -43,6 +43,7 @@
 #import "EZShapeCover.h"
 #import "EZExtender.h"
 #import "EZClickImage.h"
+#import "GPUImageSharpenFilter.h"
 
 //#include <vector>
 
@@ -1195,7 +1196,7 @@
             blurCycle = 0.9;
             smallBlurRatio = 0.15;
         }
-        CGFloat adjustedFactor = 14.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
+        CGFloat adjustedFactor = 18.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
         finalBlendFilter.blurFilter.distanceNormalizationFactor = adjustedFactor;
         finalBlendFilter.blurFilter.blurSize = 1.5;
         //finalBlendFilter.blurRatio = smallBlurRatio;

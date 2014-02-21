@@ -106,7 +106,18 @@
     } failblk:error];
 }
 
-
+//The purpose of this functionality to make sure unregisterred user could keep inforamtion.
+- (void) registerMockUser:(EZEventBlock)success error:(EZEventBlock)error
+{
+    [EZNetworkUtility postJson:@"mockUser" parameters:nil complete:^(NSDictionary* dict){
+        EZPerson* person = [[EZPerson alloc] init];
+        [person fromJson:dict];
+        self.currentPersonID  = person.personID;
+        self.currentLoginPerson = person;
+        EZDEBUG(@"Mocked person id:%@", person.personID);
+        success(person);
+    } failblk:error];
+}
 //
 - (void) queryPhotos:(int)page pageSize:(int)pageSize  success:(EZEventBlock)success failure:(EZEventBlock)failure
 {

@@ -12,6 +12,8 @@
 		181608D218B5B1A300DD5995 /* EZShapeCover.m in Sources */ = {isa = PBXBuildFile; fileRef = 181608D118B5B1A300DD5995 /* EZShapeCover.m */; };
 		181608D718B70C0900DD5995 /* EZScrollController.m in Sources */ = {isa = PBXBuildFile; fileRef = 181608D618B70C0900DD5995 /* EZScrollController.m */; };
 		181608DA18B714B900DD5995 /* EZModalDissolveAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = 181608D918B714B900DD5995 /* EZModalDissolveAnimation.m */; };
+		181608E318B733B500DD5995 /* EZRegisterController.m in Sources */ = {isa = PBXBuildFile; fileRef = 181608E118B733B500DD5995 /* EZRegisterController.m */; };
+		181608E418B733B500DD5995 /* EZRegisterController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 181608E218B733B500DD5995 /* EZRegisterController.xib */; };
 		181903EE187FD4E5001FC370 /* EZHomeBiBlur.m in Sources */ = {isa = PBXBuildFile; fileRef = 181903ED187FD4E5001FC370 /* EZHomeBiBlur.m */; };
 		181903F4187FF49C001FC370 /* EZHomeBlendFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 181903F3187FF49C001FC370 /* EZHomeBlendFilter.m */; };
 		181903F7187FFC64001FC370 /* EZHomeGaussianFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 181903F6187FFC64001FC370 /* EZHomeGaussianFilter.m */; };
@@ -280,6 +282,9 @@
 		181608D618B70C0900DD5995 /* EZScrollController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZScrollController.m; sourceTree = "<group>"; };
 		181608D818B714B900DD5995 /* EZModalDissolveAnimation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZModalDissolveAnimation.h; sourceTree = "<group>"; };
 		181608D918B714B900DD5995 /* EZModalDissolveAnimation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZModalDissolveAnimation.m; sourceTree = "<group>"; };
+		181608E018B733B500DD5995 /* EZRegisterController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZRegisterController.h; sourceTree = "<group>"; };
+		181608E118B733B500DD5995 /* EZRegisterController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZRegisterController.m; sourceTree = "<group>"; };
+		181608E218B733B500DD5995 /* EZRegisterController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EZRegisterController.xib; sourceTree = "<group>"; };
 		181903EC187FD4E5001FC370 /* EZHomeBiBlur.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZHomeBiBlur.h; sourceTree = "<group>"; };
 		181903ED187FD4E5001FC370 /* EZHomeBiBlur.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZHomeBiBlur.m; sourceTree = "<group>"; };
 		181903F2187FF49C001FC370 /* EZHomeBlendFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZHomeBlendFilter.h; sourceTree = "<group>"; };
@@ -659,6 +664,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		181608DD18B7333E00DD5995 /* login */ = {
+			isa = PBXGroup;
+			children = (
+				181608E018B733B500DD5995 /* EZRegisterController.h */,
+				181608E118B733B500DD5995 /* EZRegisterController.m */,
+				181608E218B733B500DD5995 /* EZRegisterController.xib */,
+			);
+			name = login;
+			sourceTree = "<group>";
+		};
 		182A54FE1862C717003D4A01 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -853,6 +868,7 @@
 		18E34685183DF54400C9D89D /* FeatherCV */ = {
 			isa = PBXGroup;
 			children = (
+				181608DD18B7333E00DD5995 /* login */,
 				18E746C518A4A26A0023967B /* afnetwork */,
 				18C0E7691861A07200D694CE /* sound_effects */,
 				18A36FE91855C1470022F0A8 /* camera */,
@@ -1362,6 +1378,7 @@
 				18E34822183F02D600C9D89D /* haarcascade_mcs_rightear.xml in Resources */,
 				18A3701E1855C2A40022F0A8 /* blur-on.png in Resources */,
 				18A370281855C2A40022F0A8 /* flash-off.png in Resources */,
+				181608E418B733B500DD5995 /* EZRegisterController.xib in Resources */,
 				18E346F4183DF9C400C9D89D /* half_love_right@2x.png in Resources */,
 				18E346E4183DF9B300C9D89D /* corner_left_bottom@2x.png in Resources */,
 				18A370381855C2A40022F0A8 /* micro_carbon.png in Resources */,
@@ -1429,6 +1446,7 @@
 				1866ADCD189FA21400DB46E2 /* EZFiveInputFilter.m in Sources */,
 				18F58B5A18716C19006CB966 /* EZGradientLayerView.m in Sources */,
 				1866ADAB18966E7000DB46E2 /* ModalAnimation.m in Sources */,
+				181608E318B733B500DD5995 /* EZRegisterController.m in Sources */,
 				18E34780183DFAA400C9D89D /* EZUploadHandler.m in Sources */,
 				1866ADB11897698900DB46E2 /* EZRaiseAnimation.m in Sources */,
 				18A3703E1859AE850022F0A8 /* EZContactTablePage.m in Sources */,

@@ -89,6 +89,7 @@
 
 - (void) registerUser:(NSDictionary*)person success:(EZEventBlock)success error:(EZEventBlock)error;
 
+- (void) registerMockUser:(EZEventBlock)success error:(EZEventBlock)error;
 
 - (void) loginUser:(NSDictionary*)loginInfo success:(EZEventBlock)success error:(EZEventBlock)error;
 

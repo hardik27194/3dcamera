@@ -60,13 +60,11 @@ NSString *const kHomeBlendFragmentShaderString = SHADER_STRING
  lowp float calcHue(lowp vec4 rawcolor)
  {
      highp float fd = distance(rawcolor.rgb, skinColor);
-     /**
-     if(fd < 0.42){
+     if(fd < 0.40){
          fd = fd * fd;
      }else{
-         fd = fd * fd + (fd - 0.42) * 1.2;
+         fd = fd * 0.6 + (fd - 0.45) * 2.0;
      }
-      **/
      return min(1.0, fd);
      //return 1.0/(exp((1.5 - distance(rawcolor.rgb, skinColor))) + 1.0);
  }
