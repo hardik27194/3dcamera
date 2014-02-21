@@ -658,9 +658,9 @@ static int photoCount = 1;
     EZDEBUG(@"Uploaded for photoID:%@, uploaded:%i", photo.photoID, photo.uploaded);
     if(!photo.uploaded){
         [[EZDataUtil getInstance] uploadPhoto:photo success:^(EZPhoto* obj){
-                EZDEBUG(@"Uploaded photoID success:%@", obj.photoID);
+            EZDEBUG(@"Uploaded photoID success:%@", obj.photoID);
         } failure:^(id err){
-                EZDEBUG(@"upload photo error:%@", err);
+            EZDEBUG(@"upload photo error:%@", err);
         }];
     }
     [[EZDataUtil getInstance] exchangePhoto:photo success:^(EZPhoto* pt){

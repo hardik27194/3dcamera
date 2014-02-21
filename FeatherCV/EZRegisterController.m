@@ -16,6 +16,12 @@
 
 @implementation EZRegisterController
 
+
+- (id) init
+{
+    return [self initWithNibName:@"EZRegisterController" bundle:nil];
+}
+
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -53,9 +59,12 @@
     };
     
     [[EZDataUtil getInstance] registerUser:registerInfo success:^(EZPerson* person){
-    
+        EZDEBUG(@"Register success");
+        if(_completedBlock){
+            _completedBlock(person);
+        }
     } error:^(id err){
-    
+        EZDEBUG(@"Register error:%@", err);
     }];
     
     
@@ -69,7 +78,7 @@
         }else if(textField == _name){
             [_password becomeFirstResponder];
         }else{
-            
+            [self startRegister:_name.text mobile:_mobile.text password:_password.text];
         }
         return true;
     }else{

@@ -98,6 +98,7 @@
     EZSaturationFilter* fixColorFilter;
     EZSaturationFilter* secFixColorFilter;
     GPUImageFilter* skinBrighter;
+    GPUImageSharpenFilter* sharpenFilter;
     GPUImagePicture *staticPicture;
     NSMutableArray* tongParameters;
     NSMutableArray* redAdjustments;
@@ -551,6 +552,7 @@
     _pageTurn = [[EZSoundEffect alloc] initWithSoundNamed:@"page_turn.aiff"];
     _shotReady = [[EZSoundEffect alloc] initWithSoundNamed:@"shot_voice.aiff"];
     _shotVoice = [[EZSoundEffect alloc] initWithSoundNamed:@"shot.wav"];
+    sharpenFilter = [[GPUImageSharpenFilter alloc] init];
     
     //set background color
     //self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"micro_carbon"]];
@@ -1196,7 +1198,7 @@
             blurCycle = 0.9;
             smallBlurRatio = 0.15;
         }
-        CGFloat adjustedFactor = 18.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
+        CGFloat adjustedFactor = 30.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
         finalBlendFilter.blurFilter.distanceNormalizationFactor = adjustedFactor;
         finalBlendFilter.blurFilter.blurSize = 1.5;
         //finalBlendFilter.blurRatio = smallBlurRatio;

@@ -109,7 +109,7 @@
 //The purpose of this functionality to make sure unregisterred user could keep inforamtion.
 - (void) registerMockUser:(EZEventBlock)success error:(EZEventBlock)error
 {
-    [EZNetworkUtility postJson:@"mockUser" parameters:nil complete:^(NSDictionary* dict){
+    [EZNetworkUtility postJson:@"register" parameters:@{@"mock":@(1)} complete:^(NSDictionary* dict){
         EZPerson* person = [[EZPerson alloc] init];
         [person fromJson:dict];
         self.currentPersonID  = person.personID;
