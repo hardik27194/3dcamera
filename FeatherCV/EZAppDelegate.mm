@@ -281,11 +281,7 @@
     **/
     //[EZDataUtil getInstance].currentPersonID = nil;
     if(![[EZDataUtil getInstance] getCurrentPersonID]){
-        [[EZDataUtil getInstance] registerUser:@{
-                            @"mobile":int2str(rand()),
-                            @"password":@"coolguy",
-                            @"name":@"coolguy"
-                            } success:^(EZPerson* ps){
+        [[EZDataUtil getInstance] registerMockUser:^(EZPerson* ps){
                                 EZDEBUG(@"successfully registerred:%@, personID:%@", ps.mobile, ps.personID);
                             } error:^(id err){
                                 EZDEBUG(@"Error detail:%@", err);

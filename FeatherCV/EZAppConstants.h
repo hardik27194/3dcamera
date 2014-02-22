@@ -21,6 +21,8 @@
 
 #define animateCoverViewTag 20000120
 
+#define shaderSkinColor vec3(1.0,0.75,0.58)
+
 #define VinesGray RGBCOLOR(230, 231, 226);
 
 #define normalBarTitleColor RGBCOLOR(144,126,117)

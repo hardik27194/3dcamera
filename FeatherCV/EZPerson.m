@@ -26,6 +26,7 @@
              @"mobile":null2Empty(_mobile),
              @"avatar":null2Empty(_avatar),
              @"email":null2Empty(_email),
+             @"mock":@(_mock),
              @"joinedTime":_joinedTime?isoDateFormat(_joinedTime):@"",
              @"joined":@(_joined)
              };
@@ -43,6 +44,7 @@
         _joinedTime = [[EZDataUtil getInstance].isoFormatter  dateFromString:[dict objectForKey:@"joinedTime"]];
     }
     _joined = [[dict objectForKey:@"joined"] integerValue];
+    _mock = [[dict objectForKey:@"mock"] integerValue];
     //return self;
 }
 

@@ -629,10 +629,7 @@ static int photoCount = 1;
 
 }
 
-- (void) changePhotoStatus:(EZPhoto*)photo success:(EZEventBlock)success failed:(EZEventBlock)failed
-{
-    
-}
+
 
 - (void) uploadAndExchange:(EZPhoto*)photo sucess:(EZEventBlock)block failed:(EZEventBlock)failed
 {
@@ -650,30 +647,6 @@ static int photoCount = 1;
 
 }
 
-- (void) testBackendCommunication:(EZPhoto*)photo exchanged:(EZEventBlock)block
-{
-    static int sequence = 0;
-    //if((sequence % 2) == 0){
-    //NSString* storedFile = [EZFileUtil saveImageToCache:[myPhoto getScreenImage]];
-    EZDEBUG(@"Uploaded for photoID:%@, uploaded:%i", photo.photoID, photo.uploaded);
-    if(!photo.uploaded){
-        [[EZDataUtil getInstance] uploadPhoto:photo success:^(EZPhoto* obj){
-            EZDEBUG(@"Uploaded photoID success:%@", obj.photoID);
-        } failure:^(id err){
-            EZDEBUG(@"upload photo error:%@", err);
-        }];
-    }
-    [[EZDataUtil getInstance] exchangePhoto:photo success:^(EZPhoto* pt){
-        block(pt);
-    } failure:^(id err){
-        EZDEBUG(@"Photo exchange failure:%@", err);
-    }];
-    //}else{
-    
-    //}
-    ++sequence;
-    
-}
 
 - (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
 {

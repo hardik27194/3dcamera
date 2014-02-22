@@ -19,7 +19,7 @@ NSString *const kHomeBlendFragmentShaderString = SHADER_STRING
  varying highp vec2 textureCoordinate2;
  
  //edge
- varying highp vec2 textureCoordinate3;
+ //varying highp vec2 textureCoordinate3;
  
  //small blur
  //varying highp vec2 textureCoordinate4;
@@ -28,9 +28,9 @@ NSString *const kHomeBlendFragmentShaderString = SHADER_STRING
  
  uniform sampler2D inputImageTexture;
  uniform sampler2D inputImageTexture2;
- uniform sampler2D inputImageTexture3;
+ //uniform sampler2D inputImageTexture3;
  //uniform sampler2D inputImageTexture4;
- uniform lowp vec3 skinColor;
+ //uniform lowp vec3 skinColor;
  uniform lowp vec4 faceRegion;
  
  uniform lowp float blurRatio;
@@ -42,6 +42,7 @@ NSString *const kHomeBlendFragmentShaderString = SHADER_STRING
  const lowp vec4  kRGBToI     = vec4 (0.595716, -0.274453, -0.321263, 0.0);
  const lowp vec4  kRGBToQ     = vec4 (0.211456, -0.522591, 0.31135, 0.0);
  const highp vec3 W = vec3(0.2125, 0.7154, 0.0721);
+ const lowp vec3  skinColor = shaderSkinColor;
  lowp float calcHueOld(lowp vec4 rawcolor)
  {
 
@@ -86,10 +87,10 @@ NSString *const kHomeBlendFragmentShaderString = SHADER_STRING
      
      lowp vec4 sharpImageColor = texture2D(inputImageTexture, textureCoordinate);
      //lowp vec4 smallBlurColor = texture2D(inputImageTexture3, textureCoordinate3);
-     lowp vec4 detectedEdge = texture2D(inputImageTexture2, textureCoordinate2);
-     lowp vec4 blurredImageColor = texture2D(inputImageTexture3, textureCoordinate3);
+     //lowp vec4 detectedEdge = texture2D(inputImageTexture2, textureCoordinate2);
+     lowp vec4 blurredImageColor = texture2D(inputImageTexture2, textureCoordinate2);
 
-     lowp float finalEdgeRatio = detectedEdge.r;
+     //lowp float finalEdgeRatio = detectedEdge.r;
      /**
      if(showFace == 1 && textureCoordinate.x > faceRegion.x && textureCoordinate.x < faceRegion.y && textureCoordinate.y > faceRegion.z && textureCoordinate.y < faceRegion.w){
          gl_FragColor = sharpImageColor * 0.3;
@@ -99,27 +100,27 @@ NSString *const kHomeBlendFragmentShaderString = SHADER_STRING
       **/
      if(imageMode == 0){
          lowp float colorDist = calcHue(sharpImageColor);
-         lowp float lineDist = calcLineDist(sharpImageColor);
-         lowp vec3 darkColor = vec3(0.35);
-         lowp float brightness = dot(sharpImageColor.rgb, W);
-         brightness = brightness * brightness;
-         finalEdgeRatio = finalEdgeRatio * (1.0 - brightness);
+         //lowp float lineDist = calcLineDist(sharpImageColor);
+         //lowp vec3 darkColor = vec3(0.35);
+         //lowp float brightness = dot(sharpImageColor.rgb, W);
+         //brightness = brightness * brightness;
+         //finalEdgeRatio = finalEdgeRatio * (1.0 - brightness);
          //colorDist * sharpImageColor +  (1.0 - colorDist) *
          
          //if(finalEdgeRatio > 0.08){
          //    finalEdgeRatio = 1.0;
          //}
-         finalEdgeRatio = finalEdgeRatio * 2.0;
+         //finalEdgeRatio = finalEdgeRatio * 2.0;
          
          //else if(finalEdgeRatio < 0.2){
          //    finalEdgeRatio = 0.0;
          //}
-         finalEdgeRatio = min(finalEdgeRatio * lineDist, 1.0);
+         //finalEdgeRatio = min(finalEdgeRatio * lineDist, 1.0);
          //gl_FragColor = colorDist * sharpImageColor +  (1.0 - colorDist) * (sharpImageColor * finalEdgeRatio + (1.0 - finalEdgeRatio) * (sharpImageColor*blurRatio + (1.0 - blurRatio)*blurredImageColor));// finalEdgeRatio + (1.0 - finalEdgeRatio) * vec4(0.5);
          gl_FragColor = colorDist * sharpImageColor +  (1.0 - colorDist) * (sharpImageColor*blurRatio + (1.0 - blurRatio)*blurredImageColor);
          
      }else if(imageMode == 1){
-         gl_FragColor = detectedEdge;
+         gl_FragColor = sharpImageColor;
      }else if(imageMode == 2){
          gl_FragColor = sharpImageColor;
      }
@@ -182,23 +183,27 @@ NSString *const kFaceBlurFragmentShaderString = SHADER_STRING
     //_blurFilter.blurSize = 5.0;
     //[self addFilter:_blurFilter];
     //[self addFilter:_smallBlurFilter];
-    _edgeFilter = [[EZHomeEdgeFilter alloc] init];
-    [self addFilter:_edgeFilter];
+    //_edgeFilter = [[EZHomeEdgeFilter alloc] init];
+    //[self addFilter:_edgeFilter];
     //[_edgeFilter addTarget:_edgeBlurFilter];
     // Second pass: combine the blurred image with the original sharp one
-    _combineFilter = [[GPUImageThreeInputFilter alloc] initWithFragmentShaderFromString:kHomeBlendFragmentShaderString];
-    [self addTarget:_blurFilter];
+    _combineFilter = [[GPUImageTwoInputFilter alloc] initWithFragmentShaderFromString:kHomeBlendFragmentShaderString];
+    
+    _sharpenFilter = [[GPUImageSharpenFilter alloc] init];
+    _sharpenFilter.sharpness = 0.3;
+    [self addTarget:_sharpenFilter];
+    [_sharpenFilter addTarget:_blurFilter];
     [self addTarget:_combineFilter];
-    [_edgeFilter addTarget:_combineFilter atTextureLocation:1];
+    //[_edgeFilter addTarget:_combineFilter atTextureLocation:1];
     //[_skinBrighter addTarget:_combineFilter atTextureLocation:0];
-    [_blurFilter addTarget:_combineFilter atTextureLocation:2];
+    [_blurFilter addTarget:_combineFilter atTextureLocation:1];
     //[_smallBlurFilter addTarget:_combineFilter atTextureLocation:2];
     //[_edgeFilter addTarget:_combineFilter atTextureLocation:3];
     
     // To prevent double updating of this filter, disable updates from the sharp image side
     //[_combineFilter disableSecondFrameCheck];
-    self.initialFilters = [NSArray arrayWithObjects:_edgeFilter,_blurFilter, _combineFilter, nil];
-    self.skinColors = @[@(0.9),@(0.55),@(0.38)];
+    self.initialFilters = [NSArray arrayWithObjects:_sharpenFilter,_blurFilter, _combineFilter, nil];
+    //self.skinColors = @[@(1.0),@(0.75),@(0.58)];
     self.terminalFilter = _combineFilter;
     //self.edgeRatio =
     self.imageMode = 0;
@@ -221,6 +226,7 @@ NSString *const kFaceBlurFragmentShaderString = SHADER_STRING
     [_combineFilter setInteger:imageMode forUniformName:@"imageMode"];
 }
 
+/**
 - (void) setSkinColors:(NSArray *)skinColors
 {
     GPUVector3 skinColor;
@@ -230,7 +236,7 @@ NSString *const kFaceBlurFragmentShaderString = SHADER_STRING
     _skinColors = skinColors;
     [_combineFilter setFloatVec3:skinColor forUniformName:@"skinColor"];
 }
-
+**/
 - (void) setShowFace:(int)showFace
 {
     _showFace = showFace;

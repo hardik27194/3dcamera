@@ -24,6 +24,7 @@
 		182A55091862C735003D4A01 /* libGPUImage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 182A55041862C71A003D4A01 /* libGPUImage.a */; };
 		182A550D18643141003D4A01 /* EZFaceBlurFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 182A550C18643140003D4A01 /* EZFaceBlurFilter.m */; };
 		182A551018645374003D4A01 /* EZFaceBlurFilter2.m in Sources */ = {isa = PBXBuildFile; fileRef = 182A550F18645374003D4A01 /* EZFaceBlurFilter2.m */; };
+		184DBE7218B8D8A400239F0F /* EZSkinSharpen.m in Sources */ = {isa = PBXBuildFile; fileRef = 184DBE7118B8D8A400239F0F /* EZSkinSharpen.m */; };
 		18512A331861BE6300282264 /* shot_voice.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 18512A321861BE6300282264 /* shot_voice.aiff */; };
 		1866AD8C1890FC7000DB46E2 /* EZSkinBrighter.m in Sources */ = {isa = PBXBuildFile; fileRef = 1866AD8B1890FC7000DB46E2 /* EZSkinBrighter.m */; };
 		1866AD9C18965EF000DB46E2 /* EZCycleTongFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 1866AD9B18965EF000DB46E2 /* EZCycleTongFilter.m */; };
@@ -304,6 +305,8 @@
 		182A550C18643140003D4A01 /* EZFaceBlurFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZFaceBlurFilter.m; sourceTree = "<group>"; };
 		182A550E18645374003D4A01 /* EZFaceBlurFilter2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZFaceBlurFilter2.h; sourceTree = "<group>"; };
 		182A550F18645374003D4A01 /* EZFaceBlurFilter2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZFaceBlurFilter2.m; sourceTree = "<group>"; };
+		184DBE7018B8D8A400239F0F /* EZSkinSharpen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZSkinSharpen.h; sourceTree = "<group>"; };
+		184DBE7118B8D8A400239F0F /* EZSkinSharpen.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZSkinSharpen.m; sourceTree = "<group>"; };
 		18512A321861BE6300282264 /* shot_voice.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = shot_voice.aiff; sourceTree = "<group>"; };
 		1866AD8A1890FC7000DB46E2 /* EZSkinBrighter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZSkinBrighter.h; sourceTree = "<group>"; };
 		1866AD8B1890FC7000DB46E2 /* EZSkinBrighter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZSkinBrighter.m; sourceTree = "<group>"; };
@@ -767,6 +770,8 @@
 				1866ADC9189F9F5900DB46E2 /* EZSkinMaskFilter.m */,
 				181608D018B5B1A300DD5995 /* EZShapeCover.h */,
 				181608D118B5B1A300DD5995 /* EZShapeCover.m */,
+				184DBE7018B8D8A400239F0F /* EZSkinSharpen.h */,
+				184DBE7118B8D8A400239F0F /* EZSkinSharpen.m */,
 			);
 			name = camera;
 			sourceTree = "<group>";
@@ -1485,6 +1490,7 @@
 				1866ADC71898F0DB00DB46E2 /* LFGlassView.m in Sources */,
 				18E34724183DFA3300C9D89D /* EZAlbumTablePage.m in Sources */,
 				1866ADAA18966E7000DB46E2 /* BaseAnimation.m in Sources */,
+				184DBE7218B8D8A400239F0F /* EZSkinSharpen.m in Sources */,
 				181608DA18B714B900DD5995 /* EZModalDissolveAnimation.m in Sources */,
 				181608D718B70C0900DD5995 /* EZScrollController.m in Sources */,
 				18D384CB18B34D8C00CB5BF1 /* EZChatRegion.m in Sources */,

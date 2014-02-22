@@ -20,6 +20,10 @@
 
 @property (nonatomic, strong) NSString* email;
 
+//A default user
+//Anything need a mock user to success
+@property (nonatomic, assign) BOOL mock;
+
 @property (nonatomic, strong) NSDate* joinedTime;
 
 //If this user is already feather client or not

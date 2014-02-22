@@ -463,6 +463,8 @@
     GPUImageToneCurveFilter* resFilter = [[GPUImageToneCurveFilter alloc] init];
     
     [resFilter setRgbCompositeControlPoints:@[pointValue(0.0, 0.0), pointValue(0.125, 0.140), pointValue(0.25, 0.27), pointValue(0.5, 0.525), pointValue(0.75, 0.770), pointValue(1.0, 1.0)]];
+    [resFilter setRedControlPoints:@[pointValue(0.0, 0.0),pointValue(0.125, 0.13), pointValue(0.25, 0.26), pointValue(0.5, 0.51), pointValue(0.75, 0.76), pointValue(1.0, 0.99)]];
+    [resFilter setBlueControlPoints:@[pointValue(0.0, 0.0),pointValue(0.125, 0.118), pointValue(0.25, 0.243), pointValue(0.5, 0.493), pointValue(0.75, 0.743), pointValue(1.0, 0.995)]];
     //[resFilter setRedControlPoints:@[pointValue(0.0, 0.0),pointValue(0.125, 0.128), pointValue(0.25, 0.254), pointValue(0.5, 0.504), pointValue(0.75, 0.754), pointValue(1.0, 0.99)]];
     //[resFilter setGreenControlPoints:@[pointValue(0.0, 0.0),pointValue(0.125, 0.125), pointValue(0.25, 0.25), pointValue(0.5, 0.5), pointValue(0.75, 0.75), pointValue(1.0, 0.995)]];
     //[resFilter setBlueControlPoints:@[pointValue(0.0, 0.0),pointValue(0.125, 0.123), pointValue(0.25, 0.247), pointValue(0.5, 0.497), pointValue(0.75, 0.747), pointValue(1.0, 1.0)]];
@@ -553,6 +555,7 @@
     _shotReady = [[EZSoundEffect alloc] initWithSoundNamed:@"shot_voice.aiff"];
     _shotVoice = [[EZSoundEffect alloc] initWithSoundNamed:@"shot.wav"];
     sharpenFilter = [[GPUImageSharpenFilter alloc] init];
+    sharpenFilter.sharpness = 0.3;
     
     //set background color
     //self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"micro_carbon"]];
@@ -1167,9 +1170,10 @@
     if(!_disableFaceBeautify && (fobj || stillCamera.isFrontFacing || _shotMode == kSelfShotMode)){
         whiteBalancerFilter.temperature = 5500.0;
         //[redEnhanceFilter addTarget:tongFilter];
-        [redEnhanceFilter addTarget:hueFilter];
-        [hueFilter addTarget:skinBrighter];
-        [skinBrighter addTarget:finalBlendFilter];
+        [redEnhanceFilter addTarget:tongFilter];
+        [tongFilter addTarget:hueFilter];
+        [hueFilter addTarget:finalBlendFilter];
+        //[sharpenFilter addTarget:finalBlendFilter];
         [finalBlendFilter addTarget:filter];
         //[redEnhanceFilter addTarget:finalBlendFilter];
         //[secFixColorFilter addTarget:finalBlendFilter];
@@ -1198,7 +1202,7 @@
             blurCycle = 0.9;
             smallBlurRatio = 0.15;
         }
-        CGFloat adjustedFactor = 30.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
+        CGFloat adjustedFactor = 14;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
         finalBlendFilter.blurFilter.distanceNormalizationFactor = adjustedFactor;
         finalBlendFilter.blurFilter.blurSize = 1.5;
         //finalBlendFilter.blurRatio = smallBlurRatio;
@@ -1283,6 +1287,7 @@
     [darkBlurFilter removeAllTargets];
     [simpleFilter removeAllTargets];
     [redEnhanceFilter removeAllTargets];
+    [sharpenFilter removeAllTargets];
     //blur
     [blurFilter removeAllTargets];
     [hueFilter removeAllTargets];
