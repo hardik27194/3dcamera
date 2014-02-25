@@ -27,6 +27,10 @@
 @property (nonatomic, strong) NSDate* joinedTime;
 
 //If this user is already feather client or not
+//joined is good enough
+//What's the meaning of not jointed?
+//Which is really confusing.
+//joined is false, mean this is a mock user. 
 @property (nonatomic, assign) BOOL joined;
 
 - (NSDictionary*) toJson;

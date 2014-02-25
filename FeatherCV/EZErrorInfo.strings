@@ -1,0 +1,8 @@
+/* 
+  EZErrorInfo.strings
+  FeatherCV
+
+  Created by xietian on 14-2-24.
+  Copyright (c) 2014年 tiange. All rights reserved.
+*/
+"network error" = "网络连接不上，稍后再试";

@@ -23,6 +23,18 @@ SINGLETON_FOR_CLASS(EZUIUtility)
     return self;
 }
 
+
++ (UIViewController*) topMostController
+{
+    UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
+    
+    while (topController.presentedViewController) {
+        topController = topController.presentedViewController;
+    }
+    
+    return topController;
+}
+
 - (UIColor*) getBackgroundColor:(UIColor*)color
 {
     if(color){
@@ -120,6 +132,17 @@ SINGLETON_FOR_CLASS(EZUIUtility)
         //[picker release];
         _completed(originalImage);
     }
+}
+
+- (void) raiseInfoWindow:(NSString*)title info:(NSString *)info
+{
+    UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:title message:info delegate:self cancelButtonTitle:nil otherButtonTitles:nil];
+    
+    [alertView show];
+    
+    dispatch_later(1.5, ^(){
+        [alertView dismissWithClickedButtonIndex:-1 animated:YES];
+    });
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker

@@ -41,8 +41,14 @@
 
 - (void) raiseCamera:(BOOL)isAlbum controller:(UIViewController*)controller completed:(EZEventBlock)block;
 
+//This window will be disappear after some time
+- (void) raiseInfoWindow:(NSString*)title info:(NSString*)info;
+
 - (UIImagePickerController*) getCamera:(BOOL)isAlbum slide:(BOOL)slide completed:(EZEventBlock)block;
 
+//Why do I use this?
+//I want to get the controller to present my modal view.
++ (UIViewController*) topMostController;
 //+ (EZUIUtility*) getInstance;
 SINGLETON_FOR_HEADER(EZUIUtility);
 

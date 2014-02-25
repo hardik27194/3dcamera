@@ -10,4 +10,8 @@
 
 @interface EZSkinSharpen : GPUImageSharpenFilter
 
+@property (nonatomic, assign) CGFloat sharpenSize;
+
+@property (nonatomic, assign) CGFloat sharpenRatio;
+
 @end

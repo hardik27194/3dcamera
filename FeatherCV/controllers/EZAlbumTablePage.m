@@ -26,6 +26,9 @@
 #import "EZAnimationUtil.h"
 #import "EZRotateAnimation.h"
 #import "EZScrollController.h"
+#import "EZShapeCover.h"
+#import "EZSimpleClick.h"
+
 static int photoCount = 1;
 @interface EZAlbumTablePage ()
 
@@ -42,6 +45,12 @@ static int photoCount = 1;
     [self createMoreButton];
     [self.tableView registerClass:[EZPhotoCell class] forCellReuseIdentifier:@"PhotoCell"];
     return self;
+}
+
+- (UIStatusBarStyle)preferredStatusBarStyle
+{
+    EZDEBUG(@"preferred style");
+    return UIStatusBarStyleLightContent;
 }
 
 
@@ -92,6 +101,10 @@ static int photoCount = 1;
 - (void) viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    [[self navigationController] setNavigationBarHidden:YES animated:NO];
+   
+    if(![EZDataUtil getInstance].barBackground.superview)
+        [TopView addSubview:[EZDataUtil getInstance].barBackground];
     //_moreButton.alpha = 0.0;
     //[self.navigationController.navigationBar addSubview:_moreButton];
     //[UIView animateWithDuration:0.3 animations:^(){
@@ -103,6 +116,7 @@ static int photoCount = 1;
 {
     [super viewWillDisappear:animated];
     [_moreButton removeFromSuperview];
+    [[EZDataUtil getInstance].barBackground removeFromSuperview];
     _menuView.height = 0;
 }
 
@@ -370,6 +384,41 @@ static int photoCount = 1;
 
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(pickPhotoType:)];
     
+    CGRect bounds = [UIScreen mainScreen].bounds;
+    
+    CGFloat radius = 60.0;
+    
+    //dispatch_later(0.1, ^(){
+        
+    //});
+    dispatch_later(0.1, ^(){
+    
+        EZClickView* clickView = [[EZClickView alloc] initWithFrame:CGRectMake((320.0 - radius)/2.0, bounds.size.height - radius - 20.0, radius, radius)];
+    //[clickView digHole:50 color:[UIColor whiteColor] opacity:1.0];
+    //clickView.userInteractionEnabled = YES;
+    
+        
+    //UIView* borderView = [[UIView alloc] initWithFrame:CGRectMake(0, bounds.size.height - radius, radius, radius)];
+    //borderView.backgroundColor = [UIColor clearColor];
+        clickView.layer.borderColor = [UIColor whiteColor].CGColor;
+        clickView.layer.borderWidth = 4.0;
+        //[borderView enableRoundImage];
+        //[TopView addSubview:borderView];
+    //clickView.backgroundColor = [UIColor clearColor];
+    //clickView.layer.borderColor = [UIColor whiteColor].CGColor;
+    //clickView.layer.borderWidth = 4.0;
+    [clickView enableRoundImage];
+    clickView.releasedBlock = ^(id obj){
+        [weakSelf raiseCamera];
+    };
+    [TopView addSubview:clickView];
+        
+    UIView* statusBarBackground = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 20)];
+    statusBarBackground.backgroundColor = RGBCOLOR(0, 197, 213);
+    [TopView addSubview:statusBarBackground];
+    [EZDataUtil getInstance].barBackground = statusBarBackground;
+    [EZDataUtil getInstance].centerButton = clickView;
+    });
     
     
     //_observedTarget = [[EZPhoto alloc] init];
@@ -384,6 +433,7 @@ static int photoCount = 1;
     //};
     
     //[_observedTarget addObserver:self forKeyPath:@"uploaded" options:NSKeyValueObservingOptionNew context:nil];
+    
 
 }
 
@@ -715,14 +765,15 @@ static int photoCount = 1;
         [cell.frontImage setImageWithURL:str2url(switchPhoto.screenURL)];
     }
     __weak EZPhotoCell* weakCell = cell;
-    cell.frontImage.releasedBlock = ^(id obj){
+    cell.frontImage.tappedBlock = ^(id obj){
         EZDEBUG(@"Cell Released clicked");
+        [[EZUIUtility sharedEZUIUtility] raiseInfoWindow:@"测试" info:@"好好测"];
         if(switchPhoto){
             [self switchImage:weakCell displayPhoto:cp front:myPhoto back:switchPhoto];
         }
     };
     
-    cell.frontImage.longPressBlock = ^(id obj){
+    cell.frontImage.longPressed = ^(id obj){
         UIImageView* fullView = [[UIImageView alloc] initWithImage:weakCell.frontImage.image];
         fullView.contentMode = UIViewContentModeScaleToFill;
         EZDEBUG(@"Long press called %@", NSStringFromCGRect(fullView.bounds));
@@ -736,7 +787,9 @@ static int photoCount = 1;
         sc.tappedBlock = ^(UIViewController* obj){
             EZDEBUG(@"dismiss current view");
             [obj dismissViewControllerAnimated:YES completion:nil];
+            [EZDataUtil getInstance].centerButton.alpha = 1.0;
         };
+        [EZDataUtil getInstance].centerButton.alpha = 0.0;
         
     };
     return cell;

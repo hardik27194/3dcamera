@@ -234,6 +234,13 @@
     }
 }
 
+//What's the purpose of this
+//Whether we allow the login page to show off or not.
+- (void) triggerLogin:(EZEventBlock)success failure:(EZEventBlock)failure isLogin:(BOOL)isLogin
+{
+    
+}
+
 
 - (void) loginUser:(NSDictionary*)loginInfo success:(EZEventBlock)success error:(EZEventBlock)error
 {

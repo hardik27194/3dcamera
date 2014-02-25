@@ -26,6 +26,11 @@
 
 + (EZDataUtil*) getInstance;
 
+
+@property (nonatomic, strong) EZClickView* centerButton;
+
+@property (nonatomic, strong) UIView* barBackground;
+
 @property (nonatomic, strong) ALAssetsLibrary* assetLibaray;
 
 //This queue are used to execute the task without blocking the front end
@@ -93,6 +98,9 @@
 
 - (void) loginUser:(NSDictionary*)loginInfo success:(EZEventBlock)success error:(EZEventBlock)error;
 
+//What's the purpose of this
+//Whether we allow the login page to show off or not.
+- (void) triggerLogin:(EZEventBlock)success failure:(EZEventBlock)failure isLogin:(BOOL)isLogin;
 
 //This method will enable the user to upload all it's contacts information to the server.
 //The server will get the uploaded information and return a list which update the current user information.
@@ -167,6 +175,8 @@
 - (void) getAlbumPhotoCount:(EZEventBlock)success;
 
 - (void) saveImage:(UIImage*)shotImage success:(EZEventBlock)success failure:(EZEventBlock)failure;
+
+//- (void) raiseRegisterProcess:
 
 - (void) assetURLToAsset:(NSURL*)url success:(EZEventBlock)success;
 

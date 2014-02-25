@@ -61,10 +61,10 @@ NSString *const kHomeBlendFragmentShaderString = SHADER_STRING
  lowp float calcHue(lowp vec4 rawcolor)
  {
      highp float fd = distance(rawcolor.rgb, skinColor);
-     if(fd < 0.40){
+     if(fd < shaderSkinRange){
          fd = fd * fd;
      }else{
-         fd = fd * 0.6 + (fd - 0.45) * 2.0;
+         fd = fd * fd + (fd - shaderSkinRange) * 2.0;
      }
      return min(1.0, fd);
      //return 1.0/(exp((1.5 - distance(rawcolor.rgb, skinColor))) + 1.0);
@@ -117,6 +117,7 @@ NSString *const kHomeBlendFragmentShaderString = SHADER_STRING
          //}
          //finalEdgeRatio = min(finalEdgeRatio * lineDist, 1.0);
          //gl_FragColor = colorDist * sharpImageColor +  (1.0 - colorDist) * (sharpImageColor * finalEdgeRatio + (1.0 - finalEdgeRatio) * (sharpImageColor*blurRatio + (1.0 - blurRatio)*blurredImageColor));// finalEdgeRatio + (1.0 - finalEdgeRatio) * vec4(0.5);
+         //blurRatio = 0.0;
          gl_FragColor = colorDist * sharpImageColor +  (1.0 - colorDist) * (sharpImageColor*blurRatio + (1.0 - blurRatio)*blurredImageColor);
          
      }else if(imageMode == 1){
@@ -189,10 +190,11 @@ NSString *const kFaceBlurFragmentShaderString = SHADER_STRING
     // Second pass: combine the blurred image with the original sharp one
     _combineFilter = [[GPUImageTwoInputFilter alloc] initWithFragmentShaderFromString:kHomeBlendFragmentShaderString];
     
-    _sharpenFilter = [[GPUImageSharpenFilter alloc] init];
-    _sharpenFilter.sharpness = 0.3;
-    [self addTarget:_sharpenFilter];
-    [_sharpenFilter addTarget:_blurFilter];
+    //_sharpenFilter = [[GPUImageSharpenFilter alloc] init];
+    //_sharpenFilter.sharpness = 0.3;
+    //[self addTarget:_sharpenFilter];
+    //[_sharpenFilter addTarget:_blurFilter];
+    [self addTarget:_blurFilter];
     [self addTarget:_combineFilter];
     //[_edgeFilter addTarget:_combineFilter atTextureLocation:1];
     //[_skinBrighter addTarget:_combineFilter atTextureLocation:0];
@@ -202,7 +204,7 @@ NSString *const kFaceBlurFragmentShaderString = SHADER_STRING
     
     // To prevent double updating of this filter, disable updates from the sharp image side
     //[_combineFilter disableSecondFrameCheck];
-    self.initialFilters = [NSArray arrayWithObjects:_sharpenFilter,_blurFilter, _combineFilter, nil];
+    self.initialFilters = [NSArray arrayWithObjects:_blurFilter, _combineFilter, nil];
     //self.skinColors = @[@(1.0),@(0.75),@(0.58)];
     self.terminalFilter = _combineFilter;
     //self.edgeRatio =

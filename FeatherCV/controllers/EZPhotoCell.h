@@ -27,7 +27,7 @@
  **/
 @class EZClickImage;
 @class EZClickView;
-
+@class EZSimpleClick;
 
 #define MainLabelTag 20140103
 
@@ -58,7 +58,7 @@
 //The UIImage which have no effects
 //@property (nonatomic, strong) UIImageView* frontNoEffects;
 
-@property (nonatomic, strong) EZClickImage* frontImage;
+@property (nonatomic, strong) EZSimpleClick* frontImage;
 
 @property (nonatomic, strong) UIImageView* backImage;
 

@@ -10,8 +10,10 @@
 
 @interface EZShapeCover : UIView
 
-- (void) digHole;
+- (void) digHole:(CGFloat)radius color:(UIColor*)fillColor opacity:(CGFloat)opacity;
 
 @property (nonatomic, strong) CAShapeLayer* fillLayer;
+
+@property (nonatomic, strong) EZEventBlock releaseBlock;
 
 @end

@@ -87,10 +87,11 @@
 
 }
 
+/**
 - (void)viewDidLayoutSubviews
 {
 }
-
+**/
 
 - (void)scrollViewWillBeginZooming:(UIScrollView *)scrollView withView:(UIView *)view
 {

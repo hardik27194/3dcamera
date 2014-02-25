@@ -164,6 +164,11 @@ typedef enum {
 
 @property (nonatomic, assign) BOOL disableFaceBeautify;
 
+//Will pervent the duoble click from happening.
+@property (nonatomic, assign) BOOL takingPhoto;
+
+
+@property (nonatomic, strong) EZEventBlock oldBlock;
 //This method will change the turnStatus
 - (void) captureTurnedImage;
 

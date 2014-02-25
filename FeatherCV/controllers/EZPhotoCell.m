@@ -13,7 +13,7 @@
 #import "AFNetworking.h"
 #import "EZExtender.h"
 #import "UIImageView+AFNetworking.h"
-
+#import "EZSimpleClick.h"
 
 
 @implementation EZPhotoCell
@@ -88,9 +88,9 @@
     return rotateContainer;
 }
 
-- (EZClickImage*) createFrontImage
+- (EZSimpleClick*) createFrontImage
 {
-    EZClickImage* frontImage = [[EZClickImage alloc] initWithFrame:CGRectMake(0, 0, 310, 310)];
+    EZSimpleClick* frontImage = [[EZSimpleClick alloc] initWithFrame:CGRectMake(0, 0, 310, 310)];
     frontImage.contentMode = UIViewContentModeScaleAspectFit;
     frontImage.clipsToBounds = true;
     frontImage.backgroundColor = [UIColor whiteColor];
