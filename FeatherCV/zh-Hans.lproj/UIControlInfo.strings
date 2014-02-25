@@ -1,0 +1,12 @@
+/* 
+  UIControlInfo.strings
+  FeatherCV
+
+  Created by xietian on 14-2-25.
+  Copyright (c) 2014年 tiange. All rights reserved.
+*/
+
+
+"register-like" = "注册后就可以点赞了。";
+"register-like-error" = "注册失败";
+"Please try it later" = "请稍后重试";

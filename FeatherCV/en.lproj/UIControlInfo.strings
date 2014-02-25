@@ -1,0 +1,12 @@
+/* 
+  UIControlInfo.strings
+  FeatherCV
+
+  Created by xietian on 14-2-25.
+  Copyright (c) 2014年 tiange. All rights reserved.
+*/
+
+
+"register-like" = "Once You Register Feather, You could like your favorite photos";
+"register-like-error" = "Encounter error while try to register";
+"Please try it later" = "Please try it later";

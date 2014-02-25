@@ -19,6 +19,7 @@
 #import "EZNetworkUtility.h"
 #import "EZExtender.h"
 #import "UIImageView+AFNetworking.h"
+#import "EZRegisterController.h"
 
 
 @implementation EZAlbumResult
@@ -236,8 +237,16 @@
 
 //What's the purpose of this
 //Whether we allow the login page to show off or not.
-- (void) triggerLogin:(EZEventBlock)success failure:(EZEventBlock)failure isLogin:(BOOL)isLogin
+//Why do we ask them to register
+//Login or register can 
+- (void) triggerLogin:(EZEventBlock)success failure:(EZEventBlock)failure reason:(NSString*)reason isLogin:(BOOL)isLogin
 {
+    EZRegisterController* registerCtl = [[EZRegisterController alloc] init];
+    registerCtl.registerReason.text = reason;
+    registerCtl.completedBlock = success;
+    registerCtl.cancelBlock = failure;
+    UIViewController* presenter = [EZUIUtility topMostController];
+    [presenter presentViewController:registerCtl animated:YES completion:nil];
     
 }
 
@@ -505,12 +514,37 @@
 
 //Should I give the person id or what?
 //Let's give it. Expose the parameter make the function status free. More easier to debug
-- (void) likedPhoto:(int)combinePhotoID success:(EZEventBlock)success failure:(EZEventBlock)failure
+- (void) likedPhoto:(NSString*)combinePhotoID success:(EZEventBlock)success failure:(EZEventBlock)failure
 {
-    EZDEBUG(@"combinePhotoID:%i", combinePhotoID);
-    dispatch_async(dispatch_get_main_queue(), ^(){
-        success(nil);
-    });
+    EZDEBUG(@"combinePhotoID:%@", combinePhotoID);
+    if(!self.currentPersonID){
+        //Not login user.
+        //
+        [self triggerLogin:^(EZPerson* ps){
+            [self rawLikePhoto:combinePhotoID success:success failure:failure];
+        } failure:^(id obj){
+            //failure(macroControlInfo(@""));
+            [[EZUIUtility sharedEZUIUtility] raiseInfoWindow:macroControlInfo(@"register-like-error") info:macroControlInfo(@"Please try it later")];
+        } reason:macroControlInfo(@"register-like") isLogin:NO];
+    }else{
+        EZDEBUG(@"Will like directly");
+        [self rawLikePhoto:combinePhotoID success:success failure:failure];
+    }
+
+}
+
+//Will not trigger login.
+- (void) rawLikePhoto:(NSString*)photoID success:(EZEventBlock)success failure:(EZEventBlock)failure
+{
+    [EZNetworkUtility postParameterAsJson:@"photo/info" parameters:@{@"cmd":@"like", @"photoID":photoID} complete:^(id info){
+        EZDEBUG(@"Like photo result:%@", info);
+    } failblk:^(id info){
+        if(failure){
+            EZDEBUG(@"Like photo error:%@", info);
+            failure(info);
+        }
+    }];
+    
 }
 
 

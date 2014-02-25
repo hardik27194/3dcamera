@@ -16,13 +16,15 @@
 #define photoPageSize 5
 
 
+#define macroControlInfo(keyName) NSLocalizedStringFromTable(keyName, @"UIControlInfo", nil)
+
 #define BlurBackground RGBA(240, 240, 240, 128)
 //Interesting.
 #define turningMockPageTag 20070424
 
 #define animateCoverViewTag 20000120
 
-#define shaderSkinColor vec3(0.95,0.65,0.48)
+#define shaderSkinColor vec3(0.93,0.68,0.51)
 
 #define shaderSkinRange 0.4
 

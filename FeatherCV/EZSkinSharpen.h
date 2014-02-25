@@ -14,4 +14,6 @@
 
 @property (nonatomic, assign) CGFloat sharpenRatio;
 
+@property (nonatomic, assign) CGFloat sharpenBar;
+
 @end

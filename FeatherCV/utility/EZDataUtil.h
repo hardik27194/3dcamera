@@ -82,7 +82,7 @@
 - (void) cleanLogin;
 //Should I give the person id or what?
 //Let's give it. Expose the parameter make the function status free. More easier to debug
-- (void) likedPhoto:(int)photoID success:(EZEventBlock)success failure:(EZEventBlock)failure;
+- (void) likedPhoto:(NSString*)photoID success:(EZEventBlock)success failure:(EZEventBlock)failure;
 
 - (void) prefetchImage:(NSString*) url success:(EZEventBlock)success failure:(EZEventBlock)failure;
 

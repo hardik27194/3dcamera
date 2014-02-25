@@ -82,8 +82,8 @@ typedef enum {
 @property (nonatomic, weak) IBOutlet UILabel* redGapText;
 @property (nonatomic, weak) IBOutlet UILabel* blueGapText;
 @property (nonatomic, weak) IBOutlet UIButton *photoCaptureButton;
-@property (nonatomic, weak) IBOutlet UIButton *cancelButton;
-@property (nonatomic, weak) IBOutlet UIButton *configButton;
+@property (nonatomic, strong) UIButton *cancelButton;
+@property (nonatomic, strong) UIButton *configButton;
 
 @property (nonatomic, weak) IBOutlet UIButton *cameraToggleButton;
 @property (nonatomic, weak) IBOutlet UIButton *blurToggleButton;

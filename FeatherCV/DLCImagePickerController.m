@@ -560,11 +560,13 @@
     
     bigSharpenFilter = [[EZSkinSharpen alloc] init];
     bigSharpenFilter.sharpenSize = 3.2;
-    bigSharpenFilter.sharpenRatio = 0.034;
+    bigSharpenFilter.sharpenRatio = 0.1;
+    bigSharpenFilter.sharpenBar = 0.0;
     
     smallSharpenFilter = [[EZSkinSharpen alloc] init];
     smallSharpenFilter.sharpenSize = 1.6;
-    smallSharpenFilter.sharpenRatio = 0.125;
+    smallSharpenFilter.sharpenRatio = 0.1;
+    smallSharpenFilter.sharpenBar = 0.0;
     
     //sharpenFilter.sharpness = 0.3;
     
@@ -636,6 +638,24 @@
     [tapRecognizer addTarget:self action:@selector(handleTapToFocus:)];
     [shapeCover addGestureRecognizer:tapRecognizer];
     [self.view addSubview:shapeCover];
+    
+    
+    cancelButton = [[UIButton alloc] initWithFrame:CGRectMake(5, bound.size.height - 44 - 10, 60, 44)];
+    [cancelButton setTitle:@"取消" forState:UIControlStateNormal];
+    [cancelButton addTarget:self action:@selector(cancel:) forControlEvents:UIControlEventTouchUpInside];
+    cancelButton.center = CGPointMake(5+30, 35);
+    
+    
+    _configButton = [[UIButton alloc] initWithFrame:CGRectMake(320 - 60 - 5, bound.size.height - 44 - 10, 60, 44)];
+    [_configButton setTitle:@"设置" forState:UIControlStateNormal];
+    [_configButton addTarget:self action:@selector(configClicked:) forControlEvents:UIControlEventTouchUpInside];
+    _configButton.center = CGPointMake(315 - 30 - 5, 35);
+    
+    [self.view addSubview:cancelButton];
+    [self.view addSubview:_configButton];
+                     
+                     
+                     
     
     //roundBackground = [[UIView alloc] initWithFrame:imageView.frame];
     //roundBackground.backgroundColor = [UIColor blackColor];
@@ -1193,9 +1213,9 @@
         //[redEnhanceFilter addTarget:tongFilter];
         [redEnhanceFilter addTarget:tongFilter];
         [tongFilter addTarget:hueFilter];
-        [hueFilter addTarget:bigSharpenFilter];
-        [bigSharpenFilter addTarget:smallSharpenFilter];
-        [smallSharpenFilter addTarget:finalBlendFilter];
+        [hueFilter addTarget:smallSharpenFilter];
+        [smallSharpenFilter addTarget:bigSharpenFilter];
+        [bigSharpenFilter addTarget:finalBlendFilter];
         [finalBlendFilter addTarget:filter];
         //[redEnhanceFilter addTarget:finalBlendFilter];
         //[secFixColorFilter addTarget:finalBlendFilter];
@@ -1224,9 +1244,9 @@
             blurCycle = 0.9;
             smallBlurRatio = 0.15;
         }
-        CGFloat adjustedFactor = 17.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
+        CGFloat adjustedFactor = 16.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
         finalBlendFilter.blurFilter.distanceNormalizationFactor = adjustedFactor;
-        finalBlendFilter.blurFilter.blurSize = 2.5;
+        finalBlendFilter.blurFilter.blurSize = 2.5;//fobj.orgRegion.size.width;
         //finalBlendFilter.blurRatio = smallBlurRatio;
         //finalBlendFilter.imageMode = 0;
         finalBlendFilter.showFace = 1;

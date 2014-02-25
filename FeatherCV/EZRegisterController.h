@@ -12,6 +12,8 @@
 
 @property (nonatomic, strong) IBOutlet UILabel* registerTitle;
 
+@property (nonatomic, strong) IBOutlet UILabel* registerReason;
+
 @property (nonatomic, strong) IBOutlet UILabel* nameTitle;
 
 @property (nonatomic, strong) IBOutlet UILabel* mobileTitle;
@@ -27,6 +29,10 @@
 @property (nonatomic, strong) IBOutlet UIButton* registerButton;
 
 @property (nonatomic, strong) EZEventBlock completedBlock;
+
+//I will have a ErrorInfo definition in this code.
+//Not all block need this detail information.
+@property (nonatomic, strong) EZEventBlock cancelBlock;
 
 - (IBAction) registerClicked:(id)sender;
 

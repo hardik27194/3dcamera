@@ -49,6 +49,7 @@
     return res;
 }
 
+
 - (NSDictionary*) toJson
 {
     if(_photoID){
@@ -66,8 +67,8 @@
              @"height":@(_size.height),
              @"createdTime":_createdTime?isoDateFormat(_createdTime):@"",
              @"conversations":[self conversationToJson],
-             @"photoRelations":[self relationsToJson]
-             
+             @"photoRelations":[self relationsToJson],
+             @"liked":_liked.count?_liked:@[]
                  };
     }else{
         return @{
@@ -83,7 +84,8 @@
                  @"height":@(_size.height),
                  @"createdTime":_createdTime?isoDateFormat(_createdTime):@"",
                  @"conversations":[self conversationToJson],
-                 @"photoRelations":[self relationsToJson]
+                 @"photoRelations":[self relationsToJson],
+                 @"liked":_liked.count?_liked:@[]
                  };
 
     }
@@ -109,7 +111,7 @@
     _createdTime = isoStr2Date([dict objectForKey:@"createdTime"]);
     _screenURL = [dict objectForKey:@"screenURL"];
     _conversations = [self conversationFromJson:[dict objectForKey:@"conversations"]];
-    
+    _liked =[NSMutableArray arrayWithArray:[dict objectForKey:@"liked"]];
     CGFloat width = [[dict objectForKey:@"width"] floatValue];
     CGFloat height = [[dict objectForKey:@"height"] floatValue];
 

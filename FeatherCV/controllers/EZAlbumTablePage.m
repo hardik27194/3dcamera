@@ -393,7 +393,7 @@ static int photoCount = 1;
     //});
     dispatch_later(0.1, ^(){
     
-        EZClickView* clickView = [[EZClickView alloc] initWithFrame:CGRectMake((320.0 - radius)/2.0, bounds.size.height - radius - 20.0, radius, radius)];
+        EZClickView* clickView = [[EZClickView alloc] initWithFrame:CGRectMake((320.0 - radius)/2.0, bounds.size.height - radius - 2.0, radius, radius)];
     //[clickView digHole:50 color:[UIColor whiteColor] opacity:1.0];
     //clickView.userInteractionEnabled = YES;
     
@@ -407,10 +407,11 @@ static int photoCount = 1;
     //clickView.backgroundColor = [UIColor clearColor];
     //clickView.layer.borderColor = [UIColor whiteColor].CGColor;
     //clickView.layer.borderWidth = 4.0;
-    [clickView enableRoundImage];
-    clickView.releasedBlock = ^(id obj){
+        [clickView enableRoundImage];
+        clickView.releasedBlock = ^(id obj){
         [weakSelf raiseCamera];
     };
+    clickView.center = CGPointMake(160, bounds.size.height - (30 + 5));
     [TopView addSubview:clickView];
         
     UIView* statusBarBackground = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 20)];
@@ -437,27 +438,6 @@ static int photoCount = 1;
 
 }
 
-- (void) testHomeMadeRotation
-{
-    
-    EZClickImage* clickView = [[EZClickImage alloc] initWithFrame:CGRectMake(0, 100, 200, 200)];
-    static int type = 0;
-    clickView.image = [UIImage imageNamed:@"header_1"];
-    clickView.backgroundColor = RGBCOLOR(255, 128, 128);
-    [self.tableView addSubview:clickView];
-    //clickView.layer.anchorPoint = CGPointMake(0.5, 0.5);
-    clickView.releasedBlock = ^(id obj){
-        EZRotateAnimation* rotateAnim = [[EZRotateAnimation alloc] init:clickView interval:3.0 rad:1.0 repeat:type];
-        //_holder = rotateAnim;
-        //[[EZAnimationUtil sharedEZAnimationUtil] addAnimation:rotateAnim];
-        [UIView animateWithDuration:0.3 animations:^(){
-            
-            
-        }];
-        EZDEBUG(@"start animate:%i", type);
-        ++type;
-    };
-}
 
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context {
     EZDEBUG(@"Key path get called %@, object type:%@", keyPath, object);
@@ -748,6 +728,7 @@ static int photoCount = 1;
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     EZDisplayPhoto* cp = [_combinedPhotos objectAtIndex:indexPath.row];
     cell.backgroundColor = VinesGray;
+    
     //This is for later update purpose. great, let's get whole thing up and run.
     cell.currentPos = indexPath.row;
     //EZCombinedPhoto* curPhoto = [cp.combinedPhotos objectAtIndex:cp.selectedCombinePhoto];
@@ -771,6 +752,20 @@ static int photoCount = 1;
         if(switchPhoto){
             [self switchImage:weakCell displayPhoto:cp front:myPhoto back:switchPhoto];
         }
+    };
+    
+    cell.clickHeart.releasedBlock = ^(id obj){
+        EZDEBUG(@"Like called");
+        [[EZDataUtil getInstance] likedPhoto:switchPhoto.photoID success:^(id obj){
+            EZDEBUG(@"likeed");
+            if(weakCell.currentPos == indexPath.row){
+                weakCell.clickHeart.backgroundColor = [UIColor redColor];
+            }
+            //switchPhoto;
+        } failure:^(id obj){
+            EZDEBUG(@"failed to like the photo");
+        }];
+    
     };
     
     cell.frontImage.longPressed = ^(id obj){

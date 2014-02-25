@@ -24,6 +24,8 @@ NSString *const kImageHomeSharpenFragmentShaderString = SHADER_STRING
  
  uniform lowp float sharpenRatio;
  
+ uniform lowp float sharpenBar;
+ 
  const lowp vec3 skinColor = shaderSkinColor;
  
  lowp float calcHue(mediump vec3 rawcolor)
@@ -51,10 +53,15 @@ NSString *const kImageHomeSharpenFragmentShaderString = SHADER_STRING
      //highp float sharpDist = distance(sharpGap, sharpGap);
      highp float sharpDist = sqrt(sharpGap.x * sharpGap.x + sharpGap.y * sharpGap.y + sharpGap.z * sharpGap.z);
      
-     if(sharpDist < 0.3){
+     
+     if(sharpDist < sharpenBar){
          sharpDist = sharpDist * sharpDist;
      }else{
-         sharpDist = sharpDist * sharpDist + (sharpDist - 0.3) * 2.0;
+         
+         sharpDist = sharpDist + (sharpDist - sharpenBar);
+         if(sharpDist > 0.4){
+             sharpDist = 0.4 + (sharpDist - 0.4) * 0.1;
+         }
      }
      lowp float colorDist = calcHue(textureColor);
      sharpDist = sharpDist * colorDist * sharpenRatio;
@@ -72,10 +79,13 @@ NSString *const kImageHomeSharpenFragmentShaderString = SHADER_STRING
 - (id) init
 {
     self = [super initWithFragmentShaderFromString:kImageHomeSharpenFragmentShaderString];
-    _sharpenSize = 1.0;
-    _sharpenRatio = 0.1;
+    self.sharpenSize = 1.0;
+    self.sharpenRatio = 0.1;
+    self.sharpenBar = 0.1;
     return self;
 }
+
+
 
 - (void)setupFilterForSize:(CGSize)filterFrameSize;
 {
@@ -98,7 +108,15 @@ NSString *const kImageHomeSharpenFragmentShaderString = SHADER_STRING
 
 - (void) setSharpenRatio:(CGFloat)sharpenRatio
 {
+    _sharpenRatio = sharpenRatio;
     [self setFloat:sharpenRatio forUniformName:@"sharpenRatio"];
+}
+
+
+- (void) setSharpenBar:(CGFloat)sharpenBar
+{
+    _sharpenBar = sharpenBar;
+    [self setFloat:_sharpenBar forUniformName:@"sharpenBar"];
 }
 
 @end

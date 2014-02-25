@@ -84,6 +84,7 @@
 
 @property (nonatomic, strong) EZEventBlock clicked;
 
+@property (nonatomic, strong) EZClickImage* clickHeart;
 //Name of the current image
 @property (nonatomic, strong) UILabel* name;
 

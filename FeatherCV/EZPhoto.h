@@ -25,6 +25,10 @@ typedef enum {
 @property (nonatomic, strong) NSString* photoID;
 
 @property (nonatomic, strong) EZPerson* owner;
+
+//Who has liked this photo.
+//Add the user id into this place
+@property (nonatomic, strong) NSMutableArray* liked;
 //@property (nonatomic, assign) int ownerID;
 
 //@property (nonatomic, assign) int otherID;

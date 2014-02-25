@@ -163,7 +163,7 @@ alpha:(a)/255.0f]
 #define int2str(intVal) [NSString stringWithFormat:@"%i",intVal]
 #define float2str(fVal) [NSString stringWithFormat:@"%f",fVal]
 #define str2json(str) [EZNetworkUtility str2json:str]
-#define currentLoginID  [EZUserUtil getInstance].getCurrentID
+#define currentLoginID  [EZUserUtil getInstance].currentPersonID
 #define uid2person(uid) [[EZUserUtil getInstance] id2user:uid]
 #define currentLoginUser [EZUserUtil getInstance].getCurrentUser
 #define str2url(strs) [NSURL URLWithString:strs]

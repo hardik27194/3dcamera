@@ -129,8 +129,10 @@ NSString *const kGPUImageMyColorFragmentShaderString = SHADER_STRING
           **/
      }else if(red2Green < 0.0 && blue2Green < 0.0 && greenLevelDiff > 0.0){
          lowp float deltaGreen = red2Green * red2Green * greenRatio * greenLevelDiff;
+         lowp float halfDelta = deltaGreen/2.0;
          fixRedColor.g = min(1.0, sharpImageColor.g + deltaGreen);
-         fixRedColor.r = max(0.0, sharpImageColor.r - deltaGreen);
+         fixRedColor.r = max(0.0, sharpImageColor.r - halfDelta);
+         fixRedColor.b = max(0.0, sharpImageColor.b - halfDelta);
      }
      gl_FragColor = fixRedColor;
  }

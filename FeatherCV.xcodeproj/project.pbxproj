@@ -27,6 +27,7 @@
 		184DBE7218B8D8A400239F0F /* EZSkinSharpen.m in Sources */ = {isa = PBXBuildFile; fileRef = 184DBE7118B8D8A400239F0F /* EZSkinSharpen.m */; };
 		184DBE7718BB476F00239F0F /* EZSimpleClick.m in Sources */ = {isa = PBXBuildFile; fileRef = 184DBE7618BB476F00239F0F /* EZSimpleClick.m */; };
 		184DBE7918BB51DB00239F0F /* EZErrorInfo.strings in Resources */ = {isa = PBXBuildFile; fileRef = 184DBE7818BB51DB00239F0F /* EZErrorInfo.strings */; };
+		184DBE7C18BC909000239F0F /* UIControlInfo.strings in Resources */ = {isa = PBXBuildFile; fileRef = 184DBE7E18BC909000239F0F /* UIControlInfo.strings */; };
 		18512A331861BE6300282264 /* shot_voice.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 18512A321861BE6300282264 /* shot_voice.aiff */; };
 		1866AD8C1890FC7000DB46E2 /* EZSkinBrighter.m in Sources */ = {isa = PBXBuildFile; fileRef = 1866AD8B1890FC7000DB46E2 /* EZSkinBrighter.m */; };
 		1866AD9C18965EF000DB46E2 /* EZCycleTongFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 1866AD9B18965EF000DB46E2 /* EZCycleTongFilter.m */; };
@@ -312,6 +313,8 @@
 		184DBE7518BB476F00239F0F /* EZSimpleClick.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZSimpleClick.h; sourceTree = "<group>"; };
 		184DBE7618BB476F00239F0F /* EZSimpleClick.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZSimpleClick.m; sourceTree = "<group>"; };
 		184DBE7818BB51DB00239F0F /* EZErrorInfo.strings */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; path = EZErrorInfo.strings; sourceTree = "<group>"; };
+		184DBE7D18BC909000239F0F /* en */ = {isa = PBXFileReference; lastKnownFileType = file; name = en; path = en.lproj/UIControlInfo.strings; sourceTree = "<group>"; };
+		184DBE7F18BC909D00239F0F /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = file; name = "zh-Hans"; path = "zh-Hans.lproj/UIControlInfo.strings"; sourceTree = "<group>"; };
 		18512A321861BE6300282264 /* shot_voice.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = shot_voice.aiff; sourceTree = "<group>"; };
 		1866AD8A1890FC7000DB46E2 /* EZSkinBrighter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZSkinBrighter.h; sourceTree = "<group>"; };
 		1866AD8B1890FC7000DB46E2 /* EZSkinBrighter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZSkinBrighter.m; sourceTree = "<group>"; };
@@ -910,6 +913,7 @@
 				18E3468B183DF54400C9D89D /* main.m */,
 				18E3468D183DF54400C9D89D /* FeatherCV-Prefix.pch */,
 				184DBE7818BB51DB00239F0F /* EZErrorInfo.strings */,
+				184DBE7E18BC909000239F0F /* UIControlInfo.strings */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -1379,6 +1383,7 @@
 				18E3481D183F02D600C9D89D /* haarcascade_mcs_eyepair_small.xml in Resources */,
 				18E34827183F02D600C9D89D /* haarcascade_smile.xml in Resources */,
 				18F58B6C18719071006CB966 /* border_right.png in Resources */,
+				184DBE7C18BC909000239F0F /* UIControlInfo.strings in Resources */,
 				18E346FE183DF9C400C9D89D /* default-like-btn@2x.png in Resources */,
 				18E346FC183DF9C400C9D89D /* add_friend@2x.png in Resources */,
 				18E34700183DF9C400C9D89D /* talk-btn@2x.png in Resources */,
@@ -1592,6 +1597,15 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		184DBE7E18BC909000239F0F /* UIControlInfo.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				184DBE7D18BC909000239F0F /* en */,
+				184DBE7F18BC909D00239F0F /* zh-Hans */,
+			);
+			name = UIControlInfo.strings;
+			sourceTree = "<group>";
+		};
 		18E34688183DF54400C9D89D /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (

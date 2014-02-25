@@ -15,6 +15,7 @@
 #import "UIImageView+AFNetworking.h"
 #import "EZSimpleClick.h"
 
+#define kHeartRadius 35
 
 @implementation EZPhotoCell
 
@@ -66,6 +67,13 @@
         //_frontImage.backgroundColor = RGBCOLOR(255, 255, 0);
         //_toolRegion = [self createToolRegion:ToolRegionRect];
         _photoTalk = (UILabel*)[_toolRegion viewWithTag:MainLabelTag];
+        
+        _clickHeart = [[EZClickImage alloc] initWithFrame:CGRectMake(310 - kHeartRadius, _frontImage.frame.size.height - kHeartRadius, kHeartRadius, kHeartRadius)];
+        [_clickHeart enableRoundImage];
+        [_container addSubview:_clickHeart];
+        _clickHeart.backgroundColor = randBack(nil);
+        
+        
         [self.contentView addSubview:_container];
         //[self.contentView addSubview:_toolRegion];
         //[self.contentView addSubview:_feedbackRegion];
