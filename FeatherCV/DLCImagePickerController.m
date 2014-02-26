@@ -80,6 +80,7 @@
     GPUImageCropFilter *cropFilter;
     GPUImageFilter* simpleFilter;
     EZSharpenGaussian* sharpenGaussian;
+    EZSharpenGaussian* sharpenGaussianSec;
     //EZCycleDiminish* cycleDarken;
     //EZFaceBlurFilter* faceBlurFilter;
     EZNightBlurFilter* darkBlurFilter;
@@ -94,6 +95,7 @@
     //EZFaceBlurFilter2* dynamicBlurFilter;
     //EZHomeGaussianFilter* biBlurFilter;
     EZHomeBlendFilter* finalBlendFilter;
+    EZHomeBlendFilter* secBlendFilter;
     EZHomeBiBlur* skinBlurFilter;
     //Used as the beginning of the filter
     EZDoubleOutFilter* orgFiler;
@@ -572,6 +574,7 @@
     
     
     sharpenGaussian = [[EZSharpenGaussian alloc] init];
+    sharpenGaussianSec = [[EZSharpenGaussian alloc] init];
     
     //sharpenFilter.sharpness = 0.3;
     
@@ -729,6 +732,7 @@
     //fixColorFilter.redEnhanceLevel = 0.6;
     redEnhanceFilter = [self createRedEnhanceFilter];
     finalBlendFilter = [self createFaceBlurFilter];
+    secBlendFilter = [self createFaceBlurFilter];
     //cycleDarken = [[EZCycleDiminish alloc] init];
 
     simpleFilter = [[GPUImageFilter alloc] init];
@@ -1142,10 +1146,12 @@
     [orgFiler addTarget:hueFilter];
     //[redEnhanceFilter addTarget:hueFilter];
     [hueFilter addTarget:tongFilter];
+    [tongFilter addTarget:redEnhanceFilter];
+    [redEnhanceFilter addTarget:filter];
     //[tongFilter addTarget:redEnhanceFilter];
     //[redEnhanceFilter addTarget:crossHairFilter];
     //[crossHairFilter addTarget:filter];
-    [tongFilter addTarget:filter];
+    //[redEnhanceFilter addTarget:filter];
     //[sharpenFilter addTarget:filter];
     //[hueFilter addTarget:tongFilter];
     //[tongFilter addTarget:redEnhanceFilter];
@@ -1251,9 +1257,12 @@
             blurCycle = 0.9;
             smallBlurRatio = 0.15;
         }
-        CGFloat adjustedFactor = 17.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
+        CGFloat adjustedFactor = 30.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
         finalBlendFilter.blurFilter.distanceNormalizationFactor = adjustedFactor;
-        finalBlendFilter.blurFilter.blurSize = 2.0;//fobj.orgRegion.size.width;
+        finalBlendFilter.blurFilter.blurSize = 1.0;//fobj.orgRegion.size.width;
+        
+        secBlendFilter.blurFilter.distanceNormalizationFactor = adjustedFactor;
+        secBlendFilter.blurFilter.blurSize = 2.0;
         //finalBlendFilter.blurRatio = smallBlurRatio;
         //finalBlendFilter.imageMode = 0;
         finalBlendFilter.showFace = 1;
@@ -1297,6 +1306,7 @@
         //[secFixColorFilter addTarget:redEnhanceFilter];
         //[redEnhanceFilter addTarget:filter];
     }
+    //kSystemSoundID_Vibrate
     [filter addTarget:self.imageView];
     GPUImageRotationMode imageViewRotationMode = kGPUImageNoRotation;
     switch (staticPictureOriginalOrientation) {

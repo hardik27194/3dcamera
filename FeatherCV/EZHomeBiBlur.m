@@ -22,7 +22,7 @@ NSString *const kGPUImageHomeBilateralFilterFragmentShaderString = SHADER_STRING
  
  lowp float sigmoid(highp float mixVal, highp float midVal)
  {
-     highp float mixedVal = -(mixVal - midVal) * 1.0;
+     highp float mixedVal = -(mixVal - midVal) * 0.5;
      return 1.0/(exp(mixedVal) + 1.0);
  }
  

@@ -118,8 +118,8 @@ NSString *const kHomeBlendFragmentShaderString = SHADER_STRING
          //finalEdgeRatio = min(finalEdgeRatio * lineDist, 1.0);
          //gl_FragColor = colorDist * sharpImageColor +  (1.0 - colorDist) * (sharpImageColor * finalEdgeRatio + (1.0 - finalEdgeRatio) * (sharpImageColor*blurRatio + (1.0 - blurRatio)*blurredImageColor));// finalEdgeRatio + (1.0 - finalEdgeRatio) * vec4(0.5);
          //blurRatio = 0.0;
-         gl_FragColor = colorDist * sharpImageColor +  (1.0 - colorDist) * (sharpImageColor*blurRatio + (1.0 - blurRatio)*blurredImageColor);
-         
+         //gl_FragColor = colorDist * sharpImageColor +  (1.0 - colorDist) * (sharpImageColor*blurRatio + (1.0 - blurRatio)*blurredImageColor);
+         gl_FragColor = blurredImageColor;
      }else if(imageMode == 1){
          gl_FragColor = sharpImageColor;
      }else if(imageMode == 2){

@@ -112,7 +112,8 @@ NSString *const kGPUImageMyColorFragmentShaderString = SHADER_STRING
      
      //lowp float green2Red = sharpImageColor.g - sharpImageColor.r;
      //lowp float green2Blue = sharpImageColor.g - sharpImageColor.b;
-     lowp float greenLevelDiff = min(-red2Green - blue2Green - greenEnhanceLevel, 1.0);
+     lowp float greenLevelDiff = min(red2Green + blue2Green + greenEnhanceLevel, 1.0);
+     
      
      if(red2Blue > 0.0 && red2Green > 0.0 && levelDiff > 0.0){
          lowp float deltaRed = red2Green * red2Green * redRatio * levelDiff;
@@ -121,12 +122,11 @@ NSString *const kGPUImageMyColorFragmentShaderString = SHADER_STRING
          fixRedColor.g = max(0.0, sharpImageColor.g - halfRed);
          fixRedColor.b = max(0.0, sharpImageColor.b - halfRed);
      }else if(blue2Red > 0.0 && blue2Green > 0.0 && (blue2Green + blue2Red) > blueEnhanceLevel){
-         /**
-         lowp float redBlueRatio = (sharpImageColor.r/sharpImageColor.b) * blueRatio;
-         lowp float plusRed = sharpImageColor.b * redBlueRatio;
-         fixRedColor.r = min(1.0, sharpImageColor.r + plusRed);
-         fixRedColor.b = max(0.0, sharpImageColor.b - plusRed);
-          **/
+      
+         //lowp float redBlueRatio = (sharpImageColor.r/sharpImageColor.b) * blueRatio;
+         //lowp float plusRed = sharpImageColor.b * redBlueRatio;
+         //fixRedColor.r = min(1.0, sharpImageColor.r + plusRed);
+         //fixRedColor.b = max(0.0, sharpImageColor.b - plusRed);
      }else if(red2Green < 0.0 && blue2Green < 0.0 && greenLevelDiff > 0.0){
          lowp float deltaGreen = red2Green * red2Green * greenRatio * greenLevelDiff;
          lowp float halfDelta = deltaGreen/2.0;
@@ -134,7 +134,14 @@ NSString *const kGPUImageMyColorFragmentShaderString = SHADER_STRING
          fixRedColor.r = max(0.0, sharpImageColor.r - halfDelta);
          fixRedColor.b = max(0.0, sharpImageColor.b - halfDelta);
      }
-     gl_FragColor = fixRedColor;
+     /**
+     lowp float deltaGreen = 0.0;
+     if(red2Green < 0.0 && blue2Green < 0.0 && greenLevelDiff > 0.0){
+         deltaGreen = red2Green * red2Green * greenRatio * greenLevelDiff;
+         lowp float halfDelta = deltaGreen/2.0;
+     }
+      **/
+     gl_FragColor = fixRedColor;// vec4(vec3(deltaGreen), fixRedColor.w);
  }
  );
 #else
