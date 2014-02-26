@@ -21,5 +21,6 @@
 @property (readwrite, nonatomic) CGFloat greenEnhanceLevel;
 @property (readwrite, nonatomic) CGFloat greenRatio;
 
+@property (nonatomic, assign) int brightMode;
 
 @end

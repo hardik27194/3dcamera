@@ -33,6 +33,7 @@ NSString *const kGPUImageMyColorFragmentShaderString = SHADER_STRING
  uniform lowp float greenEnhanceLevel;
  uniform lowp float greenRatio;
  uniform lowp float greenLimit;
+ uniform lowp int brightMode;
  
  const highp  vec4  kRGBToYPrime = vec4 (0.299, 0.587, 0.114, 0.0);
  const highp  vec4  kRGBToI     = vec4 (0.595716, -0.274453, -0.321263, 0.0);
@@ -114,6 +115,7 @@ NSString *const kGPUImageMyColorFragmentShaderString = SHADER_STRING
      //lowp float green2Blue = sharpImageColor.g - sharpImageColor.b;
      lowp float greenLevelDiff = min(red2Green + blue2Green + greenEnhanceLevel, 1.0);
      
+     if(brightMode == 0){
      
      if(red2Blue > 0.0 && red2Green > 0.0 && levelDiff > 0.0){
          lowp float deltaRed = red2Green * red2Green * redRatio * levelDiff;
@@ -128,20 +130,22 @@ NSString *const kGPUImageMyColorFragmentShaderString = SHADER_STRING
          //fixRedColor.r = min(1.0, sharpImageColor.r + plusRed);
          //fixRedColor.b = max(0.0, sharpImageColor.b - plusRed);
      }else if(red2Green < 0.0 && blue2Green < 0.0 && greenLevelDiff > 0.0){
-         lowp float deltaGreen = red2Green * red2Green * greenRatio * greenLevelDiff;
+         lowp float deltaGreen = - red2Green * greenRatio * greenLevelDiff;
          lowp float halfDelta = deltaGreen/2.0;
          fixRedColor.g = min(1.0, sharpImageColor.g + deltaGreen);
          fixRedColor.r = max(0.0, sharpImageColor.r - halfDelta);
          fixRedColor.b = max(0.0, sharpImageColor.b - halfDelta);
      }
+     }
      /**
      lowp float deltaGreen = 0.0;
      if(red2Green < 0.0 && blue2Green < 0.0 && greenLevelDiff > 0.0){
-         deltaGreen = red2Green * red2Green * greenRatio * greenLevelDiff;
+         deltaGreen = - red2Green * greenRatio * greenLevelDiff;
          lowp float halfDelta = deltaGreen/2.0;
      }
+     gl_FragColor = vec4(vec3(deltaGreen), fixRedColor.w);
       **/
-     gl_FragColor = fixRedColor;// vec4(vec3(deltaGreen), fixRedColor.w);
+     gl_FragColor = fixRedColor;
  }
  );
 #else
@@ -203,6 +207,7 @@ NSString *const kGPUImageHueFragmentShaderString = SHADER_STRING
     }
     self.redRatio = 0.15;
     self.redEnhanceLevel = 0.40;
+    self.brightMode = 0;
     return self;
 }
 
@@ -211,6 +216,12 @@ NSString *const kGPUImageHueFragmentShaderString = SHADER_STRING
     _blueRatio = blueRatio;
     [self setFloat:_blueRatio forUniformName:@"blueRatio"];
     
+}
+
+- (void) setBrightMode:(int)brightMode
+{
+    _brightMode = brightMode;
+    [self setInteger:_brightMode forUniformName:@"brightMode"];
 }
 
 - (void) setBlueEnhanceLevel:(CGFloat)blueEnhanceLevel

@@ -1229,7 +1229,8 @@
         //[smallSharpenFilter addTarget:bigSharpenFilter];
         [hueFilter addTarget:sharpenGaussian];
         [sharpenGaussian addTarget:finalBlendFilter];
-        [finalBlendFilter addTarget:filter];
+        [finalBlendFilter addTarget:secBlendFilter];
+        [secBlendFilter addTarget:filter];
         //[redEnhanceFilter addTarget:finalBlendFilter];
         //[secFixColorFilter addTarget:finalBlendFilter];
         //[hueFilter addTarget:filter];
@@ -1260,9 +1261,11 @@
         CGFloat adjustedFactor = 30.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
         finalBlendFilter.blurFilter.distanceNormalizationFactor = adjustedFactor;
         finalBlendFilter.blurFilter.blurSize = 1.0;//fobj.orgRegion.size.width;
+        finalBlendFilter.imageMode = 1;
         
         secBlendFilter.blurFilter.distanceNormalizationFactor = adjustedFactor;
-        secBlendFilter.blurFilter.blurSize = 2.0;
+        secBlendFilter.blurFilter.blurSize = .5;
+        secBlendFilter.imageMode = 0;
         //finalBlendFilter.blurRatio = smallBlurRatio;
         //finalBlendFilter.imageMode = 0;
         finalBlendFilter.showFace = 1;
@@ -1706,6 +1709,9 @@
 {
     //if(_flipStatus == kTakingPhoto){
     //NSString* cameraSwitch = @"翻转摄像头";
+    redEnhanceFilter.brightMode = !redEnhanceFilter.brightMode;
+    EZDEBUG(@"Current bright Mode:%i", redEnhanceFilter.brightMode);
+    [staticPicture processImage];
         NSString* flashMode = @"闪光灯:自动";
         if(_flashMode == 0){
             flashMode = @"闪光灯:关闭";
