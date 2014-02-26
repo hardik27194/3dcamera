@@ -560,13 +560,13 @@
     
     bigSharpenFilter = [[EZSkinSharpen alloc] init];
     bigSharpenFilter.sharpenSize = 3.2;
-    bigSharpenFilter.sharpenRatio = 0.1;
-    bigSharpenFilter.sharpenBar = 0.0;
+    bigSharpenFilter.sharpenRatio = 0.2;
+    bigSharpenFilter.sharpenBar = 0.1;
     
     smallSharpenFilter = [[EZSkinSharpen alloc] init];
     smallSharpenFilter.sharpenSize = 1.6;
-    smallSharpenFilter.sharpenRatio = 0.1;
-    smallSharpenFilter.sharpenBar = 0.0;
+    smallSharpenFilter.sharpenRatio = 0.2;
+    smallSharpenFilter.sharpenBar = 0.1;
     
     //sharpenFilter.sharpness = 0.3;
     
@@ -1134,6 +1134,7 @@
     _detectFace = true;
     //[self startFaceCapture];
     hueFilter.hue = 350;
+    [tongFilter setRgbCompositeControlPoints:@[pointValue(0.0, 0.0), pointValue(0.125, 0.125), pointValue(0.25, 0.25), pointValue(0.5, 0.525), pointValue(0.75, 0.770), pointValue(1.0, 1.0)]];
     [stillCamera addTarget:orgFiler];
     [orgFiler addTarget:hueFilter];
     //[redEnhanceFilter addTarget:hueFilter];
@@ -1186,6 +1187,7 @@
     CGFloat dark = 100;//[self getISOSpeedRating];
     hueFilter.hue = 350.0;
     //GPUImageFilter* firstFilter = nil;
+    [tongFilter setRgbCompositeControlPoints:@[pointValue(0.0, 0.0), pointValue(0.125, 0.125), pointValue(0.25, 0.25), pointValue(0.5, 0.525), pointValue(0.75, 0.770), pointValue(1.0, 1.0)]];
     if(dark >= 400){
         //[tongFilter addTarget:darkBlurFilter];
         //firstFilter = (GPUImageFilter*)darkBlurFilter;
@@ -1211,6 +1213,7 @@
     if(!_disableFaceBeautify && (fobj || stillCamera.isFrontFacing || _shotMode == kSelfShotMode)){
         whiteBalancerFilter.temperature = 5500.0;
         //[redEnhanceFilter addTarget:tongFilter];
+        [tongFilter setRgbCompositeControlPoints:@[pointValue(0.0, 0.0), pointValue(0.125, 0.125), pointValue(0.25, 0.26), pointValue(0.5, 0.535), pointValue(0.75, 0.770), pointValue(1.0, 1.0)]];
         [redEnhanceFilter addTarget:tongFilter];
         [tongFilter addTarget:hueFilter];
         [hueFilter addTarget:smallSharpenFilter];
@@ -1244,9 +1247,9 @@
             blurCycle = 0.9;
             smallBlurRatio = 0.15;
         }
-        CGFloat adjustedFactor = 16.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
+        CGFloat adjustedFactor = 18.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
         finalBlendFilter.blurFilter.distanceNormalizationFactor = adjustedFactor;
-        finalBlendFilter.blurFilter.blurSize = 2.5;//fobj.orgRegion.size.width;
+        finalBlendFilter.blurFilter.blurSize = 2.2;//fobj.orgRegion.size.width;
         //finalBlendFilter.blurRatio = smallBlurRatio;
         //finalBlendFilter.imageMode = 0;
         finalBlendFilter.showFace = 1;

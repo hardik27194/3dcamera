@@ -57,10 +57,9 @@ NSString *const kImageHomeSharpenFragmentShaderString = SHADER_STRING
      if(sharpDist < sharpenBar){
          sharpDist = sharpDist * sharpDist;
      }else{
-         
-         sharpDist = sharpDist + (sharpDist - sharpenBar);
-         if(sharpDist > 0.4){
-             sharpDist = 0.4 + (sharpDist - 0.4) * 0.1;
+         sharpDist = sharpenBar + (sharpDist - sharpenBar) * 1.2;
+         if(sharpDist > 0.7){
+             sharpDist = 0.7 + (sharpDist - 0.7) * 0.1;
          }
      }
      lowp float colorDist = calcHue(textureColor);
