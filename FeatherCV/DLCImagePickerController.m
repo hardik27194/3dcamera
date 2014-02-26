@@ -1227,10 +1227,10 @@
         [tongFilter addTarget:hueFilter];
         //[hueFilter addTarget:smallSharpenFilter];
         //[smallSharpenFilter addTarget:bigSharpenFilter];
-        [hueFilter addTarget:sharpenGaussian];
-        [sharpenGaussian addTarget:finalBlendFilter];
-        [finalBlendFilter addTarget:secBlendFilter];
-        [secBlendFilter addTarget:filter];
+        [hueFilter addTarget:finalBlendFilter];
+        //[sharpenGaussian addTarget:finalBlendFilter];
+        [finalBlendFilter addTarget:filter];
+        //[secBlendFilter addTarget:filter];
         //[redEnhanceFilter addTarget:finalBlendFilter];
         //[secFixColorFilter addTarget:finalBlendFilter];
         //[hueFilter addTarget:filter];
@@ -1258,10 +1258,10 @@
             blurCycle = 0.9;
             smallBlurRatio = 0.15;
         }
-        CGFloat adjustedFactor = 30.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
+        CGFloat adjustedFactor = 17.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
         finalBlendFilter.blurFilter.distanceNormalizationFactor = adjustedFactor;
-        finalBlendFilter.blurFilter.blurSize = 1.0;//fobj.orgRegion.size.width;
-        finalBlendFilter.imageMode = 1;
+        finalBlendFilter.blurFilter.blurSize = 2.5;//fobj.orgRegion.size.width;
+        finalBlendFilter.imageMode = 0;
         
         secBlendFilter.blurFilter.distanceNormalizationFactor = adjustedFactor;
         secBlendFilter.blurFilter.blurSize = .5;

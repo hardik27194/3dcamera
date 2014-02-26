@@ -63,7 +63,7 @@ NSString *const kImageHomeSharpenFragmentShaderString = SHADER_STRING
          }
      }
      lowp float colorDist = calcHue(textureColor);
-     sharpDist = sharpDist * colorDist * sharpenRatio;
+     sharpDist = sharpDist * sharpenRatio;
      sharpDist = min(1.0, sharpDist);
     
      highp float centerMt  = 1.0 + 4.0 * sharpDist;

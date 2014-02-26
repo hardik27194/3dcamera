@@ -98,14 +98,14 @@ NSString *const EZGaussianSharpenFragmentShaderString = SHADER_STRING
      if(sharpDist < sharpenBar){
          sharpDist = sharpDist * sharpDist;
      }else{
-         sharpDist = sharpenBar + (sharpDist - sharpenBar) * 1.2;
-         if(sharpDist > 0.7){
-             sharpDist = 0.7 + (sharpDist - 0.7) * 0.1;
-         }
-     }
-     mediump float sharpenRatio = 2.0;
+         sharpDist = sharpenBar + (sharpDist - sharpenBar) * 2.0;
+              }
+     mediump float sharpenRatio = 1.0;
      lowp float colorDist = calcHue(centralColor.rgb);
-     sharpDist = colorDist * sharpDist * sharpenRatio;
+     //sharpDist = sharpDist * sharpenRatio;
+     if(sharpDist > 0.3){
+         sharpDist = 0.3 + (sharpDist - 0.3) * 0.1;
+     }
      sharpDist = min(1.0, sharpDist);
      gl_FragColor = vec4(vec3(centralColor.rgb + (centralColor.rgb - sum.rgb) * sharpDist), centralColor.w);
      //gl_FragColor = orgColor;
