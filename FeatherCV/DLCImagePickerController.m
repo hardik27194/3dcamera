@@ -45,6 +45,7 @@
 #import "EZClickImage.h"
 #import "GPUImageSharpenFilter.h"
 #import "EZSkinSharpen.h"
+#import "EZSharpenGaussian.h"
 
 //#include <vector>
 
@@ -78,6 +79,7 @@
     GPUImageOutput<GPUImageInput> *blurFilter;
     GPUImageCropFilter *cropFilter;
     GPUImageFilter* simpleFilter;
+    EZSharpenGaussian* sharpenGaussian;
     //EZCycleDiminish* cycleDarken;
     //EZFaceBlurFilter* faceBlurFilter;
     EZNightBlurFilter* darkBlurFilter;
@@ -568,6 +570,9 @@
     smallSharpenFilter.sharpenRatio = 0.2;
     smallSharpenFilter.sharpenBar = 0.1;
     
+    
+    sharpenGaussian = [[EZSharpenGaussian alloc] init];
+    
     //sharpenFilter.sharpness = 0.3;
     
     //set background color
@@ -886,7 +891,6 @@
     [EZUIUtility sharedEZUIUtility].cameraRaised = false;
 }
 
-
 - (void) becomeInvisible
 {
     EZDEBUG(@"BecomeInvisible get called");
@@ -906,8 +910,7 @@
 -(void) setupCamera {
     
     if ([UIImagePickerController isSourceTypeAvailable: UIImagePickerControllerSourceTypeCamera]) {
-        // Has camera
-        
+        //Has camera
         stillCamera = [[GPUImageStillCamera alloc] initWithSessionPreset:AVCaptureSessionPresetPhoto cameraPosition:(_frontFacing?AVCaptureDevicePositionFront:AVCaptureDevicePositionBack)];
         stillCamera.outputImageOrientation = UIInterfaceOrientationPortrait;
         //stillCamera.horizontallyMirrorFrontFacingCamera = TRUE;
@@ -1216,9 +1219,10 @@
         [tongFilter setRgbCompositeControlPoints:@[pointValue(0.0, 0.0), pointValue(0.125, 0.125), pointValue(0.25, 0.26), pointValue(0.5, 0.535), pointValue(0.75, 0.770), pointValue(1.0, 1.0)]];
         [redEnhanceFilter addTarget:tongFilter];
         [tongFilter addTarget:hueFilter];
-        [hueFilter addTarget:smallSharpenFilter];
-        [smallSharpenFilter addTarget:bigSharpenFilter];
-        [bigSharpenFilter addTarget:finalBlendFilter];
+        //[hueFilter addTarget:smallSharpenFilter];
+        //[smallSharpenFilter addTarget:bigSharpenFilter];
+        [hueFilter addTarget:sharpenGaussian];
+        [sharpenGaussian addTarget:finalBlendFilter];
         [finalBlendFilter addTarget:filter];
         //[redEnhanceFilter addTarget:finalBlendFilter];
         //[secFixColorFilter addTarget:finalBlendFilter];
@@ -1247,9 +1251,9 @@
             blurCycle = 0.9;
             smallBlurRatio = 0.15;
         }
-        CGFloat adjustedFactor = 18.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
+        CGFloat adjustedFactor = 17.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
         finalBlendFilter.blurFilter.distanceNormalizationFactor = adjustedFactor;
-        finalBlendFilter.blurFilter.blurSize = 2.2;//fobj.orgRegion.size.width;
+        finalBlendFilter.blurFilter.blurSize = 2.0;//fobj.orgRegion.size.width;
         //finalBlendFilter.blurRatio = smallBlurRatio;
         //finalBlendFilter.imageMode = 0;
         finalBlendFilter.showFace = 1;
@@ -1648,7 +1652,7 @@
             //[weakSelf handleFullImage:fullImg];
             UIImageOrientation prevOrient = fullImg.imageOrientation;
             //BOOL antialias = [weakSelf haveDetectedFace];
-            fullImg = [fullImg resizedImageWithMinimumSize:CGSizeMake(fullImg.size.width/2.0, fullImg.size.height/2.0) antialias:YES];
+            fullImg = [fullImg resizedImageWithMinimumSize:CGSizeMake(fullImg.size.width/2.0, fullImg.size.height/2.0) antialias:NO];
             EZDEBUG(@"tailored full size length:%@, prevOrient:%i, current orientation:%i", NSStringFromCGSize(fullImg.size), prevOrient, fullImg.imageOrientation);
             completion(fullImg, nil);
         };
