@@ -113,6 +113,7 @@
     NSMutableArray* blueAdjustments;
     EZShapeCover* shapeCover;
     EZClickImage* rotateView;
+    UIView* rotateContainer;
     UIView* roundBackground;
     
     EZDisplayPhoto* disPhoto;
@@ -153,6 +154,8 @@
     GPUImageCrosshairGenerator* crossHairFilter;
     //To switch the camera
     EZEventBlock faceCovered;
+    
+    UITextField* textField;
 }
 
 @synthesize delegate,
@@ -665,14 +668,19 @@
     [_toolBarRegion addSubview:_configButton];
     [self.view addSubview:_toolBarRegion];
 
-    rotateView = [[EZClickImage alloc] initWithFrame:CGRectMake(5, 0, 310, 310)];
+    rotateContainer = [[UIView alloc] initWithFrame:CGRectMake(5, 0, 310, 310)];
+    [rotateContainer enableRoundImage];
+    rotateContainer.alpha = 0.0;
+    [self.view addSubview:rotateContainer];
+    
+    rotateView = [[EZClickImage alloc] initWithFrame:CGRectMake(0, 0, 310, 310)];
     rotateView.contentMode = UIViewContentModeScaleAspectFill;
     [rotateView enableRoundImage];
-    rotateView.alpha = 0.0;
+    //rotateView.alpha = 1.0;
     rotateView.pressedBlock = ^(id obj){
         [weakSelf changePhoto];
     };
-    [self.view addSubview:rotateView];
+    [rotateContainer addSubview:rotateView];
     _isFrontCamera = false;
     retakeButton = cancelImage;
     topBar.backgroundColor = RGBA(255, 255, 255, 128);
@@ -690,9 +698,9 @@
     shapeCover.frame = imageView.frame;
     //shapeCover.backgroundColor = [UIColor blackColor];
     [shapeCover digHole:310 color:[UIColor blackColor] opacity:0.4];
-    CGFloat adjustedY = (imageView.frame.size.height - 310)/2.0;
+    CGFloat adjustedY = (imageView.frame.size.height - 310)/2.0 - 10.0;
     //roundBackground.frame = imageView.frame;
-    rotateView.y = adjustedY;
+    rotateContainer.y = adjustedY;
     
 }
 
@@ -1553,17 +1561,19 @@
     //if(_detectedFaceObj){
     //    currentImage = [currentImage resizedImageWithMaximumSize:currentImage.size antialias:true];
     //}
-    [self startRotateImage:currentImage];
+    [self prepareRotateImage:currentImage];
     
     if(_shotPhoto.photoRelations.count){
         EZPhoto* matched = [_shotPhoto.photoRelations objectAtIndex:0];
         EZDEBUG(@"prefetch image:%@", matched.screenURL);
+        
         [[EZDataUtil getInstance] prefetchImage:matched.screenURL success:^(UIImage* image){
             //[rotateView.layer removeAllAnimations];
             EZDEBUG(@"image fetched back");
             dispatch_later(0.5,
             ^(){
-                [self stopRotateImage:image];
+                //[self stopRotateImage:image];
+                [self rotateCurrentImage:image];
                 _flipStatus = kTakedPhoto;
             });
             
@@ -1722,21 +1732,34 @@
     }
 }
 
+- (void) rotateCurrentImage:(UIImage*)image
+{
+    UIView* snapView = [rotateView snapshotViewAfterScreenUpdates:NO];
+    [rotateContainer insertSubview:snapView aboveSubview:rotateView];
+    rotateView.image = image;
+    [UIView flipTransition:snapView dest:rotateView container:rotateContainer isLeft:YES duration:0.5 complete:^(id obj){
+        [snapView removeFromSuperview];
+    }];
+}
 //Don't rotate, only get rotation ready.
 - (void) prepareRotateImage:(UIImage*)image
 {
-    shapeCover.backgroundColor = RotateBackground;
-    rotateView.alpha = 1.0;
     if(image){
         rotateView.image = image;
     }
+    [UIView animateWithDuration:0.3 animations:^(){
+        shapeCover.backgroundColor = RotateBackground;
+        rotateContainer.alpha = 1.0;
+    }];
 }
 
 - (void) hideRotateImage
 {
     //roundBackground.alpha = 0.0;
-    shapeCover.backgroundColor = [UIColor clearColor];
-    rotateView.alpha = 0.0;
+    [UIView animateWithDuration:0.3 animations:^(){
+        shapeCover.backgroundColor = [UIColor clearColor];
+        rotateContainer.alpha = 0.0;
+    }];
 }
 
 - (void) startRotateImage:(UIImage*)image
@@ -1752,7 +1775,7 @@
     if(image){
         rotateView.image = image;
     }
-    [rotateView.layer removeAllAnimations];
+    [rotateContainer.layer removeAllAnimations];
 }
 
 
