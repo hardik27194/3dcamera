@@ -216,6 +216,55 @@ NSString *const kFaceBlurFragmentShaderString = SHADER_STRING
     return self;
 }
 
+
+- (id)initWithFilters:(NSArray*)outfilters;
+{
+    if (!(self = [super init]))
+    {
+		return nil;
+    }
+    hasOverriddenAspectRatio = NO;
+    _blurFilter = [[EZHomeBiBlur alloc] init];
+    _sharpGaussian = [[EZSharpenGaussian alloc] init];
+    _combineFilter = [[GPUImageTwoInputFilter alloc] initWithFragmentShaderFromString:kHomeBlendFragmentShaderString];
+    self.blendFilters = outfilters;
+    return self;
+}
+
+- (void) removeAllTargets
+{
+    [super removeAllTargets];
+    [_blurFilter removeAllTargets];
+    [_sharpGaussian removeAllTargets];
+    [_combineFilter removeAllTargets];
+}
+
+- (void) setBlendFilters:(NSArray*)outfilters
+{
+    _blendFilters = outfilters;
+    // Second pass: combine the blurred image with the original sharp one
+    [self removeAllTargets];
+    GPUImageFilter* prevFilter = self;
+    GPUImageFilter* firstFilter = nil;
+    for(int i = 0; i < outfilters.count; i ++){
+        GPUImageFilter* gf = [outfilters objectAtIndex:i];
+        if(i == 0){
+            firstFilter = gf;
+        }
+        [prevFilter addTarget:gf];
+        prevFilter = gf;
+    }
+    
+    [prevFilter addTarget:_sharpGaussian];
+    [_sharpGaussian addTarget:_blurFilter];
+    [self addTarget:_combineFilter];
+    [_blurFilter addTarget:_combineFilter atTextureLocation:1];
+    self.initialFilters = [NSArray arrayWithObjects:firstFilter, _combineFilter, nil];
+    //self.skinColors = @[@(1.0),@(0.75),@(0.58)];
+    self.terminalFilter = _combineFilter;
+    self.imageMode = 0;
+}
+
 - (void) setBlurRatio:(CGFloat)blurRatio
 {
     [_combineFilter setFloat:blurRatio forUniformName:@"blurRatio"];

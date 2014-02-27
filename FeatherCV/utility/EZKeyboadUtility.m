@@ -68,13 +68,17 @@ static EZKeyboadUtility* instance;
     CGRect keyboardFrameBeginRect = [keyboardFrameBegin CGRectValue];
     CGRect keyboardFrameEndRect = [keyboardFrameEnd CGRectValue];
     
+    //
+    _gapHeight = keyboardFrameBeginRect.size.height - keyboardFrameEndRect.size.height;
+    
+    
     _keyboardFrame = keyboardFrameEndRect;
     
     //CGRect  adjustedRect = [self.view convertRect:keyboardFrameEndRect fromView:[UIApplication sharedApplication].keyWindow];
     
     //CGFloat boardY = keyboardFrameBeginRect.size.height == 216 ? 252:216;
     
-    EZDEBUG(@"KeyBoard frame:%@,adjustedFrame:%@, endFrame:%@", NSStringFromCGRect(keyboardFrameBeginRect),NSStringFromCGRect(_keyboardFrame), NSStringFromCGRect(keyboardFrameEndRect));
+    EZDEBUG(@"KeyBoard frame:%@,adjustedFrame:%@, endFrame:%@, gapHeight:%f", NSStringFromCGRect(keyboardFrameBeginRect),NSStringFromCGRect(_keyboardFrame), NSStringFromCGRect(keyboardFrameEndRect), _gapHeight);
 
     [[EZMessageCenter getInstance] postEvent:EventKeyboardWillRaise attached:self];
     //EZDEBUG(@"About to raise the index:%i", _messages.count -1);

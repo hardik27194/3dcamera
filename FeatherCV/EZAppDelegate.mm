@@ -33,6 +33,7 @@
 #import "AFNetworkActivityIndicatorManager.h"
 #import "LFDisplayBridge.h"
 #import "EZAnimationUtil.h"
+#import "EZKeyboadUtility.h"
 
 @implementation EZAppDelegate
 
@@ -225,6 +226,12 @@
     //[[UINavigationBar appearance] setBarStyle:UIBarStyleBlack];
 }
 
+- (void) setupKeyboard
+{
+    //Setup the keyBoard, then I could monitoring the whole thing
+    [EZKeyboadUtility getInstance];
+}
+
 - (void) setupNetwork
 {
     NSURLCache *URLCache = [[NSURLCache alloc] initWithMemoryCapacity:4 * 1024 * 1024 diskCapacity:20 * 1024 * 1024 diskPath:nil];
@@ -291,6 +298,7 @@
     [self setupAppearance];
     [self setupNetwork];
     [self enableProximate:YES];
+    [self setupKeyboard];
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     //[[UIDevice currentDevice] setProximityMonitoringEnabled:YES];
     //self.window.backgroundColor = [UIColor greenColor];

@@ -15,6 +15,8 @@
 
 @property (nonatomic, assign) CGRect keyboardFrame;
 
+@property (nonatomic, assign) CGFloat gapHeight;
+
 @property (nonatomic, assign) BOOL keyboardRaised;
 
 - (CGRect) keyboardFrameToView:(UIView*)dest;

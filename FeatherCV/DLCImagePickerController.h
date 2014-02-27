@@ -61,7 +61,7 @@ typedef enum {
 - (void)imagePickerControllerDidCancel:(DLCImagePickerController *)picker imageCount:(int)imageCount;
 @end
 
-@interface DLCImagePickerController : UIViewController <UINavigationControllerDelegate,UIImagePickerControllerDelegate, UIActionSheetDelegate>
+@interface DLCImagePickerController : UIViewController <UINavigationControllerDelegate,UIImagePickerControllerDelegate, UIActionSheetDelegate, UITextFieldDelegate>
 
 
 //The job front camera will have to do. 
@@ -172,8 +172,18 @@ typedef enum {
 //Will pervent the duoble click from happening.
 @property (nonatomic, assign) BOOL takingPhoto;
 
+@property (nonatomic, assign) CGFloat centerButtonY;
+@property (nonatomic, assign) CGFloat buttonRegionY;
+@property (nonatomic, assign) CGFloat textFieldY;
+
+@property (nonatomic, strong) UITextField* textField;
 
 @property (nonatomic, strong) EZEventBlock oldBlock;
+
+//This is a flag determine that if we hide the text or not
+@property (nonatomic, assign) BOOL hideTextInput;
+
+@property (nonatomic, assign) BOOL firstTime;
 //This method will change the turnStatus
 - (void) captureTurnedImage;
 

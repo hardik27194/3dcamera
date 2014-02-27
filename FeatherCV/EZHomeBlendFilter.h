@@ -23,6 +23,8 @@
     BOOL hasOverriddenAspectRatio;
 }
 
+//- (void) setFilters:(NSArray*)filters;
+@property (nonatomic, strong) NSArray* blendFilters;
 //@property (nonatomic, strong) EZSkinBrighter* skinBrighter;
 @property (nonatomic, strong) EZHomeBiBlur* blurFilter;
 //@property (nonatomic, strong) EZHomeLineBiFilter* smallBlurFilter;
