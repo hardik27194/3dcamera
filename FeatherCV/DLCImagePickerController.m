@@ -651,25 +651,20 @@
     cancelButton = [[UIButton alloc] initWithFrame:CGRectMake(5, bound.size.height - 44 - 10, 60, 44)];
     [cancelButton setTitle:@"取消" forState:UIControlStateNormal];
     [cancelButton addTarget:self action:@selector(cancel:) forControlEvents:UIControlEventTouchUpInside];
-    cancelButton.center = CGPointMake(5+30, 35);
+    cancelButton.center = CGPointMake(5+30, 80 - 35);
     
     
     _configButton = [[UIButton alloc] initWithFrame:CGRectMake(320 - 60 - 5, bound.size.height - 44 - 10, 60, 44)];
     [_configButton setTitle:@"设置" forState:UIControlStateNormal];
     [_configButton addTarget:self action:@selector(configClicked:) forControlEvents:UIControlEventTouchUpInside];
-    _configButton.center = CGPointMake(315 - 30 - 5, 35);
+    _configButton.center = CGPointMake(315 - 30 - 5, 80 - 35);
     
-    [self.view addSubview:cancelButton];
-    [self.view addSubview:_configButton];
-                     
-                     
-                     
-    
-    //roundBackground = [[UIView alloc] initWithFrame:imageView.frame];
-    //roundBackground.backgroundColor = [UIColor blackColor];
-    //[roundBackground enableRoundImage];
-    //roundBackground.alpha = 0.0;
-    //__weak DLCImagePickerController* weakSelf = self;
+    _toolBarRegion = [[UIView alloc] initWithFrame:CGRectMake(0, bound.size.height - 80, 320, 80)];
+    _toolBarRegion.backgroundColor = [UIColor clearColor];
+    [_toolBarRegion addSubview:cancelButton];
+    [_toolBarRegion addSubview:_configButton];
+    [self.view addSubview:_toolBarRegion];
+
     rotateView = [[EZClickImage alloc] initWithFrame:CGRectMake(5, 0, 310, 310)];
     rotateView.contentMode = UIViewContentModeScaleAspectFill;
     [rotateView enableRoundImage];
@@ -677,27 +672,15 @@
     rotateView.pressedBlock = ^(id obj){
         [weakSelf changePhoto];
     };
-    //[self.view addSubview:roundBackground];
     [self.view addSubview:rotateView];
-    
-    
-    
-    
     _isFrontCamera = false;
     retakeButton = cancelImage;
-    
-    //UIView* barBackground = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 40)];
-    //barBackground.backgroundColor = RGBCOLOR(255, 255, 128);
-    //[self.view addSubview:barBackground];
     topBar.backgroundColor = RGBA(255, 255, 255, 128);
-    
-    
     _oldBlock = [EZDataUtil getInstance].centerButton.releasedBlock;
     [EZDataUtil getInstance].centerButton.releasedBlock = ^(id obj){
         [weakSelf takePhoto:nil];
     };
     crossHairFilter = [[GPUImageCrosshairGenerator alloc] init];
-    
 }
 
 - (void) viewWillLayoutSubviews
@@ -1258,7 +1241,7 @@
             blurCycle = 0.9;
             smallBlurRatio = 0.15;
         }
-        CGFloat adjustedFactor = 17.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
+        CGFloat adjustedFactor = 15.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
         finalBlendFilter.blurFilter.distanceNormalizationFactor = adjustedFactor;
         finalBlendFilter.blurFilter.blurSize = 2.5;//fobj.orgRegion.size.width;
         finalBlendFilter.imageMode = 0;
@@ -1739,14 +1722,27 @@
     }
 }
 
-- (void) startRotateImage:(UIImage*)image
+//Don't rotate, only get rotation ready.
+- (void) prepareRotateImage:(UIImage*)image
 {
-    //roundBackground.alpha = 1.0;
     shapeCover.backgroundColor = RotateBackground;
     rotateView.alpha = 1.0;
     if(image){
         rotateView.image = image;
     }
+}
+
+- (void) hideRotateImage
+{
+    //roundBackground.alpha = 0.0;
+    shapeCover.backgroundColor = [UIColor clearColor];
+    rotateView.alpha = 0.0;
+}
+
+- (void) startRotateImage:(UIImage*)image
+{
+    //roundBackground.alpha = 1.0;
+    [self prepareRotateImage:image];
     [rotateView runSpinAnimation:2.0 rotations:2.0 repeat:1000.0];
 
 }
@@ -1759,12 +1755,7 @@
     [rotateView.layer removeAllAnimations];
 }
 
-- (void) hideRotateImage
-{
-    //roundBackground.alpha = 0.0;
-    shapeCover.backgroundColor = [UIColor clearColor];
-    rotateView.alpha = 0.0;
-}
+
 
 - (IBAction) panHandler:(id)sender
 {

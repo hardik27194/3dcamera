@@ -29,6 +29,7 @@
 		184DBE7918BB51DB00239F0F /* EZErrorInfo.strings in Resources */ = {isa = PBXBuildFile; fileRef = 184DBE7818BB51DB00239F0F /* EZErrorInfo.strings */; };
 		184DBE7C18BC909000239F0F /* UIControlInfo.strings in Resources */ = {isa = PBXBuildFile; fileRef = 184DBE7E18BC909000239F0F /* UIControlInfo.strings */; };
 		184DBE8218BDA16E00239F0F /* EZSharpenGaussian.m in Sources */ = {isa = PBXBuildFile; fileRef = 184DBE8118BDA16E00239F0F /* EZSharpenGaussian.m */; };
+		184DBE8918BE2B5800239F0F /* EZChromaBiFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 184DBE8818BE2B5800239F0F /* EZChromaBiFilter.m */; };
 		18512A331861BE6300282264 /* shot_voice.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 18512A321861BE6300282264 /* shot_voice.aiff */; };
 		1866AD8C1890FC7000DB46E2 /* EZSkinBrighter.m in Sources */ = {isa = PBXBuildFile; fileRef = 1866AD8B1890FC7000DB46E2 /* EZSkinBrighter.m */; };
 		1866AD9C18965EF000DB46E2 /* EZCycleTongFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 1866AD9B18965EF000DB46E2 /* EZCycleTongFilter.m */; };
@@ -314,10 +315,12 @@
 		184DBE7518BB476F00239F0F /* EZSimpleClick.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZSimpleClick.h; sourceTree = "<group>"; };
 		184DBE7618BB476F00239F0F /* EZSimpleClick.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZSimpleClick.m; sourceTree = "<group>"; };
 		184DBE7818BB51DB00239F0F /* EZErrorInfo.strings */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; path = EZErrorInfo.strings; sourceTree = "<group>"; };
-		184DBE7D18BC909000239F0F /* en */ = {isa = PBXFileReference; lastKnownFileType = file; name = en; path = en.lproj/UIControlInfo.strings; sourceTree = "<group>"; };
-		184DBE7F18BC909D00239F0F /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = file; name = "zh-Hans"; path = "zh-Hans.lproj/UIControlInfo.strings"; sourceTree = "<group>"; };
+		184DBE7D18BC909000239F0F /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/UIControlInfo.strings; sourceTree = "<group>"; };
+		184DBE7F18BC909D00239F0F /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/UIControlInfo.strings"; sourceTree = "<group>"; };
 		184DBE8018BDA16E00239F0F /* EZSharpenGaussian.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZSharpenGaussian.h; sourceTree = "<group>"; };
 		184DBE8118BDA16E00239F0F /* EZSharpenGaussian.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZSharpenGaussian.m; sourceTree = "<group>"; };
+		184DBE8718BE2B5800239F0F /* EZChromaBiFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZChromaBiFilter.h; sourceTree = "<group>"; };
+		184DBE8818BE2B5800239F0F /* EZChromaBiFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZChromaBiFilter.m; sourceTree = "<group>"; };
 		18512A321861BE6300282264 /* shot_voice.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = shot_voice.aiff; sourceTree = "<group>"; };
 		1866AD8A1890FC7000DB46E2 /* EZSkinBrighter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZSkinBrighter.h; sourceTree = "<group>"; };
 		1866AD8B1890FC7000DB46E2 /* EZSkinBrighter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZSkinBrighter.m; sourceTree = "<group>"; };
@@ -785,6 +788,8 @@
 				184DBE7118B8D8A400239F0F /* EZSkinSharpen.m */,
 				184DBE8018BDA16E00239F0F /* EZSharpenGaussian.h */,
 				184DBE8118BDA16E00239F0F /* EZSharpenGaussian.m */,
+				184DBE8718BE2B5800239F0F /* EZChromaBiFilter.h */,
+				184DBE8818BE2B5800239F0F /* EZChromaBiFilter.m */,
 			);
 			name = camera;
 			sourceTree = "<group>";
@@ -1554,6 +1559,7 @@
 				18E746EA18A4A26A0023967B /* AFHTTPRequestOperation.m in Sources */,
 				184DBE7718BB476F00239F0F /* EZSimpleClick.m in Sources */,
 				18E3470B183DFA1A00C9D89D /* EZTestSuites.m in Sources */,
+				184DBE8918BE2B5800239F0F /* EZChromaBiFilter.m in Sources */,
 				18E3472A183DFA3300C9D89D /* EZTiltMainView.m in Sources */,
 				18E3477D183DFAA400C9D89D /* EZNetworkUtility.m in Sources */,
 				18E34778183DFAA400C9D89D /* EZMotionUtility.m in Sources */,

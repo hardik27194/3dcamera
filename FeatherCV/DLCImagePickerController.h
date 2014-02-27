@@ -95,6 +95,11 @@ typedef enum {
 @property (nonatomic, weak) IBOutlet UIScrollView *filterScrollView;
 @property (nonatomic, weak) IBOutlet UIImageView *filtersBackgroundImageView;
 @property (nonatomic, weak) IBOutlet UIView *photoBar;
+
+//The place which will hold all the tool bar
+@property (nonatomic, strong) UIView* toolBarRegion;
+
+
 @property (nonatomic, weak) IBOutlet UIView *topBar;
 //This view act as a flash for the self shot camera.
 @property (nonatomic, strong) UIView* flashView;

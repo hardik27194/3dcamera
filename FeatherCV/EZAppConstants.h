@@ -24,7 +24,7 @@
 
 #define animateCoverViewTag 20000120
 
-#define shaderSkinColor vec3(0.93,0.68,0.51)
+#define shaderSkinColor vec3(0.83,0.68,0.51)
 
 #define shaderSkinRange 0.4
 
