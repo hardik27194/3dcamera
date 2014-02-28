@@ -926,9 +926,6 @@
     hueFilter.hue = 355;
     EZDEBUG(@"adjust:%f", hueFilter.hue);
     orgFiler = [[EZDoubleOutFilter alloc] init];
-    //cropFilter = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.0f, 0.0f, 1.0, 0.75)];
-    //edgeFilter = [[GPUImagePrewittEdgeDetectionFilter alloc] init];
-    
     filter = [[GPUImageFilter alloc] init];
     secFixColorFilter = [self createBlueStretchFilter];
     //[secFixColorFilter updateAllConfigure];
@@ -940,9 +937,9 @@
     redEnhanceFilter = [self createRedEnhanceFilter];
     //finalBlendFilter = [[EZHomeBlendFilter alloc] initWithFilters];   //[self createFaceBlurFilter];
     //secBlendFilter = [self createFaceBlurFilter];
-    finalBlendFilter = [[EZHomeBlendFilter alloc] initSimple];
+    finalBlendFilter = [[EZHomeBlendFilter alloc] initWithTongFilter:[self createTongFilter]];
+    [finalBlendFilter.tongFilter setRgbCompositeControlPoints:@[pointValue(0.0, 0.0), pointValue(0.125, 0.135), pointValue(0.25, 0.27), pointValue(0.5, 0.535), pointValue(0.75, 0.770), pointValue(1.0, 1.0)]];
     //cycleDarken = [[EZCycleDiminish alloc] init];
-
     simpleFilter = [[GPUImageFilter alloc] init];
     
     whiteBalancerFilter = [[GPUImageWhiteBalanceFilter alloc] init];
@@ -1184,7 +1181,6 @@
     if (![UIImagePickerController isSourceTypeAvailable: UIImagePickerControllerSourceTypeCamera]) {
         isStatic = YES;
     }
-    
     if (!isStatic) {
         [self prepareLiveFilter];
     } else {
@@ -1406,15 +1402,12 @@
     if(!_disableFaceBeautify && (fobj || stillCamera.isFrontFacing || _shotMode == kSelfShotMode)){
         whiteBalancerFilter.temperature = 5500.0;
         //[redEnhanceFilter addTarget:tongFilter];
-        finalBlendFilter = [[EZHomeBlendFilter alloc] initWithFilters:@[tongFilter]];
+        //finalBlendFilter = [[EZHomeBlendFilter alloc] initWithFilters:@[tongFilter]];
         //finalBlendFilter.blendFilters = @[tongFilter, hueFilter];
-        [tongFilter setRgbCompositeControlPoints:@[pointValue(0.0, 0.0), pointValue(0.125, 0.125), pointValue(0.25, 0.26), pointValue(0.5, 0.535), pointValue(0.75, 0.770), pointValue(1.0, 1.0)]];
-        
         [hueFilter addTarget:finalBlendFilter];
         [finalBlendFilter addTarget:filter];
         CGFloat blurCycle = 1.5;
         CGFloat smallBlurRatio = 0.3;
-        
         if(_shotMode == kSelfShotMode){
             if(stillCamera.isFrontFacing){
                 blurCycle = 2.0;
@@ -1435,7 +1428,7 @@
         }
         CGFloat adjustedFactor = 15.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
         finalBlendFilter.blurFilter.distanceNormalizationFactor = adjustedFactor;
-        finalBlendFilter.blurFilter.blurSize = 2.5;//fobj.orgRegion.size.width;
+        finalBlendFilter.blurFilter.blurSize = 2.0;//fobj.orgRegion.size.width;
         finalBlendFilter.imageMode = 0;
         finalBlendFilter.showFace = 1;
         finalBlendFilter.faceRegion = @[@(fobj.orgRegion.origin.x), @(fobj.orgRegion.origin.x + fobj.orgRegion.size.width), @(fobj.orgRegion.origin.y), @(fobj.orgRegion.origin.y + fobj.orgRegion.size.height)];

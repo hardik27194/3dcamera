@@ -188,7 +188,6 @@ typedef enum {
 
 //This is a flag determine that if we hide the text or not
 @property (nonatomic, assign) BOOL hideTextInput;
-
 //The flip animation
 @property (nonatomic, assign) BOOL turnedImage;
 

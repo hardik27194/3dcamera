@@ -243,6 +243,33 @@ NSString *const kFaceBlurFragmentShaderString = SHADER_STRING
     return self;
 }
 
+- (id) initWithTongFilter:(GPUImageToneCurveFilter*)tongFilter
+{
+    //_blendFilters = outfilters;
+    // Second pass: combine the blurred image with the original sharp one
+    //[self removeAllTargets];
+    self = [super init];
+    EZDEBUG(@"setup blend filers");
+    hasOverriddenAspectRatio = NO;
+    _blurFilter = [[EZHomeBiBlur alloc] init];
+    _sharpGaussian = [[EZSharpenGaussian alloc] init];
+    _combineFilter = [[GPUImageTwoInputFilter alloc] initWithFragmentShaderFromString:kHomeBlendFragmentShaderString];
+    _tongFilter = tongFilter;
+    //GPUImageFilter* currentFilter = [outfilters objectAtIndex:0];
+    //GPUImageFilter* firstFilter = currentFilter;
+    [self addTarget:tongFilter];
+    
+    [tongFilter addTarget:_sharpGaussian];
+    [_sharpGaussian addTarget:_blurFilter];
+    [self addTarget:_combineFilter];
+    [_blurFilter addTarget:_combineFilter atTextureLocation:1];
+    self.initialFilters = [NSArray arrayWithObjects:tongFilter, _combineFilter, nil];
+    //self.skinColors = @[@(1.0),@(0.75),@(0.58)];
+    self.terminalFilter = _combineFilter;
+    self.imageMode = 0;
+    return self;
+}
+
 - (void) removeMyTargets
 {
     [super removeAllTargets];

@@ -16,6 +16,7 @@
 #import "EZHomeLineBiFilter.h"
 #import "EZSkinBrighter.h"
 #import "EZSharpenGaussian.h"
+#import <GPUImageToneCurveFilter.h>
 
 @class EZFourInputFilter;
 @interface EZHomeBlendFilter : GPUImageFilterGroup
@@ -36,6 +37,8 @@
 
 @property (nonatomic, strong) GPUImageSharpenFilter* sharpenFilter;
 
+@property (nonatomic, strong) GPUImageToneCurveFilter* tongFilter;
+
 @property (nonatomic, assign) CGFloat blurRatio;
 @property (nonatomic, assign) CGFloat edgeRatio;
 //@property (readwrite, nonatomic) NSArray* skinColors;
@@ -47,5 +50,7 @@
 - (id)initWithFilters:(NSArray*)filters;
 
 - (id) initSimple;
+
+- (id) initWithTongFilter:(GPUImageToneCurveFilter*)tongFilter;
 
 @end
