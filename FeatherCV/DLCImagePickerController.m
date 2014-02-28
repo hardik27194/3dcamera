@@ -647,12 +647,15 @@
     
         chatText = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 255, 20)];
         chatText.font = [UIFont systemFontOfSize:14];
+        chatText.textAlignment = NSTextAlignmentRight;
+        [chatText setTextColor:[UIColor whiteColor]];
     
         authorIcon = [[EZClickImage alloc] initWithFrame:CGRectMake(265, 0, 35, 35)];
         [authorIcon enableRoundImage];
         [authorIcon setImageWithURL:str2url([EZDataUtil getInstance].currentLoginPerson.avatar)];
         [chatRegion addSubview:chatText];
         [chatRegion addSubview:authorIcon];
+        //[self.view addSubview:chatRegion];
     }
     //[self.view addSubview:chatRegion];
     
@@ -677,17 +680,18 @@
         EZDEBUG(@"keyboard raised:%@, appFrame:%@, smallGap:%f",NSStringFromCGRect(keyFrame), NSStringFromCGRect(appFrame), smallGap);
         
         if(abs(smallGap) > 0){
-            [weakSelf liftWithBottom:smallGap time:0.3];
+            [weakSelf liftWithBottom:smallGap time:0.3 complete:nil];
         }else{
+            weakSelf.toolBarRegion.hidden = TRUE;
             [weakSelf.view addSubview:cancelKeyboard];
-            [weakSelf liftWithBottom:-keyFrame.size.height time:0.4];
+            [weakSelf liftWithBottom:-keyFrame.size.height time:0.3 complete:nil];
         }
     };
     
     keyboardHideHandler = ^(id obj){
         [cancelKeyboard removeFromSuperview];
         //[weakSelf liftWithBottom:-keyFrame.size.height time:0.6];
-        [weakSelf hideKeyboard:weakSelf.hideTextInput];
+        [weakSelf hideKeyboard:weakSelf.hideTextInput complete:nil];
         
     };
     //[[EZMessageCenter getInstance] registerEvent:EZ block:
@@ -699,8 +703,9 @@
 }
 
 //I will check if have the text field or not.
-- (void) hideKeyboard:(BOOL)hideTextRegion
+- (void) hideKeyboard:(BOOL)hideTextRegion complete:(EZEventBlock)complete
 {
+    
     [UIView animateWithDuration:0.4  animations:^(){
         if(hideTextRegion){
             [EZDataUtil getInstance].centerButton.y = _centerButtonY;
@@ -709,20 +714,27 @@
         }
         self.view.y = 0;
     } completion:^(BOOL completed){
+        _toolBarRegion.hidden = FALSE;
         if(hideTextRegion){
             [self showTextField:NO];
+        }
+        if(complete){
+            complete(nil);
         }
     }];
 }
      
-- (void) liftWithBottom:(CGFloat)delta time:(CGFloat)timeval
+- (void) liftWithBottom:(CGFloat)delta time:(CGFloat)timeval complete:(EZEventBlock)complete
 {
     //textFieldShouldReturn
-    [UIView animateWithDuration:timeval delay:0.0 options:UIViewAnimationOptionCurveEaseOut  animations:^(){
+    [UIView animateWithDuration:timeval delay:0.0 options:UIViewAnimationOptionCurveLinear  animations:^(){
         [[EZDataUtil getInstance].centerButton moveY:delta];
         [self.view moveY:delta];
+        //cancelButton
     } completion:^(BOOL completed){
-        
+        if(complete){
+            complete(nil);
+        }
     }];
 
 }
@@ -739,15 +751,15 @@
     CGRect bounds = [UIScreen mainScreen].applicationFrame;
     textInputRegion = [[UIView alloc] initWithFrame:CGRectMake(0, bounds.size.height, 320, 44)];
     textInputRegion.backgroundColor = [UIColor whiteColor];
-    _textField = [[UITextField alloc] initWithFrame:CGRectMake(5, 0, 240, 44)];
+    _textField = [[UITextField alloc] initWithFrame:CGRectMake(5, 0, 310, 44)];
     _textField.placeholder = macroControlInfo(@"Say something");
     _textField.delegate = self;
-    _textField.returnKeyType = UIReturnKeyDone;
-    cancelText = [[UIButton alloc] initWithFrame:CGRectMake(255, 0, 60, 44)];
-    [cancelText setTitle:macroControlInfo(@"Cancel-Text") forState:UIControlStateNormal];
-    [cancelText setTitleColor:RGBCOLOR(128, 128, 128) forState:UIControlStateNormal];
-    [cancelText addTarget:self action:@selector(cancelText:) forControlEvents:UIControlEventTouchUpInside];
-    [textInputRegion addSubview:cancelText];
+    _textField.returnKeyType = UIReturnKeySend;
+    //cancelText = [[UIButton alloc] initWithFrame:CGRectMake(255, 0, 60, 44)];
+    //[cancelText setTitle:macroControlInfo(@"Cancel-Text") forState:UIControlStateNormal];
+    //[cancelText setTitleColor:RGBCOLOR(128, 128, 128) forState:UIControlStateNormal];
+    //[cancelText addTarget:self action:@selector(cancelText:) forControlEvents:UIControlEventTouchUpInside];
+    //[textInputRegion addSubview:cancelText];
     [textInputRegion addSubview:_textField];
     [self.view addSubview:textInputRegion];
 }
@@ -762,7 +774,10 @@
 - (void)textFieldDidBeginEditing:(UITextField *)textField
 {
     EZDEBUG(@"Rotate back");
-    [self rotateCurrentImage:[disPhoto.photo getScreenImage]];
+    if(!_turnedImage){
+        _turnedImage = TRUE;
+        [self rotateCurrentImage:[disPhoto.photo getScreenImage]];
+    }
 }
 
 
@@ -776,15 +791,24 @@
                                                   @"text":_textField.text,
                                                   @"date":[NSDate date]
                                                 }];
+        
+        [self createChatRegion];
+        chatText.text = _textField.text;
+        [chatText enableTextWrap];
+        chatRegion.y = bound.size.height;
+        EZDEBUG(@"show avatar:%@", currentLoginUser.avatar);
+        [authorIcon setImageWithURL:str2url(currentLoginUser.avatar)];
+        
+        [UIView animateWithDuration:0.3 delay:0.0 usingSpringWithDamping:0.5 initialSpringVelocity:0.5 options:0 animations:^(){
+            chatRegion.y =  bound.size.height - (bound.size.height - 320)/2.0 + 10.0;
+        } completion:^(BOOL completed){
+            
+        }];
         _textField.text = @"";
+
+        
     }
     _hideTextInput = true;
-    [self createChatRegion];
-    chatRegion.y = bound.size.height;
-    [self.view addSubview:chatRegion];
-    [UIView animateWithDuration:0.6 animations:^(){
-        chatRegion.y =  bound.size.height - (bound.size.height - imageView.bounds.size.height)/2.0 + 10.0;
-    }];
     
     dispatch_later(1.5, ^(){
             [self savePhoto];
@@ -856,7 +880,7 @@
     [rotateView enableRoundImage];
     //rotateView.alpha = 1.0;
     rotateView.pressedBlock = ^(id obj){
-        [weakSelf changePhoto];
+        //[weakSelf changePhoto];
     };
     [rotateContainer addSubview:rotateView];
     _isFrontCamera = false;
@@ -905,8 +929,9 @@
     //[fixColorFilter updateAllConfigure];
     //fixColorFilter.redEnhanceLevel = 0.6;
     redEnhanceFilter = [self createRedEnhanceFilter];
-    finalBlendFilter = [self createFaceBlurFilter];
-    secBlendFilter = [self createFaceBlurFilter];
+    //finalBlendFilter = [[EZHomeBlendFilter alloc] initWithFilters];   //[self createFaceBlurFilter];
+    //secBlendFilter = [self createFaceBlurFilter];
+    finalBlendFilter = [[EZHomeBlendFilter alloc] initSimple];
     //cycleDarken = [[EZCycleDiminish alloc] init];
 
     simpleFilter = [[GPUImageFilter alloc] init];
@@ -1082,7 +1107,7 @@
     [[EZMessageCenter getInstance] unregisterEvent:EZFaceCovered forObject:faceCovered];
     [[EZMessageCenter getInstance] unregisterEvent:EventKeyboardWillRaise forObject:keyboardRaiseHandler];
     [[EZMessageCenter getInstance] unregisterEvent:EventKeyboardWillHide forObject:keyboardHideHandler];
-    [self hideKeyboard:YES];
+    [self hideKeyboard:YES complete:nil];
     [[UIApplication sharedApplication] setStatusBarHidden:false];
     [EZDataUtil getInstance].centerButton.releasedBlock = _oldBlock;
 }
@@ -1361,38 +1386,21 @@
         //firstFilter = (GPUImageFilter*)darkBlurFilter;
         [staticPicture addTarget:darkBlurFilter];
         [darkBlurFilter addTarget:redEnhanceFilter];
-        
-        //[tongFilter addTarget:hueFilter];
     }else{
         [staticPicture addTarget:redEnhanceFilter];
-        //[whiteBalancerFilter addTarget:redEnhanceFilter];
-        //[redEnhanceFilter addTarget:tongFilter];
-        //[tongFilter addTarget:hueFilter];
-        
     }
-    //[tongFilter addTarget:fixColorFilter];
-    //[fixColorFilter addTarget:secFixColorFilter];
     EZDEBUG(@"Prepare new static image get called, flash image:%i, image size:%@, dark:%f", _isImageWithFlash, NSStringFromCGSize(img.size), dark);
     //GPUImageFilter* imageFilter = secFixColorFilter;
     whiteBalancerFilter.temperature = 5000.0;
     if(!_disableFaceBeautify && (fobj || stillCamera.isFrontFacing || _shotMode == kSelfShotMode)){
         whiteBalancerFilter.temperature = 5500.0;
         //[redEnhanceFilter addTarget:tongFilter];
+        finalBlendFilter = [[EZHomeBlendFilter alloc] initWithFilters:@[tongFilter, hueFilter]];
+        //finalBlendFilter.blendFilters = @[tongFilter, hueFilter];
         [tongFilter setRgbCompositeControlPoints:@[pointValue(0.0, 0.0), pointValue(0.125, 0.125), pointValue(0.25, 0.26), pointValue(0.5, 0.535), pointValue(0.75, 0.770), pointValue(1.0, 1.0)]];
-        [redEnhanceFilter addTarget:tongFilter];
-        [tongFilter addTarget:hueFilter];
-        //[hueFilter addTarget:smallSharpenFilter];
-        //[smallSharpenFilter addTarget:bigSharpenFilter];
-        [hueFilter addTarget:finalBlendFilter];
-        //[sharpenGaussian addTarget:finalBlendFilter];
+        
+        [redEnhanceFilter addTarget:finalBlendFilter];
         [finalBlendFilter addTarget:filter];
-        //[secBlendFilter addTarget:filter];
-        //[redEnhanceFilter addTarget:finalBlendFilter];
-        //[secFixColorFilter addTarget:finalBlendFilter];
-        //[hueFilter addTarget:filter];
-        //[fixColorFilter addTarget:secFixColorFilter];
-        //[secFixColorFilter addTarget:redEnhanceFilter];
-        //[redEnhanceFilter addTarget:filter];
         CGFloat blurCycle = 1.5;
         CGFloat smallBlurRatio = 0.3;
         
@@ -1684,11 +1692,12 @@
     [self prepareStaticFilter:_detectedFaceObj image:img];
     [staticPicture processImage];
     
-    
     UIImage* currentImage = [self getPhotoAndUpload];
     //if(_detectedFaceObj){
     //    currentImage = [currentImage resizedImageWithMaximumSize:currentImage.size antialias:true];
     //}
+    [self removeAllTargets];
+    staticPicture = nil;
     [self prepareRotateImage:currentImage];
     [self showTextField:YES];
     if(_shotPhoto.photoRelations.count){
@@ -1985,7 +1994,7 @@
     //fobj.orgRegion = CGRectMake(0, 0, 0.3, 0.3);
     if(fobj){
         //[tongFilter addTarget:finalBlendFilter];
-        EZHomeBlendFilter* faceBlur = [self createFaceBlurFilter];
+        EZHomeBlendFilter* faceBlur = [[EZHomeBlendFilter alloc] initWithFilters:nil]; //[self createFaceBlurFilter];
         [res addObject:faceBlur];
         //[secFixColorFilter addTarget:finalBlendFilter];
         [res addObject:[self createRedStretchFilter]];
@@ -2018,6 +2027,7 @@
     if (!isStatic) {
         _takingPhoto = TRUE;
         isStatic = YES;
+        _turnedImage = FALSE;
         [self changeButtonStatus:YES];
         _isImageWithFlash = NO;
         //[self.libraryToggleButton setHidden:YES];
@@ -2236,10 +2246,12 @@
    
     //[self cancelAll];
     if(isStatic){
+        //_hideTextInput = TRUE;
         [self retakePhoto:self.cancelButton];
         [self changeButtonStatus:NO];
         [self stopRotateImage:nil];
         [self hideRotateImage];
+        [self showTextField:NO];
         _flipStatus = kTakingPhoto;
     }else{
         [self innserCancel];

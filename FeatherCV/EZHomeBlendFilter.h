@@ -44,4 +44,8 @@
 
 @property (nonatomic, assign) int imageMode;
 
+- (id)initWithFilters:(NSArray*)filters;
+
+- (id) initSimple;
+
 @end

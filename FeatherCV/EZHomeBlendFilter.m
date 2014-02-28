@@ -14,7 +14,6 @@
 NSString *const kHomeBlendFragmentShaderString = SHADER_STRING
 (
  varying highp vec2 textureCoordinate;
- 
  //blurred
  varying highp vec2 textureCoordinate2;
  
@@ -217,6 +216,19 @@ NSString *const kFaceBlurFragmentShaderString = SHADER_STRING
 }
 
 
+- (id) initSimple
+{
+    if (!(self = [super init]))
+    {
+		return nil;
+    }
+    hasOverriddenAspectRatio = NO;
+    _blurFilter = [[EZHomeBiBlur alloc] init];
+    _sharpGaussian = [[EZSharpenGaussian alloc] init];
+    _combineFilter = [[GPUImageTwoInputFilter alloc] initWithFragmentShaderFromString:kHomeBlendFragmentShaderString];
+    return self;
+}
+
 - (id)initWithFilters:(NSArray*)outfilters;
 {
     if (!(self = [super init]))
@@ -231,7 +243,7 @@ NSString *const kFaceBlurFragmentShaderString = SHADER_STRING
     return self;
 }
 
-- (void) removeAllTargets
+- (void) removeMyTargets
 {
     [super removeAllTargets];
     [_blurFilter removeAllTargets];
@@ -243,19 +255,19 @@ NSString *const kFaceBlurFragmentShaderString = SHADER_STRING
 {
     _blendFilters = outfilters;
     // Second pass: combine the blurred image with the original sharp one
-    [self removeAllTargets];
-    GPUImageFilter* prevFilter = self;
-    GPUImageFilter* firstFilter = nil;
-    for(int i = 0; i < outfilters.count; i ++){
-        GPUImageFilter* gf = [outfilters objectAtIndex:i];
-        if(i == 0){
-            firstFilter = gf;
-        }
-        [prevFilter addTarget:gf];
-        prevFilter = gf;
-    }
+    //[self removeAllTargets];
+    [self removeMyTargets];
+    EZDEBUG(@"setup blend filers");
     
-    [prevFilter addTarget:_sharpGaussian];
+    GPUImageFilter* currentFilter = [outfilters objectAtIndex:0];
+    GPUImageFilter* firstFilter = currentFilter;
+    [self addTarget:firstFilter];
+    for(int i = 1; i < outfilters.count; i ++){
+        GPUImageFilter* gf = [outfilters objectAtIndex:i];
+        [currentFilter addTarget:gf];
+        currentFilter = gf;
+    }
+    [currentFilter addTarget:_sharpGaussian];
     [_sharpGaussian addTarget:_blurFilter];
     [self addTarget:_combineFilter];
     [_blurFilter addTarget:_combineFilter atTextureLocation:1];

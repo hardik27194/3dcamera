@@ -157,15 +157,14 @@ alpha:(a)/255.0f]
 #define darkerBackGroundColor [UIColor colorWithPatternImage:[UIImage imageNamed:@"background-block1-repeat"]]
 
 
-
 #define iconImageURL(orgurl)  [NSString stringWithFormat:@"%@?imageView/1/w/90/h/90", orgurl]
 #define char2String(str) [NSString stringWithCString:str encoding:NSUTF8StringEncoding]
 #define int2str(intVal) [NSString stringWithFormat:@"%i",intVal]
 #define float2str(fVal) [NSString stringWithFormat:@"%f",fVal]
 #define str2json(str) [EZNetworkUtility str2json:str]
-#define currentLoginID  [EZUserUtil getInstance].currentPersonID
+#define currentLoginID  [EZDataUtil getInstance] getCurrentPersonID]
 #define uid2person(uid) [[EZUserUtil getInstance] id2user:uid]
-#define currentLoginUser [EZUserUtil getInstance].getCurrentUser
+#define currentLoginUser [EZDataUtil getInstance].currentLoginPerson
 #define str2url(strs) [NSURL URLWithString:strs]
 #define radians(degree) degree*M_PI/180
 #define str2cover(str) [[EZUserUtil getInstance] getCoverURL:str]
