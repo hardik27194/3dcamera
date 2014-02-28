@@ -104,7 +104,7 @@ typedef enum {
 //This view act as a flash for the self shot camera.
 @property (nonatomic, strong) UIView* flashView;
 
-@property (nonatomic, strong) DLCBlurOverlayView *blurOverlayView;
+//@property (nonatomic, strong) DLCBlurOverlayView *blurOverlayView;
 @property (nonatomic, strong) UIImageView *focusView;
 
 //@property (nonatomic, strong) UIImageView *rotateView;
@@ -114,6 +114,8 @@ typedef enum {
 @property (nonatomic, assign) CGFloat outputJPEGQuality;
 @property (nonatomic, assign) CGSize requestedImageSize;
 @property (nonatomic, assign) BOOL senseRotate;
+//If the image have saved
+@property (nonatomic, assign) BOOL isSaved;
 
 @property (nonatomic, strong) EZSoundEffect* pageTurn;
 @property (nonatomic, strong) EZSoundEffect* shotReady;
@@ -126,6 +128,10 @@ typedef enum {
 @property (nonatomic, assign) int imageCount;
 @property (nonatomic, assign) EZFlipStatus flipStatus;
 
+//I will need this flag to check if the image is showing our self or not.
+@property (nonatomic, assign) BOOL showOther;
+
+@property (nonatomic, strong) UIImage* otherImage;
 //@property (nonatomic, strong) EZPhoto* matchedPhoto;
 //The purpose is to carry all the remote operation result
 @property (nonatomic, strong) EZPhoto* shotPhoto;

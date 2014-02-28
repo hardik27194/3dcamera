@@ -142,7 +142,7 @@
     
     //The button will cancel image
     UIButton* cancelImage;
-    
+    UIButton* quitButton;
     EZClickView* smileDetected;
     UIImageView* blackView;
     UIView* blackCover;
@@ -165,7 +165,8 @@
     UIView* chatRegion;
     UILabel* chatText;
     EZClickImage* authorIcon;
-    
+    //The icon for the matched user
+    EZClickImage* otherIcon;
     EZEventBlock keyboardRaiseHandler;
     EZEventBlock keyboardHideHandler;
 }
@@ -184,7 +185,7 @@
     filtersBackgroundImageView,
     photoBar,
     topBar,
-    blurOverlayView,
+    //blurOverlayView,
     outputJPEGQuality,
     requestedImageSize;
 
@@ -606,17 +607,17 @@
 	self.focusView.alpha = 0;
     orgFocusSize = self.focusView.frame.size;
     
-    self.blurOverlayView = [[DLCBlurOverlayView alloc] initWithFrame:CGRectMake(0, 0,
-																				self.imageView.frame.size.width,
-																				self.imageView.frame.size.height)];
+    //self.blurOverlayView = [[DLCBlurOverlayView alloc] initWithFrame:CGRectMake(0, 0,
+	//																			self.imageView.frame.size.width,
+//																				self.imageView.frame.size.height)];
     __weak DLCImagePickerController* weakSelf = self;
     faceCovered = ^(NSNumber* status){
         EZDEBUG(@"face status:%i", status.intValue);
         [weakSelf switchCamera];
     };
-    self.blurOverlayView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    self.blurOverlayView.alpha = 0;
-    [self.imageView addSubview:self.blurOverlayView];
+    //self.blurOverlayView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    //self.blurOverlayView.alpha = 0;
+    //[self.imageView addSubview:self.blurOverlayView];
     
     //No issue.
     hasBlur = NO;
@@ -678,11 +679,11 @@
         CGRect keyFrame = [keyUtil keyboardFrameToView:weakSelf.view];
         CGFloat smallGap = keyUtil.gapHeight;
         EZDEBUG(@"keyboard raised:%@, appFrame:%@, smallGap:%f",NSStringFromCGRect(keyFrame), NSStringFromCGRect(appFrame), smallGap);
-        
+
         if(abs(smallGap) > 0){
             [weakSelf liftWithBottom:smallGap time:0.3 complete:nil];
         }else{
-            weakSelf.toolBarRegion.hidden = TRUE;
+            //weakSelf.toolBarRegion.hidden = TRUE;
             [weakSelf.view addSubview:cancelKeyboard];
             [weakSelf liftWithBottom:-keyFrame.size.height time:0.3 complete:nil];
         }
@@ -708,15 +709,16 @@
     
     [UIView animateWithDuration:0.4  animations:^(){
         if(hideTextRegion){
-            [EZDataUtil getInstance].centerButton.y = _centerButtonY;
+            //[EZDataUtil getInstance].centerButton.y = _centerButtonY;
+            [self showTextField:NO];
         }else{
-            [EZDataUtil getInstance].centerButton.y = _centerButtonY - textInputRegion.frame.size.height;
+            //[EZDataUtil getInstance].centerButton.y = _centerButtonY - textInputRegion.frame.size.height;
         }
         self.view.y = 0;
     } completion:^(BOOL completed){
-        _toolBarRegion.hidden = FALSE;
+        //_toolBarRegion.hidden = FALSE;
         if(hideTextRegion){
-            [self showTextField:NO];
+            //[self showTextField:NO];
         }
         if(complete){
             complete(nil);
@@ -728,7 +730,7 @@
 {
     //textFieldShouldReturn
     [UIView animateWithDuration:timeval delay:0.0 options:UIViewAnimationOptionCurveLinear  animations:^(){
-        [[EZDataUtil getInstance].centerButton moveY:delta];
+        //[[EZDataUtil getInstance].centerButton moveY:delta];
         [self.view moveY:delta];
         //cancelButton
     } completion:^(BOOL completed){
@@ -774,10 +776,10 @@
 - (void)textFieldDidBeginEditing:(UITextField *)textField
 {
     EZDEBUG(@"Rotate back");
-    if(!_turnedImage){
-        _turnedImage = TRUE;
-        [self rotateCurrentImage:[disPhoto.photo getScreenImage]];
-    }
+    //if(!_turnedImage){
+    //    _turnedImage = TRUE;
+        //[self rotateCurrentImage:[disPhoto.photo getScreenImage]];
+    //}
 }
 
 
@@ -827,14 +829,16 @@
     //usingSpringWithDamping:0.5 initialSpringVelocity:0.5
     [UIView animateWithDuration:0.3 delay:0.0 options:UIViewAnimationOptionCurveEaseOut  animations:^(){
         if(show){
-            _toolBarRegion.y = _toolBarRegion.frame.origin.y - 44;
+            //_toolBarRegion.y = _toolBarRegion.frame.origin.y - 44;
             textInputRegion.y = bounds.size.height - 44;
-            [[EZDataUtil getInstance].centerButton moveY:-44];
+            //[[EZDataUtil getInstance].centerButton moveY:-44];
+            _toolBarRegion.alpha = 0;
+            [EZDataUtil getInstance].centerButton.alpha = 0;
         }else{
             textInputRegion.y = bounds.size.height;
-            _toolBarRegion.y = toolRegionY;
+            _toolBarRegion.alpha = 1.0;
             //[[EZDataUtil getInstance].centerButton moveY:44];
-            [EZDataUtil getInstance].centerButton.y = _centerButtonY;
+            [EZDataUtil getInstance].centerButton.alpha = 1.0;
         }
     } completion:^(BOOL completed){
         
@@ -851,13 +855,17 @@
     [tapRecognizer addTarget:self action:@selector(handleTapToFocus:)];
     [shapeCover addGestureRecognizer:tapRecognizer];
     [self.view addSubview:shapeCover];
+    //quitButton = [[UIButton alloc] initWithFrame:CGRectMake(5, 10, 60, 44)];
+    //[quitButton setTitle:@"退出" forState:UIControlStateNormal];
+    //[quitButton addTarget:self action:@selector(quit:) forControlEvents:UIControlEventTouchUpInside];
+    //[self.view addSubview:quitButton];
     
     
     cancelButton = [[UIButton alloc] initWithFrame:CGRectMake(5, bound.size.height - 44 - 10, 60, 44)];
-    [cancelButton setTitle:@"取消" forState:UIControlStateNormal];
+    [cancelButton setTitle:@"退出" forState:UIControlStateNormal];
     [cancelButton addTarget:self action:@selector(cancel:) forControlEvents:UIControlEventTouchUpInside];
     cancelButton.center = CGPointMake(5+30, 80 - 35);
-    
+    //cancelButton.hidden = NO;
     
     _configButton = [[UIButton alloc] initWithFrame:CGRectMake(320 - 60 - 5, bound.size.height - 44 - 10, 60, 44)];
     [_configButton setTitle:@"设置" forState:UIControlStateNormal];
@@ -880,7 +888,8 @@
     [rotateView enableRoundImage];
     //rotateView.alpha = 1.0;
     rotateView.pressedBlock = ^(id obj){
-        //[weakSelf changePhoto];
+        [weakSelf changePhoto];
+        
     };
     [rotateContainer addSubview:rotateView];
     _isFrontCamera = false;
@@ -1344,10 +1353,10 @@
     hueFilter.hue = 350;
     [tongFilter setRgbCompositeControlPoints:@[pointValue(0.0, 0.0), pointValue(0.125, 0.125), pointValue(0.25, 0.25), pointValue(0.5, 0.525), pointValue(0.75, 0.770), pointValue(1.0, 1.0)]];
     [stillCamera addTarget:orgFiler];
-    [orgFiler addTarget:hueFilter];
+    [orgFiler addTarget:redEnhanceFilter];
+    [redEnhanceFilter addTarget:hueFilter];
     [hueFilter addTarget:tongFilter];
-    [tongFilter addTarget:redEnhanceFilter];
-    [redEnhanceFilter addTarget:filter];
+    [tongFilter addTarget:filter];
     [filter addTarget:self.imageView];
     [filter prepareForImageCapture];
 }
@@ -1384,10 +1393,12 @@
     if(dark >= 400){
         //[tongFilter addTarget:darkBlurFilter];
         //firstFilter = (GPUImageFilter*)darkBlurFilter;
-        [staticPicture addTarget:darkBlurFilter];
-        [darkBlurFilter addTarget:redEnhanceFilter];
+        //[staticPicture addTarget:darkBlurFilter];
+        [staticPicture addTarget:redEnhanceFilter];
+        [redEnhanceFilter addTarget:hueFilter];
     }else{
         [staticPicture addTarget:redEnhanceFilter];
+        [redEnhanceFilter addTarget:hueFilter];
     }
     EZDEBUG(@"Prepare new static image get called, flash image:%i, image size:%@, dark:%f", _isImageWithFlash, NSStringFromCGSize(img.size), dark);
     //GPUImageFilter* imageFilter = secFixColorFilter;
@@ -1395,11 +1406,11 @@
     if(!_disableFaceBeautify && (fobj || stillCamera.isFrontFacing || _shotMode == kSelfShotMode)){
         whiteBalancerFilter.temperature = 5500.0;
         //[redEnhanceFilter addTarget:tongFilter];
-        finalBlendFilter = [[EZHomeBlendFilter alloc] initWithFilters:@[tongFilter, hueFilter]];
+        finalBlendFilter = [[EZHomeBlendFilter alloc] initWithFilters:@[tongFilter]];
         //finalBlendFilter.blendFilters = @[tongFilter, hueFilter];
         [tongFilter setRgbCompositeControlPoints:@[pointValue(0.0, 0.0), pointValue(0.125, 0.125), pointValue(0.25, 0.26), pointValue(0.5, 0.535), pointValue(0.75, 0.770), pointValue(1.0, 1.0)]];
         
-        [redEnhanceFilter addTarget:finalBlendFilter];
+        [hueFilter addTarget:finalBlendFilter];
         [finalBlendFilter addTarget:filter];
         CGFloat blurCycle = 1.5;
         CGFloat smallBlurRatio = 0.3;
@@ -1431,9 +1442,9 @@
         //finalBlendFilter.smallBlurFilter.blurSize = blurAspectRatio * blurCycle;
         EZDEBUG(@"Will blur face:%@, blurCycle:%f, adjustedColor:%f", NSStringFromCGRect(fobj.orgRegion), blurCycle, adjustedFactor);
     }else{
-        [redEnhanceFilter addTarget:tongFilter];
-        [tongFilter addTarget:hueFilter];
-        [hueFilter addTarget:filter];
+        [hueFilter addTarget:tongFilter];
+        [tongFilter addTarget:filter];
+        //[hueFilter addTarget:filter];
         EZDEBUG(@"No face find out");
     }
     //kSystemSoundID_Vibrate
@@ -1537,8 +1548,8 @@
         }
         hasBlur = YES;
         CGPoint excludePoint = [(GPUImageGaussianSelectiveBlurFilter*)blurFilter excludeCirclePoint];
-		CGSize frameSize = self.blurOverlayView.frame.size;
-		self.blurOverlayView.circleCenter = CGPointMake(excludePoint.x * frameSize.width, excludePoint.y * frameSize.height);
+		//CGSize frameSize = self.blurOverlayView.frame.size;
+		//self.blurOverlayView.circleCenter = CGPointMake(excludePoint.x * frameSize.width, excludePoint.y * frameSize.height);
         [self.blurToggleButton setSelected:YES];
         [self flashBlurOverlay];
     }
@@ -1699,7 +1710,7 @@
     [self removeAllTargets];
     staticPicture = nil;
     [self prepareRotateImage:currentImage];
-    [self showTextField:YES];
+    //[self showTextField:YES];
     if(_shotPhoto.photoRelations.count){
         EZPhoto* matched = [_shotPhoto.photoRelations objectAtIndex:0];
         EZDEBUG(@"prefetch image:%@", matched.screenURL);
@@ -1707,23 +1718,25 @@
         [[EZDataUtil getInstance] prefetchImage:matched.screenURL success:^(UIImage* image){
             //[rotateView.layer removeAllAnimations];
             EZDEBUG(@"image fetched back");
-            dispatch_later(0.5,
-            ^(){
-                //[self stopRotateImage:image];
-                [self rotateCurrentImage:image];
-                _flipStatus = kTakedPhoto;
-            });
+            //dispatch_later(0.5,
+                        //^(){
+                               //[self stopRotateImage:image];
+                        //       _showOther = YES;
             
+                         //  });
+            _otherImage = image;
+            _flipStatus = kTakedPhoto;
+             //[self rotateCurrentImage:image];
         } failure:^(id err){
             EZDEBUG(@"Failed to get image:%@, url:%@", err, matched.screenURL);
             [self hideRotateImage];
             _flipStatus = kTakedPhoto;
         }];
     }else{
-        dispatch_later(0.5, ^(){
-            EZDEBUG(@"Did find matched photo");
-            [self stopRotateImage:nil];
-        });
+        ///dispatch_later(0.5, ^(){
+        //    EZDEBUG(@"Did find matched photo");
+        //    [self stopRotateImage:nil];
+        //});
     }
     EZDEBUG(@"started spin animation");
     
@@ -1839,6 +1852,10 @@
 {
     //if(_flipStatus == kTakingPhoto){
     //NSString* cameraSwitch = @"翻转摄像头";
+    if(isStatic){
+        [_textField resignFirstResponder];
+        [self savePhoto];
+    }else{
     redEnhanceFilter.brightMode = !redEnhanceFilter.brightMode;
     EZDEBUG(@"Current bright Mode:%i", redEnhanceFilter.brightMode);
     [staticPicture processImage];
@@ -1851,21 +1868,33 @@
     
         UIActionSheet* actionSheet = [[UIActionSheet alloc] initWithTitle:@"相机设置" delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:nil otherButtonTitles:@"翻转摄像头",flashMode,(_disableFaceBeautify?@"打开美化":@"关闭美化"), nil];
         [actionSheet showInView:self.view];
-    //}
-    
-    //else if(_flipStatus == kTakedPhoto){
-    //    [self c]
-   // }
-
+    }
 }
+
 
 - (void) changePhoto
 {
+    /**
     if(_flipStatus == kTakedPhoto){
         [self startRotateImage:nil];
         [self startPreFetch:_shotPhoto imageSuccess:^(UIImage* img){
             [self stopRotateImage:img];
         }];
+    }
+     **/
+    if(_flipStatus != kTakedPhoto){
+        EZDEBUG(@"Quit for not take photo");
+        return;
+    }
+    EZDEBUG(@"Showother:%i", _showOther);
+    if(_showOther){
+        _showOther = false;
+        [self rotateCurrentImage:disPhoto.photo.getScreenImage];
+        [self showTextField:YES];
+    }else{
+        _showOther = true;
+        [self rotateCurrentImage:_otherImage];
+        [self showTextField:NO];
     }
 }
 
@@ -2025,7 +2054,10 @@
     }
     [self.photoCaptureButton setEnabled:NO];
     if (!isStatic) {
+        _detectedFaceObj = nil;
         _takingPhoto = TRUE;
+        _showOther = NO;
+        _isSaved = NO;
         isStatic = YES;
         _turnedImage = FALSE;
         [self changeButtonStatus:YES];
@@ -2034,10 +2066,18 @@
         //[self.cameraToggleButton setEnabled:NO];
         //[self.flashToggleButton setEnabled:NO];
         [self prepareForCapture];
-        
-    } else {
-        [_textField resignFirstResponder];
-        [self savePhoto];
+    }else{
+        if(!_isSaved){
+            _isSaved = true;
+            [self changePhoto];
+            [self savePhoto];
+            cancelButton.hidden = YES;
+        }else{
+            cancelButton.hidden = NO;
+            [self retakePhoto:nil];
+            [self changeButtonStatus:NO];
+            
+        }
     }
 }
 
@@ -2045,10 +2085,8 @@
 {
     _flipStatus = kTakedPhoto;
     ++_imageCount;
-    [self retakePhoto:nil];
-    [self changeButtonStatus:NO];
     //[self confirmCurrentMatch];
-    [self showTextField:NO];
+    //[self showTextField:NO];
     //[self hideKeyboard];
     [self triggerUpload];
 }
@@ -2215,16 +2253,18 @@
 {
     EZDEBUG(@"The button status:%i", staticFlag);
     if(staticFlag){
-        [self.cancelButton setTitle:@"重拍" forState:UIControlStateNormal];
-        [self.photoCaptureButton setTitle:@"保存" forState:UIControlStateNormal];
-        //[self.configButton setTitle:@"换照片" forState:UIControlStateNormal];
+        //self.cancelButton.hidden = FALSE;
+        [self.cancelButton setTitle:@"取消" forState:UIControlStateNormal];
+        //[self.photoCaptureButton setTitle:@"保存" forState:UIControlStateNormal];
+        [self.configButton setTitle:@"保存" forState:UIControlStateNormal];
         [self.photoCaptureButton setEnabled:YES];
         self.configButton.hidden = YES;
     }else{
         [self.cancelButton setTitle:@"退出" forState:UIControlStateNormal];
-        [self.photoCaptureButton setTitle:@"按这里拍摄" forState:UIControlStateNormal];
+        //self.cancelButton.hidden = TRUE;
+        //[self.photoCaptureButton setTitle:@"按这里拍摄" forState:UIControlStateNormal];
         //self.configButton.hidden = NO;
-        //[self.configButton setTitle:@"设置" forState:UIControlStateNormal];
+        [self.configButton setTitle:@"设置" forState:UIControlStateNormal];
         [self.photoCaptureButton setEnabled:YES];
     }
     
@@ -2251,13 +2291,18 @@
         [self changeButtonStatus:NO];
         [self stopRotateImage:nil];
         [self hideRotateImage];
-        [self showTextField:NO];
+        //[self showTextField:NO];
         _flipStatus = kTakingPhoto;
     }else{
         [self innserCancel];
         [self cancelAll];
     }
     //[self switchDisplayImage];
+}
+
+- (void) quit:(id)sender
+{
+    
 }
 
 - (void) switchDisplayImage
@@ -2292,7 +2337,7 @@
         
         if ([sender state] == UIGestureRecognizerStateBegan || [sender state] == UIGestureRecognizerStateChanged) {
             //[gpu setBlurSize:0.0f];
-            [self.blurOverlayView setCircleCenter:tapPoint];
+            //[self.blurOverlayView setCircleCenter:tapPoint];
             [gpu setExcludeCirclePoint:CGPointMake(tapPoint.x/320.0f, tapPoint.y/320.0f)];
         }
         
@@ -2382,9 +2427,9 @@
         if ([sender state] == UIGestureRecognizerStateBegan || [sender state] == UIGestureRecognizerStateChanged) {
             //[gpu setBlurSize:0.0f];
             [gpu setExcludeCirclePoint:CGPointMake(midpoint.x/320.0f, midpoint.y/320.0f)];
-            self.blurOverlayView.circleCenter = CGPointMake(midpoint.x, midpoint.y);
+            //self.blurOverlayView.circleCenter = CGPointMake(midpoint.x, midpoint.y);
             CGFloat radius = MAX(MIN(sender.scale*[gpu excludeCircleRadius], 0.6f), 0.15f);
-            self.blurOverlayView.radius = radius*320.f;
+            //self.blurOverlayView.radius = radius*320.f;
             [gpu setExcludeCircleRadius:radius];
             sender.scale = 1.0f;
         }
@@ -2463,13 +2508,13 @@
 -(void) showBlurOverlay:(BOOL)show{
     if(show){
         [UIView animateWithDuration:0.2 delay:0 options:0 animations:^{
-            self.blurOverlayView.alpha = 0.6;
+            //self.blurOverlayView.alpha = 0.6;
         } completion:^(BOOL finished) {
             
         }];
     }else{
         [UIView animateWithDuration:0.35 delay:0.2 options:0 animations:^{
-            self.blurOverlayView.alpha = 0;
+            //self.blurOverlayView.alpha = 0;
         } completion:^(BOOL finished) {
             
         }];
@@ -2479,10 +2524,10 @@
 
 -(void) flashBlurOverlay {
     [UIView animateWithDuration:0.2 delay:0 options:0 animations:^{
-        self.blurOverlayView.alpha = 0.6;
+        //self.blurOverlayView.alpha = 0.6;
     } completion:^(BOOL finished) {
         [UIView animateWithDuration:0.35 delay:0.2 options:0 animations:^{
-            self.blurOverlayView.alpha = 0;
+            //self.blurOverlayView.alpha = 0;
         } completion:^(BOOL finished) {
             
         }];
@@ -2497,7 +2542,7 @@
     filter = nil;
     blurFilter = nil;
     staticPicture = nil;
-    self.blurOverlayView = nil;
+    //self.blurOverlayView = nil;
     //self.focusView = nil;
 }
 
