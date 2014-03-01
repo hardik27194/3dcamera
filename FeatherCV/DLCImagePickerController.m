@@ -195,6 +195,103 @@
     outputJPEGQuality,
     requestedImageSize;
 
+-(void) prepareStaticFilter:(EZFaceResultObj*)fobj image:(UIImage*)img{
+    _detectFace = false;
+    
+    CGFloat dark = 100;//[self getISOSpeedRating];
+    hueFilter.hue = 350.0;
+    //GPUImageFilter* firstFilter = nil;
+    [tongFilter setRgbCompositeControlPoints:liveTongSetting];
+    if(dark >= 400){
+        //[tongFilter addTarget:darkBlurFilter];
+        //firstFilter = (GPUImageFilter*)darkBlurFilter;
+        //[staticPicture addTarget:darkBlurFilter];
+        [staticPicture addTarget:redEnhanceFilter];
+        [redEnhanceFilter addTarget:hueFilter];
+        [hueFilter addTarget:tongFilter];
+    }else{
+        [staticPicture addTarget:redEnhanceFilter];
+        [redEnhanceFilter addTarget:hueFilter];
+        [hueFilter addTarget:tongFilter];
+    }
+    EZDEBUG(@"Prepare new static image get called, flash image:%i, image size:%@, dark:%f", _isImageWithFlash, NSStringFromCGSize(img.size), dark);
+    //GPUImageFilter* imageFilter = secFixColorFilter;
+    whiteBalancerFilter.temperature = 5000.0;
+    if(!_disableFaceBeautify && (fobj || stillCamera.isFrontFacing || _shotMode == kSelfShotMode)){
+        [tongFilter setRgbCompositeControlPoints:faceTongSetting];
+        [tongFilter addTarget:finalBlendFilter];
+        [finalBlendFilter addTarget:filter];
+    
+        secBlendFilter.blurFilter.distanceNormalizationFactor = 30.0;
+        secBlendFilter.blurFilter.blurSize = 3.0;
+        secBlendFilter.miniRealRatio = 0.5;
+        secBlendFilter.imageMode = 0;
+        
+        finalBlendFilter.blurFilter.distanceNormalizationFactor = 15.0;
+        finalBlendFilter.blurFilter.blurSize = 1.0;//fobj.orgRegion.size.width;
+        finalBlendFilter.miniRealRatio = 0.1;
+        finalBlendFilter.imageMode = 0;
+        //finalBlendFilter.showFace = 1;
+        finalBlendFilter.faceRegion = @[@(fobj.orgRegion.origin.x), @(fobj.orgRegion.origin.x + fobj.orgRegion.size.width), @(fobj.orgRegion.origin.y), @(fobj.orgRegion.origin.y + fobj.orgRegion.size.height)];
+        //finalBlendFilter.smallBlurFilter.blurSize = blurAspectRatio * blurCycle;
+        EZDEBUG(@"Will adjusted Face");
+    }else{
+        [tongFilter addTarget:filter];
+        //[hueFilter addTarget:filter];
+        EZDEBUG(@"No face find out");
+    }
+    //kSystemSoundID_Vibrate
+    [filter addTarget:self.imageView];
+    GPUImageRotationMode imageViewRotationMode = kGPUImageNoRotation;
+    switch (staticPictureOriginalOrientation) {
+        case UIImageOrientationLeft:
+            imageViewRotationMode = kGPUImageRotateRight;
+            break;
+        case UIImageOrientationRight:
+            imageViewRotationMode = kGPUImageRotateLeft;
+            break;
+        case UIImageOrientationDown:
+            imageViewRotationMode = kGPUImageRotate180;
+            break;
+        default:
+            imageViewRotationMode = kGPUImageNoRotation;
+            break;
+    }
+    if(stillCamera.isFrontFacing){
+        [self.imageView setInputRotation:kGPUImageNoRotation atIndex:0];
+    }else{
+        [self.imageView setInputRotation:imageViewRotationMode atIndex:0];
+    }
+    [staticPicture processImage];
+}
+
+
+- (void) setupOtherFilters
+{
+    hueFilter = [[GPUImageHueFilter alloc] init];
+    hueFilter.hue = 355;
+    EZDEBUG(@"adjust:%f", hueFilter.hue);
+    orgFiler = [[EZDoubleOutFilter alloc] init];
+    filter = [[GPUImageFilter alloc] init];
+    simpleFilter = [[GPUImageFilter alloc] init];
+    secFixColorFilter = [self createBlueStretchFilter];
+    //[secFixColorFilter updateAllConfigure];
+    //[secFixColorFilter ]
+    //secFixColorFilter.redEnhanceLevel = 0.6;
+    fixColorFilter = [self createRedStretchFilter];
+    //[fixColorFilter updateAllConfigure];
+    //fixColorFilter.redEnhanceLevel = 0.6;
+    redEnhanceFilter = [self createRedEnhanceFilter];
+    //finalBlendFilter = [[EZHomeBlendFilter alloc] initWithFilters];   //[self createFaceBlurFilter];
+    //secBlendFilter = [self createFaceBlurFilter];
+    secBlendFilter = [[EZHomeBlendFilter alloc] initWithTongFilter:[self createTongFilter]];
+    //secBlendFilter.imageMode = 3;
+    finalBlendFilter = [[EZHomeBlendFilter alloc] initWithFilter:secBlendFilter];
+    [finalBlendFilter.tongFilter setRgbCompositeControlPoints:faceTongSetting];
+    //cycleDarken = [[EZCycleDiminish alloc] init];
+    
+}
+
 -(void) sharedInit {
 	outputJPEGQuality = 1.0;
 	requestedImageSize = CGSizeZero;
@@ -251,27 +348,6 @@
     [staticPicture processImage];
 }
 
-- (void) adjustLine
-{
-    CGFloat pixelSize = 0.0005;//MAX(0.05/50.00, 0.0005);
-    _blueGapText.text = [NSString stringWithFormat:@"%f", _blueGap.value/500.0];
-    EZDEBUG(@"calculate value:%f", pixelSize);
-    CGFloat previousWidth = finalBlendFilter.edgeFilter.texelWidth;
-    CGFloat previousHeight = finalBlendFilter.edgeFilter.texelHeight;
-    
-    if(previousHeight > previousWidth){
-        double aspectRatio = previousHeight/previousWidth;
-        finalBlendFilter.edgeFilter.texelHeight = aspectRatio * pixelSize;
-        finalBlendFilter.edgeFilter.texelWidth = pixelSize;// _blueGap.value/500.0;
-    }else{
-        double aspectRatio = previousWidth/previousHeight;
-        finalBlendFilter.edgeFilter.texelHeight = pixelSize;
-        finalBlendFilter.edgeFilter.texelWidth = aspectRatio * pixelSize;// _blueGap.value/500.0;
-    }
-    EZDEBUG(@"previous %@, %@, current:%@, %@",[NSNumber numberWithDouble:previousWidth], [NSNumber numberWithDouble:previousHeight],[NSNumber numberWithDouble:finalBlendFilter.edgeFilter.texelWidth],[NSNumber numberWithDouble:finalBlendFilter.edgeFilter.texelHeight]
-            );
-
-}
 
 - (void) adjustSlideValue:(id)sender
 {
@@ -955,7 +1031,7 @@
     
     cancelButton = [[UIButton alloc] initWithFrame:CGRectMake(5, bound.size.height - 44 - 10, 60, 44)];
     [cancelButton setTitle:@"退出" forState:UIControlStateNormal];
-    [cancelButton addTarget:self action:@selector(cancel:) forControlEvents:UIControlEventTouchUpInside];
+    [cancelButton addTarget:self action:@selector(cancelClicked:) forControlEvents:UIControlEventTouchUpInside];
     cancelButton.center = CGPointMake(5+30, 80 - 35);
     //cancelButton.hidden = NO;
     
@@ -1011,31 +1087,7 @@
 
 }
 
-- (void) setupOtherFilters
-{
-    hueFilter = [[GPUImageHueFilter alloc] init];
-    hueFilter.hue = 355;
-    EZDEBUG(@"adjust:%f", hueFilter.hue);
-    orgFiler = [[EZDoubleOutFilter alloc] init];
-    filter = [[GPUImageFilter alloc] init];
-    secFixColorFilter = [self createBlueStretchFilter];
-    //[secFixColorFilter updateAllConfigure];
-    //[secFixColorFilter ]
-    //secFixColorFilter.redEnhanceLevel = 0.6;
-    fixColorFilter = [self createRedStretchFilter];
-    //[fixColorFilter updateAllConfigure];
-    //fixColorFilter.redEnhanceLevel = 0.6;
-    redEnhanceFilter = [self createRedEnhanceFilter];
-    //finalBlendFilter = [[EZHomeBlendFilter alloc] initWithFilters];   //[self createFaceBlurFilter];
-    //secBlendFilter = [self createFaceBlurFilter];
-    finalBlendFilter = [[EZHomeBlendFilter alloc] initWithTongFilter:[self createTongFilter]];
-    [finalBlendFilter.tongFilter setRgbCompositeControlPoints:faceTongSetting];
-    //cycleDarken = [[EZCycleDiminish alloc] init];
-    simpleFilter = [[GPUImageFilter alloc] init];
-    
-    whiteBalancerFilter = [[GPUImageWhiteBalanceFilter alloc] init];
-    
-}
+
 
 - (void) setupTongFilter
 {
@@ -1435,6 +1487,7 @@
 }
 
 -(void) prepareLiveFilter {
+    EZDEBUG(@"Prepare live filter");
     _detectFace = true;
     //[self startFaceCapture];
     hueFilter.hue = 350;
@@ -1469,92 +1522,6 @@
     finalBlendFilter.imageMode = imgMode;
     [staticPicture processImage];
     //finalBlendFilter.imageMode = 2;
-}
-
--(void) prepareStaticFilter:(EZFaceResultObj*)fobj image:(UIImage*)img{
-    _detectFace = false;
-    
-    CGFloat dark = 100;//[self getISOSpeedRating];
-    hueFilter.hue = 350.0;
-    //GPUImageFilter* firstFilter = nil;
-    [tongFilter setRgbCompositeControlPoints:@[pointValue(0.0, 0.0), pointValue(0.125, 0.125), pointValue(0.25, 0.25), pointValue(0.5, 0.525), pointValue(0.75, 0.770), pointValue(1.0, 1.0)]];
-    if(dark >= 400){
-        //[tongFilter addTarget:darkBlurFilter];
-        //firstFilter = (GPUImageFilter*)darkBlurFilter;
-        //[staticPicture addTarget:darkBlurFilter];
-        [staticPicture addTarget:redEnhanceFilter];
-        [redEnhanceFilter addTarget:hueFilter];
-    }else{
-        [staticPicture addTarget:redEnhanceFilter];
-        [redEnhanceFilter addTarget:hueFilter];
-    }
-    EZDEBUG(@"Prepare new static image get called, flash image:%i, image size:%@, dark:%f", _isImageWithFlash, NSStringFromCGSize(img.size), dark);
-    //GPUImageFilter* imageFilter = secFixColorFilter;
-    whiteBalancerFilter.temperature = 5000.0;
-    if(!_disableFaceBeautify && (fobj || stillCamera.isFrontFacing || _shotMode == kSelfShotMode)){
-        whiteBalancerFilter.temperature = 5500.0;
-        //[redEnhanceFilter addTarget:tongFilter];
-        //finalBlendFilter = [[EZHomeBlendFilter alloc] initWithFilters:@[tongFilter]];
-        //finalBlendFilter.blendFilters = @[tongFilter, hueFilter];
-        [hueFilter addTarget:finalBlendFilter];
-        [finalBlendFilter addTarget:filter];
-        CGFloat blurCycle = 1.5;
-        CGFloat smallBlurRatio = 0.3;
-        if(_shotMode == kSelfShotMode){
-            if(stillCamera.isFrontFacing){
-                blurCycle = 2.0;
-            }else{
-                blurCycle = 2.5;
-            }
-        }else if(fobj){
-            blurCycle = 1.7;//2.5 * fobj.orgRegion.size.width;
-            smallBlurRatio = 0.3 * (1.0 - fobj.orgRegion.size.width);
-            //if(fobj.orgRegion.size.width > 0.5){
-                //blurCycle = 1.2 * blurCycle;
-            //}
-        }else{
-            fobj = [[EZFaceResultObj alloc] init];
-            fobj.orgRegion = CGRectMake(0.1, 0.1, 0.3, 0.3);
-            blurCycle = 0.9;
-            smallBlurRatio = 0.15;
-        }
-        CGFloat adjustedFactor = 16.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
-        finalBlendFilter.blurFilter.distanceNormalizationFactor = adjustedFactor;
-        finalBlendFilter.blurFilter.blurSize = 2.2;//fobj.orgRegion.size.width;
-        finalBlendFilter.imageMode = 0;
-        finalBlendFilter.showFace = 1;
-        finalBlendFilter.faceRegion = @[@(fobj.orgRegion.origin.x), @(fobj.orgRegion.origin.x + fobj.orgRegion.size.width), @(fobj.orgRegion.origin.y), @(fobj.orgRegion.origin.y + fobj.orgRegion.size.height)];
-        //finalBlendFilter.smallBlurFilter.blurSize = blurAspectRatio * blurCycle;
-        EZDEBUG(@"Will blur face:%@, blurCycle:%f, adjustedColor:%f", NSStringFromCGRect(fobj.orgRegion), blurCycle, adjustedFactor);
-    }else{
-        [hueFilter addTarget:tongFilter];
-        [tongFilter addTarget:filter];
-        //[hueFilter addTarget:filter];
-        EZDEBUG(@"No face find out");
-    }
-    //kSystemSoundID_Vibrate
-    [filter addTarget:self.imageView];
-    GPUImageRotationMode imageViewRotationMode = kGPUImageNoRotation;
-    switch (staticPictureOriginalOrientation) {
-        case UIImageOrientationLeft:
-            imageViewRotationMode = kGPUImageRotateRight;
-            break;
-        case UIImageOrientationRight:
-            imageViewRotationMode = kGPUImageRotateLeft;
-            break;
-        case UIImageOrientationDown:
-            imageViewRotationMode = kGPUImageRotate180;
-            break;
-        default:
-            imageViewRotationMode = kGPUImageNoRotation;
-            break;
-    }
-    if(stillCamera.isFrontFacing){
-        [self.imageView setInputRotation:kGPUImageNoRotation atIndex:0];
-    }else{
-        [self.imageView setInputRotation:imageViewRotationMode atIndex:0];
-    }
-    [staticPicture processImage];
 }
 
 
@@ -1810,12 +1777,12 @@
             
                          //  });
             _otherImage = image;
-            _flipStatus = kTakedPhoto;
+            _flipStatus = kStoredPhoto;
              //[self rotateCurrentImage:image];
         } failure:^(id err){
             EZDEBUG(@"Failed to get image:%@, url:%@", err, matched.screenURL);
             [self hideRotateImage];
-            _flipStatus = kTakedPhoto;
+            _flipStatus = kStoredPhoto;
         }];
     }else{
         ///dispatch_later(0.5, ^(){
@@ -1824,11 +1791,6 @@
         //});
     }
     EZDEBUG(@"started spin animation");
-    
-    [self.retakeButton setHidden:NO];
-    //[self.photoCaptureButton setTitle:@"Done" forState:UIControlStateNormal];
-    //[self.photoCaptureButton setImage:nil forState:UIControlStateNormal];
-    [self.photoCaptureButton setEnabled:YES];
     isStatic = true;
     //_takingPhoto = false;
     [blackCover removeFromSuperview];
@@ -2154,8 +2116,8 @@
     }else{
         if(!_isSaved){
             _isSaved = true;
-            [self changePhoto];
             [self savePhoto];
+            [self changePhoto];
             cancelButton.hidden = YES;
         }else{
             cancelButton.hidden = NO;
@@ -2297,14 +2259,6 @@
     staticPictureOriginalOrientation = UIImageOrientationUp;
     isStatic = NO;
     [self removeAllTargets];
-    EZDEBUG(@"selfShot:%i, front:%i", _selfShot, stillCamera.isFrontFacing);
-    if(_selfShot && !stillCamera.isFrontFacing){
-        [stillCamera rotateCamera];
-    }
-    [stillCamera startCameraCapture];
-    [self.cameraToggleButton setEnabled:YES];
-    
-    
     if([UIImagePickerController isSourceTypeAvailable: UIImagePickerControllerSourceTypeCamera]
        && stillCamera
        && [stillCamera.inputCamera hasTorch]) {
@@ -2312,6 +2266,13 @@
     }
     //[self setFilter:selectedFilter];
     [self prepareFilter];
+    EZDEBUG(@"selfShot:%i, front:%i", _selfShot, stillCamera.isFrontFacing);
+    if(_selfShot && !stillCamera.isFrontFacing){
+        [stillCamera rotateCamera];
+    }
+    [stillCamera startCameraCapture];
+    [self.cameraToggleButton setEnabled:YES];
+    
 }
 
 - (void) testImageSave
@@ -2367,14 +2328,15 @@
     [self.delegate imagePickerControllerDidCancel:self imageCount:_imageCount];
 }
 
--(IBAction) cancel:(id)sender {
+-(IBAction) cancelClicked:(id)sender {
     EZDEBUG(@"Cancel get called");
     if(isStatic){
         //_hideTextInput = TRUE;
-        [self retakePhoto:self.cancelButton];
+        //[self stopRotateImage:nil];
+        //[self hideRotateImage];
+        EZDEBUG(@"Before calling retakePhoto");
+        [self retakePhoto:nil];
         [self changeButtonStatus:NO];
-        [self stopRotateImage:nil];
-        [self hideRotateImage];
         //[self showTextField:NO];
         _flipStatus = kTakingPhoto;
     }else{

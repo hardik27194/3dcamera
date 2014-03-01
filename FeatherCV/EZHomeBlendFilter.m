@@ -36,6 +36,7 @@ NSString *const kHomeBlendFragmentShaderString = SHADER_STRING
  uniform lowp float edgeRatio;
  uniform lowp int imageMode;
  uniform lowp int showFace;
+ uniform lowp float miniRealRatio;
  
  const lowp vec4  kRGBToYPrime = vec4 (0.299, 0.587, 0.114, 0.0);
  const lowp vec4  kRGBToI     = vec4 (0.595716, -0.274453, -0.321263, 0.0);
@@ -117,13 +118,15 @@ NSString *const kHomeBlendFragmentShaderString = SHADER_STRING
          //finalEdgeRatio = min(finalEdgeRatio * lineDist, 1.0);
          //gl_FragColor = colorDist * sharpImageColor +  (1.0 - colorDist) * (sharpImageColor * finalEdgeRatio + (1.0 - finalEdgeRatio) * (sharpImageColor*blurRatio + (1.0 - blurRatio)*blurredImageColor));// finalEdgeRatio + (1.0 - finalEdgeRatio) * vec4(0.5);
          //blurRatio = 0.0;
-         colorDist = min(0.9, colorDist + 0.2);
+         colorDist = min(1.0, colorDist + miniRealRatio);
          gl_FragColor = colorDist * sharpImageColor +  (1.0 - colorDist) * (sharpImageColor*blurRatio + (1.0 - blurRatio)*blurredImageColor);
      //gl_FragColor = blurredImageColor;
      }else if(imageMode == 1){
          gl_FragColor = blurredImageColor;
      }else if(imageMode == 2){
          gl_FragColor = sharpImageColor;
+     }else if(imageMode == 3){
+         gl_FragColor = vec4(vec3(0.0),1.0);
      }
      //gl_FragColor = blurredImageColor;
  }
@@ -243,30 +246,31 @@ NSString *const kFaceBlurFragmentShaderString = SHADER_STRING
     return self;
 }
 
-- (id) initWithTongFilter:(GPUImageToneCurveFilter*)tongFilter
+- (id) initWithFilter:(GPUImageFilter*)filter
 {
-    //_blendFilters = outfilters;
-    // Second pass: combine the blurred image with the original sharp one
-    //[self removeAllTargets];
     self = [super init];
     EZDEBUG(@"setup blend filers");
     hasOverriddenAspectRatio = NO;
     _blurFilter = [[EZHomeBiBlur alloc] init];
     _sharpGaussian = [[EZSharpenGaussian alloc] init];
     _combineFilter = [[GPUImageTwoInputFilter alloc] initWithFragmentShaderFromString:kHomeBlendFragmentShaderString];
-    _tongFilter = tongFilter;
-    //GPUImageFilter* currentFilter = [outfilters objectAtIndex:0];
-    //GPUImageFilter* firstFilter = currentFilter;
-    [self addTarget:tongFilter];
-    
-    [tongFilter addTarget:_sharpGaussian];
+    [self addTarget:filter];
+    [filter addTarget:_sharpGaussian];
     [_sharpGaussian addTarget:_blurFilter];
     [self addTarget:_combineFilter];
     [_blurFilter addTarget:_combineFilter atTextureLocation:1];
-    self.initialFilters = [NSArray arrayWithObjects:tongFilter, _combineFilter, nil];
+    self.initialFilters = [NSArray arrayWithObjects:filter, _combineFilter, nil];
     //self.skinColors = @[@(1.0),@(0.75),@(0.58)];
     self.terminalFilter = _combineFilter;
     self.imageMode = 0;
+    return self;
+
+}
+
+- (id) initWithTongFilter:(GPUImageToneCurveFilter*)tongFilter
+{
+    self = [self initWithFilter:tongFilter];
+    _tongFilter = tongFilter;
     return self;
 }
 
@@ -312,6 +316,12 @@ NSString *const kFaceBlurFragmentShaderString = SHADER_STRING
 - (void) setEdgeRatio:(CGFloat)edgeRatio
 {
     [_combineFilter setFloat:edgeRatio forUniformName:@"edgeRatio"];
+}
+
+- (void) setMiniRealRatio:(CGFloat)miniRealRatio
+{
+    _miniRealRatio = miniRealRatio;
+    [_combineFilter setFloat:miniRealRatio forUniformName:@"miniRealRatio"];
 }
 
 - (void) setImageMode:(int)imageMode

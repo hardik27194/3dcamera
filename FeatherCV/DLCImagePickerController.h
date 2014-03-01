@@ -21,6 +21,7 @@ typedef enum {
 
 typedef enum {
     kTakingPhoto,
+    kStoredPhoto,
     kTakedPhoto,
     kMatchAgain,
 } EZFlipStatus;

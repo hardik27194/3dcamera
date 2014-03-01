@@ -40,6 +40,9 @@
 @property (nonatomic, strong) GPUImageToneCurveFilter* tongFilter;
 
 @property (nonatomic, assign) CGFloat blurRatio;
+
+@property (nonatomic, assign) CGFloat miniRealRatio;
+
 @property (nonatomic, assign) CGFloat edgeRatio;
 //@property (readwrite, nonatomic) NSArray* skinColors;
 @property (nonatomic, strong) NSArray* faceRegion;
@@ -48,6 +51,8 @@
 @property (nonatomic, assign) int imageMode;
 
 - (id)initWithFilters:(NSArray*)filters;
+
+- (id) initWithFilter:(GPUImageFilter*)filter;
 
 - (id) initSimple;
 

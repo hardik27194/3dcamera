@@ -749,9 +749,9 @@ static int photoCount = 1;
     cell.frontImage.tappedBlock = ^(id obj){
         EZDEBUG(@"Cell Released clicked");
         //[[EZUIUtility sharedEZUIUtility] raiseInfoWindow:@"测试" info:@"好好测"];
-        //if(switchPhoto){
-        //    [self switchImage:weakCell displayPhoto:cp front:myPhoto back:switchPhoto];
-        //}
+        if(switchPhoto){
+            [self switchImage:weakCell displayPhoto:cp front:myPhoto back:switchPhoto];
+        }
     };
     
     cell.clickHeart.releasedBlock = ^(id obj){
