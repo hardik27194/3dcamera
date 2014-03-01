@@ -277,6 +277,13 @@
 {
     _cameraRaised = false;
     [EZTestSuites testAll];
+    
+    CFTimeInterval startTime = CACurrentMediaTime();
+    // perform some action
+    //EZDEBUG(@"first value:%f", startTime);
+    CFTimeInterval elapsedTime = CACurrentMediaTime() - startTime;
+    EZDEBUG(@"elipsed time:%f", elapsedTime);
+    
     /**
     [[EZDataUtil getInstance] loginUser:@{
                                           @"mobile":@"15216727142",
@@ -292,7 +299,7 @@
                                 EZDEBUG(@"successfully registerred:%@, personID:%@", ps.mobile, ps.personID);
                             } error:^(id err){
                                 EZDEBUG(@"Error detail:%@", err);
-                            }];
+        }];
     }
     //[[EZAnimationUtil sharedEZAnimationUtil] addAnimation:self];
     [self setupAppearance];

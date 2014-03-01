@@ -68,6 +68,12 @@
 @end
 
 
+#define liveTongSetting @[pointValue(0.0, 0.0), pointValue(0.125, 0.125), pointValue(0.25, 0.25), pointValue(0.5, 0.525), pointValue(0.75, 0.770), pointValue(1.0, 1.0)]
+
+#define faceTongSetting @[pointValue(0.0, 0.0), pointValue(0.125, 0.135), pointValue(0.25, 0.275), pointValue(0.5, 0.54), pointValue(0.75, 0.770), pointValue(1.0, 1.0)]
+
+
+
 @implementation DLCImagePickerController {
     GPUImageStillCamera * stillCamera;
     GPUImageWhiteBalanceFilter* whiteBalancerFilter;
@@ -550,7 +556,93 @@
     [self.configButton setTitleColor:RGBCOLOR(43, 43, 43) forState:UIControlStateNormal];
 }
 
--(void)viewDidLoad {
+- (void) viewDidLoad
+{
+    [EZUIUtility sharedEZUIUtility].cameraRaised = true;
+    [super viewDidLoad];
+    
+    //self.view.backgroundColor = [UIColor whiteColor];
+    [[UIApplication sharedApplication] setStatusBarHidden:YES];
+    _senseRotate = true;
+    //_recordedMotions = [[NSMutableArray alloc] init];
+    _flashView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    _flashView.backgroundColor = [UIColor whiteColor];
+    _flashMode = 2;
+    
+    [self setupFlashFilter];
+    [self setupDarkFilter];
+    [self setupButton];
+    matchedPhotos = [[NSMutableArray alloc] init];
+    _storedMotionDelta = [[NSMutableArray alloc] init];
+    self.wantsFullScreenLayout = YES;
+    _pageTurn = [[EZSoundEffect alloc] initWithSoundNamed:@"page_turn.aiff"];
+    _shotReady = [[EZSoundEffect alloc] initWithSoundNamed:@"shot_voice.aiff"];
+    _shotVoice = [[EZSoundEffect alloc] initWithSoundNamed:@"shot.wav"];
+    
+    bigSharpenFilter = [[EZSkinSharpen alloc] init];
+    bigSharpenFilter.sharpenSize = 3.2;
+    bigSharpenFilter.sharpenRatio = 0.2;
+    bigSharpenFilter.sharpenBar = 0.1;
+    
+    smallSharpenFilter = [[EZSkinSharpen alloc] init];
+    smallSharpenFilter.sharpenSize = 1.6;
+    smallSharpenFilter.sharpenRatio = 0.2;
+    smallSharpenFilter.sharpenBar = 0.1;
+    
+    
+    sharpenGaussian = [[EZSharpenGaussian alloc] init];
+    sharpenGaussianSec = [[EZSharpenGaussian alloc] init];
+    
+    //sharpenFilter.sharpness = 0.3;
+    
+    //set background color
+    //self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"micro_carbon"]];
+    
+    self.photoBar.backgroundColor = [UIColor colorWithPatternImage:
+                                     [UIImage imageNamed:@"photo_bar"]];
+    
+    self.topBar.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"photo_bar"]];
+    //button states
+    [self.blurToggleButton setSelected:NO];
+    [self.filtersToggleButton setSelected:NO];
+    
+    staticPictureOriginalOrientation = UIImageOrientationUp;
+    
+    self.focusView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"focus-crosshair"]];
+	[self.view addSubview:self.focusView];
+	self.focusView.alpha = 0;
+    orgFocusSize = self.focusView.frame.size;
+    
+    __weak DLCImagePickerController* weakSelf = self;
+    faceCovered = ^(NSNumber* status){
+        EZDEBUG(@"face status:%i", status.intValue);
+        [weakSelf switchCamera];
+    };
+    //self.blurOverlayView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    //self.blurOverlayView.alpha = 0;
+    //[self.imageView addSubview:self.blurOverlayView];
+    
+    //No issue.
+    hasBlur = NO;
+    //we need a crop filter for the live video
+    float widthAspect = [UIScreen mainScreen].bounds.size.width/[UIScreen mainScreen].bounds.size.height;
+    EZDEBUG(@"The width aspect ratio is:%f", widthAspect);
+    [self setupOtherFilters];
+    [self setupTongFilter];
+    skinBrighter = [self createSkinBrighter];
+    imageView.fillMode = kGPUImageFillModePreserveAspectRatioAndFill;
+    EZDEBUG(@"The imageView frame:%@", NSStringFromCGRect(imageView.frame));
+    //[self setupEdgeDetector];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        [self setupCamera];
+    });
+    //[self startFaceCapture];
+    [self setupUI];
+    [self createTextField];
+    [self setupKeyboard];
+}
+
+-(void)viewDidLoadOld {
     [EZUIUtility sharedEZUIUtility].cameraRaised = true;
     [super viewDidLoad];
     
@@ -634,9 +726,9 @@
         [self setupCamera];
     });
     //[self startFaceCapture];
-    [self setupUI:weakSelf];
+    [self setupUI];
     [self createTextField];
-    [self setupKeyboard:weakSelf];
+    [self setupKeyboard];
     
 }
 
@@ -662,15 +754,16 @@
     
 }
 
-- (void) setupKeyboard:(DLCImagePickerController*)weakSelf
+- (void) setupKeyboard
 {
+    __weak DLCImagePickerController* weakSelf = self;
     CGRect appFrame = [UIScreen mainScreen].applicationFrame;
     EZClickView* cancelKeyboard = [[EZClickView alloc] initWithFrame:CGRectMake(0, 0, 320, appFrame.size.height - textInputRegion.bounds.size.height)];
     cancelKeyboard.backgroundColor = [UIColor clearColor];//RGBA(128, 0, 0, 128);
     cancelKeyboard.enableTouchEffects = false;
     cancelKeyboard.releasedBlock = ^(id obj){
         EZDEBUG(@"cancel clicked");
-        _hideTextInput = false;
+        weakSelf.hideTextInput = false;
         [weakSelf.textField resignFirstResponder];
         //[self hideKeyboard:NO];
     };
@@ -699,7 +792,6 @@
     _centerButtonY = [EZDataUtil getInstance].centerButton.frame.origin.y;
     [[EZMessageCenter getInstance] registerEvent:EventKeyboardWillRaise block:keyboardRaiseHandler];
     [[EZMessageCenter getInstance] registerEvent:EventKeyboardWillHide block:keyboardHideHandler];
-    
 
 }
 
@@ -791,9 +883,8 @@
     if(![_textField.text isEmpty]){
         [disPhoto.photo.conversations addObject:@{
                                                   @"text":_textField.text,
-                                                  @"date":[NSDate date]
+                                                  @"date":isoDateFormat([NSDate date])
                                                 }];
-        
         [self createChatRegion];
         chatText.text = _textField.text;
         [chatText enableTextWrap];
@@ -811,10 +902,10 @@
         
     }
     _hideTextInput = true;
-    
     dispatch_later(1.5, ^(){
-            [self savePhoto];
-            [self retakePhoto:nil];
+            //[self savePhoto];
+            //[self retakePhoto:nil];
+            [self takePhoto:nil];
             [chatRegion removeFromSuperview];
             //[self showTextField:NO];
     });
@@ -845,8 +936,9 @@
     }];
 }
 
-- (void) setupUI:(id)weakSelf
+- (void) setupUI
 {
+    __weak DLCImagePickerController* weakSelf = self;
      CGRect bound = [UIScreen mainScreen].bounds;
     shapeCover = [[EZShapeCover alloc] initWithFrame:imageView.frame];
     EZDEBUG(@"initial frame:%@", NSStringFromCGRect(imageView.frame));
@@ -899,7 +991,6 @@
     [EZDataUtil getInstance].centerButton.releasedBlock = ^(id obj){
         [weakSelf takePhoto:nil];
     };
-    crossHairFilter = [[GPUImageCrosshairGenerator alloc] init];
 }
 
 
@@ -938,7 +1029,7 @@
     //finalBlendFilter = [[EZHomeBlendFilter alloc] initWithFilters];   //[self createFaceBlurFilter];
     //secBlendFilter = [self createFaceBlurFilter];
     finalBlendFilter = [[EZHomeBlendFilter alloc] initWithTongFilter:[self createTongFilter]];
-    [finalBlendFilter.tongFilter setRgbCompositeControlPoints:@[pointValue(0.0, 0.0), pointValue(0.125, 0.135), pointValue(0.25, 0.27), pointValue(0.5, 0.535), pointValue(0.75, 0.770), pointValue(1.0, 1.0)]];
+    [finalBlendFilter.tongFilter setRgbCompositeControlPoints:faceTongSetting];
     //cycleDarken = [[EZCycleDiminish alloc] init];
     simpleFilter = [[GPUImageFilter alloc] init];
     
@@ -1347,7 +1438,8 @@
     _detectFace = true;
     //[self startFaceCapture];
     hueFilter.hue = 350;
-    [tongFilter setRgbCompositeControlPoints:@[pointValue(0.0, 0.0), pointValue(0.125, 0.125), pointValue(0.25, 0.25), pointValue(0.5, 0.525), pointValue(0.75, 0.770), pointValue(1.0, 1.0)]];
+    
+    [tongFilter setRgbCompositeControlPoints:liveTongSetting];
     [stillCamera addTarget:orgFiler];
     [orgFiler addTarget:redEnhanceFilter];
     [redEnhanceFilter addTarget:hueFilter];
@@ -1426,9 +1518,9 @@
             blurCycle = 0.9;
             smallBlurRatio = 0.15;
         }
-        CGFloat adjustedFactor = 15.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
+        CGFloat adjustedFactor = 16.0;//MAX(17 - 10 * fobj.orgRegion.size.width, 13.0);
         finalBlendFilter.blurFilter.distanceNormalizationFactor = adjustedFactor;
-        finalBlendFilter.blurFilter.blurSize = 2.0;//fobj.orgRegion.size.width;
+        finalBlendFilter.blurFilter.blurSize = 2.2;//fobj.orgRegion.size.width;
         finalBlendFilter.imageMode = 0;
         finalBlendFilter.showFace = 1;
         finalBlendFilter.faceRegion = @[@(fobj.orgRegion.origin.x), @(fobj.orgRegion.origin.x + fobj.orgRegion.size.width), @(fobj.orgRegion.origin.y), @(fobj.orgRegion.origin.y + fobj.orgRegion.size.height)];
@@ -2082,6 +2174,8 @@
     //[self showTextField:NO];
     //[self hideKeyboard];
     [self triggerUpload];
+    _shotPhoto = nil;
+    
 }
 
 
@@ -2090,11 +2184,9 @@
     for(EZPhoto* ph in _shotPhoto.photoRelations){
         [self cancelPrematchPhoto:ph];
     }
-    
-    for(EZPhoto* ph in matchedPhotos){
-        [self cancelPrematchPhoto:ph];
-    }
-
+    //for(EZPhoto* ph in matchedPhotos){
+    //    [self cancelPrematchPhoto:ph];
+    //}
 }
 
 - (void) triggerUpload
@@ -2115,7 +2207,7 @@
     [[EZDataUtil getInstance].pendingUploads addObject:disPhoto.photo];
     [[EZDataUtil getInstance] uploadPendingPhoto];
     EZDEBUG(@"complete pending call");
-    [self innserCancel];
+    [self innerCancel];
      EZDEBUG(@"The photoID to update is:%@, prevMatched count:%i", disPhoto.photo.photoID, matchedPhotos.count);
     for(EZPhoto* ph in matchedPhotos){
         [self cancelPrematchPhoto:ph];
@@ -2195,6 +2287,7 @@
 }
 
 -(IBAction) retakePhoto:(UIButton *)button {
+    [self preMatchPhoto];
     [self hideRotateImage];
     smileDetected.alpha = 0.0;
     _turnStatus = kCameraNormal;
@@ -2247,7 +2340,7 @@
     EZDEBUG(@"The button status:%i", staticFlag);
     if(staticFlag){
         //self.cancelButton.hidden = FALSE;
-        [self.cancelButton setTitle:@"取消" forState:UIControlStateNormal];
+        [self.cancelButton setTitle:@"重拍" forState:UIControlStateNormal];
         //[self.photoCaptureButton setTitle:@"保存" forState:UIControlStateNormal];
         [self.configButton setTitle:@"保存" forState:UIControlStateNormal];
         [self.photoCaptureButton setEnabled:YES];
@@ -2259,11 +2352,12 @@
         //self.configButton.hidden = NO;
         [self.configButton setTitle:@"设置" forState:UIControlStateNormal];
         [self.photoCaptureButton setEnabled:YES];
+        self.configButton.hidden = NO;
     }
     
 }
 
-- (void) innserCancel
+- (void) innerCancel
 {
     EZUIUtility.sharedEZUIUtility.cameraClickButton.releasedBlock = nil;
     [self dismissViewControllerAnimated:YES completion:^(){
@@ -2275,9 +2369,6 @@
 
 -(IBAction) cancel:(id)sender {
     EZDEBUG(@"Cancel get called");
-    //[self executeGame];
-   
-    //[self cancelAll];
     if(isStatic){
         //_hideTextInput = TRUE;
         [self retakePhoto:self.cancelButton];
@@ -2287,9 +2378,9 @@
         //[self showTextField:NO];
         _flipStatus = kTakingPhoto;
     }else{
-        [self innserCancel];
-        [self cancelAll];
+        [self innerCancel];
     }
+    [self cancelAll];
     //[self switchDisplayImage];
 }
 

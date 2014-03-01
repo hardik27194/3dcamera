@@ -98,8 +98,8 @@ NSString *const EZGaussianSharpenFragmentShaderString = SHADER_STRING
      if(sharpDist < sharpenBar){
          sharpDist = sharpDist * sharpDist;
      }else{
-         sharpDist = sharpenBar + (sharpDist - sharpenBar) * 1.2;
-              }
+         sharpDist = sharpenBar + (sharpDist - sharpenBar) * 1.4;
+    }
      mediump float sharpenRatio = 1.0;
      lowp float colorDist = calcHue(centralColor.rgb);
      //sharpDist = sharpDist * sharpenRatio;
