@@ -26,6 +26,7 @@
 
 + (EZDataUtil*) getInstance;
 
+@property (nonatomic, assign) int queryingCount;
 
 @property (nonatomic, strong) EZClickView* centerButton;
 
@@ -64,13 +65,26 @@
 //A good change to use the KV listener.
 @property (nonatomic, strong) NSMutableArray* pendingPhotos;
 
+@property (nonatomic, strong) NSMutableSet* pendingUserQuery;
+
+@property (nonatomic, strong) NSMutableDictionary* pendingPersonCall;
+
+@property (nonatomic, strong) NSMutableDictionary* currentQueryUsers;
+
 @property (nonatomic, strong) UIImageView* prefetchImage;
+
+@property (nonatomic, strong) NSDateFormatter* timeFormatter;
 
 
 //Check the current status
 - (BOOL) canUpload;
 
+- (void) uploadPendingPhoto;
+
+- (void) queryPendingPerson;
+
 - (NSString*) getCurrentPersonID;
+
 //@property (nonatomic, strong) NSMutable
 //Phone number will be the unique id?
 //Mean only one id for each phone right?
@@ -110,11 +124,12 @@
 //The this one could be a periodic update.
 - (void) uploadContacts:(NSArray*)contacts success:(EZEventBlock)succss failure:(EZEventBlock)failure;
 
-
+//Internal invokation only.
+- (void) queryPersonIDs:(NSArray*)personIDs success:(EZEventBlock)success failure:(EZEventBlock)failure;
 //Get the person object
 //- (EZPerson*) getPerson:(int)personID;
 //Check cache first, if not then will query the person
-- (void) getPersonID:(NSString*)personID success:(EZEventBlock)success failure:(EZEventBlock)failure;
+- (void) getPersonByID:(NSString*)personID success:(EZEventBlock)success;
 
 //Get converstaion regarding this photo
 - (void) getConversation:(int)combineID success:(EZEventBlock)success failure:(EZEventBlock)failure;
@@ -124,6 +139,8 @@
 //Should we generate it dynamically.
 //Maybe we should.
 - (void) uploadPhoto:(EZPhoto*)photo success:(EZEventBlock)success failure:(EZEventBlock)failure;
+
+- (void) uploadAvatar:(UIImage*)img success:(EZEventBlock)success failure:(EZEventBlock)failure;
 
 - (void) addConverstaion:(int)combinedID text:(NSString*)text success:(EZEventBlock)success failure:(EZEventBlock)failure;
 
@@ -139,6 +156,7 @@
 - (void) getAllContacts:(EZEventBlock)blk;
 
 
+//- (void) uploadAvatar:()
 //When need to call this?
 //When I get the photo album access, I will upload all the extracted photo information
 //Then I will update the photo information to the server side.
@@ -190,6 +208,6 @@
 //Remove the photo from the array, once it is successfuls
 
 @property (nonatomic, assign) int uploadingTasks;
-- (void) uploadPendingPhoto;
+
 
 @end

@@ -271,18 +271,20 @@
 - (void) uploadPendingImages:(id)obj
 {
     [[EZDataUtil getInstance] uploadPendingPhoto];
+    [[EZDataUtil getInstance] queryPendingPerson];
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     _cameraRaised = false;
+    ///[EZDataUtil getInstance].currentPersonID = @"52f783d7e7b5b9dd9c28f1cc";
     [EZTestSuites testAll];
     
-    CFTimeInterval startTime = CACurrentMediaTime();
-    // perform some action
+    //CFTimeInterval startTime = CACurrentMediaTime();
+    //perform some action
     //EZDEBUG(@"first value:%f", startTime);
-    CFTimeInterval elapsedTime = CACurrentMediaTime() - startTime;
-    EZDEBUG(@"elipsed time:%f", elapsedTime);
+    //CFTimeInterval elapsedTime = CACurrentMediaTime() - startTime;
+    //EZDEBUG(@"elipsed time:%f", elapsedTime);
     
     /**
     [[EZDataUtil getInstance] loginUser:@{

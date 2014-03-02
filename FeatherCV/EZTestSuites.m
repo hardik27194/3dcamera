@@ -17,6 +17,21 @@
 #import "EZHomeBlendFilter.h"
 #import <GPUImageFilter.h>
 
+@interface ReleasedObj : NSObject
+
+@property (nonatomic, strong) NSString* name;
+
+@end
+
+@implementation ReleasedObj
+
+- (void) dealloc
+{
+    EZDEBUG(@"Dealloced %@", _name);
+}
+
+@end
+
 @implementation EZTestSuites
 
 + (void) testAll
@@ -30,6 +45,30 @@
     //[EZTestSuites testSoundEffects];
     //[self testImageProcess];
     //[self testImageStore];
+    ReleasedObj* obj = [[ReleasedObj alloc] init];
+    obj.name = @"Tian";
+    [[EZDataUtil getInstance] uploadAvatar:[UIImage imageNamed:@"header_1"] success:^(NSString* url){
+        EZDEBUG(@"Final url is:%@", url);
+    } failure:^(id err){
+        EZDEBUG(@"error:%@", err);
+    }];
+    
+    [[EZDataUtil getInstance] getPersonByID:@"52f78923e7b5b9dd9c28f1ce" success:^(EZPerson* ps){
+        EZDEBUG(@"Query back person id:%@, isQuerying:%i, name:%@, releaseName:%@", ps.personID, ps.isQuerying, ps.name, obj.name);
+    }];
+    
+    [[EZDataUtil getInstance] getPersonByID:@"52f78b93e7b5b9dd9c28f1d1" success:^(EZPerson* ps){
+        EZDEBUG(@"Query back person id:%@, isQuerying:%i, name:%@", ps.personID, ps.isQuerying, ps.name);
+    }];
+
+    [[EZDataUtil getInstance] getPersonByID:@"52f78923e7b5b9dd9c28f1ce" success:^(EZPerson* ps){
+        EZDEBUG(@"Second Query back person id:%@, isQuerying:%i, name:%@", ps.personID, ps.isQuerying, ps.name);
+    }];
+    
+    [[EZDataUtil getInstance] getPersonByID:@"52f78b93e7b5b9dd9c28f1d1" success:^(EZPerson* ps){
+        EZDEBUG(@"Second Query back person id:%@, isQuerying:%i, name:%@", ps.personID, ps.isQuerying, ps.name);
+    }];
+
 }
 
 + (void) testImageStore

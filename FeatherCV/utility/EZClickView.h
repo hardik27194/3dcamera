@@ -9,7 +9,17 @@
 #import <UIKit/UIKit.h>
 #import "EZConstants.h"
 
+
+typedef enum {
+    kPressColorChange,
+    kPressEnlargeCycle
+} EZPressAnimType;
+
 @interface EZClickView : UIView
+
+@property (nonatomic, assign) EZPressAnimType animType;
+
+@property (nonatomic, assign) CGFloat enlargeScale;
 
 @property (nonatomic, strong) EZEventBlock pressedBlock;
 

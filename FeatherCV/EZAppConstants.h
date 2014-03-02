@@ -13,18 +13,30 @@
 //Will hold the Application related constants.
 #define ContainerWidth 300.0
 
+#define DefaultChatUnitHeight 95.0
+
 #define photoPageSize 5
 
+#define smallIconRadius 35
 
 #define macroControlInfo(keyName) NSLocalizedStringFromTable(keyName, @"UIControlInfo", nil)
 
+#define formatRelativeTime(time) [[EZDataUtil getInstance].timeFormatter stringFromDate:time]
+
 #define BlurBackground RGBA(240, 240, 240, 128)
+
+#define lightGrayBackground RGBCOLOR(217, 217, 217)
 //Interesting.
 #define turningMockPageTag 20070424
 
 #define animateCoverViewTag 20000120
 
 #define shaderSkinColor vec3(0.73,0.73,0.51)
+
+
+#define longShaderSkinColor vec3(0.83,0.83, 0.61)
+
+#define shortShaderSkinColor vec3(0.63, 0.63, 0.41)
 
 #define shaderSkinRange 0.4
 
@@ -53,11 +65,11 @@
 
 #define isoStr2Date(curStr) [[EZDataUtil getInstance].isoFormatter dateFromString:curStr]
 
-//#define baseUploadURL @"http://10.0.1.6:8080/upload"
+//#define baseUploadURL @"http://127.0.0.1:8080/upload"
 //#define baseUploadURL @"http://192.168.1.102:8080/upload"
 #define baseUploadURL @"http://www.enjoyxue.com:8080/upload"
 
-//#define baseServiceURL @"http://10.0.1.6:8080/"
+//#define baseServiceURL @"http://127.0.0.1:8080/"
 //#define baseServiceURL @"http://192.168.1.102:8080/"
 #define baseServiceURL @"http://www.enjoyxue.com:8080/"
 
@@ -98,6 +110,10 @@
 
 #define EZZoomoutAlbum @"EZZoomoutAlbum"
 #define EZZoominAlbum @"EZZoominAlbum"
+
+#define EZCenterBigRadius 60.0
+
+#define EZCenterSmallRadius 40.0
 
 #define AllResizeMask UIViewAutoresizingFlexibleBottomMargin|UIViewAutoresizingFlexibleTopMargin|UIViewAutoresizingFlexibleLeftMargin|UIViewAutoresizingFlexibleRightMargin|UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight
 

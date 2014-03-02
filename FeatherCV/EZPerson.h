@@ -33,6 +33,10 @@
 //joined is false, mean this is a mock user. 
 @property (nonatomic, assign) BOOL joined;
 
+//Mean this person are querying.
+//You can add key-value pair to listen to this value.
+@property (nonatomic, assign) BOOL isQuerying;
+
 - (NSDictionary*) toJson;
 
 - (void) fromJson:(NSDictionary*)dict;

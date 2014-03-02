@@ -1059,7 +1059,7 @@ NSString* doubleString(NSString* str)
 
 - (NSData*) toJpegData
 {
-    return UIImageJPEGRepresentation(self, 0.3);
+    return UIImageJPEGRepresentation(self, 0.5);
 }
 
 -(UIImage *) cutout: (CGRect) coords {

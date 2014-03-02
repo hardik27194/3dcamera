@@ -37,6 +37,7 @@ NSString *const kHomeBlendFragmentShaderString = SHADER_STRING
  uniform lowp int imageMode;
  uniform lowp int showFace;
  uniform lowp float miniRealRatio;
+ uniform lowp int skinColorFlag;
  
  const lowp vec4  kRGBToYPrime = vec4 (0.299, 0.587, 0.114, 0.0);
  const lowp vec4  kRGBToI     = vec4 (0.595716, -0.274453, -0.321263, 0.0);
@@ -58,9 +59,9 @@ NSString *const kHomeBlendFragmentShaderString = SHADER_STRING
      return res;
  }
  
- lowp float calcHue(lowp vec4 rawcolor)
+ lowp float calcHue(lowp vec4 rawcolor,lowp vec3 skColor)
  {
-     highp float fd = distance(rawcolor.rgb, skinColor);
+     highp float fd = distance(rawcolor.rgb, skColor);
      if(fd < shaderSkinRange){
          fd = fd * fd;
      }else{
@@ -99,7 +100,11 @@ NSString *const kHomeBlendFragmentShaderString = SHADER_STRING
      }
       **/
      if(imageMode == 0){
-         lowp float colorDist = calcHue(blurredImageColor);
+         lowp vec3 skColor = shortShaderSkinColor;
+         if(skinColorFlag == 1){
+             skColor = longShaderSkinColor;
+         }
+         lowp float colorDist = calcHue(blurredImageColor, skColor);
          //lowp float lineDist = calcLineDist(sharpImageColor);
          //lowp vec3 darkColor = vec3(0.35);
          //lowp float brightness = dot(sharpImageColor.rgb, W);
@@ -341,6 +346,13 @@ NSString *const kFaceBlurFragmentShaderString = SHADER_STRING
     [_combineFilter setFloatVec3:skinColor forUniformName:@"skinColor"];
 }
 **/
+
+- (void) setSkinColorFlag:(int)skinColorFlag
+{
+    _skinColorFlag = skinColorFlag;
+    [_combineFilter setInteger:skinColorFlag forUniformName:@"skinColorFlag"];
+}
+
 - (void) setShowFace:(int)showFace
 {
     _showFace = showFace;

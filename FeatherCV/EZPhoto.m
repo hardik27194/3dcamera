@@ -13,6 +13,13 @@
 
 @implementation EZPhoto
 
+- (id) init
+{
+    self = [super init];
+    _conversations = [[NSMutableArray alloc] init];
+    return self;
+    
+}
 
 - (NSArray*) conversationToJson
 {

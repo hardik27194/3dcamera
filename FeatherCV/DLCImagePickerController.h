@@ -51,6 +51,7 @@ typedef enum {
 
 
 @class EZPhoto;
+@class EZDisplayPhoto;
 @class DLCImagePickerController;
 
 @protocol DLCImagePickerDelegate <NSObject>
@@ -136,6 +137,9 @@ typedef enum {
 //@property (nonatomic, strong) EZPhoto* matchedPhoto;
 //The purpose is to carry all the remote operation result
 @property (nonatomic, strong) EZPhoto* shotPhoto;
+
+//Keep this photo for input text
+@property (nonatomic, strong) EZDisplayPhoto* savedPhoto;
 
 //0 mean off
 //1 mean on

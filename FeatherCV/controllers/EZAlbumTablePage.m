@@ -179,7 +179,6 @@ static int photoCount = 1;
 {
     EZDEBUG(@"Store image get called:%i", _newlyCreated);
     ++_newlyCreated;
-    
 }
 
 //Will animate the newly create image to flip to another side
@@ -386,27 +385,26 @@ static int photoCount = 1;
     
     CGRect bounds = [UIScreen mainScreen].bounds;
     
-    CGFloat radius = 60.0;
+    
     
     //dispatch_later(0.1, ^(){
         
     //});
     dispatch_later(0.1, ^(){
-    
-        EZClickView* clickView = [[EZClickView alloc] initWithFrame:CGRectMake((320.0 - radius)/2.0, bounds.size.height - radius - 2.0, radius, radius)];
-    //[clickView digHole:50 color:[UIColor whiteColor] opacity:1.0];
-    //clickView.userInteractionEnabled = YES;
+        EZClickView* clickView = [[EZClickView alloc] initWithFrame:CGRectMake((320.0 - EZCenterSmallRadius)/2.0, bounds.size.height - EZCenterSmallRadius - 2.0, EZCenterSmallRadius, EZCenterSmallRadius)];
+        //[clickView digHole:50 color:[UIColor whiteColor] opacity:1.0];
+        //clickView.userInteractionEnabled = YES;
     
         
-    //UIView* borderView = [[UIView alloc] initWithFrame:CGRectMake(0, bounds.size.height - radius, radius, radius)];
-    //borderView.backgroundColor = [UIColor clearColor];
+        //UIView* borderView = [[UIView alloc] initWithFrame:CGRectMake(0, bounds.size.height - radius, radius, radius)];
+        //borderView.backgroundColor = [UIColor clearColor];
         clickView.layer.borderColor = [UIColor whiteColor].CGColor;
         clickView.layer.borderWidth = 4.0;
         //[borderView enableRoundImage];
         //[TopView addSubview:borderView];
-    //clickView.backgroundColor = [UIColor clearColor];
-    //clickView.layer.borderColor = [UIColor whiteColor].CGColor;
-    //clickView.layer.borderWidth = 4.0;
+        //clickView.backgroundColor = [UIColor clearColor];
+        //clickView.layer.borderColor = [UIColor whiteColor].CGColor;
+        //clickView.layer.borderWidth = 4.0;
         [clickView enableRoundImage];
         clickView.releasedBlock = ^(id obj){
         [weakSelf raiseCamera];
@@ -420,21 +418,6 @@ static int photoCount = 1;
     [EZDataUtil getInstance].barBackground = statusBarBackground;
     [EZDataUtil getInstance].centerButton = clickView;
     });
-    
-    
-    //_observedTarget = [[EZPhoto alloc] init];
-    //observeTarget.uploaded
-    //EZClickView* clickView = [[EZClickView alloc] initWithFrame:CGRectMake(0, 200, 100, 100)];
-    //clickView.backgroundColor = RGBCOLOR(128, 128, 255);
-    //[self.view addSubview:clickView];
-    
-    //clickView.pressedBlock = ^(id obj){
-     //   EZDEBUG(@"clicked");
-     //   _observedTarget.uploaded = !_observedTarget.uploaded;
-    //};
-    
-    //[_observedTarget addObserver:self forKeyPath:@"uploaded" options:NSKeyValueObservingOptionNew context:nil];
-    
 
 }
 
@@ -612,7 +595,7 @@ static int photoCount = 1;
     }
     **/
     
-    return 320 + 40;
+    return 320 + DefaultChatUnitHeight;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -754,19 +737,6 @@ static int photoCount = 1;
         }
     };
     
-    cell.clickHeart.releasedBlock = ^(id obj){
-        EZDEBUG(@"Like called");
-        [[EZDataUtil getInstance] likedPhoto:switchPhoto.photoID success:^(id obj){
-            EZDEBUG(@"likeed");
-            if(weakCell.currentPos == indexPath.row){
-                weakCell.clickHeart.backgroundColor = [UIColor redColor];
-            }
-            //switchPhoto;
-        } failure:^(id obj){
-            EZDEBUG(@"failed to like the photo");
-        }];
-    
-    };
     
     cell.frontImage.longPressed = ^(id obj){
         UIImageView* fullView = [[UIImageView alloc] initWithImage:weakCell.frontImage.image];
@@ -787,7 +757,38 @@ static int photoCount = 1;
         [EZDataUtil getInstance].centerButton.alpha = 0.0;
         
     };
+    
+    if(cp.isFront){
+        [self setChatInfo:cell displayPhoto:cp.photo person:currentLoginUser];
+    }else{
+        EZPhoto* otherSide = nil;
+        if(cp.photo.photoRelations.count){
+            otherSide = [cp.photo.photoRelations objectAtIndex:0];
+        }
+        EZPerson* person = otherSide.owner;
+        [self setChatInfo:cell displayPhoto:otherSide person:person];
+    }
     return cell;
+}
+
+- (void) setChatInfo:(EZPhotoCell*)cell displayPhoto:(EZPhoto*)photo person:(EZPerson*)person
+{
+    [cell.chatUnit.authorIcon setImageWithURL:str2url(person.avatar)];
+    cell.chatUnit.authorIcon.releasedBlock = ^(id obj){
+        EZDEBUG(@"The author id is:%@", person.personID);
+    };
+    if(photo.conversations.count > 0){
+        NSDictionary* conversation = [photo.conversations objectAtIndex:0];
+        NSDate* dt =(NSDate*) [conversation objectForKey:@"date"];
+        NSString* comment = [conversation objectForKey:@"text"];
+        EZDEBUG(@"converation %@:%@", dt, comment);
+        //cell.chatUnit.textDate = [conversation objectForKey:@"date"];
+        [cell.chatUnit setTimeStr:formatRelativeTime(dt)];
+        [cell.chatUnit setChatStr:comment];
+    }else{
+        [cell.chatUnit setTimeStr:@""];
+        [cell.chatUnit setChatStr:@""];
+    }
 }
 
 
@@ -817,15 +818,18 @@ static int photoCount = 1;
     UIView* snapShot = [weakCell.frontImage snapshotViewAfterScreenUpdates:YES];
     snapShot.frame = weakCell.frontImage.frame;
     [weakCell.rotateContainer addSubview:snapShot];
+    EZPhoto* photo = nil;
     if(cp.isFront){
+        photo = back;
         [weakCell.frontImage setImageWithURL:str2url(back.screenURL)];
     }else{
+        photo = front;
         [weakCell.frontImage setImage:[front getScreenImage]];
     }
     
-    
     [UIView flipTransition:snapShot dest:weakCell.frontImage container:weakCell.rotateContainer isLeft:YES duration:2 complete:^(id obj){
         [snapShot removeFromSuperview];
+        [self setChatInfo:weakCell displayPhoto:photo person:photo.owner];
         //EZDEBUG(@"rotation completed:%i", (int)[snapShot superview]);
     }];
     cp.isFront = !cp.isFront;

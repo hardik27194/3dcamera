@@ -224,13 +224,15 @@
     
         secBlendFilter.blurFilter.distanceNormalizationFactor = 30.0;
         secBlendFilter.blurFilter.blurSize = 3.0;
-        secBlendFilter.miniRealRatio = 0.5;
+        secBlendFilter.miniRealRatio = 0.25;
         secBlendFilter.imageMode = 0;
+        secBlendFilter.skinColorFlag = 1;
         
         finalBlendFilter.blurFilter.distanceNormalizationFactor = 15.0;
-        finalBlendFilter.blurFilter.blurSize = 1.0;//fobj.orgRegion.size.width;
-        finalBlendFilter.miniRealRatio = 0.1;
+        finalBlendFilter.blurFilter.blurSize = 0.5;//fobj.orgRegion.size.width;
+        finalBlendFilter.miniRealRatio = 0.05;
         finalBlendFilter.imageMode = 0;
+        finalBlendFilter.skinColorFlag = 0;
         //finalBlendFilter.showFace = 1;
         finalBlendFilter.faceRegion = @[@(fobj.orgRegion.origin.x), @(fobj.orgRegion.origin.x + fobj.orgRegion.size.width), @(fobj.orgRegion.origin.y), @(fobj.orgRegion.origin.y + fobj.orgRegion.size.height)];
         //finalBlendFilter.smallBlurFilter.blurSize = blurAspectRatio * blurCycle;
@@ -814,12 +816,13 @@
         chatRegion = [[UIView alloc] initWithFrame:CGRectMake(5, 100, 310, 80)];
         chatRegion.backgroundColor = [UIColor clearColor];
     
-        chatText = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 255, 20)];
-        chatText.font = [UIFont systemFontOfSize:14];
+        chatText = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 250, 20)];
+        chatText.font = [UIFont boldSystemFontOfSize:16];
         chatText.textAlignment = NSTextAlignmentRight;
         [chatText setTextColor:[UIColor whiteColor]];
     
         authorIcon = [[EZClickImage alloc] initWithFrame:CGRectMake(265, 0, 35, 35)];
+        authorIcon.backgroundColor = [UIColor whiteColor];
         [authorIcon enableRoundImage];
         [authorIcon setImageWithURL:str2url([EZDataUtil getInstance].currentLoginPerson.avatar)];
         [chatRegion addSubview:chatText];
@@ -959,26 +962,29 @@
     if(![_textField.text isEmpty]){
         [disPhoto.photo.conversations addObject:@{
                                                   @"text":_textField.text,
-                                                  @"date":isoDateFormat([NSDate date])
+                                                  @"date":[NSDate date]
                                                 }];
+        EZDEBUG(@"added input to photo:%@", disPhoto.photo.conversations);
         [self createChatRegion];
         chatText.text = _textField.text;
         [chatText enableTextWrap];
         chatRegion.y = bound.size.height;
         EZDEBUG(@"show avatar:%@", currentLoginUser.avatar);
         [authorIcon setImageWithURL:str2url(currentLoginUser.avatar)];
-        
-        [UIView animateWithDuration:0.3 delay:0.0 usingSpringWithDamping:0.5 initialSpringVelocity:0.5 options:0 animations:^(){
+        [self.view addSubview:chatRegion];
+        dispatch_later(0.3, ^(){
+        [UIView animateWithDuration:0.35 delay:0.0 usingSpringWithDamping:0.5 initialSpringVelocity:0.5 options:0 animations:^(){
             chatRegion.y =  bound.size.height - (bound.size.height - 320)/2.0 + 10.0;
         } completion:^(BOOL completed){
-            
+            //[chatRegion removeFromSuperview];
         }];
+        });
         _textField.text = @"";
 
         
     }
     _hideTextInput = true;
-    dispatch_later(1.5, ^(){
+    dispatch_later(2.0, ^(){
             //[self savePhoto];
             //[self retakePhoto:nil];
             [self takePhoto:nil];
@@ -1086,7 +1092,6 @@
     }
 
 }
-
 
 
 - (void) setupTongFilter
@@ -1208,31 +1213,6 @@
         [weakSelf handleMobileMotion:md];
     } key:@"CameraMotion" type:kEZRotation];
 }
-
-
-//This is historic relics now.
-//I will remove it during the last commit.
-/**
--(void) becomeVisible:(BOOL)isFront
-{
-    
-    _isVisible = true;
-    __weak DLCImagePickerController* weakSelf = self;
-    if(_senseRotate){
-        [[EZMotionUtility getInstance] registerHandler:^(EZMotionData* md){
-            [weakSelf handleMobileMotion:md];
-        } key:@"CameraMotion" type:kEZRotation];
-    }
-    EZDEBUG(@"BecomeVisible get called, isFront:%i, current:%i", isFront, stillCamera.isFrontFacing);
-    if(isFront && !stillCamera.isFrontFacing){
-        [self switchCamera];
-    }else if(!isFront && stillCamera.isFrontFacing){
-        [self switchCamera];
-    }
-    //EZDEBUG(@"After call capture:%i",stillCamera.isFrontFacing);
-    //[stillCamera startCameraCapture];
-}
- **/
 
 - (void) viewWillDisappear:(BOOL)animated
 {
@@ -1899,11 +1879,7 @@
 {
     //if(_flipStatus == kTakingPhoto){
     //NSString* cameraSwitch = @"翻转摄像头";
-    if(isStatic){
-        [_textField resignFirstResponder];
-        [self savePhoto];
-    }else{
-    redEnhanceFilter.brightMode = !redEnhanceFilter.brightMode;
+    //redEnhanceFilter.brightMode = !redEnhanceFilter.brightMode;
     EZDEBUG(@"Current bright Mode:%i", redEnhanceFilter.brightMode);
     [staticPicture processImage];
         NSString* flashMode = @"闪光灯:自动";
@@ -1913,9 +1889,9 @@
             flashMode = @"闪光灯:打开";
         }
     
-        UIActionSheet* actionSheet = [[UIActionSheet alloc] initWithTitle:@"相机设置" delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:nil otherButtonTitles:@"翻转摄像头",flashMode,(_disableFaceBeautify?@"打开美化":@"关闭美化"), nil];
+    UIActionSheet* actionSheet = [[UIActionSheet alloc] initWithTitle:@"相机设置" delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:nil otherButtonTitles:@"翻转摄像头",flashMode,(_disableFaceBeautify?@"打开美化":@"关闭美化"), nil];
         [actionSheet showInView:self.view];
-    }
+    
 }
 
 
@@ -1945,6 +1921,30 @@
     }
 }
 
+- (void) fakeAnimation:(UIImage*)image
+{
+    //UIView* snapView = [rotateView snapshotViewAfterScreenUpdates:NO];
+    //UIView* view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 10, 10)];
+    
+    //[rotateContainer insertSubview:snapView aboveSubview:rotateView];
+    rotateView.image = image;
+    
+    //[UIView flipTransition:snapView dest:rotateView container:rotateContainer isLeft:YES duration:0.5 complete:^(id obj){
+//        [snapView removeFromSuperview];
+//    }];
+    
+    //[view removeFromSuperview];
+    //[snapView removeFromSuperview];
+    EZDEBUG(@"Just remove a rotate view");
+    /**
+    [UIView animateWithDuration:0.1 animations:^(){
+        rotateView.layer.transform = CATransform3DMakeRotation(M_PI, 0, 1, 0);
+    } completion:^(BOOL completed){
+        
+    }];
+     **/
+}
+
 - (void) rotateCurrentImage:(UIImage*)image
 {
     UIView* snapView = [rotateView snapshotViewAfterScreenUpdates:NO];
@@ -1960,8 +1960,9 @@
     if(image){
         rotateView.image = image;
     }
+    shapeCover.backgroundColor = RotateBackground;
     [UIView animateWithDuration:0.3 animations:^(){
-        shapeCover.backgroundColor = RotateBackground;
+        //shapeCover.backgroundColor = RotateBackground;
         rotateContainer.alpha = 1.0;
     }];
 }
@@ -1969,10 +1970,12 @@
 - (void) hideRotateImage
 {
     //roundBackground.alpha = 0.0;
+    shapeCover.backgroundColor = [UIColor clearColor];
     [UIView animateWithDuration:0.3 animations:^(){
-        shapeCover.backgroundColor = [UIColor clearColor];
+        //shapeCover.backgroundColor = [UIColor clearColor];
         rotateContainer.alpha = 0.0;
     }];
+    //[rotateContainer.layer removeAllAnimations];
 }
 
 - (void) startRotateImage:(UIImage*)image
@@ -2108,19 +2111,22 @@
         isStatic = YES;
         _turnedImage = FALSE;
         [self changeButtonStatus:YES];
+        _toolBarRegion.alpha = 0;
         _isImageWithFlash = NO;
-        //[self.libraryToggleButton setHidden:YES];
-        //[self.cameraToggleButton setEnabled:NO];
-        //[self.flashToggleButton setEnabled:NO];
         [self prepareForCapture];
     }else{
         if(!_isSaved){
             _isSaved = true;
             [self savePhoto];
             [self changePhoto];
+            //[self fakeAnimation:nil];
             cancelButton.hidden = YES;
         }else{
             cancelButton.hidden = NO;
+            [[EZMessageCenter getInstance]postEvent:EZTakePicture attached:disPhoto];
+            [self completedProcess];
+            //[self fakeAnimation];
+            //[self fakeAnimation:nil];
             [self retakePhoto:nil];
             [self changeButtonStatus:NO];
             
@@ -2136,14 +2142,15 @@
     //[self showTextField:NO];
     //[self hideKeyboard];
     [self triggerUpload];
+    //_savedPhoto = _shotPhoto;
     _shotPhoto = nil;
     
 }
 
 
-- (void) cancelAll
+- (void) cancelAll:(EZPhoto*)photo
 {
-    for(EZPhoto* ph in _shotPhoto.photoRelations){
+    for(EZPhoto* ph in photo.photoRelations){
         [self cancelPrematchPhoto:ph];
     }
     //for(EZPhoto* ph in matchedPhotos){
@@ -2153,11 +2160,15 @@
 
 - (void) triggerUpload
 {
-    [self.delegate imagePickerController:self didFinishPickingMediaWithInfo:@{@"displayPhoto":disPhoto}];
     EZDEBUG(@"trigger pending upload");
     [[EZDataUtil getInstance].pendingUploads addObject:disPhoto.photo];
-    [[EZDataUtil getInstance] uploadPendingPhoto];
+}
 
+//Mean all the upload and things completed.
+- (void) completedProcess
+{
+    [self.delegate imagePickerController:self didFinishPickingMediaWithInfo:@{@"displayPhoto":disPhoto}];
+    [[EZDataUtil getInstance] uploadPendingPhoto];
 }
 
 //Mean I accept current image with a match
@@ -2171,9 +2182,9 @@
     EZDEBUG(@"complete pending call");
     [self innerCancel];
      EZDEBUG(@"The photoID to update is:%@, prevMatched count:%i", disPhoto.photo.photoID, matchedPhotos.count);
-    for(EZPhoto* ph in matchedPhotos){
-        [self cancelPrematchPhoto:ph];
-    }
+    //for(EZPhoto* ph in matchedPhotos){
+    //    [self cancelPrematchPhoto:ph];
+    //}
 }
 
 - (UIImage*) getPhotoAndUpload
@@ -2197,6 +2208,7 @@
         //[self preMatchPhoto];
         disPhoto = dp;
         _takingPhoto = false;
+        _toolBarRegion.alpha = 1;
     }];
     
     return currentFilteredVideoFrame;
@@ -2238,8 +2250,6 @@
                  //Why setup the flag here?
                  //Because the user will interact with the photo from now on
                  ep.matchCompleted = TRUE;
-                 
-                 [[EZMessageCenter getInstance]postEvent:EZTakePicture attached:displayPhoto];
                  EZDEBUG(@"after size:%f, %f", ep.size.width, ep.size.height);
                  success(displayPhoto);
              }];
@@ -2255,10 +2265,10 @@
     _turnStatus = kCameraNormal;
     [self.retakeButton setHidden:YES];
     [self.libraryToggleButton setHidden:NO];
-    staticPicture = nil;
     staticPictureOriginalOrientation = UIImageOrientationUp;
     isStatic = NO;
     [self removeAllTargets];
+    staticPicture = nil;
     if([UIImagePickerController isSourceTypeAvailable: UIImagePickerControllerSourceTypeCamera]
        && stillCamera
        && [stillCamera.inputCamera hasTorch]) {
@@ -2330,20 +2340,24 @@
 
 -(IBAction) cancelClicked:(id)sender {
     EZDEBUG(@"Cancel get called");
+    EZPhoto* currentPhoto = _shotPhoto;
     if(isStatic){
         //_hideTextInput = TRUE;
         //[self stopRotateImage:nil];
         //[self hideRotateImage];
-        EZDEBUG(@"Before calling retakePhoto");
-        [self retakePhoto:nil];
-        [self changeButtonStatus:NO];
-        //[self showTextField:NO];
+        if(_takingPhoto){
+            return;
+        }
         _flipStatus = kTakingPhoto;
+        [self retakePhoto:nil];
+        //This will trigger the view update?
+        rotateView.image = nil;
+        [self changeButtonStatus:NO];
     }else{
         [self innerCancel];
     }
-    [self cancelAll];
-    //[self switchDisplayImage];
+    //[self cancelPrematchPhoto:currentPhoto];
+    [self cancelAll:currentPhoto];
 }
 
 - (void) quit:(id)sender

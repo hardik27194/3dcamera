@@ -14,6 +14,7 @@
 #import "ILTranslucentView.h"
 #import "EZDisplayPhoto.h"
 #import "EZBarRegion.h"
+#import "EZChatUnit.h"
 /**
  What's the purpose of this class?
  I will display a cell on the screen. 
@@ -101,6 +102,8 @@
 //Don't use the cell which is turning.
 @property (nonatomic, assign) BOOL isTurning;
 
+
+@property (nonatomic, strong) EZChatUnit* chatUnit;
 //- (void) adjust
 
 - (void) displayPhoto:(NSString*)photo;

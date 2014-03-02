@@ -19,31 +19,7 @@
 
 @implementation EZPhotoCell
 
-- (void) setupIcon
-{
-    _headIcon = [[EZClickImage alloc] initWithFrame:CGRectMake(15, (ToolRegionHeight-40)/2, 40, 40)];
-    [_headIcon enableRoundImage];
-    _headIcon.backgroundColor = randBack(nil);
-    
-    _linkIcon = [[EZClickImage alloc] initWithFrame:CGRectMake(15+40+10, (ToolRegionHeight - 40)/2, 40, 40)];
-    [_linkIcon enableRoundImage];
-    _linkIcon.backgroundColor = randBack(nil);
-    
-    _backIcon = [[EZClickImage alloc] initWithFrame:CGRectMake(15+80+20, (ToolRegionHeight - 40)/2, 40, 40)];
-    [_backIcon enableRoundImage];
-    _backIcon.backgroundColor = randBack(nil);
-    
-    _countIcon = [[UILabel alloc] initWithFrame:CGRectMake(15+120+30, (ToolRegionHeight - 40)/2, 40, 40)];
-    _countIcon.font = [UIFont systemFontOfSize:14];
-    _countIcon.textAlignment = NSTextAlignmentCenter;
-    _countIcon.backgroundColor = randBack(nil);
-    [_countIcon enableRoundImage];
-    
-    //[_toolRegion addSubview:_headIcon];
-    //[_toolRegion addSubview:_linkIcon];
-    //[_toolRegion addSubview:_backIcon];
-    //[_toolRegion addSubview:_countIcon];
-}
+
 
 - (id) initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
@@ -66,13 +42,14 @@
         _frontImage = [self createFrontImage];
         //_frontImage.backgroundColor = RGBCOLOR(255, 255, 0);
         //_toolRegion = [self createToolRegion:ToolRegionRect];
+        /**
         _photoTalk = (UILabel*)[_toolRegion viewWithTag:MainLabelTag];
         
         _clickHeart = [[EZClickImage alloc] initWithFrame:CGRectMake(310 - kHeartRadius, _frontImage.frame.size.height - kHeartRadius, kHeartRadius, kHeartRadius)];
         [_clickHeart enableRoundImage];
         [_container addSubview:_clickHeart];
-        _clickHeart.backgroundColor = randBack(nil);
-        
+        //_clickHeart.backgroundColor = randBack(nil);
+        **/
         
         [self.contentView addSubview:_container];
         //[self.contentView addSubview:_toolRegion];
@@ -81,7 +58,8 @@
         //[_frontImage addSubview:_toolRegion];
         //[_rotateContainer addSubview:_toolRegion];
         //_container.enableTouchEffects = NO;
-        [self setupIcon];
+        _chatUnit = [[EZChatUnit alloc] initWithFrame:CGRectMake(0, 330, 320, 40)];
+        [_container addSubview:_chatUnit];
         
     }
     return self;

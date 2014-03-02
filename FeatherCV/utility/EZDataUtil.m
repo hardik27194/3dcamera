@@ -1,4 +1,4 @@
-//
+    //
 //  EZDataUtil.m
 //  Feather
 //
@@ -54,8 +54,56 @@
     //Now keep it simple and stupid
     _pendingUploads = [[NSMutableArray alloc] init];
     _prefetchImage = [[UIImageView alloc] init];
+    _pendingUserQuery = [[NSMutableSet alloc] init];
+    _currentQueryUsers = [[NSMutableDictionary alloc] init];
+    _pendingPersonCall = [[NSMutableDictionary alloc] init];
+    _timeFormatter = [[NSDateFormatter alloc] init];
+    [_timeFormatter setDateStyle:NSDateFormatterShortStyle];
+    [_timeFormatter setTimeStyle:NSDateFormatterShortStyle];
+    [_timeFormatter setDoesRelativeDateFormatting:YES];
     return self;
 }
+
+
+- (void) callPendingQuery:(EZPerson*)ps
+{
+    NSMutableArray* calls = [_pendingPersonCall objectForKey:ps.personID];
+    EZDEBUG(@"Pending call:%i", calls.count);
+    for(EZEventBlock blk in calls){
+        blk(ps);
+    }
+    [calls removeAllObjects];
+}
+
+//Learn to combine the call
+- (void) queryPendingPerson
+{
+    if(_queryingCount){
+        EZDEBUG(@"quit for querying:%i", _queryingCount);
+    }
+    _queryingCount = true;
+    NSArray* dupIDs = [NSArray arrayWithArray:[_pendingUserQuery allObjects]];
+    [_pendingUserQuery removeAllObjects];
+    [self queryPersonIDs:dupIDs success:^(NSArray* arr){
+        EZDEBUG(@"successfully query:%i users back", dupIDs.count);
+        for(NSDictionary* pdict in arr){
+            EZPerson* ps = [_currentQueryUsers objectForKey:[pdict objectForKey:@"personID"]];
+            [ps fromJson:pdict];
+            ps.isQuerying = false;
+            //[_currentQueryUsers setValue:ps forKey:ps.personID];
+            [_pendingUserQuery removeObject:ps.personID];
+            [self callPendingQuery:ps];
+        }
+        _queryingCount = false;
+    } failure:^(id obj){
+        EZDEBUG(@"failed to do the jobs");
+        _queryingCount = false;
+    }];
+    
+}
+
+
+
 
 
 //Check the current status
@@ -119,6 +167,29 @@
         success(person);
     } failblk:error];
 }
+
+
+- (void) queryPersonIDs:(NSArray*)personIDs success:(EZEventBlock)success failure:(EZEventBlock)failure
+{
+    [EZNetworkUtility postParameterAsJson:@"person/info"
+                               parameters:@{@"cmd":@"personID",
+                                        @"personIDs":personIDs
+                                }
+    complete:^(NSArray* persons){
+        EZDEBUG(@"Photo size:%i",persons.count);
+        NSMutableArray* res = [[NSMutableArray alloc] initWithCapacity:persons.count];
+        for(NSDictionary* dict in persons){
+            //EZPerson* person = [[EZPerson alloc] init];
+            //[person fromJson:dict];
+            [res addObject:dict];
+            //[_currentQueryUsers setObject:person forKey:person.personID];
+        }
+        if(success){
+            success(res);
+        }
+        } failblk:failure];
+
+}
 //
 - (void) queryPhotos:(int)page pageSize:(int)pageSize  success:(EZEventBlock)success failure:(EZEventBlock)failure
 {
@@ -151,6 +222,7 @@
 - (void) uploadPhotoInfo:(NSArray *)photoInfo success:(EZEventBlock)success failure:(EZEventBlock)failure
 {
     NSDictionary* jsons =@{@"cmd":@"update",@"photos":[self arrayToJson:photoInfo]};
+    EZDEBUG(@"upload info:%@", jsons);
     [EZNetworkUtility postParameterAsJson:@"photo/info" parameters:jsons complete:^(NSArray* arr){
         NSMutableArray* res = [[NSMutableArray alloc] init];
         for(int i = 0; i < arr.count; i ++){
@@ -215,6 +287,19 @@
 
 }
 
+- (void) uploadAvatar:(UIImage*)img success:(EZEventBlock)success failure:(EZEventBlock)failure
+{
+    
+    NSString* storedFile =[EZFileUtil saveImageToCache:img];
+    [EZNetworkUtility upload:baseUploadURL parameters:@{} file:storedFile complete:^(id obj){
+        NSString* screenURL = [obj objectForKey:@"avatar"];
+        EZDEBUG(@"uploaded avatar URL:%@", screenURL);
+        currentLoginUser.avatar = screenURL;
+        success(screenURL);
+    } error:failure progress:^(CGFloat percent){
+        EZDEBUG(@"The uploaded percent:%f", percent);
+    }];
+}
 - (void) uploadPhoto:(EZPhoto*)photo success:(EZEventBlock)success failure:(EZEventBlock)failure
 {
     //NSDictionary* jsonInfo = [photo toJson];
@@ -283,12 +368,9 @@
         _currentPersonID = [[NSUserDefaults standardUserDefaults] objectForKey:@"CurrentSessionID"];
     }
     if(_currentPersonID && !_currentLoginPerson){
-        [self getPersonID:_currentPersonID success:^(EZPerson* ps){
+        [self getPersonByID:_currentPersonID success:^(EZPerson* ps){
             //EZDEBUG(@"loaded person count:%i", ps.count);
             _currentLoginPerson = ps;
-            
-        } failure:^(id err){
-            EZDEBUG(@"failed to load person:%@", err);
         }];
     }
     EZDEBUG(@"Current PersonID:%@", _currentPersonID);
@@ -553,29 +635,34 @@
     [_prefetchImage preloadImageURL:str2url(url) success:success failed:failure];
 }
 
-- (EZPerson*) getPerson:(NSString*)personID
-{
-    EZPerson* res = [[EZPerson alloc] init];
-    res.personID = personID;
-    res.name = [NSString stringWithFormat:@"天哥:%@", personID];
-    //if(personID % 2){
-    res.avatar = [EZFileUtil fileToURL:@"img01.jpg"].absoluteString;
-    //}else{
-    //    res.avatar = [EZFileUtil fileToURL:@"img02.jpg"].absoluteString;
-    //}
-    res.joined = true;
-    return res;
-}
 //Get the person object
-- (void) getPersonID:(NSString*)personID success:(EZEventBlock)success failure:(EZEventBlock)failure;
+- (void) getPersonByID:(NSString*)personID success:(EZEventBlock)success;
 {
-    [EZNetworkUtility postParameterAsJson:@"person/info" parameters:@{@"cmd":@"personID", @"personIDs":@[personID]}
-                                 complete:^(NSArray* arr){
-                                     EZPerson* ps = [[EZPerson alloc] init];
-                                     [ps fromJson:[arr objectAtIndex:0]];
-                                     success(ps);
-                                 } failblk:failure];
-
+    EZPerson* ps = [_currentQueryUsers objectForKey:personID];
+    if(!ps){
+        //[self queryPendingPerson]
+        ps = [[EZPerson alloc] init];
+        ps.personID = personID;
+        ps.isQuerying = true;
+        [_currentQueryUsers setObject:ps forKey:personID];
+        
+    }
+    if(!ps.isQuerying){
+        if(success){
+            success(ps);
+        }
+    }else{
+        [_pendingUserQuery addObject:personID];
+        NSMutableArray* queryCalls = [_pendingPersonCall objectForKey:personID];
+        if(!queryCalls){
+            queryCalls = [[NSMutableArray alloc] init];
+            [_pendingPersonCall setObject:queryCalls forKey:personID];
+        }
+        [queryCalls addObject:success];
+        //Trigger the person query call
+        [self queryPendingPerson];
+        
+    }
 }
 
 //Invite your friend

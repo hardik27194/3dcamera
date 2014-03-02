@@ -39,9 +39,8 @@
     _longPressTime = time;
 }
 
-- (void) pressed
+- (void) changeColor
 {
-    EZDEBUG(@"Pressed clicked");
     if(!_pressedView){
         _pressedView = [[UIView alloc] initWithFrame:self.bounds];
         [self addSubview:_pressedView];
@@ -49,10 +48,29 @@
         [_pressedView setFrame:self.bounds];
     }
     //Then my code will be very strong.
-    if(_enableTouchEffects){
-        [self bringSubviewToFront:_pressedView];
-        _pressedView.backgroundColor = randBack(_pressedColor);
-        _pressedView.hidden = false;
+    //if(_enableTouchEffects){
+    [self bringSubviewToFront:_pressedView];
+    _pressedView.backgroundColor = randBack(_pressedColor);
+    _pressedView.hidden = false;
+    //}
+
+}
+
+- (void) enlargeCycle
+{
+    //CGAffineTransformScale(<#CGAffineTransform t#>, <#CGFloat sx#>, <#CGFloat sy#>)
+}
+
+- (void) pressed
+{
+    EZDEBUG(@"Pressed clicked");
+    if(!_enableTouchEffects)
+        return;
+    
+    if(_animType == kPressColorChange){
+        [self changeColor];
+    }else{
+        
     }
     /**
     [UIView animateWithDuration:0.2f animations:^{
