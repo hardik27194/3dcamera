@@ -98,13 +98,13 @@ NSString *const EZGaussianSharpenFragmentShaderString = SHADER_STRING
      if(sharpDist < sharpenBar){
          sharpDist = sharpDist * sharpDist;
      }else{
-         sharpDist = sharpenBar + (sharpDist - sharpenBar) * 1.4;
+         sharpDist = sharpenBar + (sharpDist - sharpenBar) * 1.8;
     }
      mediump float sharpenRatio = 1.0;
-     lowp float colorDist = calcHue(centralColor.rgb);
+     //lowp float colorDist = calcHue(centralColor.rgb);
      //sharpDist = sharpDist * sharpenRatio;
      if(sharpDist > 0.25){
-         sharpDist = 0.25 + (sharpDist - 0.25) * 0.1;
+         sharpDist = 0.25 + (sharpDist - 0.25) * 0.5;
      }
      sharpDist = min(0.3, sharpDist);
      gl_FragColor = vec4(vec3(centralColor.rgb + (centralColor.rgb - sum.rgb) * sharpDist), centralColor.w);
@@ -122,7 +122,7 @@ NSString *const EZSharpenFinalString = SHADER_STRING
  
  varying highp vec2 textureCoordinate;
  varying highp vec2 blurCoordinates[GAUSSIAN_SAMPLES];
- 
+ uniform lowp int imageMode;
  
  void main()
  {
@@ -149,7 +149,14 @@ NSString *const EZSharpenFinalString = SHADER_STRING
 - (id) init
 {
     self = [super initWithFirstStageVertexShaderFromString:EZGaussianSharpenVertexShaderString firstStageFragmentShaderFromString:EZGaussianSharpenFragmentShaderString secondStageVertexShaderFromString:EZGaussianSharpenVertexShaderString secondStageFragmentShaderFromString:EZGaussianSharpenFragmentShaderString];
+    self.imageMode = 0;
     return self;
+}
+
+- (void) setImageMode:(int)imageMode
+{
+    _imageMode = imageMode;
+    [self setInteger:imageMode forUniformName:@"imageMode"];
 }
 
 @end

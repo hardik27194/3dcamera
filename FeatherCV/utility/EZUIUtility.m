@@ -77,7 +77,6 @@ SINGLETON_FOR_CLASS(EZUIUtility)
     // Hides the controls for moving & scaling pictures, or for
     // trimming movies. To instead show the controls, use YES.
     cameraUI.allowsEditing = NO;
-    
     cameraUI.delegate = self;
     return cameraUI;
 }
@@ -104,15 +103,43 @@ SINGLETON_FOR_CLASS(EZUIUtility)
     
     //[UIImagePickerController availableMediaTypesForSourceType:
     // UIImagePickerControllerSourceTypeCamera];
-    
     // Hides the controls for moving & scaling pictures, or for
     // trimming movies. To instead show the controls, use YES.
     cameraUI.allowsEditing = NO;
-    
     cameraUI.delegate = self;
-    
     [controller presentViewController:cameraUI animated:YES completion:nil];
     
+}
+
+- (void)proximityStateChanged:(NSNotification *)note
+{
+    if ( !note ) {
+        //[self setFaceDownOnSurface:NO];
+        EZDEBUG(@"Don't have notes");
+        //return;
+    }else{
+        EZDEBUG(@"notes name:%@, user information:%@", note.name, note.userInfo);
+    }
+    
+    UIDevice *device = [UIDevice currentDevice];
+    //BOOL newProximityState = device.proximityState;
+    EZDEBUG(@"state is:%i", device.proximityState);
+    if(device.proximityState == 0){
+        [[EZMessageCenter getInstance] postEvent:EZTriggerCamera attached:nil];
+    }
+     [[EZMessageCenter getInstance] postEvent:EZFaceCovered attached:@(device.proximityState)];
+}
+
+- (void) enableProximate:(BOOL)enable
+{
+    UIDevice *device = [UIDevice currentDevice];
+    if ( enable ) {
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(proximityStateChanged:) name:UIDeviceProximityStateDidChangeNotification object:nil];
+        device.proximityMonitoringEnabled = YES;
+    } else {
+        device.proximityMonitoringEnabled = NO;
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceProximityStateDidChangeNotification object:nil];
+    }
 }
 
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info

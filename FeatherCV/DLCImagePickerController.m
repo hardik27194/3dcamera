@@ -222,17 +222,17 @@
         [tongFilter addTarget:finalBlendFilter];
         [finalBlendFilter addTarget:filter];
     
-        secBlendFilter.blurFilter.distanceNormalizationFactor = 30.0;
-        secBlendFilter.blurFilter.blurSize = 3.0;
-        secBlendFilter.miniRealRatio = 0.25;
+        secBlendFilter.blurFilter.distanceNormalizationFactor = 20.0;
+        secBlendFilter.blurFilter.blurSize = 2.7;
+        secBlendFilter.miniRealRatio = 0.1;
         secBlendFilter.imageMode = 0;
         secBlendFilter.skinColorFlag = 1;
         
         finalBlendFilter.blurFilter.distanceNormalizationFactor = 15.0;
         finalBlendFilter.blurFilter.blurSize = 0.5;//fobj.orgRegion.size.width;
-        finalBlendFilter.miniRealRatio = 0.05;
+        finalBlendFilter.miniRealRatio = 0;
         finalBlendFilter.imageMode = 0;
-        finalBlendFilter.skinColorFlag = 0;
+        finalBlendFilter.skinColorFlag = 1;
         //finalBlendFilter.showFace = 1;
         finalBlendFilter.faceRegion = @[@(fobj.orgRegion.origin.x), @(fobj.orgRegion.origin.x + fobj.orgRegion.size.width), @(fobj.orgRegion.origin.y), @(fobj.orgRegion.origin.y + fobj.orgRegion.size.height)];
         //finalBlendFilter.smallBlurFilter.blurSize = blurAspectRatio * blurCycle;
@@ -625,6 +625,7 @@
     //[self startMobileMotion];
     [[EZMessageCenter getInstance] registerEvent:EZFaceCovered block:faceCovered];
     [self preMatchPhoto];
+    [[EZUIUtility sharedEZUIUtility] enableProximate:YES];
 }
 
 - (void) setupButton
@@ -693,8 +694,7 @@
     
     __weak DLCImagePickerController* weakSelf = self;
     faceCovered = ^(NSNumber* status){
-        EZDEBUG(@"face status:%i", status.intValue);
-        [weakSelf switchCamera];
+        [weakSelf coverStatusChange:status.intValue];
     };
     //self.blurOverlayView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     //self.blurOverlayView.alpha = 0;
@@ -718,6 +718,78 @@
     [self setupUI];
     [self createTextField];
     [self setupKeyboard];
+}
+
+- (void) longCoverStart
+{
+    EZDEBUG(@"Will start the long cover");
+    __weak DLCImagePickerController* weakSelf = self;
+    _cancelShot = false;
+    if(!_coverTapView){
+        _coverTapView = [[EZClickView alloc] initWithFrame:[UIScreen mainScreen].applicationFrame];
+        _coverTapView.backgroundColor = [UIColor blackColor];
+        _coverTapView.enableTouchEffects = NO;
+    }
+    [TopView addSubview:_coverTapView];
+    _coverTapView.pressedBlock  = ^(id obj){
+        EZDEBUG(@"Will cover shot");
+        weakSelf.cancelShot = true;
+        //[_shotVoice play];
+        [weakSelf.coverTapView removeFromSuperview];
+        if(weakSelf.coverStatus == kCoverShotting){
+            weakSelf.coverStatus = kCoverInit;
+        }
+        
+        UILabel* cancelInfo = [[UILabel alloc] initWithFrame:CGRectMake(0, 30, 320, 30)];
+        cancelInfo.font = [UIFont boldSystemFontOfSize:18];
+        cancelInfo.textColor = [UIColor whiteColor];
+        cancelInfo.textAlignment = NSTextAlignmentCenter;
+        cancelInfo.text = macroControlInfo(@"Self shot cancelled");
+        [TopView addSubview:cancelInfo];
+        dispatch_later(1.2, ^(){
+            [cancelInfo removeFromSuperview];
+        });
+        
+    };
+    
+    if(stillCamera.isFrontFacing){
+        [self switchCamera];
+    }
+    [self startCoverCapture];
+}
+
+- (void) coverStatusChange:(int)status
+{
+    __weak DLCImagePickerController* weakSelf = self;
+    EZDEBUG(@"face status:%i", status);
+    if(isStatic){
+        EZDEBUG(@"Quit for static");
+        _coverStatus = kCoverInit;
+        return;
+    }
+    if(_coverStatus == kCoverShotting){
+        EZDEBUG(@"quit for shotting");
+        return;
+    }
+    if(_coverStatus == kCoverInit && status == 1){
+        EZDEBUG(@"Will start long cover");
+        _coverStatus = kCoverStart;
+        _longCover = ^(id obj){
+            [weakSelf longCoverStart];
+        };
+        dispatch_later(1.0, ^(){
+            if(_longCover){
+                _coverStatus = kCoverShotting;
+                _longCover(nil);
+            }
+        });
+        //dispatch_later(0.5, ^(){});
+    }else if(_coverStatus == kCoverStart && status == 0){
+        _coverStatus = kCoverInit;
+        _longCover = nil;
+        [self switchCamera];
+    }
+    //[weakSelf switchCamera];
 }
 
 -(void)viewDidLoadOld {
@@ -1195,9 +1267,21 @@
     [capturingBlack removeFromSuperview];
 }
 
+- (void) startCoverCapture
+{
+    dispatch_later(0.3, ^(){
+        [_shotReady play];
+    });
+    [self performSelector:@selector(takePhoto:)
+               withObject:nil
+               afterDelay:3.0];
+}
+
+
+
 - (void) startTurnCapture
 {
-    [self addCaptureView];
+    //[self addCaptureView];
     dispatch_later(0.3, ^(){
         [_shotReady play];
     });
@@ -1205,6 +1289,7 @@
                withObject:nil
                afterDelay:3.0];
 }
+
 
 - (void) startMobileMotion
 {
@@ -1761,7 +1846,7 @@
              //[self rotateCurrentImage:image];
         } failure:^(id err){
             EZDEBUG(@"Failed to get image:%@, url:%@", err, matched.screenURL);
-            [self hideRotateImage];
+            //[self hideRotateImage];
             _flipStatus = kStoredPhoto;
         }];
     }else{
@@ -1772,6 +1857,9 @@
     }
     EZDEBUG(@"started spin animation");
     isStatic = true;
+    if(_coverStatus == kCoverShotting){
+        _coverStatus = kCoverInit;
+    }
     //_takingPhoto = false;
     [blackCover removeFromSuperview];
 }
@@ -2099,6 +2187,12 @@
 
 -(IBAction) takePhoto:(id)sender{
     smileDetected.alpha = 0;
+    [_coverTapView removeFromSuperview];
+    if(_cancelShot){
+        _cancelShot = false;
+        EZDEBUG(@"Cancel shotting");
+        return;
+    }
     if(_takingPhoto){
         return;
     }

@@ -62,11 +62,8 @@ NSString *const kHomeBlendFragmentShaderString = SHADER_STRING
  lowp float calcHue(lowp vec4 rawcolor,lowp vec3 skColor)
  {
      highp float fd = distance(rawcolor.rgb, skColor);
-     if(fd < shaderSkinRange){
-         fd = fd * fd;
-     }else{
-         fd = fd * fd + (fd - shaderSkinRange) * 2.0;
-     }
+     highp float base = dot(skColor, skColor);
+     fd = fd / base;
      return min(1.0, fd);
      //return 1.0/(exp((1.5 - distance(rawcolor.rgb, skinColor))) + 1.0);
  }
@@ -257,11 +254,11 @@ NSString *const kFaceBlurFragmentShaderString = SHADER_STRING
     EZDEBUG(@"setup blend filers");
     hasOverriddenAspectRatio = NO;
     _blurFilter = [[EZHomeBiBlur alloc] init];
-    _sharpGaussian = [[EZSharpenGaussian alloc] init];
+    //_sharpGaussian = [[EZSharpenGaussian alloc] init];
     _combineFilter = [[GPUImageTwoInputFilter alloc] initWithFragmentShaderFromString:kHomeBlendFragmentShaderString];
     [self addTarget:filter];
-    [filter addTarget:_sharpGaussian];
-    [_sharpGaussian addTarget:_blurFilter];
+    //[filter addTarget:_sharpGaussian];
+    [filter addTarget:_blurFilter];
     [self addTarget:_combineFilter];
     [_blurFilter addTarget:_combineFilter atTextureLocation:1];
     self.initialFilters = [NSArray arrayWithObjects:filter, _combineFilter, nil];
@@ -272,10 +269,41 @@ NSString *const kFaceBlurFragmentShaderString = SHADER_STRING
 
 }
 
+- (id) initWithSharpen
+{
+    EZDEBUG(@"setup blend filers");
+    hasOverriddenAspectRatio = NO;
+    _blurFilter = [[EZHomeBiBlur alloc] init];
+    _sharpGaussian = [[EZSharpenGaussian alloc] init];
+    _combineFilter = [[GPUImageTwoInputFilter alloc] initWithFragmentShaderFromString:kHomeBlendFragmentShaderString];
+    [self addTarget:_sharpGaussian];
+    //[tongFilter addTarget:_sharpGaussian];
+    [_sharpGaussian addTarget:_blurFilter];
+    [self addTarget:_combineFilter];
+    [_blurFilter addTarget:_combineFilter atTextureLocation:1];
+    self.initialFilters = [NSArray arrayWithObjects:_sharpGaussian, _combineFilter, nil];
+    //self.skinColors = @[@(1.0),@(0.75),@(0.58)];
+    self.terminalFilter = _combineFilter;
+    self.imageMode = 0;
+    return self;
+}
+
 - (id) initWithTongFilter:(GPUImageToneCurveFilter*)tongFilter
 {
-    self = [self initWithFilter:tongFilter];
-    _tongFilter = tongFilter;
+    EZDEBUG(@"setup blend filers");
+    hasOverriddenAspectRatio = NO;
+    _blurFilter = [[EZHomeBiBlur alloc] init];
+    _sharpGaussian = [[EZSharpenGaussian alloc] init];
+    _combineFilter = [[GPUImageTwoInputFilter alloc] initWithFragmentShaderFromString:kHomeBlendFragmentShaderString];
+    [self addTarget:tongFilter];
+    [tongFilter addTarget:_sharpGaussian];
+    [_sharpGaussian addTarget:_blurFilter];
+    [self addTarget:_combineFilter];
+    [_blurFilter addTarget:_combineFilter atTextureLocation:1];
+    self.initialFilters = [NSArray arrayWithObjects:tongFilter, _combineFilter, nil];
+    //self.skinColors = @[@(1.0),@(0.75),@(0.58)];
+    self.terminalFilter = _combineFilter;
+    self.imageMode = 0;
     return self;
 }
 

@@ -50,6 +50,13 @@ typedef enum {
 } EZCameraTurnStatus;
 
 
+typedef enum {
+    kCoverInit,
+    kCoverStart,
+    kCoverCancelled,
+    kCoverShotting
+}EZCoverStatus;
+
 @class EZPhoto;
 @class EZDisplayPhoto;
 @class DLCImagePickerController;
@@ -141,6 +148,16 @@ typedef enum {
 //Keep this photo for input text
 @property (nonatomic, strong) EZDisplayPhoto* savedPhoto;
 
+//The status machine to coordinate the action of the hand
+@property (nonatomic, assign) EZCoverStatus coverStatus;
+
+//@property (nonatomic, assign) EZEventBlock longCoverTmp;
+
+@property (nonatomic, strong) EZEventBlock longCover;
+
+@property (nonatomic, strong) EZClickView* coverTapView;
+
+@property (nonatomic, assign) BOOL cancelShot;
 //0 mean off
 //1 mean on
 //2 mean auto

@@ -58,6 +58,8 @@
 
 - (id) initSimple;
 
+- (id) initWithSharpen;
+
 - (id) initWithTongFilter:(GPUImageToneCurveFilter*)tongFilter;
 
 @end

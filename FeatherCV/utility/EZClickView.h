@@ -40,6 +40,10 @@ typedef enum {
 
 @property (nonatomic, strong) UIView* pressedView;
 
+@property (nonatomic, assign) CGFloat orgWidth;
+
+@property (nonatomic, assign) CGFloat orgHeight;
+
 - (void) recieveLongPress:(CGFloat)time callback:(EZEventBlock)block;
 
 @end

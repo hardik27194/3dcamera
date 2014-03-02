@@ -334,12 +334,9 @@ static int photoCount = 1;
     //self.navigationItem.leftBarButtonItem  = [[UIBarButtonItem alloc] initWithTitle:@"更多" style:UIBarButtonItemStylePlain target:self action:@selector(showMenu:)];
     _combinedPhotos = [[NSMutableArray alloc] init];
     
-    self.refreshControl = [[UIRefreshControl alloc] init];
-    [self.refreshControl addTarget:self action:@selector(refreshInvoked:forState:)forControlEvents:UIControlEventValueChanged];
+    //self.refreshControl = [[UIRefreshControl alloc] init];
+    //[self.refreshControl addTarget:self action:@selector(refreshInvoked:forState:)forControlEvents:UIControlEventValueChanged];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    
-    
-    
     //self.tableView.backgroundColor = RGBCOLOR(230, 231, 226);
     self.tableView.backgroundColor = VinesGray;
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
@@ -365,7 +362,7 @@ static int photoCount = 1;
     }];
     
     [[EZMessageCenter getInstance] registerEvent:EZTriggerCamera block:^(id obj){
-        [weakSelf raiseCamera];
+        //[weakSelf raiseCamera];
     }];
     
     
@@ -400,6 +397,8 @@ static int photoCount = 1;
         //borderView.backgroundColor = [UIColor clearColor];
         clickView.layer.borderColor = [UIColor whiteColor].CGColor;
         clickView.layer.borderWidth = 4.0;
+        clickView.animType = kPressEnlargeCycle;
+        clickView.enlargeScale = 1.5;
         //[borderView enableRoundImage];
         //[TopView addSubview:borderView];
         //clickView.backgroundColor = [UIColor clearColor];

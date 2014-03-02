@@ -46,6 +46,7 @@
 
 - (UIImagePickerController*) getCamera:(BOOL)isAlbum slide:(BOOL)slide completed:(EZEventBlock)block;
 
+- (void) enableProximate:(BOOL)enable;
 //Why do I use this?
 //I want to get the controller to present my modal view.
 + (UIViewController*) topMostController;

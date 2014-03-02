@@ -10,4 +10,7 @@
 
 @interface EZSharpenGaussian : GPUImageGaussianBlurFilter
 
+//0 mean sharpen, 1 mean not
+@property (nonatomic, assign) int imageMode;
+
 @end

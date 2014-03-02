@@ -56,9 +56,37 @@
 
 }
 
-- (void) enlargeCycle
+- (void) enlargeCycle:(BOOL)enlarge
 {
-    //CGAffineTransformScale(<#CGAffineTransform t#>, <#CGFloat sx#>, <#CGFloat sy#>)
+    CGAffineTransform transform = CGAffineTransformIdentity;
+    CGFloat orgBorder = 4.0;
+    CGFloat borderWidth = 4.0;
+    if(enlarge){
+        transform = CGAffineTransformScale(CGAffineTransformIdentity, _enlargeScale, _enlargeScale);
+        borderWidth = (self.width * _enlargeScale - self.width) / 2.0;
+        [UIView animateWithDuration:0.4 delay:0.1 usingSpringWithDamping:0.5 initialSpringVelocity:0.5 options: UIViewAnimationOptionCurveLinear animations:^(){
+            self.transform = transform;
+            self.layer.borderWidth = borderWidth;
+        } completion:^(BOOL completed){
+            [UIView animateWithDuration:0.3 animations:^(){
+                self.layer.borderWidth = orgBorder;
+            }];
+        }];
+    }else{
+        borderWidth = (self.width * _enlargeScale - self.width) / 2.0;
+        [UIView animateWithDuration:0.3 delay:0.1 options: UIViewAnimationOptionCurveLinear animations:^(){
+            self.layer.borderWidth = borderWidth;
+        } completion:^(BOOL completed){
+            [UIView animateWithDuration:0.4 delay:0 usingSpringWithDamping:0.5 initialSpringVelocity:0.5 options: UIViewAnimationOptionCurveLinear animations:^(){
+                self.transform = transform;
+                self.layer.borderWidth = orgBorder;
+            } completion:^(BOOL completed){
+
+            }];
+        }];
+    }
+    
+   
 }
 
 - (void) pressed
@@ -70,7 +98,7 @@
     if(_animType == kPressColorChange){
         [self changeColor];
     }else{
-        
+        [self enlargeCycle:YES];
     }
     /**
     [UIView animateWithDuration:0.2f animations:^{
@@ -82,23 +110,27 @@
      **/
 }
 //Mean the touch ended, doesn't mean a effective click
+- (void) hideColor
+{
+    [UIView animateWithDuration:0.3 animations:^(){
+        _pressedView.alpha = 0;
+    } completion:^(BOOL completed){
+        _pressedView.hidden = true;
+        _pressedView.alpha = 1.0;
+    }];
+}
+
 - (void) unpressed
 {
     //_pressedView.hidden = true;
-    if(_enableTouchEffects){
-        [UIView animateWithDuration:0.3 animations:^(){
-            _pressedView.alpha = 0;
-        } completion:^(BOOL completed){
-            _pressedView.hidden = true;
-            _pressedView.alpha = 1.0;
-        }];
+    if(!_enableTouchEffects){
+        return;
     }
-    /**
-    [UIView animateWithDuration:0.2 animations:^(){
-        //view.layer.shadowOpacity = 0.0f;
-        self.transform = CGAffineTransformMakeScale(1.0f, 1.0f);
-    }];
-     **/
+    if(_animType == kPressColorChange){
+        [self hideColor];
+    }else{
+        [self enlargeCycle:NO];
+    }
 }
 
 //Any finger pressed will trigger this event.

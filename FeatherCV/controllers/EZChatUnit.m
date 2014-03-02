@@ -10,6 +10,8 @@
 #import "EZClickImage.h"
 #import "EZExtender.h"
 
+#define chatTextLength 230
+
 @implementation EZChatUnit
 
 - (id) init
@@ -30,14 +32,18 @@
 {
     _chatText.text = chatStr;
     CGSize textSize = [_chatText sizeThatFits:CGSizeMake(999, 35)];
-    CGSize textHeight = [_chatText sizeThatFits:CGSizeMake(245, 999)];
+    CGSize textHeight = [_chatText sizeThatFits:CGSizeMake(chatTextLength, 999)];
     //[_chatText setSize:textSize];
-    _chatText.width = textSize.width + 6;
-    _chatText.x = 245 - _chatText.width;
-    if(textHeight.height > _chatText.height){
-        _chatText.height = textSize.height + 10;
+    CGFloat width = textSize.width + 6;
+    if(width > chatTextLength){
+        width = chatTextLength;
     }
-
+    _chatText.width = width;
+    _chatText.x = chatTextLength - _chatText.width + 10;
+    if(textHeight.height > _chatText.height){
+        _chatText.height = textHeight.height + 10;
+    }
+    EZDEBUG(@"chat:%@, height:%f, width:%f", chatStr, width, textHeight.height);
 }
 
 - (id)initWithFrame:(CGRect)frame
@@ -55,7 +61,7 @@
         _chatText = [[UILabel alloc] initWithFrame:CGRectMake(5, 30, 245, 35)];
         _chatText.layer.cornerRadius = 3.0;
         _chatText.font = [UIFont systemFontOfSize:15];
-        _chatText.textAlignment = NSTextAlignmentRight;
+        _chatText.textAlignment = NSTextAlignmentLeft;
         _chatText.textColor = darkTextColor;
         _chatText.backgroundColor = RGBCOLOR(230, 230, 234);
         _chatText.lineBreakMode = NSLineBreakByWordWrapping;

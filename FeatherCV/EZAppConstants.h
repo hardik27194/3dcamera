@@ -111,6 +111,7 @@
 #define EZZoomoutAlbum @"EZZoomoutAlbum"
 #define EZZoominAlbum @"EZZoominAlbum"
 
+
 #define EZCenterBigRadius 60.0
 
 #define EZCenterSmallRadius 40.0
