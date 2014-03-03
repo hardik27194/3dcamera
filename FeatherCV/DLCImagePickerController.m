@@ -47,6 +47,7 @@
 #import "EZSkinSharpen.h"
 #import "EZSharpenGaussian.h"
 #import "EZKeyboadUtility.h"
+#import "EZCenterButton.h"
 
 //#include <vector>
 
@@ -618,9 +619,7 @@
     [super viewDidAppear:animated];
     EZDEBUG(@"DLCImage view really appear");
     __weak DLCImagePickerController* weakSelf = self;
-    EZUIUtility.sharedEZUIUtility.cameraClickButton.pressedBlock = ^(id sender){
-        [weakSelf takePhoto:nil];
-    };
+    
     _isVisible = TRUE;
     //[self startMobileMotion];
     [[EZMessageCenter getInstance] registerEvent:EZFaceCovered block:faceCovered];
@@ -1141,9 +1140,13 @@
     _isFrontCamera = false;
     retakeButton = cancelImage;
     topBar.backgroundColor = RGBA(255, 255, 255, 128);
-    _oldBlock = [EZDataUtil getInstance].centerButton.releasedBlock;
-    [EZDataUtil getInstance].centerButton.releasedBlock = ^(id obj){
+    _oldPressBlock = [EZDataUtil getInstance].centerButton.pressedBlock;
+    _oldReleaseBlock = [EZDataUtil getInstance].centerButton.releasedBlock;
+    [EZDataUtil getInstance].centerButton.releasedBlock = nil;
+    [EZDataUtil getInstance].centerButton.pressedBlock = ^(EZCenterButton* obj){
+        [obj animateButton:0.3 lineWidth:13 completed:^(id obj){
         [weakSelf takePhoto:nil];
+        }];
     };
 }
 
@@ -1323,7 +1326,8 @@
     [[EZMessageCenter getInstance] unregisterEvent:EventKeyboardWillHide forObject:keyboardHideHandler];
     [self hideKeyboard:YES complete:nil];
     [[UIApplication sharedApplication] setStatusBarHidden:false];
-    [EZDataUtil getInstance].centerButton.releasedBlock = _oldBlock;
+    [EZDataUtil getInstance].centerButton.releasedBlock = _oldReleaseBlock;
+    [EZDataUtil getInstance].centerButton.pressedBlock = _oldPressBlock;
 }
 
 -(void) setupCamera {

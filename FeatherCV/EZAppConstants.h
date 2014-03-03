@@ -114,7 +114,7 @@
 
 #define EZCenterBigRadius 60.0
 
-#define EZCenterSmallRadius 40.0
+#define EZCenterSmallRadius 70.0
 
 #define AllResizeMask UIViewAutoresizingFlexibleBottomMargin|UIViewAutoresizingFlexibleTopMargin|UIViewAutoresizingFlexibleLeftMargin|UIViewAutoresizingFlexibleRightMargin|UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight
 

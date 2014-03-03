@@ -238,9 +238,10 @@ static int photoCount = 1;
     //controller.prefersStatusBarHidden = TRUE;
     camera.transitioningDelegate = _cameraAnimation;
     camera.delegate = self;
-    if(camera.isFrontCamera){
-        [camera switchCamera];
-    }
+    //if(camera.isFrontCamera){
+    //    [camera switchCamera];
+    //}
+    EZDEBUG(@"before present");
     [self presentViewController:camera animated:TRUE completion:^(){
         EZDEBUG(@"Presentation completed");
     }];
@@ -329,28 +330,9 @@ static int photoCount = 1;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-   //self.navigationItem.rightBarButtonItem = [[UINavigationItem alloc] initWithTitle:@""];
-    
-    //self.navigationItem.leftBarButtonItem  = [[UIBarButtonItem alloc] initWithTitle:@"更多" style:UIBarButtonItemStylePlain target:self action:@selector(showMenu:)];
+
     _combinedPhotos = [[NSMutableArray alloc] init];
     
-    
-    /**
-    EZCenterButton* button = [[EZCenterButton alloc] initWithFrame:CGRectMake(0, 100, 100, 100) cycleRadius:35 lineWidth:5];
-    [self.view addSubview:button];
-    button.center = CGPointMake(160, 200);
-    __weak EZCenterButton* weakButton = button;
-    button.pressedBlock = ^(id obj){
-        EZDEBUG(@"The cycle clicked");
-        [weakButton animateButton:0.5 lineWidth:20 completed:^(id obj){
-            EZDEBUG(@"Completed");
-        }];
-        //[weakButton setNeedsDisplay];
-    };
-    **/
-    //self.refreshControl = [[UIRefreshControl alloc] init];
-    //[self.refreshControl addTarget:self action:@selector(refreshInvoked:forState:)forControlEvents:UIControlEventValueChanged];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     //self.tableView.backgroundColor = RGBCOLOR(230, 231, 226);
     self.tableView.backgroundColor = VinesGray;
@@ -396,36 +378,19 @@ static int photoCount = 1;
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(pickPhotoType:)];
     
     CGRect bounds = [UIScreen mainScreen].bounds;
-    
-    
-    
-    //dispatch_later(0.1, ^(){
-        
-    //});
     dispatch_later(0.1, ^(){
-        EZClickView* clickView = [[EZClickView alloc] initWithFrame:CGRectMake((320.0 - EZCenterSmallRadius)/2.0, bounds.size.height - EZCenterSmallRadius - 2.0, EZCenterSmallRadius, EZCenterSmallRadius)];
-        //[clickView digHole:50 color:[UIColor whiteColor] opacity:1.0];
-        //clickView.userInteractionEnabled = YES;
-    
-        
-        //UIView* borderView = [[UIView alloc] initWithFrame:CGRectMake(0, bounds.size.height - radius, radius, radius)];
-        //borderView.backgroundColor = [UIColor clearColor];
-        clickView.layer.borderColor = [UIColor whiteColor].CGColor;
-        clickView.layer.borderWidth = 4.0;
-        clickView.animType = kPressEnlargeCycle;
-        clickView.enlargeScale = 1.5;
-        //[borderView enableRoundImage];
-        //[TopView addSubview:borderView];
-        //clickView.backgroundColor = [UIColor clearColor];
-        //clickView.layer.borderColor = [UIColor whiteColor].CGColor;
-        //clickView.layer.borderWidth = 4.0;
-        [clickView enableRoundImage];
-        clickView.releasedBlock = ^(id obj){
-        [weakSelf raiseCamera];
-    };
+    EZCenterButton* clickView = [[EZCenterButton alloc] initWithFrame:CGRectMake((320.0 - EZCenterSmallRadius)/2.0, bounds.size.height - EZCenterSmallRadius - 2.0, EZCenterSmallRadius, EZCenterSmallRadius) cycleRadius:20 lineWidth:5];
+                                     
+    clickView.enableTouchEffects = false;
+    clickView.releasedBlock = ^(EZCenterButton* obj){
+            [obj animateButton:0.5 lineWidth:13 completed:^(id obj){
+                //EZDEBUG(@"Before raise camera, %i", (int)self);
+                [self raiseCamera];
+                //EZDEBUG(@"The button clicked");
+            }];
+        };
     clickView.center = CGPointMake(160, bounds.size.height - (30 + 5));
     [TopView addSubview:clickView];
-        
     UIView* statusBarBackground = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 20)];
     statusBarBackground.backgroundColor = RGBCOLOR(0, 197, 213);
     [TopView addSubview:statusBarBackground];

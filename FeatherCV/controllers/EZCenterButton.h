@@ -46,6 +46,8 @@ typedef enum {
 
 @property (nonatomic, assign) CGFloat srcRadius;
 
-@property (nonatomic, assign) EZEventBlock completed;
+@property (nonatomic, strong) EZEventBlock completed;
+
+@property (nonatomic, strong) EZEventBlock pressAnimComplete;
 
 @end

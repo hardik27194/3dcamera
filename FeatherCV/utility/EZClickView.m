@@ -152,7 +152,7 @@
     }
     [self pressed];
     if(_pressedBlock){
-        _pressedBlock(touch);
+        _pressedBlock(self);
     }
     
 }
@@ -183,7 +183,7 @@
     [self unpressed];
     if(!_longPressedCalled){
         if(_releasedBlock){
-            _releasedBlock(touch);
+            _releasedBlock(self);
         }
     }
 }

@@ -14,6 +14,7 @@
 #import "EZCombinedPhoto.h"
 #import "EZConversation.h"
 
+@class EZCenterButton;
 @interface EZAlbumResult : NSObject
 
 @property (nonatomic, assign) int totalPhoto;
@@ -28,7 +29,7 @@
 
 @property (nonatomic, assign) int queryingCount;
 
-@property (nonatomic, strong) EZClickView* centerButton;
+@property (nonatomic, strong) EZCenterButton* centerButton;
 
 @property (nonatomic, strong) UIView* barBackground;
 

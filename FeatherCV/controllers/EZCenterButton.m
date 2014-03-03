@@ -114,13 +114,17 @@
 }
 
 #define frameRate  0.016
-#define firstStage 0.15
+#define firstStage 0.3
 #define secondStage 0.5
-#define thirdStage 0.65
+#define thirdStage 0.8
 //#define progressStep
 
 - (void) animateButton:(CGFloat)duration lineWidth:(CGFloat)lineWidth completed:(EZEventBlock)completed 
 {
+    if(_isAnimating){
+        EZDEBUG(@"return for Animating");
+        return;
+    }
     _totalCount = duration/frameRate;
     _srcLineWidth = _lineWidth;
     _targetLineWidth = lineWidth;
@@ -141,6 +145,7 @@
     }
     if(_progress > _totalCount){
         EZDEBUG(@"completed");
+        _isAnimating = false;
         _radius = _srcRadius;
         _lineWidth = _srcLineWidth;
         [self setNeedsDisplay];
@@ -214,6 +219,7 @@
         self.opaque = NO;
         self.backgroundColor = [UIColor clearColor];
         self.enableTouchEffects = false;
+        //self.pressedBlock = ^()
     }
     return self;
 }
@@ -224,19 +230,6 @@
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextClearRect(context, rect);
     
-    /**
-    CGContextSetStrokeColorWithColor(context, _cycleColor.CGColor);
-    //CGContextSetFillColorWithColor(context, [UIColor greenColor].CGColor);
-    //CGContextSetLineWidth(context, _lineWidth);
-    CGFloat diameter = _radius * 2.0;
-    CGFloat center = (self.width - diameter)/2.0;
-    CGFloat doubleLine = _lineWidth * 2.0;
-    CGContextBeginPath(context);
-    
-    CGContextClip(context);
-    CGContextAddEllipseInRect(context, CGRectMake(center-_lineWidth, center-_lineWidth, diameter+doubleLine, diameter+doubleLine));
-    CGContextFillPath(context);
-    **/
     CGFloat diameter = _radius * 2.0;
     CGFloat center = (self.width - diameter)/2.0;
     CGFloat doubleLine = _lineWidth * 2.0;
@@ -252,14 +245,6 @@
     CGContextSetBlendMode(context, kCGBlendModeClear);
     CGContextFillEllipseInRect(context, innerCycle);
     
-    
-    //CGContextAddEllipseInRect(context, CGRectMake(20, 20, 20, 20));
-    //CGContextFillPath(context);
-    //CGContextStrokePath(context);
-    //CGContextSetLineWidth(context, 5.0);
-    //CGContextMoveToPoint(context, 100.0,0.0);
-    //CGContextAddLineToPoint(context,100.0, 100.0);
-    //CGContextStrokePath(context);
 }
 
 /*

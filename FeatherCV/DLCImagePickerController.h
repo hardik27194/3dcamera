@@ -206,7 +206,8 @@ typedef enum {
 
 @property (nonatomic, strong) UITextField* textField;
 
-@property (nonatomic, strong) EZEventBlock oldBlock;
+@property (nonatomic, strong) EZEventBlock oldPressBlock;
+@property (nonatomic, strong) EZEventBlock oldReleaseBlock;
 
 //This is a flag determine that if we hide the text or not
 @property (nonatomic, assign) BOOL hideTextInput;
