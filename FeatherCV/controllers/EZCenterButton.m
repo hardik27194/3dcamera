@@ -10,14 +10,14 @@
 
 @implementation EZCenterButton
 
-
+/**
 + (Class)layerClass {
     return [CAShapeLayer class];
 }
-
+**/
 
 - (void)layoutSubviews {
-    [self setLayerProperties];
+    //[self setLayerProperties];
     //[self attachAnimations];
 }
 
@@ -113,41 +113,65 @@
     [self.layer addAnimation:pathAnimation forKey:@"KeyFrame"];
 }
 
-- (void) changeLineAnimation
+#define frameRate  0.016
+#define firstStage 0.25
+#define secondStage 0.5
+#define thirdStage 0.75
+//#define progressStep
+
+- (void) animateButton:(CGFloat)duration lineWidth:(CGFloat)lineWidth completed:(EZEventBlock)completed 
 {
-    //if(_animStatus != kAnimateInit){
-    //    EZDEBUG(@"animation are going on");
-    //    return;
-    //}
-    //if(_animStatus == kAnimateInit){
-    //_animStatus = kAnimateStart;
-    
-    //CAShapeLayer* layer = (CAShapeLayer*)self.layer;
-    //[CATransaction begin]; {
-    NSMutableArray* paths = [[NSMutableArray alloc] init];
-    UIBezierPath* path = [self createPath:10.0 radius:_radius];
-    //[paths addObject:(__bridge id)path.CGPath];
-    
-    //[self innerAnimation:path duration:1.0 beginTime:0];
-    //_shapeLayer.path = path.CGPath;
-    
-    UIBezierPath* path1 = [self createPath:_lineWidth radius:_radius + 10.0 - _lineWidth];
-    //[paths addObject:(__bridge id)path.CGPath];
-    //[self innerAnimation:path duration:1.0 beginTime:1.0];
-    //_shapeLayer.path = path.CGPath;
-    
-    UIBezierPath* path2 = [self createPath:10.0 radius:_radius];
-    //[paths addObject:(__bridge id)path.CGPath];
-    //[self innerAnimation:path duration:1.0 beginTime:1.0];
-    
-    UIBezierPath* path3 = [self createPath:_lineWidth radius:_radius + 10.0 - _lineWidth];
-    
-    [self animateAllPaths:@[(__bridge id)_shapeLayer.path,(__bridge id)path.CGPath, (__bridge id)path1.CGPath, (__bridge id)path2.CGPath] duration:3.0];
-    
-    //[self innerAnimation:path duration:1.0 beginTime:1.0];
-    
-    
+    _totalCount = duration/frameRate;
+    _srcLineWidth = _lineWidth;
+    _targetLineWidth = lineWidth;
+    _srcRadius = _radius;
+    _isAnimating = true;
+    _stopAnimating = false;
+    _progress = 0;
+    _completed = completed;
+    [self tick];
 }
+
+- (void) tick
+{
+    ++_progress;
+    if(_stopAnimating){
+        _isAnimating = false;
+        return;
+    }
+    if(_progress > _totalCount){
+        EZDEBUG(@"completed");
+        _radius = _srcRadius;
+        _lineWidth = _srcLineWidth;
+        [self setNeedsDisplay];
+        if(_completed){
+            _completed(nil);
+        }
+        return;
+    }
+    CGFloat ratio = _progress/_totalCount;
+    if(ratio < firstStage){
+        CGFloat delta = _targetLineWidth  * (ratio/firstStage);
+        _lineWidth = delta;
+    }else if(ratio < secondStage){
+        CGFloat delta = _targetLineWidth * (ratio - firstStage)/(secondStage - firstStage);
+        _lineWidth = _targetLineWidth - delta;
+        _radius = _srcRadius + delta;
+    }else if(ratio < thirdStage){
+        CGFloat delta = _targetLineWidth * (ratio - secondStage)/(thirdStage - secondStage);
+        _lineWidth = delta;
+        _radius = _srcRadius + (_targetLineWidth - delta);
+    }else{
+        CGFloat delta = _targetLineWidth * (ratio - secondStage)/(thirdStage - secondStage);
+        _lineWidth = _targetLineWidth - delta;
+        _radius = _srcRadius;
+    }
+    [self setNeedsDisplay];
+    dispatch_later(frameRate, ^(){
+        [self tick];
+    });
+}
+
 
 
 - (void)attachPathAnimation {
@@ -189,24 +213,25 @@
 }
 
 
-/**
+
 - (void)drawRect:(CGRect)rect {
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextClearRect(context, rect);
     CGContextSetStrokeColorWithColor(context, _cycleColor.CGColor);
     //CGContextSetFillColorWithColor(context, [UIColor greenColor].CGColor);
     CGContextSetLineWidth(context, _lineWidth);
-    CGFloat center = (self.width - _radius)/2.0;
-    CGContextAddEllipseInRect(context, CGRectMake(center, center, _radius, _radius));
+    CGFloat diameter = _radius * 2.0;
+    CGFloat center = (self.width - diameter)/2.0;
+    CGContextAddEllipseInRect(context, CGRectMake(center, center, diameter, diameter));
     //CGContextAddEllipseInRect(context, CGRectMake(20, 20, 20, 20));
     //CGContextFillPath(context);
-    CGContextStrokePath(context);
+    //CGContextStrokePath(context);
     //CGContextSetLineWidth(context, 5.0);
     //CGContextMoveToPoint(context, 100.0,0.0);
     //CGContextAddLineToPoint(context,100.0, 100.0);
     CGContextStrokePath(context);
 }
-**/
+
 /*
 // Only override drawRect: if you perform custom drawing.
 // An empty implementation adversely affects performance during animation.

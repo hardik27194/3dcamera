@@ -342,7 +342,9 @@ static int photoCount = 1;
     __weak EZCenterButton* weakButton = button;
     button.pressedBlock = ^(id obj){
         EZDEBUG(@"The cycle clicked");
-        [weakButton changeLineAnimation];
+        [weakButton changeLineAnimation:^(id obj){
+            EZDEBUG(@"Completed");
+        }];
     };
     
     //self.refreshControl = [[UIRefreshControl alloc] init];

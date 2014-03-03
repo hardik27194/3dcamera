@@ -20,16 +20,32 @@ typedef enum {
 
 - (id)initWithFrame:(CGRect)frame cycleRadius:(CGFloat)radius lineWidth:(CGFloat)width;
 
-- (void) changeLineAnimation;
+- (void) animateButton:(CGFloat)duration lineWidth:(CGFloat)lineWidth completed:(EZEventBlock)completed;
 
 @property (nonatomic, assign) CGFloat radius;
 
 @property (nonatomic, assign) CGFloat lineWidth;
 
+@property (nonatomic, assign) CGFloat targetLineWidth;
+
+@property (nonatomic, assign) CGFloat srcLineWidth;
+
 @property (nonatomic, strong) UIColor* cycleColor;
+
+@property (nonatomic, assign) CGFloat progress;
 
 @property (nonatomic, assign) EZAnimStatus animStatus;
 
 @property (nonatomic, weak) CAShapeLayer* shapeLayer;
+
+@property (nonatomic, assign) CGFloat totalCount;
+
+@property (nonatomic, assign) BOOL isAnimating;
+
+@property (nonatomic, assign) BOOL stopAnimating;
+
+@property (nonatomic, assign) CGFloat srcRadius;
+
+@property (nonatomic, assign) EZEventBlock completed;
 
 @end
