@@ -336,17 +336,19 @@ static int photoCount = 1;
     _combinedPhotos = [[NSMutableArray alloc] init];
     
     
-    EZCenterButton* button = [[EZCenterButton alloc] initWithFrame:CGRectMake(0, 100, 100, 100) cycleRadius:35 lineWidth:4];
+    /**
+    EZCenterButton* button = [[EZCenterButton alloc] initWithFrame:CGRectMake(0, 100, 100, 100) cycleRadius:35 lineWidth:5];
     [self.view addSubview:button];
     button.center = CGPointMake(160, 200);
     __weak EZCenterButton* weakButton = button;
     button.pressedBlock = ^(id obj){
         EZDEBUG(@"The cycle clicked");
-        [weakButton changeLineAnimation:^(id obj){
+        [weakButton animateButton:0.5 lineWidth:20 completed:^(id obj){
             EZDEBUG(@"Completed");
         }];
+        //[weakButton setNeedsDisplay];
     };
-    
+    **/
     //self.refreshControl = [[UIRefreshControl alloc] init];
     //[self.refreshControl addTarget:self action:@selector(refreshInvoked:forState:)forControlEvents:UIControlEventValueChanged];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;

@@ -114,9 +114,9 @@
 }
 
 #define frameRate  0.016
-#define firstStage 0.25
+#define firstStage 0.15
 #define secondStage 0.5
-#define thirdStage 0.75
+#define thirdStage 0.65
 //#define progressStep
 
 - (void) animateButton:(CGFloat)duration lineWidth:(CGFloat)lineWidth completed:(EZEventBlock)completed 
@@ -150,19 +150,24 @@
         return;
     }
     CGFloat ratio = _progress/_totalCount;
+    //EZDEBUG(@"ratio is:%f", ratio, )
+    //CGFloat delta = (_targetLineWidth - _srcLineWidth)  * ratio;//(ratio/firstStage);
+    //_lineWidth = _srcLineWidth + delta;
+    //EZDEBUG(@"lineWidth:%f, ratio:%f", _lineWidth, ratio);
+    
     if(ratio < firstStage){
-        CGFloat delta = _targetLineWidth  * (ratio/firstStage);
-        _lineWidth = delta;
+        CGFloat delta = (_targetLineWidth - _srcLineWidth)  * (ratio/firstStage);
+        _lineWidth = _srcLineWidth + delta;
     }else if(ratio < secondStage){
-        CGFloat delta = _targetLineWidth * (ratio - firstStage)/(secondStage - firstStage);
+        CGFloat delta = (_targetLineWidth - _srcLineWidth) * (ratio - firstStage)/(secondStage - firstStage);
         _lineWidth = _targetLineWidth - delta;
         _radius = _srcRadius + delta;
     }else if(ratio < thirdStage){
-        CGFloat delta = _targetLineWidth * (ratio - secondStage)/(thirdStage - secondStage);
-        _lineWidth = delta;
-        _radius = _srcRadius + (_targetLineWidth - delta);
+        CGFloat delta = (_targetLineWidth - _srcLineWidth) * (ratio - secondStage)/(thirdStage - secondStage);
+        _lineWidth =_srcLineWidth + delta;
+        _radius = _srcRadius + _targetLineWidth - _srcLineWidth  - delta;
     }else{
-        CGFloat delta = _targetLineWidth * (ratio - secondStage)/(thirdStage - secondStage);
+        CGFloat delta = (_targetLineWidth - _srcLineWidth) * (ratio - thirdStage)/(1.0 - thirdStage);
         _lineWidth = _targetLineWidth - delta;
         _radius = _srcRadius;
     }
@@ -207,6 +212,7 @@
         _lineWidth = width;
         _cycleColor = [UIColor whiteColor];
         self.opaque = NO;
+        self.backgroundColor = [UIColor clearColor];
         self.enableTouchEffects = false;
     }
     return self;
@@ -217,19 +223,43 @@
 - (void)drawRect:(CGRect)rect {
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextClearRect(context, rect);
+    
+    /**
     CGContextSetStrokeColorWithColor(context, _cycleColor.CGColor);
     //CGContextSetFillColorWithColor(context, [UIColor greenColor].CGColor);
-    CGContextSetLineWidth(context, _lineWidth);
+    //CGContextSetLineWidth(context, _lineWidth);
     CGFloat diameter = _radius * 2.0;
     CGFloat center = (self.width - diameter)/2.0;
-    CGContextAddEllipseInRect(context, CGRectMake(center, center, diameter, diameter));
+    CGFloat doubleLine = _lineWidth * 2.0;
+    CGContextBeginPath(context);
+    
+    CGContextClip(context);
+    CGContextAddEllipseInRect(context, CGRectMake(center-_lineWidth, center-_lineWidth, diameter+doubleLine, diameter+doubleLine));
+    CGContextFillPath(context);
+    **/
+    CGFloat diameter = _radius * 2.0;
+    CGFloat center = (self.width - diameter)/2.0;
+    CGFloat doubleLine = _lineWidth * 2.0;
+    
+    CGRect outCycle = CGRectMake(center - _lineWidth, center - _lineWidth, diameter + doubleLine, diameter + doubleLine);
+    
+    CGRect innerCycle = CGRectMake(center, center, diameter, diameter);
+    
+    CGContextSetFillColorWithColor( context, [UIColor whiteColor].CGColor);
+    CGContextFillEllipseInRect(context, outCycle);
+    
+    CGContextSetFillColorWithColor(context, [UIColor clearColor].CGColor);
+    CGContextSetBlendMode(context, kCGBlendModeClear);
+    CGContextFillEllipseInRect(context, innerCycle);
+    
+    
     //CGContextAddEllipseInRect(context, CGRectMake(20, 20, 20, 20));
     //CGContextFillPath(context);
     //CGContextStrokePath(context);
     //CGContextSetLineWidth(context, 5.0);
     //CGContextMoveToPoint(context, 100.0,0.0);
     //CGContextAddLineToPoint(context,100.0, 100.0);
-    CGContextStrokePath(context);
+    //CGContextStrokePath(context);
 }
 
 /*
