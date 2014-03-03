@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		180ADA5518C1CA1000AB490C /* EZChatRegion.m in Sources */ = {isa = PBXBuildFile; fileRef = 180ADA5418C1CA1000AB490C /* EZChatRegion.m */; };
 		180ADA5A18C1CA2500AB490C /* EZChatUnit.m in Sources */ = {isa = PBXBuildFile; fileRef = 180ADA5918C1CA2500AB490C /* EZChatUnit.m */; };
+		180ADA5D18C4247F00AB490C /* EZCenterButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 180ADA5C18C4247F00AB490C /* EZCenterButton.m */; };
 		181608C718B4E38600DD5995 /* EZAnimationUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 181608C618B4E38600DD5995 /* EZAnimationUtil.m */; };
 		181608CC18B4EA9F00DD5995 /* EZRotateAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = 181608CB18B4EA9F00DD5995 /* EZRotateAnimation.m */; };
 		181608D218B5B1A300DD5995 /* EZShapeCover.m in Sources */ = {isa = PBXBuildFile; fileRef = 181608D118B5B1A300DD5995 /* EZShapeCover.m */; };
@@ -283,6 +284,8 @@
 		180ADA5418C1CA1000AB490C /* EZChatRegion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZChatRegion.m; sourceTree = "<group>"; };
 		180ADA5818C1CA2500AB490C /* EZChatUnit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZChatUnit.h; sourceTree = "<group>"; };
 		180ADA5918C1CA2500AB490C /* EZChatUnit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZChatUnit.m; sourceTree = "<group>"; };
+		180ADA5B18C4247F00AB490C /* EZCenterButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZCenterButton.h; sourceTree = "<group>"; };
+		180ADA5C18C4247F00AB490C /* EZCenterButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZCenterButton.m; sourceTree = "<group>"; };
 		181608C518B4E38600DD5995 /* EZAnimationUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZAnimationUtil.h; sourceTree = "<group>"; };
 		181608C618B4E38600DD5995 /* EZAnimationUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZAnimationUtil.m; sourceTree = "<group>"; };
 		181608CA18B4EA9F00DD5995 /* EZRotateAnimation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZRotateAnimation.h; sourceTree = "<group>"; };
@@ -986,6 +989,8 @@
 				180ADA5418C1CA1000AB490C /* EZChatRegion.m */,
 				180ADA5818C1CA2500AB490C /* EZChatUnit.h */,
 				180ADA5918C1CA2500AB490C /* EZChatUnit.m */,
+				180ADA5B18C4247F00AB490C /* EZCenterButton.h */,
+				180ADA5C18C4247F00AB490C /* EZCenterButton.m */,
 			);
 			path = controllers;
 			sourceTree = "<group>";
@@ -1580,6 +1585,7 @@
 				18E34784183DFAA400C9D89D /* EZGeoUtility.m in Sources */,
 				18E746F018A4A26A0023967B /* AFURLRequestSerialization.m in Sources */,
 				18E3472D183DFA3300C9D89D /* EZTiltCell.m in Sources */,
+				180ADA5D18C4247F00AB490C /* EZCenterButton.m in Sources */,
 				18E3472B183DFA3300C9D89D /* EZMainPage.m in Sources */,
 				18E34749183DFA7300C9D89D /* EZConversation.m in Sources */,
 				18E746F518A4A26A0023967B /* UIAlertView+AFNetworking.m in Sources */,

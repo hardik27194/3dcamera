@@ -28,6 +28,7 @@
 #import "EZScrollController.h"
 #import "EZShapeCover.h"
 #import "EZSimpleClick.h"
+#import "EZCenterButton.h"
 
 static int photoCount = 1;
 @interface EZAlbumTablePage ()
@@ -333,6 +334,16 @@ static int photoCount = 1;
     
     //self.navigationItem.leftBarButtonItem  = [[UIBarButtonItem alloc] initWithTitle:@"更多" style:UIBarButtonItemStylePlain target:self action:@selector(showMenu:)];
     _combinedPhotos = [[NSMutableArray alloc] init];
+    
+    
+    EZCenterButton* button = [[EZCenterButton alloc] initWithFrame:CGRectMake(0, 100, 100, 100) cycleRadius:35 lineWidth:4];
+    [self.view addSubview:button];
+    button.center = CGPointMake(160, 200);
+    __weak EZCenterButton* weakButton = button;
+    button.pressedBlock = ^(id obj){
+        EZDEBUG(@"The cycle clicked");
+        [weakButton changeLineAnimation];
+    };
     
     //self.refreshControl = [[UIRefreshControl alloc] init];
     //[self.refreshControl addTarget:self action:@selector(refreshInvoked:forState:)forControlEvents:UIControlEventValueChanged];

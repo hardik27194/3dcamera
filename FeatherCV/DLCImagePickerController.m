@@ -223,7 +223,7 @@
         [finalBlendFilter addTarget:filter];
     
         secBlendFilter.blurFilter.distanceNormalizationFactor = 20.0;
-        secBlendFilter.blurFilter.blurSize = 2.7;
+        secBlendFilter.blurFilter.blurSize = 3.0;
         secBlendFilter.miniRealRatio = 0.1;
         secBlendFilter.imageMode = 0;
         secBlendFilter.skinColorFlag = 1;
