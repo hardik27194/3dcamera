@@ -208,22 +208,29 @@ static int photoCount = 1;
         
         [[EZDataUtil getInstance] prefetchImage:switchPhoto.screenURL success:^(UIImage* img){
             //[self switchAnimation:cp photoCell:cell indexPath:path tableView:self.tableView];
-            [self switchImage:cell displayPhoto:cp front:cp.photo back:switchPhoto];
+            [self switchImage:cell displayPhoto:cp front:cp.photo back:switchPhoto animate:NO];
         } failure:nil];
     }
+}
+
+- (void) scrollToBottom
+{
+    EZDEBUG(@"Scroll to bottom");
+    [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:_combinedPhotos.count - 1 inSection:0] atScrollPosition:UITableViewScrollPositionBottom animated:YES];
 }
 
 - (void)imagePickerControllerDidCancel:(DLCImagePickerController *)picker imageCount:(int)imageCount
 {
     EZDEBUG(@"cancel get called:%i", _newlyCreated);
     if(imageCount){
-        [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
-        dispatch_later(1.5, ^(){
-            [self animateFlip];
+        dispatch_later(0.3, ^(){
+            [self scrollToBottom];
+            dispatch_later(1.2, ^(){
+                [self animateFlip];
+            });
         });
     }
 }
-
 
 - (void) raiseCamera
 {
@@ -380,7 +387,10 @@ static int photoCount = 1;
         EZDEBUG(@"returned length:%i", arr.count);
         //[_combinedPhotos addObjectsFromArray:arr];
         [self reloadRows:arr];
-        //[self.tableView reloadData];
+        dispatch_later(0.3,
+         ^(){
+            [self scrollToBottom];
+        });
     } failure:^(NSError* err){
         EZDEBUG(@"Error detail:%@", err);
     }];
@@ -482,6 +492,8 @@ static int photoCount = 1;
 //Pull and refresh will help to check if we have more photo to match.
 //This really make sense
 //Refresh to get more
+
+/**
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
     if(!_isFirstCompleted){
@@ -489,33 +501,36 @@ static int photoCount = 1;
         return;
     }
         
-    if ((scrollView.contentOffset.y + scrollView.frame.size.height) >= scrollView.contentSize.height + 30)
+    if ((scrollView.contentOffset.y + scrollView.frame.size.height) >= scrollView.contentSize.height + 40)
     {
-        if (!_isLoadingMoreData)
-        {
-            EZDEBUG(@"I will load more data");
-            _isLoadingMoreData = true;
-            UIActivityIndicatorView* activity = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-            //[activity startAnimating];
-            [activity setPosition:CGPointMake((320.0 - activity.width)/2.0, self.tableView.contentSize.height)];
-            [self.tableView addSubview:activity];
-            [activity startAnimating];
-            //UIEdgeInsets oldInset = self.tableView.contentInset;
-            [UIView animateWithDuration:0.2 animations:^(){
-                self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 44, 0);
-            }];
-            EZOperationBlock animBlock = ^(){
-                [UIView animateWithDuration:0.3 animations:^(){
-                    self.tableView.contentInset = UIEdgeInsetsMake(64, 0, 0, 0);
-                } completion:^(BOOL completed){
-                    [activity removeFromSuperview];
-                }];
-                _isLoadingMoreData = false;
-            };
-            animBlock();
-            // proceed with the loading of more data
-        }
+        EZDEBUG(@"Will raise camera");
+        //[self raiseCamera];
     }
+}
+**/
+- (void) loadingView
+{
+    EZDEBUG(@"I will load more data");
+    _isLoadingMoreData = true;
+    UIActivityIndicatorView* activity = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    //[activity startAnimating];
+    [activity setPosition:CGPointMake((320.0 - activity.width)/2.0, self.tableView.contentSize.height)];
+    [self.tableView addSubview:activity];
+    [activity startAnimating];
+    //UIEdgeInsets oldInset = self.tableView.contentInset;
+    [UIView animateWithDuration:0.2 animations:^(){
+        self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 44, 0);
+    }];
+    EZOperationBlock animBlock = ^(){
+        [UIView animateWithDuration:0.3 animations:^(){
+            self.tableView.contentInset = UIEdgeInsetsMake(64, 0, 0, 0);
+        } completion:^(BOOL completed){
+            [activity removeFromSuperview];
+        }];
+        _isLoadingMoreData = false;
+    };
+    animBlock();
+    // proceed with the loading of more data
 }
 
 - (void) viewDidAppear:(BOOL)animated
@@ -728,7 +743,7 @@ static int photoCount = 1;
         EZDEBUG(@"Cell Released clicked");
         //[[EZUIUtility sharedEZUIUtility] raiseInfoWindow:@"测试" info:@"好好测"];
         if(switchPhoto){
-            [self switchImage:weakCell displayPhoto:cp front:myPhoto back:switchPhoto];
+            [self switchImage:weakCell displayPhoto:cp front:myPhoto back:switchPhoto animate:YES];
         }
     };
     
@@ -808,70 +823,116 @@ static int photoCount = 1;
     };
 
 }
-- (void) switchImage:(EZPhotoCell*)weakCell displayPhoto:(EZDisplayPhoto*)cp front:(EZPhoto*)front back:(EZPhoto*)back
+- (void) switchImage:(EZPhotoCell*)weakCell displayPhoto:(EZDisplayPhoto*)cp front:(EZPhoto*)front back:(EZPhoto*)back animate:(BOOL)animate
 {
-    UIView* snapShot = [weakCell.frontImage snapshotViewAfterScreenUpdates:YES];
-    snapShot.frame = weakCell.frontImage.frame;
-    [weakCell.rotateContainer addSubview:snapShot];
+    
     EZPhoto* photo = nil;
-    if(cp.isFront){
-        photo = back;
-        [weakCell.frontImage setImageWithURL:str2url(back.screenURL)];
+
+    if(animate){
+        UIView* snapShot = [weakCell.frontImage snapshotViewAfterScreenUpdates:YES];
+        snapShot.frame = weakCell.frontImage.frame;
+        [weakCell.rotateContainer addSubview:snapShot];
+        if(cp.isFront){
+            photo = back;
+            [weakCell.frontImage setImageWithURL:str2url(back.screenURL)];
+        }else{
+            photo = front;
+            [weakCell.frontImage setImage:[front getScreenImage]];
+        }
+    
+        dispatch_later(0.15, ^(){
+        [UIView flipTransition:snapShot dest:weakCell.frontImage container:weakCell.rotateContainer isLeft:YES duration:EZRotateAnimDuration complete:^(id obj){
+            [snapShot removeFromSuperview];
+            
+            [self setChatInfo:weakCell displayPhoto:photo person:pid2person(photo.personID)];
+            //EZDEBUG(@"rotation completed:%i", (int)[snapShot superview]);
+        }];}
+       );
     }else{
-        photo = front;
-        [weakCell.frontImage setImage:[front getScreenImage]];
-    }
-    [UIView flipTransition:snapShot dest:weakCell.frontImage container:weakCell.rotateContainer isLeft:YES duration:EZRotateAnimDuration complete:^(id obj){
-        [snapShot removeFromSuperview];
-        
+        if(cp.isFront){
+            photo = back;
+            [weakCell.frontImage setImageWithURL:str2url(back.screenURL)];
+        }else{
+            photo = front;
+            [weakCell.frontImage setImage:[front getScreenImage]];
+        }
         [self setChatInfo:weakCell displayPhoto:photo person:pid2person(photo.personID)];
-        //EZDEBUG(@"rotation completed:%i", (int)[snapShot superview]);
-    }];
+    }
     cp.isFront = !cp.isFront;
 
 }
 
-
+- (void) scrollViewDidScroll:(UIScrollView *)scrollView
+{
+      EZDEBUG(@"ViewDidScroll dragging point:%@, size:%@, %f _isScrolling:%i, showShapeCover:%i, animateStarted:%i", NSStringFromCGPoint(scrollView.contentOffset), NSStringFromCGSize(scrollView.contentSize),scrollView.frame.size.height, _isScrolling, _showShapeCover, _animStarted);
+    if(_isScrolling){
+        CGFloat minius = scrollView.contentOffset.y + scrollView.frame.size.height - scrollView.contentSize.height;
+        
+        if(!_showShapeCover && minius > 40 && scrollView.contentSize.height > scrollView.frame.size.height){
+            _showShapeCover = TRUE;
+            if(!_shapeCover){
+                _shapeCover = [[EZUIUtility sharedEZUIUtility] createHoleView];
+                //_shapeCover.backgroundColor = [UIColor blackColor];
+                [scrollView addSubview:_shapeCover];
+            }
+            _shapeCover.hidden = NO;
+            _shapeCover.y = scrollView.contentSize.height + 40;
+            EZDEBUG(@"_shapaCover size:%@", NSStringFromCGRect(_shapeCover.frame));
+            [scrollView addSubview:_shapeCover];
+        }else if(_showShapeCover && minius > 100){
+            //_prevInsets = scrollView.contentInset;
+            //_animStarted = TRUE;
+            //_showShapeCover = FALSE;
+            EZDEBUG(@"Will start animation");
+            [self raiseCamera];
+            /**
+            dispatch_later(0.1, ^(){
+                
+                [scrollView scrollRectToVisible:_shapeCover.frame animated:YES];
+            //[UIView  animateWithDuration:0.5 animations:^(){
+                //scrollView.contentInset = UIEdgeInsetsMake(_prevInsets.top, 0, CurrentScreenHeight + 40, 0);
+                //scrollView.contentOffset = CGPointMake(0, scrollView.contentSize.height + _shapeCover.height + 40);
+                
+                
+            //}
+            //completion:^(BOOL complete){
+            //    EZDEBUG(@"Completed scroll animation");
+                //scrollView.contentInset = _prevInsets;
+            //    _animStarted = false;
+            //}
+                
+             //];
+            
+            });
+             **/
+             
+        }
+        
+    }
+}
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
 {
-    EZDEBUG(@"Begin dragging");
+    EZDEBUG(@"Begin dragging point:%@, size:%@", NSStringFromCGPoint(scrollView.contentOffset), NSStringFromCGSize(scrollView.contentSize));
     _isScrolling = true;
 }
 
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
 {
-    EZDEBUG(@"End dragging:%i", decelerate);
-    if (!decelerate) {
-        _isScrolling = false;
-        [self replaceLargeImage];
-    }
+    EZDEBUG(@"End dragging point:%@, size:%@", NSStringFromCGPoint(scrollView.contentOffset), NSStringFromCGSize(scrollView.contentSize));
+    
+    
+    _isScrolling = false;
 }
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
     EZDEBUG(@"End Decelerating");
-    _isScrolling = false;
-    [self replaceLargeImage];
-}
-
-- (void) replaceLargeImage
-{
-    /**
-    NSArray* cells = [self.tableView visibleCells];
-    EZDEBUG(@"Scroll stopped:%i", cells.count);
-    
-    for(EZPhotoCell* pcell in cells){
-        EZDisplayPhoto* cp = [_combinedPhotos objectAtIndex:pcell.currentPos];
-        
-        if(cp.isFront && !pcell.isLarge){
-            pcell.isLarge = true;
-            //[[EZThreadUtility getInstance] executeBlockInQueue:^(){
-            //[pcell displayEffectImage:[cp.photo getLocalImage]];
-            [pcell displayImage:[cp.photo getLocalImage]];
-            //}];
-        }
+    //_isScrolling = false;
+    if(_showShapeCover){
+        _shapeCover.hidden = TRUE;
+        _showShapeCover = NO;
+        _animStarted = false;
     }
-    **/
 }
 
 

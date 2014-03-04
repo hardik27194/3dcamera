@@ -9,6 +9,7 @@
 #import "EZUIUtility.h"
 #import <MobileCoreServices/UTCoreTypes.h>
 #import "EZMessageCenter.h"
+#import "EZShapeCover.h"
 
 #define ColorTransparent 80
 @implementation EZUIUtility
@@ -45,6 +46,49 @@ SINGLETON_FOR_CLASS(EZUIUtility)
     return [_colors objectAtIndex:idx];
 }
 
+
+- (UIView*) createHoleView
+{
+    EZShapeCover* shapeCover = [[EZShapeCover alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    CGPoint centerPoint = CGPointMake(CurrentScreenWidth/2.0, CurrentScreenHeight/2.0 + CenterUpShift);
+    [shapeCover digHole:310 center:centerPoint color:[UIColor blackColor] opacity:1.0];
+    return shapeCover;
+}
+
+- (void) gravityDrop:(UIView*)container from:(UIView*)fromView to:(UIView*)toView
+{
+    
+        // no other transitions are allowed until this one finishes
+        //self.navigationController.toolbar.userInteractionEnabled = NO;
+        
+    
+    CGRect startFrame = fromView.frame;//self.view.frame;
+    CGRect endFrame = toView.frame;
+        
+        // the start position is below the bottom of the visible frame
+        startFrame.origin.y = -startFrame.size.height;
+        endFrame.origin.y = 0;
+        
+        toView.frame = startFrame;
+        
+        //NSArray *priorConstraints = self.priorConstraints;
+        [container addSubview:toView];
+        [UIView animateWithDuration:1.0f
+                              delay:0.0
+             usingSpringWithDamping:0.5
+              initialSpringVelocity:5.0
+                            options:0
+                         animations:^{ toView.frame = endFrame; }
+                         completion:^(BOOL finished) {
+                             // slide down animation finished, remove the older view and the constraints
+                             //
+                             //if (priorConstraints != nil)
+                             //    [self.view removeConstraints:priorConstraints];
+                             [fromView removeFromSuperview];
+                             
+                             //self.navigationController.toolbar.userInteractionEnabled = YES;
+                         }];
+}
 
 - (UIImagePickerController*) getCamera:(BOOL)isAlbum slide:(BOOL)slide completed:(EZEventBlock)block
 {

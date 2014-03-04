@@ -13,6 +13,8 @@
 //Will hold the Application related constants.
 #define EZStatusBarBackgroundColor [UIColor blackColor]
 
+#define CenterUpShift 20
+
 #define EZRotateAnimDuration 0.5
 //RGBCOLOR(0, 197, 213);
 

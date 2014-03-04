@@ -12,7 +12,7 @@
 //#import "DLCImagePickerController.h"
 
 
-
+@class EZShapeCover;
 //Put UI related functionality here
 //@class EZClickView;
 @interface EZUIUtility : NSObject<UIImagePickerControllerDelegate, UINavigationControllerDelegate>
@@ -39,6 +39,8 @@
 //If pass nil mean pick color randomly.
 - (UIColor*) getBackgroundColor:(UIColor*)color;
 
+
+- (EZShapeCover*) createHoleView;
 
 //This window will be disappear after some time
 - (void) raiseInfoWindow:(NSString*)title info:(NSString*)info;

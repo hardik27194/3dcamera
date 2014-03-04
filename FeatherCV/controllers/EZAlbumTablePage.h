@@ -16,6 +16,7 @@
 
 
 @class EZDisplayPhoto;
+@class EZShapeCover;
 @interface EZAlbumTablePage : UITableViewController<DLCImagePickerDelegate, UINavigationControllerDelegate, UIViewControllerTransitioningDelegate, UIActionSheetDelegate, UIAlertViewDelegate>
 
 
@@ -38,6 +39,16 @@
 @property (nonatomic, strong) UILabel* weekCount;
 @property (nonatomic, strong) UILabel* dailyCount;
 @property (nonatomic, strong) UIView* container;
+
+@property (nonatomic, assign) UIEdgeInsets prevInsets;
+
+@property (nonatomic, strong) UIView* anotherView;
+
+@property (nonatomic, strong) EZShapeCover* shapeCover;
+
+@property (nonatomic, assign) BOOL animStarted;
+
+@property (nonatomic, assign) BOOL showShapeCover;
 
 @property (nonatomic, assign) CGFloat menuHeight;
 

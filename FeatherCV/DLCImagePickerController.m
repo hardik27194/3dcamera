@@ -55,7 +55,7 @@
 
 #define RotateBackground [UIColor blackColor]
 
-#define CenterUpShift 20
+
 
 @interface EZMotionRecord : NSObject 
 
@@ -2252,10 +2252,9 @@
             [self completedProcess];
             //[self fakeAnimation];
             //[self fakeAnimation:nil];
-            [self retakePhoto:nil];
-            [self changeButtonStatus:NO];
-            
-            
+            //[self retakePhoto:nil];
+            //[self changeButtonStatus:NO];
+            [self innerCancel];
         }
     }
 }
