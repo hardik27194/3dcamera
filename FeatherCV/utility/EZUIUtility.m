@@ -81,13 +81,12 @@ SINGLETON_FOR_CLASS(EZUIUtility)
     return cameraUI;
 }
 
-- (void) raiseCamera:(BOOL)isAlbum controller:(UIViewController *)controller completed:(EZEventBlock)block
+- (void) raiseCamera:(BOOL)isAlbum controller:(UIViewController *)controller completed:(EZEventBlock)block allowEditing:(BOOL)allowEditing
 {
-    if (_cameraRaised || (([UIImagePickerController isSourceTypeAvailable:
+    if ((([UIImagePickerController isSourceTypeAvailable:
           UIImagePickerControllerSourceTypeCamera] == NO)
         && !isAlbum))
         return;
-    _cameraRaised = true;
     //[UIApplication sharedApplication].statusBarHidden = true;
     _completed = block;
     UIImagePickerController *cameraUI = [[UIImagePickerController alloc] init];
@@ -105,7 +104,7 @@ SINGLETON_FOR_CLASS(EZUIUtility)
     // UIImagePickerControllerSourceTypeCamera];
     // Hides the controls for moving & scaling pictures, or for
     // trimming movies. To instead show the controls, use YES.
-    cameraUI.allowsEditing = NO;
+    cameraUI.allowsEditing = allowEditing;
     cameraUI.delegate = self;
     [controller presentViewController:cameraUI animated:YES completion:nil];
     
@@ -144,6 +143,14 @@ SINGLETON_FOR_CLASS(EZUIUtility)
 
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
+    [picker dismissViewControllerAnimated:YES completion:nil];
+    [UIApplication sharedApplication].statusBarHidden = false;
+    [info objectForKey:
+     UIImagePickerControllerEditedImage];
+    if(_completed){
+        _completed([info objectForKey:UIImagePickerControllerEditedImage]);
+    }
+    /**
     _cameraRaised = false;
     [UIApplication sharedApplication].statusBarHidden = false;
     //[picker dismissViewControllerAnimated:YES completion:nil];
@@ -159,6 +166,7 @@ SINGLETON_FOR_CLASS(EZUIUtility)
         //[picker release];
         _completed(originalImage);
     }
+     **/
 }
 
 - (void) raiseInfoWindow:(NSString*)title info:(NSString *)info
@@ -174,10 +182,14 @@ SINGLETON_FOR_CLASS(EZUIUtility)
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
 {
+    /**
     //[picker dismissViewControllerAnimated:YES completion:nil];
     [[EZMessageCenter getInstance] postEvent:EZCameraCompleted attached:nil];
     _cameraRaised = false;
-    [UIApplication sharedApplication].statusBarHidden = false;
+    **/
+    //[UIApplication sharedApplication].statusBarHidden = false;
+    [picker dismissViewControllerAnimated:YES completion:nil];
+    
 }
 
 @end

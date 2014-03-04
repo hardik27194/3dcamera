@@ -92,7 +92,7 @@
 {
     [[EZUIUtility sharedEZUIUtility] raiseCamera:isAlbum controller:self.navigationController completed:^(UIImage* image){
         EZDEBUG(@"Get photo image");
-    }];
+    } allowEditing:NO];
 }
 
 

@@ -11,6 +11,10 @@
 #include "EZConstants.h"
 //#include <opencv2/opencv.hpp>
 //Will hold the Application related constants.
+#define CurrentScreenWidth [UIScreen mainScreen].bounds.size.width 
+
+#define CurrentScreenHeight [UIScreen mainScreen].bounds.size.height
+
 #define ContainerWidth 300.0
 
 #define DefaultChatUnitHeight 95.0
@@ -18,6 +22,8 @@
 #define photoPageSize 5
 
 #define smallIconRadius 35
+
+#define pid2person(pid) [[EZDataUtil getInstance] getPersonByID:pid success:nil]
 
 #define macroControlInfo(keyName) NSLocalizedStringFromTable(keyName, @"UIControlInfo", nil)
 
@@ -100,6 +106,8 @@
 #define EZCameraIsReady @"EZCameraIsReady"
 
 #define EZTakePicture @"EZTakePicture"
+
+#define EZStatusBarChange @"EZStatusBarChange"
 
 //Just put it on the end of the Array.
 #define EZAlbumImageReaded @"EZAlbumImageReady"

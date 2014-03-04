@@ -10,7 +10,7 @@
 
 @interface EZShapeCover : UIView
 
-- (void) digHole:(CGFloat)radius color:(UIColor*)fillColor opacity:(CGFloat)opacity;
+- (void) digHole:(CGFloat)radius center:(CGPoint)center color:(UIColor *)fillColor opacity:(CGFloat)opacity;
 
 @property (nonatomic, strong) CAShapeLayer* fillLayer;
 

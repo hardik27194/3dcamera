@@ -1159,7 +1159,7 @@
         EZDEBUG(@"imageView.bounds:%@", NSStringFromCGRect(imageView.frame));
         shapeCover.frame = imageView.frame;
         //shapeCover.backgroundColor = [UIColor blackColor];
-        [shapeCover digHole:310 color:[UIColor blackColor] opacity:0.4];
+        [shapeCover digHole:310 center:imageView.center color:[UIColor blackColor] opacity:1.0];
         CGFloat adjustedY = (imageView.frame.size.height - 310)/2.0 - 10.0;
         //roundBackground.frame = imageView.frame;
         rotateContainer.y = adjustedY;
@@ -1345,6 +1345,9 @@
                 [self.flashToggleButton setEnabled:NO];
             }
             
+            _cameraAspectSize = CMVideoFormatDescriptionGetPresentationDimensions(stillCamera.inputCamera.activeFormat.formatDescription, YES, YES);
+            CGFloat ratio = _cameraAspectSize.width/_cameraAspectSize.height;
+            EZDEBUG(@"Camera aspect:%f, %@", ratio, NSStringFromCGSize(_cameraAspectSize));
             AVCaptureDevice *device = stillCamera.inputCamera;
             if ([device isFocusModeSupported:AVCaptureFocusModeContinuousAutoFocus]) {
                 NSError *error;
@@ -2266,6 +2269,7 @@
 - (void) completedProcess
 {
     [self.delegate imagePickerController:self didFinishPickingMediaWithInfo:@{@"displayPhoto":disPhoto}];
+    disPhoto.photo.startUpload = TRUE;
     [[EZDataUtil getInstance] uploadPendingPhoto];
 }
 
@@ -2342,7 +2346,7 @@
                  ep.isLocal = true;
                  ep.createdTime = [NSDate date];
                  displayPhoto.photo = ep;
-                 displayPhoto.photo.owner = [EZDataUtil getInstance].currentLoginPerson;
+                 displayPhoto.photo.personID = currentLoginUser.personID;
                  //EZDEBUG(@"Before size");
                  ep.size = [result defaultRepresentation].dimensions;
                  //Why setup the flag here?

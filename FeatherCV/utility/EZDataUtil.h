@@ -115,7 +115,7 @@
 
 //What's the purpose of this
 //Whether we allow the login page to show off or not.
-- (void) triggerLogin:(EZEventBlock)success failure:(EZEventBlock)failure isLogin:(BOOL)isLogin;
+- (void) triggerLogin:(EZEventBlock)success failure:(EZEventBlock)failure reason:(NSString*)reason isLogin:(BOOL)isLogin;
 
 //This method will enable the user to upload all it's contacts information to the server.
 //The server will get the uploaded information and return a list which update the current user information.
@@ -130,7 +130,7 @@
 //Get the person object
 //- (EZPerson*) getPerson:(int)personID;
 //Check cache first, if not then will query the person
-- (void) getPersonByID:(NSString*)personID success:(EZEventBlock)success;
+- (EZPerson*) getPersonByID:(NSString*)personID success:(EZEventBlock)success;
 
 //Get converstaion regarding this photo
 - (void) getConversation:(int)combineID success:(EZEventBlock)success failure:(EZEventBlock)failure;

@@ -256,9 +256,9 @@
                  ep.asset = result;
                  ep.isLocal = true;
                  ed.photo = ep;
-                 ed.photo.owner = [[EZPerson alloc] init];
-                 ed.photo.owner.name = @"天哥";
-                 ed.photo.owner.avatar = [EZFileUtil fileToURL:@"tian_2.jpeg"].absoluteString;
+                 //ed.photo.owner = [[EZPerson alloc] init];
+                 //ed.photo.owner.name = @"天哥";
+                 //ed.photo.owner.avatar = [EZFileUtil fileToURL:@"tian_2.jpeg"].absoluteString;
                  //EZDEBUG(@"Before size");
                  ep.size = [result defaultRepresentation].dimensions;
                  [[EZMessageCenter getInstance]postEvent:EZTakePicture attached:ed];

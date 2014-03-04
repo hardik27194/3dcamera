@@ -9,10 +9,11 @@
 #import <UIKit/UIKit.h>
 
 #import "EZAppDelegate.h"
+#import "EZUIApplication.h"
 
 int main(int argc, char * argv[])
 {
     @autoreleasepool {
-        return UIApplicationMain(argc, argv, nil, NSStringFromClass([EZAppDelegate class]));
+        return UIApplicationMain(argc, argv, NSStringFromClass([EZUIApplication class]), NSStringFromClass([EZAppDelegate class]));
     }
 }

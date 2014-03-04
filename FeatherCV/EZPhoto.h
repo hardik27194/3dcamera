@@ -24,7 +24,10 @@ typedef enum {
 
 @property (nonatomic, strong) NSString* photoID;
 
-@property (nonatomic, strong) EZPerson* owner;
+@property (nonatomic, strong) NSString* personID;
+
+//Only start upload when this flag is true
+@property (nonatomic, assign) BOOL startUpload;
 
 //Who has liked this photo.
 //Add the user id into this place

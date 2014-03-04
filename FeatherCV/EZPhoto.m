@@ -63,7 +63,7 @@
         return @{
              //@"id":_photoID,
              @"photoID":null2Empty(_photoID),
-             @"personID":null2Empty(_owner.personID),
+             @"personID":null2Empty(_personID),
              @"assetURL":null2Empty(_assetURL),
              @"longtitude":@(_longitude),
              @"latitude":@(_latitude),
@@ -80,7 +80,7 @@
     }else{
         return @{
                  //@"id":_photoID,
-                 @"personID":null2Empty(_owner.personID),
+                 @"personID":null2Empty(_personID),
                  @"assetURL":null2Empty(_assetURL),
                  @"longtitude":@(_longitude),
                  @"latitude":@(_latitude),
@@ -101,7 +101,7 @@
 - (void) fromJson:(NSDictionary*)dict
 {
     EZDEBUG(@"json raw string:%@", dict);
-    NSString* personID = [dict objectForKey:@"personID"];
+    _personID = [dict objectForKey:@"personID"];
     //[[EZDataUtil getInstance] getPersonID:personID success:^(NSArray* ps){
     //    _owner = [ps objectAtIndex:0];
     //} failure:^(NSError* err){

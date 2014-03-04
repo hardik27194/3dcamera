@@ -30,11 +30,15 @@
     }
 }
 
-- (void) digHole:(CGFloat)radius color:(UIColor *)fillColor opacity:(CGFloat)opacity
+- (void) digHole:(CGFloat)radius center:(CGPoint)center color:(UIColor *)fillColor opacity:(CGFloat)opacity
 {
     //int radius = 310.0;
     UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:self.bounds cornerRadius:0];
-    UIBezierPath *circlePath = [UIBezierPath bezierPathWithRoundedRect:CGRectMake(5, (self.bounds.size.height - radius)/2.0 - 10.0, radius, radius) cornerRadius:radius];
+    
+    CGFloat yPos = center.y - radius/2.0;
+    CGFloat xPos = (CurrentScreenWidth - radius)/2.0;
+    
+    UIBezierPath *circlePath = [UIBezierPath bezierPathWithRoundedRect:CGRectMake(xPos, yPos, radius, radius) cornerRadius:radius];
     [path appendPath:circlePath];
     [path setUsesEvenOddFillRule:YES];
     

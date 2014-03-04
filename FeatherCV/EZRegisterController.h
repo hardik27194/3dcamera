@@ -8,7 +8,9 @@
 
 #import <UIKit/UIKit.h>
 
-@interface EZRegisterController : UIViewController<UITextFieldDelegate>
+#import "EZClickImage.h"
+
+@interface EZRegisterController : UIViewController<UITextFieldDelegate, UIActionSheetDelegate>
 
 @property (nonatomic, strong) IBOutlet UILabel* registerTitle;
 
@@ -29,6 +31,10 @@
 @property (nonatomic, strong) IBOutlet UIButton* registerButton;
 
 @property (nonatomic, strong) EZEventBlock completedBlock;
+
+@property (nonatomic, strong) EZEventBlock dismissBlock;
+
+@property (nonatomic, strong) EZClickImage* uploadAvatar;
 
 //I will have a ErrorInfo definition in this code.
 //Not all block need this detail information.

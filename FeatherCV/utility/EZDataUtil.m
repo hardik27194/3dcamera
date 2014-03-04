@@ -20,6 +20,7 @@
 #import "EZExtender.h"
 #import "UIImageView+AFNetworking.h"
 #import "EZRegisterController.h"
+#import "EZCenterButton.h"
 
 
 @implementation EZAlbumResult
@@ -75,21 +76,39 @@
     [calls removeAllObjects];
 }
 
+- (EZPerson*) addPersonToStore:(NSDictionary*)pdict isQuerying:(BOOL)query
+{
+    EZPerson* ps = [_currentQueryUsers objectForKey:[pdict objectForKey:@"personID"]];
+    if(!ps){
+        ps = [[EZPerson alloc] init];
+        [_currentQueryUsers setObject:ps forKey:[pdict objectForKey:@"personID"]];
+    }
+    [ps fromJson:pdict];
+    ps.isQuerying = query;
+    //[_currentQueryUsers setValue:ps forKey:ps.personID];
+    return ps;
+}
+
 //Learn to combine the call
 - (void) queryPendingPerson
 {
     if(_queryingCount){
         EZDEBUG(@"quit for querying:%i", _queryingCount);
+        return;
+    }
+    
+    if(!_pendingUserQuery.count){
+        return;
     }
     _queryingCount = true;
+    
     NSArray* dupIDs = [NSArray arrayWithArray:[_pendingUserQuery allObjects]];
     [_pendingUserQuery removeAllObjects];
+    
     [self queryPersonIDs:dupIDs success:^(NSArray* arr){
         EZDEBUG(@"successfully query:%i users back", dupIDs.count);
         for(NSDictionary* pdict in arr){
-            EZPerson* ps = [_currentQueryUsers objectForKey:[pdict objectForKey:@"personID"]];
-            [ps fromJson:pdict];
-            ps.isQuerying = false;
+            EZPerson* ps = [self addPersonToStore:pdict isQuerying:NO];
             //[_currentQueryUsers setValue:ps forKey:ps.personID];
             [_pendingUserQuery removeObject:ps.personID];
             [self callPendingQuery:ps];
@@ -146,8 +165,7 @@
 - (void) registerUser:(NSDictionary*)person success:(EZEventBlock)success error:(EZEventBlock)error
 {
     [EZNetworkUtility postJson:@"register" parameters:person complete:^(NSDictionary* dict){
-        EZPerson* person = [[EZPerson alloc] init];
-        [person fromJson:dict];
+        EZPerson* person = [self addPersonToStore:dict isQuerying:NO];
         self.currentPersonID  = person.personID;
         self.currentLoginPerson = person;
         EZDEBUG(@"Returned person id:%@", person.personID);
@@ -159,8 +177,7 @@
 - (void) registerMockUser:(EZEventBlock)success error:(EZEventBlock)error
 {
     [EZNetworkUtility postJson:@"register" parameters:@{@"mock":@(1)} complete:^(NSDictionary* dict){
-        EZPerson* person = [[EZPerson alloc] init];
-        [person fromJson:dict];
+        EZPerson* person = [self addPersonToStore:dict isQuerying:NO];
         self.currentPersonID  = person.personID;
         self.currentLoginPerson = person;
         EZDEBUG(@"Mocked person id:%@", person.personID);
@@ -326,12 +343,30 @@
 //Login or register can 
 - (void) triggerLogin:(EZEventBlock)success failure:(EZEventBlock)failure reason:(NSString*)reason isLogin:(BOOL)isLogin
 {
+    
     EZRegisterController* registerCtl = [[EZRegisterController alloc] init];
     registerCtl.registerReason.text = reason;
-    registerCtl.completedBlock = success;
-    registerCtl.cancelBlock = failure;
+    registerCtl.completedBlock = ^(id obj){
+        //_centerButton.hidden = NO;
+        if(success){
+            success(obj);
+        }
+    };
+    registerCtl.cancelBlock = ^(id obj){
+        //_centerButton.hidden = NO;
+        if(failure){
+            failure(obj);
+        }
+    };
+    
+    registerCtl.dismissBlock = ^(id obj){
+        _centerButton.hidden = NO;
+    };
+    
     UIViewController* presenter = [EZUIUtility topMostController];
-    [presenter presentViewController:registerCtl animated:YES completion:nil];
+    [presenter presentViewController:registerCtl animated:YES completion:^(){
+        _centerButton.hidden = YES;
+    }];
     
 }
 
@@ -636,8 +671,11 @@
 }
 
 //Get the person object
-- (void) getPersonByID:(NSString*)personID success:(EZEventBlock)success;
+- (EZPerson*) getPersonByID:(NSString*)personID success:(EZEventBlock)success;
 {
+    if(personID == nil){
+        return nil;
+    }
     EZPerson* ps = [_currentQueryUsers objectForKey:personID];
     if(!ps){
         //[self queryPendingPerson]
@@ -647,22 +685,20 @@
         [_currentQueryUsers setObject:ps forKey:personID];
         
     }
-    if(!ps.isQuerying){
-        if(success){
-            success(ps);
-        }
-    }else{
+    if(ps.isQuerying){
         [_pendingUserQuery addObject:personID];
         NSMutableArray* queryCalls = [_pendingPersonCall objectForKey:personID];
         if(!queryCalls){
             queryCalls = [[NSMutableArray alloc] init];
             [_pendingPersonCall setObject:queryCalls forKey:personID];
         }
-        [queryCalls addObject:success];
+        if(success){
+            [queryCalls addObject:success];
+        }
         //Trigger the person query call
         [self queryPendingPerson];
-        
     }
+    return ps;
 }
 
 //Invite your friend
@@ -847,11 +883,9 @@
                         ep.createdTime = [result valueForProperty:ALAssetPropertyDate];
                         ep.isLocal = true;
                         ed.photo = ep;
-                        ed.photo.owner = [[EZPerson alloc] init];
-                        ed.photo.owner.personID = [EZDataUtil getInstance].currentPersonID;
-                        ed.photo.owner.name = @"天哥";
-                        ed.photo.owner.avatar = [EZFileUtil fileToURL:@"tian_2.jpeg"].absoluteString;
-                        //EZDEBUG(@"Before size");
+                        //ed.photo.owner = [[EZPerson alloc] init];
+                        ed.photo.personID = [EZDataUtil getInstance].currentPersonID;
+                        
                         ep.size = [result defaultRepresentation].dimensions;
                         [_localPhotos addObject:ep];
                         EZDEBUG(@"after size:%f, %f", ep.size.width, ep.size.height);
@@ -978,9 +1012,18 @@
     if(!self.canUpload){
         EZDEBUG(@"Quit for network not available, status:%i", _networkStatus);
     }
-    for(int i = 0; i < _pendingUploads.count; i++){
-        EZPhoto* photo = [_pendingUploads objectAtIndex:i];
-        if(!photo.uploadInfoSuccess){
+    NSArray* uploads = [[NSArray alloc] initWithArray:_pendingUploads];
+    for(int i = 0; i < uploads.count; i++){
+        
+        EZPhoto* photo = [uploads objectAtIndex:i];
+        if(!photo.startUpload){
+            EZDEBUG(@"photo upload pending");
+            continue;
+        }
+        if(photo.uploadPhotoSuccess){
+            [_pendingUploads removeObject:photo];
+        }
+        if(!photo.photoID){
             EZDEBUG(@"Will start upload info for:%@", photo.photoID);
             ++_uploadingTasks;
             [[EZDataUtil getInstance] uploadPhotoInfo:@[photo] success:^(id info){

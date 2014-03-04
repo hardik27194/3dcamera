@@ -39,12 +39,13 @@
 //If pass nil mean pick color randomly.
 - (UIColor*) getBackgroundColor:(UIColor*)color;
 
-- (void) raiseCamera:(BOOL)isAlbum controller:(UIViewController*)controller completed:(EZEventBlock)block;
 
 //This window will be disappear after some time
 - (void) raiseInfoWindow:(NSString*)title info:(NSString*)info;
 
 - (UIImagePickerController*) getCamera:(BOOL)isAlbum slide:(BOOL)slide completed:(EZEventBlock)block;
+
+- (void) raiseCamera:(BOOL)isAlbum controller:(UIViewController *)controller completed:(EZEventBlock)block allowEditing:(BOOL)allowEditing;
 
 - (void) enableProximate:(BOOL)enable;
 //Why do I use this?

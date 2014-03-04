@@ -203,6 +203,15 @@
     //[[UINavigationBar appearance] set]
     [[UINavigationBar appearance] setBarTintColor:RGBCOLOR(0, 197, 213)];
     [[UIBarButtonItem appearance] setTintColor:[UIColor whiteColor]];
+    
+    [[EZMessageCenter getInstance] registerEvent:EZStatusBarChange block:^(NSNumber* status){
+        EZDEBUG(@"Status bar changed:%i", status.intValue);
+        if(status.intValue == 1){
+            [EZDataUtil getInstance].barBackground.alpha = 0;
+        }else{
+            [EZDataUtil getInstance].barBackground.alpha = 1;
+        }
+    }];
     /**
     [[UINavigationBar appearance] setTitleTextAttributes:
      [NSDictionary dictionaryWithObjectsAndKeys:
@@ -296,12 +305,18 @@
                                           }];
     **/
     //[EZDataUtil getInstance].currentPersonID = nil;
+    //[EZDataUtil getInstance].currentPersonID = nil;
     if(![[EZDataUtil getInstance] getCurrentPersonID]){
+       /**
         [[EZDataUtil getInstance] registerMockUser:^(EZPerson* ps){
                                 EZDEBUG(@"successfully registerred:%@, personID:%@", ps.mobile, ps.personID);
                             } error:^(id err){
                                 EZDEBUG(@"Error detail:%@", err);
         }];
+        **/
+        dispatch_later(0.3, ^(){
+        [[EZDataUtil getInstance] triggerLogin:^(EZPerson* ps){} failure:^(id err){} reason:@"请注册" isLogin:NO];
+        });
     }
     //[[EZAnimationUtil sharedEZAnimationUtil] addAnimation:self];
     [self setupAppearance];
@@ -464,6 +479,7 @@
     return _persistentStoreCoordinator;
 }
 
+
 #pragma mark - Application's Documents directory
 
 // Returns the URL to the application's Documents directory.
@@ -471,5 +487,8 @@
 {
     return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
 }
+
+
+
 
 @end

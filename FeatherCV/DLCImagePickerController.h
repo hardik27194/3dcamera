@@ -204,6 +204,8 @@ typedef enum {
 @property (nonatomic, assign) CGFloat buttonRegionY;
 @property (nonatomic, assign) CGFloat textFieldY;
 
+@property (nonatomic, assign) CGSize cameraAspectSize;
+
 @property (nonatomic, strong) UITextField* textField;
 
 @property (nonatomic, strong) EZEventBlock oldPressBlock;

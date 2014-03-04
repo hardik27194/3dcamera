@@ -376,9 +376,10 @@ static int photoCount = 1;
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"更多" style:UIBarButtonItemStylePlain target:self action:@selector(showMenu:)];
 
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(pickPhotoType:)];
-    
+    dispatch_later(0.2, ^(){
+        //[self raiseRegister];
+        
     CGRect bounds = [UIScreen mainScreen].bounds;
-    dispatch_later(0.1, ^(){
     EZCenterButton* clickView = [[EZCenterButton alloc] initWithFrame:CGRectMake((320.0 - EZCenterSmallRadius)/2.0, bounds.size.height - EZCenterSmallRadius - 2.0, EZCenterSmallRadius, EZCenterSmallRadius) cycleRadius:20 lineWidth:5];
                                      
     clickView.enableTouchEffects = false;
@@ -398,6 +399,16 @@ static int photoCount = 1;
     [EZDataUtil getInstance].centerButton = clickView;
     });
 
+}
+
+- (void) raiseRegister
+{
+    EZDEBUG(@"trigger register");
+    [[EZDataUtil getInstance] triggerLogin:^(EZPerson* ps){
+        EZDEBUG(@"person id:%@, name:%@", ps.personID, ps.name);
+    } failure:^(NSError* err){
+        EZDEBUG(@"error:%@", err);
+    } reason:@"试一试" isLogin:false];
 }
 
 
@@ -439,7 +450,8 @@ static int photoCount = 1;
             //ep.assetURL = assetURL.absoluteString;
             pt.isLocal = true;
             //ed.photo = ep;
-            ed.photo.owner = [EZDataUtil getInstance].currentLoginPerson;
+            //ed.photo.owner = [EZDataUtil getInstance].currentLoginPerson;
+            ed.photo.personID = currentLoginUser.personID;
             //EZDEBUG(@"Before size");
             //ep.size = [result defaultRepresentation].dimensions;
             
@@ -744,7 +756,7 @@ static int photoCount = 1;
         if(cp.photo.photoRelations.count){
             otherSide = [cp.photo.photoRelations objectAtIndex:0];
         }
-        EZPerson* person = otherSide.owner;
+        EZPerson* person = [[EZDataUtil getInstance] getPersonByID:otherSide.personID success:nil];
         [self setChatInfo:cell displayPhoto:otherSide person:person];
     }
     return cell;
@@ -808,7 +820,8 @@ static int photoCount = 1;
     
     [UIView flipTransition:snapShot dest:weakCell.frontImage container:weakCell.rotateContainer isLeft:YES duration:2 complete:^(id obj){
         [snapShot removeFromSuperview];
-        [self setChatInfo:weakCell displayPhoto:photo person:photo.owner];
+        
+        [self setChatInfo:weakCell displayPhoto:photo person:pid2person(photo.personID)];
         //EZDEBUG(@"rotation completed:%i", (int)[snapShot superview]);
     }];
     cp.isFront = !cp.isFront;

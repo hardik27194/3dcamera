@@ -27,6 +27,9 @@
 		182A55091862C735003D4A01 /* libGPUImage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 182A55041862C71A003D4A01 /* libGPUImage.a */; };
 		182A550D18643141003D4A01 /* EZFaceBlurFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 182A550C18643140003D4A01 /* EZFaceBlurFilter.m */; };
 		182A551018645374003D4A01 /* EZFaceBlurFilter2.m in Sources */ = {isa = PBXBuildFile; fileRef = 182A550F18645374003D4A01 /* EZFaceBlurFilter2.m */; };
+		184ADD6F18C4B3DD00367527 /* EZAvatarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 184ADD6E18C4B3DD00367527 /* EZAvatarController.m */; };
+		184ADD7418C4B40D00367527 /* EZAvatarView.m in Sources */ = {isa = PBXBuildFile; fileRef = 184ADD7318C4B40D00367527 /* EZAvatarView.m */; };
+		184ADD7718C4C20F00367527 /* EZUIApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = 184ADD7618C4C20F00367527 /* EZUIApplication.m */; };
 		184DBE7218B8D8A400239F0F /* EZSkinSharpen.m in Sources */ = {isa = PBXBuildFile; fileRef = 184DBE7118B8D8A400239F0F /* EZSkinSharpen.m */; };
 		184DBE7718BB476F00239F0F /* EZSimpleClick.m in Sources */ = {isa = PBXBuildFile; fileRef = 184DBE7618BB476F00239F0F /* EZSimpleClick.m */; };
 		184DBE7918BB51DB00239F0F /* EZErrorInfo.strings in Resources */ = {isa = PBXBuildFile; fileRef = 184DBE7818BB51DB00239F0F /* EZErrorInfo.strings */; };
@@ -318,6 +321,12 @@
 		182A550C18643140003D4A01 /* EZFaceBlurFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZFaceBlurFilter.m; sourceTree = "<group>"; };
 		182A550E18645374003D4A01 /* EZFaceBlurFilter2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZFaceBlurFilter2.h; sourceTree = "<group>"; };
 		182A550F18645374003D4A01 /* EZFaceBlurFilter2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZFaceBlurFilter2.m; sourceTree = "<group>"; };
+		184ADD6D18C4B3DD00367527 /* EZAvatarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZAvatarController.h; sourceTree = "<group>"; };
+		184ADD6E18C4B3DD00367527 /* EZAvatarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZAvatarController.m; sourceTree = "<group>"; };
+		184ADD7218C4B40D00367527 /* EZAvatarView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZAvatarView.h; sourceTree = "<group>"; };
+		184ADD7318C4B40D00367527 /* EZAvatarView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZAvatarView.m; sourceTree = "<group>"; };
+		184ADD7518C4C20F00367527 /* EZUIApplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZUIApplication.h; sourceTree = "<group>"; };
+		184ADD7618C4C20F00367527 /* EZUIApplication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZUIApplication.m; sourceTree = "<group>"; };
 		184DBE7018B8D8A400239F0F /* EZSkinSharpen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZSkinSharpen.h; sourceTree = "<group>"; };
 		184DBE7118B8D8A400239F0F /* EZSkinSharpen.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZSkinSharpen.m; sourceTree = "<group>"; };
 		184DBE7518BB476F00239F0F /* EZSimpleClick.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZSimpleClick.h; sourceTree = "<group>"; };
@@ -693,6 +702,10 @@
 				181608E018B733B500DD5995 /* EZRegisterController.h */,
 				181608E118B733B500DD5995 /* EZRegisterController.m */,
 				181608E218B733B500DD5995 /* EZRegisterController.xib */,
+				184ADD6D18C4B3DD00367527 /* EZAvatarController.h */,
+				184ADD6E18C4B3DD00367527 /* EZAvatarController.m */,
+				184ADD7218C4B40D00367527 /* EZAvatarView.h */,
+				184ADD7318C4B40D00367527 /* EZAvatarView.m */,
 			);
 			name = login;
 			sourceTree = "<group>";
@@ -911,6 +924,8 @@
 				18E3468E183DF54400C9D89D /* EZAppDelegate.h */,
 				18E3468F183DF54400C9D89D /* EZAppDelegate.mm */,
 				18E34707183DFA1A00C9D89D /* EZConstants.h */,
+				184ADD7518C4C20F00367527 /* EZUIApplication.h */,
+				184ADD7618C4C20F00367527 /* EZUIApplication.m */,
 				18E34708183DFA1A00C9D89D /* EZAppConstants.h */,
 				18E34709183DFA1A00C9D89D /* EZTestSuites.h */,
 				18E3470A183DFA1A00C9D89D /* EZTestSuites.m */,
@@ -1496,6 +1511,7 @@
 				18E34781183DFAA400C9D89D /* EZMessageCenter.m in Sources */,
 				18E3472F183DFA3400C9D89D /* EZDummyPage.m in Sources */,
 				18E3477B183DFAA400C9D89D /* EZExtender.m in Sources */,
+				184ADD7418C4B40D00367527 /* EZAvatarView.m in Sources */,
 				18FA529E188CD04D00C91D18 /* EZColorBrighter.m in Sources */,
 				18F58B52186EC0D1006CB966 /* ILTranslucentView.m in Sources */,
 				1866ADB418979C7400DB46E2 /* EZModalRaiseAnimation.m in Sources */,
@@ -1584,6 +1600,7 @@
 				184DBE8218BDA16E00239F0F /* EZSharpenGaussian.m in Sources */,
 				18E34784183DFAA400C9D89D /* EZGeoUtility.m in Sources */,
 				18E746F018A4A26A0023967B /* AFURLRequestSerialization.m in Sources */,
+				184ADD6F18C4B3DD00367527 /* EZAvatarController.m in Sources */,
 				18E3472D183DFA3300C9D89D /* EZTiltCell.m in Sources */,
 				180ADA5D18C4247F00AB490C /* EZCenterButton.m in Sources */,
 				18E3472B183DFA3300C9D89D /* EZMainPage.m in Sources */,
@@ -1593,6 +1610,7 @@
 				18E346DC183DF96D00C9D89D /* UIImage2OpenCV.mm in Sources */,
 				18E34728183DFA3300C9D89D /* EZContactsPage.m in Sources */,
 				18E3477C183DFAA400C9D89D /* EZFileUtil.m in Sources */,
+				184ADD7718C4C20F00367527 /* EZUIApplication.m in Sources */,
 				18E34726183DFA3300C9D89D /* EZScrollContainer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
