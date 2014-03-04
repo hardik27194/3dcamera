@@ -11,6 +11,11 @@
 #include "EZConstants.h"
 //#include <opencv2/opencv.hpp>
 //Will hold the Application related constants.
+#define EZStatusBarBackgroundColor [UIColor blackColor]
+
+#define EZRotateAnimDuration 0.5
+//RGBCOLOR(0, 197, 213);
+
 #define CurrentScreenWidth [UIScreen mainScreen].bounds.size.width 
 
 #define CurrentScreenHeight [UIScreen mainScreen].bounds.size.height

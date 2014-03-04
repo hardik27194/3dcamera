@@ -187,7 +187,7 @@ static int photoCount = 1;
 {
     //[self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
     EZDEBUG(@"I will start flip the image:%i", _newlyCreated);
-    for(int i = 0; i < _newlyCreated; i++){
+    for(int i = _combinedPhotos.count - 1; i >= _combinedPhotos.count - _newlyCreated; i--){
         NSIndexPath* path = [NSIndexPath indexPathForRow:i inSection:0];
         EZPhotoCell* cell = (EZPhotoCell*)[self.tableView cellForRowAtIndexPath:path];
         if(!cell){
@@ -277,9 +277,17 @@ static int photoCount = 1;
     //[self.tableView reloadData];
     //[self refresh];
     EZDEBUG(@"Refreshed get called:%i", state);
-    dispatch_later(1.0, ^(){
+    int pageStart = _combinedPhotos.count/photoPageSize;
+    EZDEBUG(@"Will load from %i", pageStart);
+    [[EZDataUtil getInstance] queryPhotos:pageStart pageSize:photoPageSize success:^(NSArray* arr){
+        EZDEBUG(@"Reloaded about %i rows of data", arr.count);
+        [self reloadRows:arr];
         [self.refreshControl endRefreshing];
-    });
+    } failure:^(id err){
+        //animBlock();
+        EZDEBUG(@"Error query photo from:%i", pageStart);
+         [self.refreshControl endRefreshing];
+    }];
 }
 
 - (void) testTextInput
@@ -333,6 +341,9 @@ static int photoCount = 1;
 
     _combinedPhotos = [[NSMutableArray alloc] init];
     
+    
+    self.refreshControl = [[UIRefreshControl alloc] init];
+    [self.refreshControl addTarget:self action:@selector(refreshInvoked:forState:)forControlEvents:UIControlEventValueChanged];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     //self.tableView.backgroundColor = RGBCOLOR(230, 231, 226);
     self.tableView.backgroundColor = VinesGray;
@@ -348,14 +359,15 @@ static int photoCount = 1;
 
     [[EZMessageCenter getInstance] registerEvent:EZTakePicture block:^(EZDisplayPhoto* dp){
         EZDEBUG(@"A photo get generated");
-        [_combinedPhotos insertObject:dp atIndex:0];
-        [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
+        [_combinedPhotos addObject:dp];
+        [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:_combinedPhotos.count-1 inSection:0]] withRowAnimation:UITableViewRowAnimationBottom];
+        //[self.tableView a]
     }];
     
     [[EZMessageCenter getInstance] registerEvent:EZAlbumImageReaded block:^(EZDisplayPhoto* dp){
         EZDEBUG(@"Recieved a image from album");
-        [_combinedPhotos insertObject:dp atIndex:0];
-        [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
+        [_combinedPhotos addObject:dp];
+        [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:_combinedPhotos.count-1 inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
     }];
     
     [[EZMessageCenter getInstance] registerEvent:EZTriggerCamera block:^(id obj){
@@ -393,7 +405,7 @@ static int photoCount = 1;
     clickView.center = CGPointMake(160, bounds.size.height - (30 + 5));
     [TopView addSubview:clickView];
     UIView* statusBarBackground = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 20)];
-    statusBarBackground.backgroundColor = RGBCOLOR(0, 197, 213);
+    statusBarBackground.backgroundColor = EZStatusBarBackgroundColor;
     [TopView addSubview:statusBarBackground];
     [EZDataUtil getInstance].barBackground = statusBarBackground;
     [EZDataUtil getInstance].centerButton = clickView;
@@ -459,8 +471,8 @@ static int photoCount = 1;
             //[[EZMessageCenter getInstance]postEvent:EZTakePicture attached:ed];
             //EZDEBUG(@"after size:%f, %f", ep.size.width, ep.size.height);
             //success(ed);
-            [_combinedPhotos addObject:ed];
-            [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:_combinedPhotos.count - 1 inSection:0]] withRowAnimation:UITableViewRowAnimationBottom];
+            [_combinedPhotos insertObject:ed atIndex:0];
+            [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationTop];
             //[self.tableView reloadData];
         }];
         }
@@ -500,15 +512,7 @@ static int photoCount = 1;
                 }];
                 _isLoadingMoreData = false;
             };
-            int pageStart = _combinedPhotos.count/photoPageSize;
-            EZDEBUG(@"Will load from %i", pageStart);
-            [[EZDataUtil getInstance] queryPhotos:pageStart pageSize:photoPageSize success:^(NSArray* arr){
-                EZDEBUG(@"Reloaded about %i rows of data", arr.count);
-                [self reloadRows:arr];
-                animBlock();
-            } failure:^(id err){
-                animBlock();
-            }];
+            animBlock();
             // proceed with the loading of more data
         }
     }
@@ -817,8 +821,7 @@ static int photoCount = 1;
         photo = front;
         [weakCell.frontImage setImage:[front getScreenImage]];
     }
-    
-    [UIView flipTransition:snapShot dest:weakCell.frontImage container:weakCell.rotateContainer isLeft:YES duration:2 complete:^(id obj){
+    [UIView flipTransition:snapShot dest:weakCell.frontImage container:weakCell.rotateContainer isLeft:YES duration:EZRotateAnimDuration complete:^(id obj){
         [snapShot removeFromSuperview];
         
         [self setChatInfo:weakCell displayPhoto:photo person:pid2person(photo.personID)];

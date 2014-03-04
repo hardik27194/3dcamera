@@ -2069,7 +2069,7 @@
     UIView* snapView = [rotateView snapshotViewAfterScreenUpdates:NO];
     [rotateContainer insertSubview:snapView aboveSubview:rotateView];
     rotateView.image = image;
-    [UIView flipTransition:snapView dest:rotateView container:rotateContainer isLeft:YES duration:0.5 complete:^(id obj){
+    [UIView flipTransition:snapView dest:rotateView container:rotateContainer isLeft:YES duration:EZRotateAnimDuration complete:^(id obj){
         [snapView removeFromSuperview];
     }];
 }
@@ -2254,6 +2254,7 @@
             //[self fakeAnimation:nil];
             [self retakePhoto:nil];
             [self changeButtonStatus:NO];
+            
             
         }
     }
