@@ -29,6 +29,7 @@
 #import "EZShapeCover.h"
 #import "EZSimpleClick.h"
 #import "EZCenterButton.h"
+#import "EZContactTablePage.h"
 
 static int photoCount = 1;
 @interface EZAlbumTablePage ()
@@ -412,6 +413,17 @@ static int photoCount = 1;
                 //EZDEBUG(@"The button clicked");
             }];
         };
+    clickView.longPressBlock = ^(EZCenterButton* obj){
+        EZDEBUG(@"Long press clicked");
+        [[EZDataUtil getInstance] jumpCycleAnimation:^(id obj){
+            EZContactTablePage* contactPage = [[EZContactTablePage alloc] init];
+            //contactPage.transitioningDelegate =
+            [self.navigationController presentViewController:contactPage animated:YES completion:nil];
+            contactPage.completedBlock = ^(id obj){
+                [weakSelf switchFriend:obj];
+            };
+        }];
+    };
     clickView.center = CGPointMake(160, bounds.size.height - (30 + 5));
     [TopView addSubview:clickView];
     UIView* statusBarBackground = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 20)];
@@ -421,6 +433,19 @@ static int photoCount = 1;
     [EZDataUtil getInstance].centerButton = clickView;
     });
 
+}
+
+- (void) switchFriend:(EZPerson*)person
+{
+    self.title = person.name;
+    EZDEBUG(@"Suppose to switch friend:%@", person.name);
+    if([currentLoginUser.mobile isEqualToString:null2Empty(person.mobile)]){
+        
+    }
+    //NSString* personID = currentLoginID;
+    //if([person.personID isEqualToString:currentLoginID]){
+        
+    //}
 }
 
 - (void) raiseRegister

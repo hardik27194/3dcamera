@@ -17,6 +17,7 @@
 
 @class EZDisplayPhoto;
 @class EZShapeCover;
+@class EZPerson;
 @interface EZAlbumTablePage : UITableViewController<DLCImagePickerDelegate, UINavigationControllerDelegate, UIViewControllerTransitioningDelegate, UIActionSheetDelegate, UIAlertViewDelegate>
 
 
@@ -34,6 +35,7 @@
 //Whether to show the hidden button or not.
 @property (nonatomic, assign) BOOL showHiddenButton;
 
+@property (nonatomic, strong) EZPerson* currentUser;
 @property (nonatomic, strong) UILabel* totalEntries;
 @property (nonatomic, strong) UILabel* monthCount;
 @property (nonatomic, strong) UILabel* weekCount;
@@ -87,7 +89,7 @@
 
 @property (nonatomic, strong) id holder;
 
-
+@property (nonatomic, strong) NSMutableArray* selfBackup;
 
 //Where do we begin
 //It used to save the memory consumption

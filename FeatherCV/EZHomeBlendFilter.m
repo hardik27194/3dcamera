@@ -256,14 +256,17 @@ NSString *const kFaceBlurFragmentShaderString = SHADER_STRING
     _blurFilter = [[EZHomeBiBlur alloc] init];
     //_sharpGaussian = [[EZSharpenGaussian alloc] init];
     _combineFilter = [[GPUImageTwoInputFilter alloc] initWithFragmentShaderFromString:kHomeBlendFragmentShaderString];
-    _sharpGaussian = [[EZSharpenGaussian alloc] init];
+    //_sharpGaussian = [[EZSharpenGaussian alloc] init];
+    //[self addTarget:filter];
+    
+    //[self addTarget:_sharpGaussian];
+    [self addTarget:_combineFilter];
+    
     [self addTarget:filter];
     //[filter addTarget:_sharpGaussian];
     [filter addTarget:_blurFilter];
-    [self addTarget:_sharpGaussian];
-    [_sharpGaussian addTarget:_combineFilter];
     [_blurFilter addTarget:_combineFilter atTextureLocation:1];
-    self.initialFilters = [NSArray arrayWithObjects:filter, _sharpGaussian, nil];
+    self.initialFilters = [NSArray arrayWithObjects:filter, _combineFilter, nil];
     //self.skinColors = @[@(1.0),@(0.75),@(0.58)];
     self.terminalFilter = _combineFilter;
     self.imageMode = 0;

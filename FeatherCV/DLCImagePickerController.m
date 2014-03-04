@@ -222,17 +222,18 @@
     whiteBalancerFilter.temperature = 5000.0;
     if(!_disableFaceBeautify && (fobj || stillCamera.isFrontFacing || _shotMode == kSelfShotMode)){
         [tongFilter setRgbCompositeControlPoints:faceTongSetting];
-        [tongFilter addTarget:finalBlendFilter];
+        [tongFilter addTarget:sharpenGaussian];
+        [sharpenGaussian addTarget:finalBlendFilter];
         [finalBlendFilter addTarget:filter];
-    
+        
         secBlendFilter.blurFilter.distanceNormalizationFactor = 20.0;
         secBlendFilter.blurFilter.blurSize = 3.0;
         secBlendFilter.miniRealRatio = 0.1;
         secBlendFilter.imageMode = 0;
         secBlendFilter.skinColorFlag = 1;
         
-        finalBlendFilter.blurFilter.distanceNormalizationFactor = 15.0;
-        finalBlendFilter.blurFilter.blurSize = 0.5;//fobj.orgRegion.size.width;
+        finalBlendFilter.blurFilter.distanceNormalizationFactor = 10.0;
+        finalBlendFilter.blurFilter.blurSize = 0.3;//fobj.orgRegion.size.width;
         finalBlendFilter.miniRealRatio = 0;
         finalBlendFilter.imageMode = 0;
         finalBlendFilter.skinColorFlag = 1;
@@ -293,6 +294,9 @@
     //secBlendFilter.imageMode = 3;
     finalBlendFilter = [[EZHomeBlendFilter alloc] initWithFilter:secBlendFilter];
     [finalBlendFilter.tongFilter setRgbCompositeControlPoints:faceTongSetting];
+    
+    sharpenGaussian = [[EZSharpenGaussian alloc] init];
+    
     //cycleDarken = [[EZCycleDiminish alloc] init];
     
 }
@@ -670,8 +674,8 @@
     smallSharpenFilter.sharpenBar = 0.1;
     
     
-    sharpenGaussian = [[EZSharpenGaussian alloc] init];
-    sharpenGaussianSec = [[EZSharpenGaussian alloc] init];
+    //sharpenGaussian = [[EZSharpenGaussian alloc] init];
+    //sharpenGaussianSec = [[EZSharpenGaussian alloc] init];
     
     //sharpenFilter.sharpness = 0.3;
     
@@ -1106,7 +1110,6 @@
     //[quitButton setTitle:@"退出" forState:UIControlStateNormal];
     //[quitButton addTarget:self action:@selector(quit:) forControlEvents:UIControlEventTouchUpInside];
     //[self.view addSubview:quitButton];
-    
     
     cancelButton = [[UIButton alloc] initWithFrame:CGRectMake(5, bound.size.height - 44 - 10, 60, 44)];
     [cancelButton setTitle:@"退出" forState:UIControlStateNormal];
@@ -1638,6 +1641,7 @@
     [smallSharpenFilter removeAllTargets];
     [bigSharpenFilter removeAllTargets];
     //blur
+    [sharpenGaussian removeAllTargets];
     [blurFilter removeAllTargets];
     [hueFilter removeAllTargets];
     [finalBlendFilter removeAllTargets];

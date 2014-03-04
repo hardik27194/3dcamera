@@ -15,6 +15,11 @@
 
 @property (nonatomic, strong) UITableView* tableView;
 
+//Whenever quit, will call this
+@property (nonatomic, strong) EZEventBlock completedBlock;
+
+
+
 //Will be called to load all the contacts from the directory.
 - (void) reloadPersons;
 

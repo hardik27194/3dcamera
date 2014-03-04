@@ -76,6 +76,11 @@
 
 @property (nonatomic, strong) NSDateFormatter* timeFormatter;
 
+@property (nonatomic, strong) EZClickView* contactButton;
+
+//People can use this cover whenever he want.
+@property (nonatomic, strong) EZClickView* totalCover;
+
 
 //Check the current status
 - (BOOL) canUpload;
@@ -86,6 +91,8 @@
 
 - (NSString*) getCurrentPersonID;
 
+
+- (void) jumpCycleAnimation:(EZEventBlock)callBack;
 //@property (nonatomic, strong) NSMutable
 //Phone number will be the unique id?
 //Mean only one id for each phone right?

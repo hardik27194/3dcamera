@@ -109,6 +109,19 @@
     return _contacts.count;
 }
 
+- (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    EZPerson* person = [_contacts objectAtIndex:indexPath.row];
+    EZDEBUG(@"Person name:%@, %@", person.name, person.personID);
+    //[self dismissViewControllerAnimated:YES completion:^(){
+        
+    //}];
+    [self.navigationController popViewControllerAnimated:YES];
+    if(_completedBlock){
+        _completedBlock(person);
+    }
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *CellIdentifier = @"Cell";

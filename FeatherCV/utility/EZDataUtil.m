@@ -39,6 +39,7 @@
     return instance;
 }
 
+
 - (id) init
 {
     self = [super init];
@@ -59,12 +60,57 @@
     _currentQueryUsers = [[NSMutableDictionary alloc] init];
     _pendingPersonCall = [[NSMutableDictionary alloc] init];
     _timeFormatter = [[NSDateFormatter alloc] init];
+    
+    _totalCover = [[EZClickView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    _totalCover.enableTouchEffects = false;
+    _totalCover.backgroundColor = [UIColor clearColor];
     [_timeFormatter setDateStyle:NSDateFormatterShortStyle];
     [_timeFormatter setTimeStyle:NSDateFormatterShortStyle];
     [_timeFormatter setDoesRelativeDateFormatting:YES];
     return self;
 }
 
+
+
+- (void) jumpCycleAnimation:(EZEventBlock)callBack
+{
+    if(!_contactButton){
+        _contactButton = [[EZClickView alloc] initWithFrame:CGRectMake(0, 0, 35, 35)];
+        _contactButton.backgroundColor = randBack(nil);
+        [_contactButton enableRoundImage];
+        //[TopView addSubview:_contactButton];
+    }
+    _contactButton.center = _centerButton.center;
+    [TopView addSubview:_totalCover];
+    [TopView addSubview:_contactButton];
+    __weak EZDataUtil* weakSelf = self;
+    [UIView animateWithDuration:0.3 delay:0.0 usingSpringWithDamping:.5 initialSpringVelocity:.5 options:UIViewAnimationOptionCurveEaseOut animations:^(){
+        [_contactButton moveY:-100];
+    } completion:nil];
+    
+    
+    
+    EZEventBlock animateBlock = ^(id obj){
+        [weakSelf.totalCover removeFromSuperview];
+        [UIView animateWithDuration:0.3 delay:0.0 usingSpringWithDamping:0.5 initialSpringVelocity:0.5 options:UIViewAnimationOptionCurveEaseOut animations:^(){
+            weakSelf.contactButton.center = weakSelf.centerButton.center;
+        } completion:^(BOOL completed){
+            [weakSelf.contactButton removeFromSuperview];
+        }];
+    };
+    _totalCover.pressedBlock = ^(UIView* sender){
+        EZDEBUG(@"_total cover clicked");
+        animateBlock(nil);
+    };
+    
+    EZEventBlock localCallBack = callBack;
+    _contactButton.pressedBlock = ^(UIView* sender){
+        animateBlock(nil);
+        localCallBack(nil);
+    };
+  
+    
+}
 
 - (void) callPendingQuery:(EZPerson*)ps
 {

@@ -31,6 +31,7 @@
 {
     //EZDEBUG(@"Configure get called");
     _enableTouchEffects = true;
+    _longPressTime = 0.3;
 }
 
 - (void) recieveLongPress:(CGFloat)time callback:(EZEventBlock)block
