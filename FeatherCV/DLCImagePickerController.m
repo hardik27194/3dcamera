@@ -55,6 +55,8 @@
 
 #define RotateBackground [UIColor blackColor]
 
+#define CenterUpShift 20
+
 @interface EZMotionRecord : NSObject 
 
 @property (nonatomic, strong) CMAttitude* attitude;
@@ -1093,8 +1095,8 @@
 {
     __weak DLCImagePickerController* weakSelf = self;
      CGRect bound = [UIScreen mainScreen].bounds;
-    shapeCover = [[EZShapeCover alloc] initWithFrame:imageView.frame];
-    EZDEBUG(@"initial frame:%@", NSStringFromCGRect(imageView.frame));
+    shapeCover = [[EZShapeCover alloc] initWithFrame:bound];
+    EZDEBUG(@"initial frame:%@", NSStringFromCGRect(bound));
     shapeCover.userInteractionEnabled = TRUE;
     tapRecognizer = [[UITapGestureRecognizer alloc] init];
     [tapRecognizer addTarget:self action:@selector(handleTapToFocus:)];
@@ -1157,12 +1159,12 @@
     if(!_firstTime){
         _firstTime = true;
         EZDEBUG(@"imageView.bounds:%@", NSStringFromCGRect(imageView.frame));
-        shapeCover.frame = imageView.frame;
+        //shapeCover.frame = imageView.frame;
         //shapeCover.backgroundColor = [UIColor blackColor];
-        [shapeCover digHole:310 center:imageView.center color:[UIColor blackColor] opacity:1.0];
-        CGFloat adjustedY = (imageView.frame.size.height - 310)/2.0 - 10.0;
+        //[shapeCover digHole:310 center:imageView.center color:[UIColor blackColor] opacity:1.0];
+        //CGFloat adjustedY = (imageView.frame.size.height - 310)/2.0 - 10.0;
         //roundBackground.frame = imageView.frame;
-        rotateContainer.y = adjustedY;
+        //rotateContainer.y = adjustedY;
         toolRegionY = _toolBarRegion.frame.origin.y;
     }
 
@@ -1359,6 +1361,10 @@
                 
             }
             EZDEBUG(@"Setup the camera for auto focus");
+            runOnMainQueueWithoutDeadlocking(^{
+                [self setupUIAfterCamera];
+            });
+            
             [self prepareFilter];
         });
     } else {
@@ -1367,6 +1373,7 @@
             self.cameraToggleButton.hidden = YES;
             self.photoCaptureButton.hidden = YES;
             self.flashToggleButton.hidden = YES;
+            
             // Show the library picker
 //            [self switchToLibrary:nil];
 //            [self performSelector:@selector(switchToLibrary:) withObject:nil afterDelay:0.5];
@@ -1374,6 +1381,23 @@
         });
     }
    
+}
+
+
+//Can make sure, this one work after the live.
+- (void) setupUIAfterCamera
+{
+    CGFloat ratio = _cameraAspectSize.width/_cameraAspectSize.height;
+    CGFloat height = CurrentScreenWidth * ratio;
+    CGFloat centerY = CurrentScreenHeight/2.0 - CenterUpShift;
+    CGPoint centerPoint = CGPointMake(CurrentScreenWidth/2.0, centerY);
+    imageView.frame = CGRectMake(0 ,0 ,CurrentScreenWidth ,height);
+    imageView.center = centerPoint;
+    EZDEBUG(@"imageView.bounds:%@, ratio:%f, height:%f, centerY:%f", NSStringFromCGRect(imageView.frame), ratio, height, centerY);
+    [shapeCover digHole:310 center:centerPoint color:[UIColor blackColor] opacity:1.0];
+    roundBackground.frame = imageView.frame;
+    rotateContainer.center = centerPoint;
+    EZDEBUG(@"Camera aspect:%f, %@", ratio, NSStringFromCGSize(_cameraAspectSize));
 }
 
 -(void) filterClicked:(UIButton *) sender {
