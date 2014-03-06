@@ -22,18 +22,21 @@
     scrollView.minimumZoomScale = 0.5;
     scrollView.delegate = self;
     scrollView.zoomScale = 1.0;
-    self.view = scrollView;
+    //self.view = scrollView;
+    self.view = [[UIView alloc] init];
 }
 
 - (id) initWithDetail:(UIImageView *)detail
 {
     self = [super init];
     [self.view addSubview:detail];
+    /**
     UIScrollView* scrollView = (UIScrollView*)self.view;
     scrollView.contentSize = CGSizeMake(detail.bounds.size.width, detail.bounds.size.height);
     scrollView.decelerationRate = UIScrollViewDecelerationRateFast;
     _scrollView = scrollView;
     _detail = detail;
+     **/
     return self;
 }
 
@@ -67,9 +70,10 @@
 	// Do any additional setup after loading the view.
 }
 
-- (void) viewWillAppear:(BOOL)animated
+- (void) viewWillAppearOld:(BOOL)animated
 {
     [super viewWillAppear:animated];
+   
     if (!_detail.image) return;
     UIImage* image = _detail.image;
     

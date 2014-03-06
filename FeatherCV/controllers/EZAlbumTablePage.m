@@ -298,11 +298,12 @@ static int photoCount = 1;
     //[_allEntries removeAllObjects];
     //[self.tableView reloadData];
     //[self refresh];
+    
     EZDEBUG(@"Refreshed get called:%i", state);
     int pageStart = _combinedPhotos.count/photoPageSize;
     EZDEBUG(@"Will load from %i", pageStart);
     [[EZDataUtil getInstance] queryPhotos:pageStart pageSize:photoPageSize success:^(NSArray* arr){
-        EZDEBUG(@"Reloaded about %i rows of data", arr.count);
+        //EZDEBUG(@"Reloaded about %i rows of data, inset:%@", arr.count, NSStringFromUIEdgeInsets(self.tableView.contentInset));
         [self reloadRows:arr];
         [self.refreshControl endRefreshing];
     } failure:^(id err){
@@ -369,8 +370,12 @@ static int photoCount = 1;
     //self.tableView.y = - 20;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.pagingEnabled = YES;
+    self.tableView.contentInset = UIEdgeInsetsMake(-64, 0, 0, 0);
+    EZDEBUG(@"Before change:%i", self.edgesForExtendedLayout);
+    self.edgesForExtendedLayout = UIRectEdgeAll;
     //self.tableView.backgroundColor = RGBCOLOR(230, 231, 226);
-    self.tableView.backgroundColor = VinesGray; //[UIColor blackColor];
+    //self.tableView.backgroundColor = VinesGray; //[UIColor blackColor];
+    //self.tableView.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"featherPage"]];
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
     __weak EZAlbumTablePage* weakSelf = self;
     //[self.tableView addSubview:[EZTestSuites testResizeMasks]];
@@ -435,7 +440,7 @@ static int photoCount = 1;
                 [self raiseCamera];
                 //EZDEBUG(@"The button clicked");
             }];
-        };
+    };
     clickView.longPressBlock = ^(EZCenterButton* obj){
         EZDEBUG(@"Long press clicked");
         [[EZDataUtil getInstance] jumpCycleAnimation:^(id obj){
@@ -798,8 +803,10 @@ static int photoCount = 1;
     
     
     cell.frontImage.longPressed = ^(id obj){
-        UIImageView* fullView = [[UIImageView alloc] initWithImage:weakCell.frontImage.image];
-        fullView.contentMode = UIViewContentModeScaleToFill;
+        
+        UIImageView* fullView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+        fullView.contentMode = UIViewContentModeScaleAspectFill;
+        fullView.image = weakCell.frontImage.image;
         EZDEBUG(@"Long press called %@", NSStringFromCGRect(fullView.bounds));
         EZScrollController* sc = [[EZScrollController alloc] initWithDetail:fullView];
         sc.transitioningDelegate = self.detailAnimation;
@@ -814,7 +821,6 @@ static int photoCount = 1;
             [EZDataUtil getInstance].centerButton.alpha = 1.0;
         };
         [EZDataUtil getInstance].centerButton.alpha = 0.0;
-        
     };
     EZPerson* person = nil;
     if(cp.isFront){

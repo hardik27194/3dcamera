@@ -30,6 +30,7 @@
 		184ADD6F18C4B3DD00367527 /* EZAvatarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 184ADD6E18C4B3DD00367527 /* EZAvatarController.m */; };
 		184ADD7418C4B40D00367527 /* EZAvatarView.m in Sources */ = {isa = PBXBuildFile; fileRef = 184ADD7318C4B40D00367527 /* EZAvatarView.m */; };
 		184ADD7718C4C20F00367527 /* EZUIApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = 184ADD7618C4C20F00367527 /* EZUIApplication.m */; };
+		184ADD8018C8692000367527 /* featherpage.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 184ADD7F18C8692000367527 /* featherpage.jpg */; };
 		184DBE7218B8D8A400239F0F /* EZSkinSharpen.m in Sources */ = {isa = PBXBuildFile; fileRef = 184DBE7118B8D8A400239F0F /* EZSkinSharpen.m */; };
 		184DBE7718BB476F00239F0F /* EZSimpleClick.m in Sources */ = {isa = PBXBuildFile; fileRef = 184DBE7618BB476F00239F0F /* EZSimpleClick.m */; };
 		184DBE7918BB51DB00239F0F /* EZErrorInfo.strings in Resources */ = {isa = PBXBuildFile; fileRef = 184DBE7818BB51DB00239F0F /* EZErrorInfo.strings */; };
@@ -327,6 +328,7 @@
 		184ADD7318C4B40D00367527 /* EZAvatarView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZAvatarView.m; sourceTree = "<group>"; };
 		184ADD7518C4C20F00367527 /* EZUIApplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZUIApplication.h; sourceTree = "<group>"; };
 		184ADD7618C4C20F00367527 /* EZUIApplication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZUIApplication.m; sourceTree = "<group>"; };
+		184ADD7F18C8692000367527 /* featherpage.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = featherpage.jpg; sourceTree = "<group>"; };
 		184DBE7018B8D8A400239F0F /* EZSkinSharpen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZSkinSharpen.h; sourceTree = "<group>"; };
 		184DBE7118B8D8A400239F0F /* EZSkinSharpen.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZSkinSharpen.m; sourceTree = "<group>"; };
 		184DBE7518BB476F00239F0F /* EZSimpleClick.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZSimpleClick.h; sourceTree = "<group>"; };
@@ -1013,6 +1015,7 @@
 		18E346D4183DF90600C9D89D /* images */ = {
 			isa = PBXGroup;
 			children = (
+				184ADD7F18C8692000367527 /* featherpage.jpg */,
 				1874D9DB18699385005743FC /* header_2.png */,
 				1874D9DC18699386005743FC /* header_1.png */,
 				18A36FD8184C7F820022F0A8 /* smile_face.png */,
@@ -1398,6 +1401,7 @@
 				18E34813183F02D600C9D89D /* haarcascade_eye.xml in Resources */,
 				18E3481B183F02D600C9D89D /* haarcascade_lowerbody.xml in Resources */,
 				18A370371855C2A40022F0A8 /* dock_bg@2x.png in Resources */,
+				184ADD8018C8692000367527 /* featherpage.jpg in Resources */,
 				18A370231855C2A40022F0A8 /* blur@2x.png in Resources */,
 				1874D9DE18699386005743FC /* header_1.png in Resources */,
 				18A3701C1855C2A40022F0A8 /* library@2x.png in Resources */,

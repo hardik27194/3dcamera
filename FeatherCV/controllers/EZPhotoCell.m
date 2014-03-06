@@ -26,17 +26,20 @@
     EZDEBUG(@"InitStyle get called:%i, id:%@", style, reuseIdentifier);
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
-        self.contentView.backgroundColor = VinesGray;
+        self.contentView.backgroundColor = [UIColor clearColor];
         // Initialization code
         _container = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, CurrentScreenHeight)];
-        _container.backgroundColor = VinesGray;
+        //_container.backgroundColor = VinesGray;
+        //_container.backgroundColor = [UIColor clearColor];
+        
         //_container.layer.cornerRadius = 5;
         //_container.clipsToBounds = true;
         //_container.backgroundColor = [UIColor greenColor];
-        
+        //UIImage* img = [UIImage imageNamed:@"featherpage.jpg"];
+       
         _rotateContainer = [self createRotateContainer:CGRectMake(0, 0, CurrentScreenWidth,CurrentScreenHeight)];
-        _rotateContainer.backgroundColor = VinesGray;
-        
+        //_rotateContainer.backgroundColor = VinesGray;
+        _rotateContainer.backgroundColor = [UIColor clearColor];
         
         [_container addSubview:_rotateContainer];
         //_rotateContainer.backgroundColor = [UIColor redColor];
