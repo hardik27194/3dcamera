@@ -52,17 +52,17 @@
         [_container addSubview:_clickHeart];
         //_clickHeart.backgroundColor = randBack(nil);
         **/
-        _headIcon = [[EZClickImage alloc] initWithFrame:CGRectMake(20, CurrentScreenHeight - 100, smallIconRadius, smallIconRadius)];
+        _headIcon = [[EZClickImage alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 55, smallIconRadius, smallIconRadius)];
         _headIcon.backgroundColor = randBack(nil);
         [_headIcon enableRoundImage];
         [_headIcon enableTouchEffects];
         [self.container addSubview:_headIcon];
         
-        _authorName = [[UILabel alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 65, 140, 30)];
+        _authorName = [[UILabel alloc] initWithFrame:CGRectMake(50, CurrentScreenHeight - 55, 140, 30)];
         [_authorName setTextColor:[UIColor whiteColor]];
         _authorName.font = [UIFont boldSystemFontOfSize:15];
         [_authorName enableShadow:[UIColor blackColor]];
-        //[self.container addSubview:_authorName];
+        [self.container addSubview:_authorName];
         
         
         [self.contentView addSubview:_container];
@@ -74,7 +74,7 @@
         //[_frontImage addSubview:_toolRegion];
         //[_rotateContainer addSubview:_toolRegion];
         //_container.enableTouchEffects = NO;
-        _chatUnit = [[EZChatUnit alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 90, CurrentScreenWidth, 40)];
+        _chatUnit = [[EZChatUnit alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 140, CurrentScreenWidth, 40)];
         [_container addSubview:_chatUnit];
         
     }

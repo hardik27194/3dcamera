@@ -36,15 +36,15 @@
 - (void) setChatStr:(NSString*)chatStr name:(NSString*)name
 {
     _chatText.text = chatStr;
-    CGSize textSize = [_chatText sizeThatFits:CGSizeMake(999, 35)];
+    //CGSize textSize = [_chatText sizeThatFits:CGSizeMake(999, 35)];
     CGSize textHeight = [_chatText sizeThatFits:CGSizeMake(chatTextLength, 999)];
     //[_chatText setSize:textSize];
-    CGFloat width = textSize.width + 6;
-    if(width > chatTextLength){
-        width = chatTextLength;
-    }
-    _chatText.width = width;
-    _chatText.x = chatTextLength - _chatText.width + 10;
+    //CGFloat width = textSize.width + 6;
+    //if(width > chatTextLength){
+    //    width = chatTextLength;
+    //}
+    //_chatText.width = width;
+    //_chatText.x = chatTextLength - _chatText.width + 10;
     if(textHeight.height > _chatText.height){
         _chatText.height = textHeight.height + 10;
     }
@@ -54,11 +54,12 @@
         _textDate.hidden = NO;
     }
     [self setAttributeString:name chatText:chatStr label:_chatText];
-    EZDEBUG(@"chat:%@, height:%f, width:%f", chatStr, width, textHeight.height);
+    //EZDEBUG(@"chat:%@, height:%f, width:%f", chatStr, width, textHeight.height);
 }
 
 - (void) setAttributeString:(NSString*)name chatText:(NSString*)chatText label:(UILabel*)label
 {
+   /**
     NSDictionary *attribs = @{
                               NSForegroundColorAttributeName: label.textColor,
                               NSFontAttributeName: [UIFont boldSystemFontOfSize:15]
@@ -77,9 +78,9 @@
                             range:bodyTextRange];
     
     // Green text attributes
-   
+   **/
    //[attributedText setAttributes:@{NSForegroundColorAttributeName:greenColor} range:greenTextRange];
-    label.attributedText = attributedText;
+    label.text = chatText;
 }
 
 
@@ -92,7 +93,7 @@
         _textDate.textAlignment = NSTextAlignmentCenter;
         _textDate.textColor = [UIColor whiteColor];
         _textDate.backgroundColor = [UIColor clearColor];
-        [self addSubview:_textDate];
+        //[self addSubview:_textDate];
         [_textDate enableShadow:[UIColor blackColor]];
         _textDate.layer.cornerRadius = 3.0;
         

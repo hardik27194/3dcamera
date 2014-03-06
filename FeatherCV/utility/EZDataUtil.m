@@ -451,10 +451,11 @@
     if(_currentPersonID && !_currentLoginPerson){
         [self getPersonByID:_currentPersonID success:^(EZPerson* ps){
             //EZDEBUG(@"loaded person count:%i", ps.count);
+            EZDEBUG(@"Current person name:%@", ps.name);
             _currentLoginPerson = ps;
         }];
     }
-    EZDEBUG(@"Current PersonID:%@", _currentPersonID);
+    EZDEBUG(@"Current PersonID:%@, person name:%@", _currentPersonID, _currentLoginPerson.name);
     return _currentPersonID;
 }
 

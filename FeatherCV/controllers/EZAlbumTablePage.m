@@ -507,8 +507,9 @@ static int photoCount = 1;
 {
     for(EZPhoto* pt in photos){
         if(! [self existed:pt.photoID]){
+             EZDEBUG(@"Transfer the image to EZDisplayPhoto successfully, personID:%@",pt.personID);
         [[EZDataUtil getInstance] assetURLToAsset:str2url(pt.assetURL) success:^(ALAsset* result){
-            EZDEBUG(@"Transfer the image to EZDisplayPhoto successfully");
+           
             EZDisplayPhoto* ed = [[EZDisplayPhoto alloc] init];
             ed.isFront = true;
             ed.photo = pt;
@@ -521,7 +522,7 @@ static int photoCount = 1;
             pt.isLocal = true;
             //ed.photo = ep;
             //ed.photo.owner = [EZDataUtil getInstance].currentLoginPerson;
-            ed.photo.personID = currentLoginUser.personID;
+            //ed.photo.personID = currentLoginUser.personID;
             //EZDEBUG(@"Before size");
             //ep.size = [result defaultRepresentation].dimensions;
             
@@ -817,8 +818,9 @@ static int photoCount = 1;
     };
     EZPerson* person = nil;
     if(cp.isFront){
-        [self setChatInfo:cell displayPhoto:cp.photo person:currentLoginUser];
-        person = currentLoginUser;
+        person = pid2person(cp.photo.personID);
+        EZDEBUG(@"I will display front image: person id:%@, name:%@", cp.photo.personID, person.name);
+        [self setChatInfo:cell displayPhoto:cp.photo person:person];
     }else{
         EZPhoto* otherSide = nil;
         if(cp.photo.photoRelations.count){
@@ -902,6 +904,7 @@ static int photoCount = 1;
         [UIView flipTransition:snapShot dest:weakCell.frontImage container:weakCell.rotateContainer isLeft:YES duration:EZRotateAnimDuration complete:^(id obj){
             [snapShot removeFromSuperview];
             EZPerson* person = pid2person(photo.personID);
+            EZDEBUG(@"person id:%@, name:%@", photo.personID, person.name);
             [self setChatInfo:weakCell displayPhoto:photo person:person];
             [weakCell.headIcon setImageWithURL:str2url(person.avatar)];
             weakCell.authorName.text = person.name;

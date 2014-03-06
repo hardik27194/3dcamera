@@ -456,6 +456,7 @@
     //Create a closure.
     _shotPhoto = [[EZPhoto alloc] init];
     EZPhoto* localPhoto = _shotPhoto;
+    _shotPhoto.personID = currentLoginID;
     [self startPreFetch:localPhoto imageSuccess:nil];
 }
 
@@ -1118,7 +1119,7 @@
     [cancelButton setTitle:@"退出" forState:UIControlStateNormal];
     [cancelButton addTarget:self action:@selector(cancelClicked:) forControlEvents:UIControlEventTouchUpInside];
     cancelButton.center = CGPointMake(5+30, 80 - 35);
-    //cancelButton.hidden = NO;
+    cancelButton.hidden = NO;
     
     _configButton = [[UIButton alloc] initWithFrame:CGRectMake(320 - 60 - 5, bound.size.height - 44 - 10, 60, 44)];
     [_configButton setTitle:@"设置" forState:UIControlStateNormal];
@@ -2305,6 +2306,8 @@
 //Mean all the upload and things completed.
 - (void) completedProcess
 {
+    //disPhoto.photo.personID = currentLoginID;
+    EZDEBUG(@"Complete process, photo id is:%@, %@", disPhoto.photo.personID, currentLoginID);
     [self.delegate imagePickerController:self didFinishPickingMediaWithInfo:@{@"displayPhoto":disPhoto}];
     disPhoto.photo.startUpload = TRUE;
     [[EZDataUtil getInstance] uploadPendingPhoto];
