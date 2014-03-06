@@ -243,6 +243,14 @@ NSString* doubleString(NSString* str)
 }
 
 
+- (void) enableShadow:(UIColor *)color
+{
+    self.layer.shadowColor = color.CGColor;
+    self.layer.shadowRadius = 3.0;
+    self.layer.shadowOpacity = 0.5;
+    self.layer.shadowOffset = CGSizeMake(0.0, 0.0);
+}
+
 @end
 
 @implementation NSString(EZPrivate)

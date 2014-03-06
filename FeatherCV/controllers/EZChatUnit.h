@@ -20,6 +20,6 @@
 
 - (void) setTimeStr:(NSString*)timeStr;
 
-- (void) setChatStr:(NSString*)chatStr;
+- (void) setChatStr:(NSString*)chatStr name:(NSString*)name;
 
 @end

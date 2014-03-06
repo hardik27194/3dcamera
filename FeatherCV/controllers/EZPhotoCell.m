@@ -28,14 +28,16 @@
     if (self) {
         self.contentView.backgroundColor = VinesGray;
         // Initialization code
-        _container = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 310 + ToolRegionHeight)];
+        _container = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, CurrentScreenHeight)];
         _container.backgroundColor = VinesGray;
         //_container.layer.cornerRadius = 5;
         //_container.clipsToBounds = true;
         //_container.backgroundColor = [UIColor greenColor];
         
-        _rotateContainer = [self createRotateContainer:CGRectMake(5, 5, 310, 310)];
+        _rotateContainer = [self createRotateContainer:CGRectMake(0, 0, CurrentScreenWidth,CurrentScreenHeight)];
         _rotateContainer.backgroundColor = VinesGray;
+        
+        
         [_container addSubview:_rotateContainer];
         //_rotateContainer.backgroundColor = [UIColor redColor];
         //[_container makeInsetShadowWithRadius:20 Color:RGBA(255, 255, 255, 128)];
@@ -50,15 +52,29 @@
         [_container addSubview:_clickHeart];
         //_clickHeart.backgroundColor = randBack(nil);
         **/
+        _headIcon = [[EZClickImage alloc] initWithFrame:CGRectMake(20, CurrentScreenHeight - 100, smallIconRadius, smallIconRadius)];
+        _headIcon.backgroundColor = randBack(nil);
+        [_headIcon enableRoundImage];
+        [_headIcon enableTouchEffects];
+        [self.container addSubview:_headIcon];
+        
+        _authorName = [[UILabel alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 65, 140, 30)];
+        [_authorName setTextColor:[UIColor whiteColor]];
+        _authorName.font = [UIFont boldSystemFontOfSize:15];
+        [_authorName enableShadow:[UIColor blackColor]];
+        //[self.container addSubview:_authorName];
+        
         
         [self.contentView addSubview:_container];
         //[self.contentView addSubview:_toolRegion];
         //[self.contentView addSubview:_feedbackRegion];
         [_rotateContainer addSubview:_frontImage];
+        
+        
         //[_frontImage addSubview:_toolRegion];
         //[_rotateContainer addSubview:_toolRegion];
         //_container.enableTouchEffects = NO;
-        _chatUnit = [[EZChatUnit alloc] initWithFrame:CGRectMake(0, 330, 320, 40)];
+        _chatUnit = [[EZChatUnit alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 90, CurrentScreenWidth, 40)];
         [_container addSubview:_chatUnit];
         
     }
@@ -70,17 +86,17 @@
     UIView* rotateContainer = [[UIView alloc] initWithFrame:rect];
     rotateContainer.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
     rotateContainer.clipsToBounds = true;
-    [rotateContainer enableRoundImage];
+    //[rotateContainer enableRoundImage];
     return rotateContainer;
 }
 
 - (EZSimpleClick*) createFrontImage
 {
-    EZSimpleClick* frontImage = [[EZSimpleClick alloc] initWithFrame:CGRectMake(0, 0, 310, 310)];
-    frontImage.contentMode = UIViewContentModeScaleAspectFit;
+    EZSimpleClick* frontImage = [[EZSimpleClick alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, CurrentScreenHeight)];
+    frontImage.contentMode = UIViewContentModeScaleAspectFill;
     frontImage.clipsToBounds = true;
     frontImage.backgroundColor = [UIColor whiteColor];
-    [frontImage enableRoundImage];
+    //[frontImage enableRoundImage];
     return frontImage;
 }
 

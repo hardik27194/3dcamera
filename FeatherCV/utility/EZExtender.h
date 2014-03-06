@@ -95,6 +95,8 @@ typedef void  (^ IterateOperation)(id obj);
 
 - (void) enableTextWrap;
 
+- (void) enableShadow:(UIColor*)color;
+
 @end
 
 @interface NSString(EZPrivate)

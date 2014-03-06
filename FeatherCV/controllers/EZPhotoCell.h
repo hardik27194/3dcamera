@@ -67,6 +67,8 @@
 
 @property (nonatomic, strong) EZClickImage* headIcon;
 
+@property (nonatomic, strong) UILabel* authorName;
+
 //The icon which represent the relationship between the headIcon and other icons
 //Which could be lock or other icons.
 @property (nonatomic, strong) EZClickImage* linkIcon;

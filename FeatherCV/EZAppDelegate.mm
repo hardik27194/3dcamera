@@ -201,8 +201,12 @@
     [[UIBarButtonItem appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName : [UIColor whiteColor]} forState:UIControlStateNormal];
     [[UINavigationBar appearance] setShadowImage:[[UIImage alloc] init]];
     //[[UINavigationBar appearance] set]
-    [[UINavigationBar appearance] setBarTintColor:RGBCOLOR(0, 197, 213)];
+    //[[UINavigationBar appearance] setBarTintColor:RGBCOLOR(0, 197, 213)];
+    [[UINavigationBar appearance] setBarTintColor:[UIColor clearColor]];
     [[UIBarButtonItem appearance] setTintColor:[UIColor whiteColor]];
+    UIImage *gradientImage44 = [UIImage imageWithColor:RGBA(0, 0, 0, 0)];
+    [[UINavigationBar appearance] setBackgroundImage:gradientImage44 forBarMetrics:UIBarMetricsDefault];
+    [[UINavigationBar appearance] setBackgroundImage:gradientImage44 forBarMetrics:UIBarMetricsLandscapePhone];
     
     [[EZMessageCenter getInstance] registerEvent:EZStatusBarChange block:^(NSNumber* status){
         EZDEBUG(@"Status bar changed:%i", status.intValue);
@@ -225,7 +229,7 @@
       //NSFontAttributeName,
       nil]];
      **/
-    //UIImage *gradientImage44 = [UIImage imageWithColor:RGBA(0, 0, 0, 128)]; //replace "nil" with your method to programmatically create a UIImage object with transparent colors for portrait orientation
+    // //replace "nil" with your method to programmatically create a UIImage object with transparent colors for portrait orientation
     //UIImage *gradientImage32 = [UIImage imageWithColor:RGBA(0, 0, 0, 128)]; //replace "nil" with your method to programmatically create a UIImage object with transparent colors for landscape orientation
     //mainNav.navigationBar.hidden = true;
     //[[UINavigationBar appearance]]

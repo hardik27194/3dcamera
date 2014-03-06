@@ -91,6 +91,8 @@
 
 @property (nonatomic, strong) NSMutableArray* selfBackup;
 
+@property (nonatomic, strong) EZEventBlock menuClicked;
+
 //Where do we begin
 //It used to save the memory consumption
 - (void) raiseCamera;

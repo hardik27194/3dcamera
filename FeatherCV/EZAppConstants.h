@@ -53,7 +53,9 @@
 
 #define shaderSkinRange 0.4
 
-#define VinesGray RGBCOLOR(230, 231, 226);
+#define VinesGray RGBCOLOR(230, 231, 226)
+
+#define CellBackground [UIColor blueColor]
 
 #define normalBarTitleColor RGBCOLOR(144,126,117)
 

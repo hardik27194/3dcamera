@@ -103,10 +103,10 @@ static int photoCount = 1;
 - (void) viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [[self navigationController] setNavigationBarHidden:YES animated:NO];
+    //[[self navigationController] setNavigationBarHidden:NO animated:NO];
    
-    if(![EZDataUtil getInstance].barBackground.superview)
-        [TopView addSubview:[EZDataUtil getInstance].barBackground];
+    //if(![EZDataUtil getInstance].barBackground.superview)
+    //    [TopView addSubview:[EZDataUtil getInstance].barBackground];
     //_moreButton.alpha = 0.0;
     //[self.navigationController.navigationBar addSubview:_moreButton];
     //[UIView animateWithDuration:0.3 animations:^(){
@@ -118,7 +118,7 @@ static int photoCount = 1;
 {
     [super viewWillDisappear:animated];
     [_moreButton removeFromSuperview];
-    [[EZDataUtil getInstance].barBackground removeFromSuperview];
+    //[[EZDataUtil getInstance].barBackground removeFromSuperview];
     _menuView.height = 0;
 }
 
@@ -151,7 +151,7 @@ static int photoCount = 1;
 }
 
 
-- (void) showMenu:(id)sender
+- (void) mockMenu
 {
     int tag = 20140129;
     if(!_menuView){
@@ -160,21 +160,30 @@ static int photoCount = 1;
         _menuHeight = _menuView.frame.size.height;
         [TopView addSubview:_menuView];
         _menuView.height = 0;
-  
+        
     }
-
+    
     
     if(_menuView.height > 10){
         [UIView animateWithDuration:0.4 delay:0.0 usingSpringWithDamping:0.8 initialSpringVelocity:1.0 options:UIViewAnimationOptionCurveEaseOut animations:^(){
-                _menuView.height = 0;
-
+            _menuView.height = 0;
+            
         } completion:nil];
     }else{
         [UIView animateWithDuration:0.4 delay:0.0 usingSpringWithDamping:0.8 initialSpringVelocity:1.0 options:UIViewAnimationOptionCurveEaseOut animations:^(){
             _menuView.height = _menuHeight;
         } completion:nil];
-
+        
     }
+}
+
+- (void) showMenu:(id)sender
+{
+    //if(_menuClicked){
+    //    _menuClicked(Nil);
+    //}
+    EZContactTablePage* contactPage = [[EZContactTablePage alloc] init];
+    [self.navigationController pushViewController:contactPage animated:YES];
 }
 
 - (void)imagePickerController:(DLCImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
@@ -229,7 +238,9 @@ static int photoCount = 1;
     if(imageCount){
         dispatch_later(0.1, ^(){
             [self scrollToBottom];
+            dispatch_later(0.1, ^(){
             [self animateFlip];
+            });
 
         });
     }
@@ -252,9 +263,10 @@ static int photoCount = 1;
     //    [camera switchCamera];
     //}
     EZDEBUG(@"before present");
-    [self presentViewController:camera animated:TRUE completion:^(){
-        EZDEBUG(@"Presentation completed");
-    }];
+    //[self presentViewController:camera animated:TRUE completion:^(){
+    //    EZDEBUG(@"Presentation completed");
+    //}];
+    [self.navigationController pushViewController:camera animated:YES];
 }
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
@@ -354,9 +366,11 @@ static int photoCount = 1;
     
     self.refreshControl = [[UIRefreshControl alloc] init];
     [self.refreshControl addTarget:self action:@selector(refreshInvoked:forState:)forControlEvents:UIControlEventValueChanged];
+    //self.tableView.y = - 20;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    self.tableView.pagingEnabled = YES;
     //self.tableView.backgroundColor = RGBCOLOR(230, 231, 226);
-    self.tableView.backgroundColor = VinesGray;
+    self.tableView.backgroundColor = VinesGray; //[UIColor blackColor];
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
     __weak EZAlbumTablePage* weakSelf = self;
     //[self.tableView addSubview:[EZTestSuites testResizeMasks]];
@@ -398,9 +412,16 @@ static int photoCount = 1;
         EZDEBUG(@"Error detail:%@", err);
     }];
     
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"更多" style:UIBarButtonItemStylePlain target:self action:@selector(showMenu:)];
+    
+    
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"通讯录" style:UIBarButtonItemStylePlain target:self action:@selector(showMenu:)];
 
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(pickPhotoType:)];
+    //UIBarButtonItem* barItem = [[UIBarButtonItem alloc] initWithTitle:@"通讯录" style:UIBarButtonItemStylePlain target:self action:@selector(showMenu:)];
+    
+    //UIButton* commButton = [[UIButton alloc] initWithFrame:CGRectMake(5, 5, 120, 44)];
+    //[commButton setTitle:@"通讯录" forState:UIControlStateNormal];
+    
+    //self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(pickPhotoType:)];
     dispatch_later(0.2, ^(){
         //[self raiseRegister];
         
@@ -430,7 +451,7 @@ static int photoCount = 1;
     [TopView addSubview:clickView];
     UIView* statusBarBackground = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 20)];
     statusBarBackground.backgroundColor = EZStatusBarBackgroundColor;
-    [TopView addSubview:statusBarBackground];
+    //[TopView addSubview:statusBarBackground];
     [EZDataUtil getInstance].barBackground = statusBarBackground;
     [EZDataUtil getInstance].centerButton = clickView;
     });
@@ -632,7 +653,7 @@ static int photoCount = 1;
     }
     **/
     
-    return 320 + DefaultChatUnitHeight;
+    return CurrentScreenHeight;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -794,22 +815,32 @@ static int photoCount = 1;
         [EZDataUtil getInstance].centerButton.alpha = 0.0;
         
     };
-    
+    EZPerson* person = nil;
     if(cp.isFront){
         [self setChatInfo:cell displayPhoto:cp.photo person:currentLoginUser];
+        person = currentLoginUser;
     }else{
         EZPhoto* otherSide = nil;
         if(cp.photo.photoRelations.count){
             otherSide = [cp.photo.photoRelations objectAtIndex:0];
         }
-        EZPerson* person = [[EZDataUtil getInstance] getPersonByID:otherSide.personID success:nil];
+        person = [[EZDataUtil getInstance] getPersonByID:otherSide.personID success:nil];
         [self setChatInfo:cell displayPhoto:otherSide person:person];
     }
+    
+    [cell.headIcon setImageWithURL:str2url(person.avatar)];
+    cell.authorName.text = person.name;
     return cell;
 }
 
 - (void) setChatInfo:(EZPhotoCell*)cell displayPhoto:(EZPhoto*)photo person:(EZPerson*)person
 {
+    if(photo.conversations.count == 0){
+        cell.chatUnit.hidden = YES;
+    }else{
+        cell.chatUnit.hidden = NO;
+    }
+    
     [cell.chatUnit.authorIcon setImageWithURL:str2url(person.avatar)];
     cell.chatUnit.authorIcon.releasedBlock = ^(id obj){
         EZDEBUG(@"The author id is:%@", person.personID);
@@ -821,10 +852,10 @@ static int photoCount = 1;
         EZDEBUG(@"converation %@:%@", dt, comment);
         //cell.chatUnit.textDate = [conversation objectForKey:@"date"];
         [cell.chatUnit setTimeStr:formatRelativeTime(dt)];
-        [cell.chatUnit setChatStr:comment];
+        [cell.chatUnit setChatStr:comment name:person.name];
     }else{
         [cell.chatUnit setTimeStr:@""];
-        [cell.chatUnit setChatStr:@""];
+        [cell.chatUnit setChatStr:@"" name:person.name];
     }
 }
 
@@ -870,8 +901,10 @@ static int photoCount = 1;
         dispatch_later(0.15, ^(){
         [UIView flipTransition:snapShot dest:weakCell.frontImage container:weakCell.rotateContainer isLeft:YES duration:EZRotateAnimDuration complete:^(id obj){
             [snapShot removeFromSuperview];
-            
-            [self setChatInfo:weakCell displayPhoto:photo person:pid2person(photo.personID)];
+            EZPerson* person = pid2person(photo.personID);
+            [self setChatInfo:weakCell displayPhoto:photo person:person];
+            [weakCell.headIcon setImageWithURL:str2url(person.avatar)];
+            weakCell.authorName.text = person.name;
             //EZDEBUG(@"rotation completed:%i", (int)[snapShot superview]);
         }];}
        );
@@ -883,7 +916,11 @@ static int photoCount = 1;
             photo = front;
             [weakCell.frontImage setImage:[front getScreenImage]];
         }
+        EZPerson* person = pid2person(photo.personID);
         [self setChatInfo:weakCell displayPhoto:photo person:pid2person(photo.personID)];
+        [weakCell.headIcon setImageWithURL:str2url(person.avatar)];
+        weakCell.authorName.text = person.name;
+
     }
     cp.isFront = !cp.isFront;
 
@@ -897,15 +934,15 @@ static int photoCount = 1;
         
         if(!_showShapeCover && minius > 40 && scrollView.contentSize.height > scrollView.frame.size.height){
             _showShapeCover = TRUE;
-            if(!_shapeCover){
-                _shapeCover = [[EZUIUtility sharedEZUIUtility] createHoleView];
+            //if(!_shapeCover){
+            //    _shapeCover = [[EZUIUtility sharedEZUIUtility] createHoleView];
                 //_shapeCover.backgroundColor = [UIColor blackColor];
-                [scrollView addSubview:_shapeCover];
-            }
-            _shapeCover.hidden = NO;
-            _shapeCover.y = scrollView.contentSize.height + 40;
-            EZDEBUG(@"_shapaCover size:%@", NSStringFromCGRect(_shapeCover.frame));
-            [scrollView addSubview:_shapeCover];
+            //    [scrollView addSubview:_shapeCover];
+            //}
+            //_shapeCover.hidden = NO;
+            //_shapeCover.y = scrollView.contentSize.height + 40;
+            //EZDEBUG(@"_shapaCover size:%@", NSStringFromCGRect(_shapeCover.frame));
+            //[scrollView addSubview:_shapeCover];
         }else if(_showShapeCover && minius > 100){
             //_prevInsets = scrollView.contentInset;
             //_animStarted = TRUE;
@@ -938,6 +975,7 @@ static int photoCount = 1;
     }
 }
 
+
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
 {
     EZDEBUG(@"Begin dragging point:%@, size:%@", NSStringFromCGPoint(scrollView.contentOffset), NSStringFromCGSize(scrollView.contentSize));
@@ -947,9 +985,10 @@ static int photoCount = 1;
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
 {
     EZDEBUG(@"End dragging point:%@, size:%@", NSStringFromCGPoint(scrollView.contentOffset), NSStringFromCGSize(scrollView.contentSize));
-    
-    
     _isScrolling = false;
+    
+    //if(decelerate) return;
+    //[self scrollViewDidEndDecelerating:scrollView];
 }
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
@@ -960,6 +999,8 @@ static int photoCount = 1;
         _showShapeCover = NO;
         _animStarted = false;
     }
+    //UITableView* tableView = (UITableView*)scrollView;
+    //[tableView scrollToRowAtIndexPath:[tableView indexPathForRowAtPoint: CGPointMake(tableView.contentOffset.x, tableView.contentOffset.y+tableView.rowHeight/2)] atScrollPosition:UITableViewScrollPositionTop animated:YES];
 }
 
 

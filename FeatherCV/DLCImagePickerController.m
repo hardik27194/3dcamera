@@ -121,7 +121,7 @@
     NSMutableArray* redAdjustments;
     NSMutableArray* greenAdjustments;
     NSMutableArray* blueAdjustments;
-    EZShapeCover* shapeCover;
+    //EZShapeCover* shapeCover;
     EZClickImage* rotateView;
     UIView* rotateContainer;
     UIView* roundBackground;
@@ -645,8 +645,8 @@
     [EZUIUtility sharedEZUIUtility].cameraRaised = true;
     [super viewDidLoad];
     
-    //self.view.backgroundColor = [UIColor whiteColor];
-    [[UIApplication sharedApplication] setStatusBarHidden:YES];
+    self.view.backgroundColor = VinesGray;
+    //[[UIApplication sharedApplication] setStatusBarHidden:YES];
     _senseRotate = true;
     //_recordedMotions = [[NSMutableArray alloc] init];
     _flashView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
@@ -713,6 +713,7 @@
     [self setupOtherFilters];
     [self setupTongFilter];
     skinBrighter = [self createSkinBrighter];
+    imageView.backgroundColor = VinesGray;
     imageView.fillMode = kGPUImageFillModePreserveAspectRatioAndFill;
     EZDEBUG(@"The imageView frame:%@", NSStringFromCGRect(imageView.frame));
     //[self setupEdgeDetector];
@@ -802,7 +803,7 @@
     [super viewDidLoad];
     
     //self.view.backgroundColor = [UIColor whiteColor];
-    [[UIApplication sharedApplication] setStatusBarHidden:YES];
+    //[[UIApplication sharedApplication] setStatusBarHidden:YES];
     _senseRotate = true;
     //_recordedMotions = [[NSMutableArray alloc] init];
     _flashView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
@@ -999,7 +1000,7 @@
 - (void) createTextField
 {
     CGRect bounds = [UIScreen mainScreen].applicationFrame;
-    textInputRegion = [[UIView alloc] initWithFrame:CGRectMake(0, bounds.size.height, 320, 44)];
+    textInputRegion = [[UIView alloc] initWithFrame:CGRectMake(0, CurrentScreenHeight, 320, 44)];
     textInputRegion.backgroundColor = [UIColor whiteColor];
     _textField = [[UITextField alloc] initWithFrame:CGRectMake(5, 0, 310, 44)];
     _textField.placeholder = macroControlInfo(@"Say something");
@@ -1080,12 +1081,12 @@
     [UIView animateWithDuration:0.3 delay:0.0 options:UIViewAnimationOptionCurveEaseOut  animations:^(){
         if(show){
             //_toolBarRegion.y = _toolBarRegion.frame.origin.y - 44;
-            textInputRegion.y = bounds.size.height - 44;
+            textInputRegion.y = CurrentScreenHeight - 44;
             //[[EZDataUtil getInstance].centerButton moveY:-44];
             _toolBarRegion.alpha = 0;
             [EZDataUtil getInstance].centerButton.alpha = 0;
         }else{
-            textInputRegion.y = bounds.size.height;
+            textInputRegion.y = CurrentScreenHeight;
             _toolBarRegion.alpha = 1.0;
             //[[EZDataUtil getInstance].centerButton moveY:44];
             [EZDataUtil getInstance].centerButton.alpha = 1.0;
@@ -1099,13 +1100,15 @@
 {
     __weak DLCImagePickerController* weakSelf = self;
      CGRect bound = [UIScreen mainScreen].bounds;
-    shapeCover = [[EZShapeCover alloc] initWithFrame:bound];
-    EZDEBUG(@"initial frame:%@", NSStringFromCGRect(bound));
-    shapeCover.userInteractionEnabled = TRUE;
+    //shapeCover = [[EZShapeCover alloc] initWithFrame:bound];
+    //EZDEBUG(@"initial frame:%@", NSStringFromCGRect(bound));
+    //shapeCover.userInteractionEnabled = TRUE;
+    imageView.userInteractionEnabled = TRUE;
     tapRecognizer = [[UITapGestureRecognizer alloc] init];
     [tapRecognizer addTarget:self action:@selector(handleTapToFocus:)];
-    [shapeCover addGestureRecognizer:tapRecognizer];
-    [self.view addSubview:shapeCover];
+    [imageView addGestureRecognizer:tapRecognizer];
+    //[shapeCover addGestureRecognizer:tapRecognizer];
+    //[self.view addSubview:shapeCover];
     //quitButton = [[UIButton alloc] initWithFrame:CGRectMake(5, 10, 60, 44)];
     //[quitButton setTitle:@"退出" forState:UIControlStateNormal];
     //[quitButton addTarget:self action:@selector(quit:) forControlEvents:UIControlEventTouchUpInside];
@@ -1128,14 +1131,14 @@
     [_toolBarRegion addSubview:_configButton];
     [self.view addSubview:_toolBarRegion];
     
-    rotateContainer = [[UIView alloc] initWithFrame:CGRectMake(5, 0, 310, 310)];
-    [rotateContainer enableRoundImage];
+    rotateContainer = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, CurrentScreenHeight)];
+    //[rotateContainer enableRoundImage];
     rotateContainer.alpha = 0.0;
     [self.view addSubview:rotateContainer];
     
-    rotateView = [[EZClickImage alloc] initWithFrame:CGRectMake(0, 0, 310, 310)];
+    rotateView = [[EZClickImage alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, CurrentScreenHeight)];
     rotateView.contentMode = UIViewContentModeScaleAspectFill;
-    [rotateView enableRoundImage];
+    //[rotateView enableRoundImage];
     //rotateView.alpha = 1.0;
     rotateView.pressedBlock = ^(id obj){
         [weakSelf changePhoto];
@@ -1330,7 +1333,7 @@
     [[EZMessageCenter getInstance] unregisterEvent:EventKeyboardWillRaise forObject:keyboardRaiseHandler];
     [[EZMessageCenter getInstance] unregisterEvent:EventKeyboardWillHide forObject:keyboardHideHandler];
     [self hideKeyboard:YES complete:nil];
-    [[UIApplication sharedApplication] setStatusBarHidden:false];
+    //[[UIApplication sharedApplication] setStatusBarHidden:false];
     [EZDataUtil getInstance].centerButton.releasedBlock = _oldReleaseBlock;
     [EZDataUtil getInstance].centerButton.pressedBlock = _oldPressBlock;
 }
@@ -1394,12 +1397,16 @@
     CGFloat height = CurrentScreenWidth * ratio;
     CGFloat centerY = CurrentScreenHeight/2.0 - CenterUpShift;
     CGPoint centerPoint = CGPointMake(CurrentScreenWidth/2.0, centerY);
-    imageView.frame = CGRectMake(0 ,0 ,CurrentScreenWidth ,height);
-    imageView.center = centerPoint;
+    imageView.frame = CGRectMake(0 ,0 ,CurrentScreenWidth ,CurrentScreenHeight);
+    //imageView.center = centerPoint;
     EZDEBUG(@"imageView.bounds:%@, ratio:%f, height:%f, centerY:%f", NSStringFromCGRect(imageView.frame), ratio, height, centerY);
-    [shapeCover digHole:310 center:centerPoint color:[UIColor blackColor] opacity:1.0];
-    roundBackground.frame = imageView.frame;
-    rotateContainer.center = centerPoint;
+    //[shapeCover digHole:310 center:centerPoint color:[UIColor blackColor] opacity:1.0];
+    roundBackground = [[UIView alloc] initWithFrame:imageView.frame];
+    //roundBackground.frame = imageView.frame;
+    roundBackground.backgroundColor = [UIColor blackColor];
+    roundBackground.alpha = 0;
+    [self.view insertSubview:roundBackground belowSubview:rotateContainer];
+    //rotateContainer.center = centerPoint;
     EZDEBUG(@"Camera aspect:%f, %@", ratio, NSStringFromCGSize(_cameraAspectSize));
 }
 
@@ -2073,8 +2080,10 @@
     UIView* snapView = [rotateView snapshotViewAfterScreenUpdates:NO];
     [rotateContainer insertSubview:snapView aboveSubview:rotateView];
     rotateView.image = image;
+    roundBackground.alpha = 1.0;
     [UIView flipTransition:snapView dest:rotateView container:rotateContainer isLeft:YES duration:EZRotateAnimDuration complete:^(id obj){
         [snapView removeFromSuperview];
+        roundBackground.alpha = 0.0;
     }];
 }
 //Don't rotate, only get rotation ready.
@@ -2083,7 +2092,7 @@
     if(image){
         rotateView.image = image;
     }
-    shapeCover.backgroundColor = RotateBackground;
+    //shapeCover.backgroundColor = RotateBackground;
     [UIView animateWithDuration:0.3 animations:^(){
         //shapeCover.backgroundColor = RotateBackground;
         rotateContainer.alpha = 1.0;
@@ -2092,8 +2101,8 @@
 
 - (void) hideRotateImage
 {
-    //roundBackground.alpha = 0.0;
-    shapeCover.backgroundColor = [UIColor clearColor];
+    roundBackground.alpha = 0.0;
+    //shapeCover.backgroundColor = [UIColor clearColor];
     [UIView animateWithDuration:0.3 animations:^(){
         //shapeCover.backgroundColor = [UIColor clearColor];
         rotateContainer.alpha = 0.0;
@@ -2103,7 +2112,7 @@
 
 - (void) startRotateImage:(UIImage*)image
 {
-    //roundBackground.alpha = 1.0;
+    roundBackground.alpha = 1.0;
     [self prepareRotateImage:image];
     [rotateView runSpinAnimation:2.0 rotations:2.0 repeat:1000.0];
 
@@ -2461,9 +2470,10 @@
 - (void) innerCancel
 {
     EZUIUtility.sharedEZUIUtility.cameraClickButton.releasedBlock = nil;
-    [self dismissViewControllerAnimated:YES completion:^(){
-        EZDEBUG(@"DLCCamera Will get dismissed");
-    }];
+    //[self dismissViewControllerAnimated:YES completion:^(){
+    //    EZDEBUG(@"DLCCamera Will get dismissed");
+    //}];
+    [self.navigationController popViewControllerAnimated:YES];
     //[self cancelPrematchPhoto];
     [self.delegate imagePickerControllerDidCancel:self imageCount:_imageCount];
 }
