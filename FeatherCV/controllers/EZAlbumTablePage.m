@@ -513,7 +513,7 @@ static int photoCount = 1;
     for(EZPhoto* pt in photos){
         if(! [self existed:pt.photoID]){
              EZDEBUG(@"Transfer the image to EZDisplayPhoto successfully, personID:%@",pt.personID);
-        [[EZDataUtil getInstance] assetURLToAsset:str2url(pt.assetURL) success:^(ALAsset* result){
+        //[[EZDataUtil getInstance] assetURLToAsset:str2url(pt.assetURL) success:^(ALAsset* result){
            
             EZDisplayPhoto* ed = [[EZDisplayPhoto alloc] init];
             ed.isFront = true;
@@ -522,7 +522,7 @@ static int photoCount = 1;
             //ed.pid = ++[EZDataUtil getInstance].photoCount;
             //ep.photoID = _matchedPhoto.srcPhotoID;
             //ep.photoRelations = @[_matchedPhoto];
-            pt.asset = result;
+            //pt.asset = result;
             //ep.assetURL = assetURL.absoluteString;
             pt.isLocal = true;
             //ed.photo = ep;
@@ -538,7 +538,7 @@ static int photoCount = 1;
             [_combinedPhotos insertObject:ed atIndex:0];
             [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationTop];
             //[self.tableView reloadData];
-        }];
+        //}];
         }
     }
 }
@@ -821,6 +821,7 @@ static int photoCount = 1;
             [EZDataUtil getInstance].centerButton.alpha = 1.0;
         };
         [EZDataUtil getInstance].centerButton.alpha = 0.0;
+
     };
     EZPerson* person = nil;
     if(cp.isFront){

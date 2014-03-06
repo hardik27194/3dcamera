@@ -60,7 +60,7 @@ typedef enum {
 @property (nonatomic, strong) NSString* address;
 
 //Just to keep it temporarily. 
-@property (nonatomic, strong) ALAsset* asset;
+//@property (nonatomic, strong) ALAsset* asset;
 
 @property (nonatomic, strong) NSString* assetURL;
 

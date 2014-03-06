@@ -1930,7 +1930,7 @@
     img = [img resizedImageWithMinimumSize:CGSizeMake(980.0, 980.0)];
     [[EZThreadUtility getInstance] executeBlockInQueue:^(){
         _imageSize = img.size;
-        _highResImageFile = [EZFileUtil saveImageToDocument:img filename:@"fullsize.png"];
+        _highResImageFile = [EZFileUtil saveImageToDocument:img];
         EZDEBUG(@"Will save image to the document:%@, %@", NSStringFromCGSize(_imageSize), _highResImageFile);
     } isConcurrent:YES];
 }
@@ -2239,6 +2239,7 @@
         return;
     }
     if(_takingPhoto){
+        EZDEBUG(@"are Taking Photo");
         return;
     }
     [self.photoCaptureButton setEnabled:NO];
@@ -2345,18 +2346,40 @@
     
     EZDEBUG(@"image size:%f, %f, matchPhotoID:%@", currentFilteredVideoFrame.size.width, currentFilteredVideoFrame.size.height, _shotPhoto.photoID);
     //EZPhoto* tmpMatch = _matchedPhoto;
-    [self createPhoto:currentFilteredVideoFrame orgData:photoMeta shotPhoto:_shotPhoto success:^(EZDisplayPhoto* dp){
-        
-        //[self preMatchPhoto];
-        disPhoto = dp;
-        _takingPhoto = false;
-        _toolBarRegion.alpha = 1;
-    }];
+    disPhoto =  [self createPhoto:currentFilteredVideoFrame orgData:photoMeta shotPhoto:_shotPhoto];
     
     return currentFilteredVideoFrame;
 }
 
-- (void) createPhoto:(UIImage*)img orgData:(NSDictionary*)orgdata shotPhoto:(EZPhoto*)shotPhoto success:(EZEventBlock)success
+
+- (EZDisplayPhoto*) createPhoto:(UIImage*)img orgData:(NSDictionary*)orgdata shotPhoto:(EZPhoto*)shotPhoto
+{
+    
+    NSString* storedURL = [EZFileUtil saveImageToDocument:img];
+    EZDEBUG(@"Stored file name:%@", storedURL);
+    EZDisplayPhoto* displayPhoto = [[EZDisplayPhoto alloc] init];
+    displayPhoto.isFront = true;
+    //EZPhoto* ep = [[EZPhoto alloc] init];
+    //ed.pid = ++[EZDataUtil getInstance].photoCount;
+    EZPhoto* ep = shotPhoto;
+    //ep.asset = result;
+    //ep.assetURL = assetURL.absoluteString;
+    ep.assetURL = storedURL;
+    ep.isLocal = true;
+    ep.createdTime = [NSDate date];
+    displayPhoto.photo = ep;
+    displayPhoto.photo.personID = currentLoginUser.personID;
+    //EZDEBUG(@"Before size");
+    ep.size = img.size;//[result defaultRepresentation].dimensions;
+    //Why setup the flag here?
+    //Because the user will interact with the photo from now on
+    ep.matchCompleted = TRUE;
+    EZDEBUG(@"after size:%f, %f", ep.size.width, ep.size.height);
+    //success(displayPhoto);
+    return displayPhoto;
+}
+
+- (void) createPhotoNewOld:(UIImage*)img orgData:(NSDictionary*)orgdata shotPhoto:(EZPhoto*)shotPhoto success:(EZEventBlock)success
 {
     EZDEBUG(@"Store image get called");
     ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
@@ -2381,7 +2404,7 @@
                  //EZPhoto* ep = [[EZPhoto alloc] init];
                  //ed.pid = ++[EZDataUtil getInstance].photoCount;
                  EZPhoto* ep = shotPhoto;
-                 ep.asset = result;
+                 //ep.asset = result;
                  ep.assetURL = assetURL.absoluteString;
                  ep.isLocal = true;
                  ep.createdTime = [NSDate date];

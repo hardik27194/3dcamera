@@ -168,21 +168,23 @@
         EZDEBUG(@"I will slide the image back");
         //[scrollContainer setIndex:1 animated:YES slide:YES];
         if(img){
-            [[EZDataUtil getInstance] saveImage:img success:^(ALAsset* asset){
+            //[[EZDataUtil getInstance] saveImage:img success:^(ALAsset* asset){
+            
                 EZDisplayPhoto* ed = [[EZDisplayPhoto alloc] init];
                 ed.isFront = true;
                 EZPhoto* ep = [[EZPhoto alloc] init];
                 //ed.pid = ++photoCount;
-                ep.asset = asset;
+                //ep.asset = asset;
                 ep.isLocal = true;
+                ep.assetURL = [EZFileUtil saveImageToDocument:img];
                 ed.photo = ep;
                 //EZDEBUG(@"Before size");
-                ep.size = [asset defaultRepresentation].dimensions;
+                ep.size = img.size;//[asset defaultRepresentation].dimensions;
                 [albumPage addPhoto:ed];
                 //[coverImage setImage:[[asset defaultRepresentation] fullScreenImage]];
-            } failure:^(NSError* err){
-                EZDEBUG(@"Error:%@", err);
-            }];
+            //} failure:^(NSError* err){
+            //    EZDEBUG(@"Error:%@", err);
+            //}];
         }
     }];
     

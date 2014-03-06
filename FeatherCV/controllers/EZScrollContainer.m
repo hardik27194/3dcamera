@@ -253,7 +253,7 @@
                  ed.isFront = true;
                  EZPhoto* ep = [[EZPhoto alloc] init];
                  ed.pid = ++[EZDataUtil getInstance].photoCount;
-                 ep.asset = result;
+                 //ep.asset = result;
                  ep.isLocal = true;
                  ed.photo = ep;
                  //ed.photo.owner = [[EZPerson alloc] init];

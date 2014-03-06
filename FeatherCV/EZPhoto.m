@@ -138,12 +138,14 @@
     EZDEBUG(@"The created date is:%@", _createdTime);
 }
 
+
 - (UIImage*) getThumbnail
 {
-    return [[UIImage alloc] initWithCGImage:[_asset aspectRatioThumbnail]];
+    //return [[UIImage alloc] initWithCGImage:[_asset aspectRatioThumbnail]];
+    return nil;
 }
 
-
+/**
 - (UIImage*) getOriginalImage
 {
     ALAssetRepresentation *assetRepresentation = [_asset defaultRepresentation];
@@ -157,7 +159,9 @@
     return fullScreenImage;
 
 }
+ **/
 
+/**
 - (UIImage*) getScreenImage
 {
     ALAssetRepresentation *assetRepresentation = [_asset defaultRepresentation];
@@ -171,6 +175,14 @@
     return fullScreenImage;
 
 }
+**/
+
+- (UIImage*) getScreenImage
+{
+    //NSURL* fileURL = str2url(_assetURL);
+    return  [UIImage imageWithContentsOfFile:_assetURL];
+}
+
 
 - (void) getAsyncImage:(EZEventBlock)block
 {

@@ -74,7 +74,7 @@
 + (void) testImageStore
 {
     UIImage* testImg = [UIImage imageNamed:@"smile_face.png"];
-    NSString* storedFile = [EZFileUtil saveImageToDocument:testImg filename:@"coolguy.png"];
+    NSString* storedFile = [EZFileUtil saveImageToDocument:testImg];
     UIImage* readBack = [UIImage imageWithContentsOfFile:storedFile];
     EZDEBUG(@"storedFile:%@, org size:%@, stored size:%@", storedFile, NSStringFromCGSize(testImg.size), NSStringFromCGSize(readBack.size));
 }

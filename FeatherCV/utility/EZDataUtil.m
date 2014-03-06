@@ -366,7 +366,7 @@
 - (void) uploadPhoto:(EZPhoto*)photo success:(EZEventBlock)success failure:(EZEventBlock)failure
 {
     //NSDictionary* jsonInfo = [photo toJson];
-    NSString* storedFile =[EZFileUtil saveImageToCache:[photo getScreenImage]];
+    NSString* storedFile =  photo.assetURL;//[EZFileUtil saveImageToCache:[photo getScreenImage]];
     if(photo.photoID){
         [EZNetworkUtility upload:baseUploadURL parameters:@{@"photoID":photo.photoID} file:storedFile complete:^(id obj){
             NSString* screenURL = [obj objectForKey:@"screenURL"];
@@ -920,7 +920,7 @@
                         ed.isFront = true;
                         EZPhoto* ep = [[EZPhoto alloc] init];
                         ed.pid = ++photoCount;
-                        ep.asset = result;
+                        //ep.asset = result;
                         ep.assetURL = ((NSURL*)[result valueForProperty:ALAssetPropertyAssetURL]).absoluteString;
                         CLLocation* location = [result valueForProperty:ALAssetPropertyLocation];
                         if(location){

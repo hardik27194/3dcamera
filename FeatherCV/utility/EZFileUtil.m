@@ -329,9 +329,11 @@
     }
 }
 
-+ (NSString*) saveImageToDocument:(UIImage*)image filename:(NSString*)fileName
++ (NSString*) saveImageToDocument:(UIImage*)image
 {
-    return [self saveToDocument:image.toData filename:fileName];
+    static int count = 0;
+    NSString* fileName = [EZFileUtil getTempFileName:int2str(count++) postFix:@"jpg"];
+    return [self saveToDocument:image.toJpegData filename:fileName];
 }
 
 + (NSString*) saveToDocument:(NSData*)data filename:(NSString*)filename
@@ -560,6 +562,7 @@
     [data writeToFile:filePath atomically:YES]; //Write the file
     return filePath;
 }
+
 
 
 @end
