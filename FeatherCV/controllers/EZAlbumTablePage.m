@@ -217,6 +217,9 @@ static int photoCount = 1;
 - (void) scrollToBottom
 {
     EZDEBUG(@"Scroll to bottom");
+    if(!_combinedPhotos.count){
+        return;
+    }
     [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:_combinedPhotos.count - 1 inSection:0] atScrollPosition:UITableViewScrollPositionBottom animated:YES];
 }
 
@@ -224,11 +227,10 @@ static int photoCount = 1;
 {
     EZDEBUG(@"cancel get called:%i", _newlyCreated);
     if(imageCount){
-        dispatch_later(0.3, ^(){
+        dispatch_later(0.1, ^(){
             [self scrollToBottom];
-            dispatch_later(1.2, ^(){
-                [self animateFlip];
-            });
+            [self animateFlip];
+
         });
     }
 }
@@ -388,7 +390,7 @@ static int photoCount = 1;
         EZDEBUG(@"returned length:%i", arr.count);
         //[_combinedPhotos addObjectsFromArray:arr];
         [self reloadRows:arr];
-        dispatch_later(0.3,
+        dispatch_later(0.1,
          ^(){
             [self scrollToBottom];
         });
@@ -418,7 +420,7 @@ static int photoCount = 1;
         [[EZDataUtil getInstance] jumpCycleAnimation:^(id obj){
             EZContactTablePage* contactPage = [[EZContactTablePage alloc] init];
             //contactPage.transitioningDelegate =
-            [self.navigationController presentViewController:contactPage animated:YES completion:nil];
+            [self.navigationController pushViewController:contactPage animated:YES];
             contactPage.completedBlock = ^(id obj){
                 [weakSelf switchFriend:obj];
             };

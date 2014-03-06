@@ -29,7 +29,7 @@
     self.tableView.dataSource = self;
     self.tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
     self.tableView.delegate = self;
-    self.tableView.backgroundColor = [UIColor clearColor];
+    self.tableView.backgroundColor = RGBA(255, 255, 255, 128);
     [self.view addSubview:self.tableView];
 }
 
@@ -111,19 +111,12 @@
 
 - (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    EZPerson* person = [_contacts objectAtIndex:indexPath.row];
-    EZDEBUG(@"Person name:%@, %@", person.name, person.personID);
-    //[self dismissViewControllerAnimated:YES completion:^(){
-        
-    //}];
-    [self.navigationController popViewControllerAnimated:YES];
-    if(_completedBlock){
-        _completedBlock(person);
-    }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    
+    __weak EZContactTablePage* weakSelf = self;
     static NSString *CellIdentifier = @"Cell";
     EZContactTableCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
     
@@ -133,7 +126,17 @@
     cell.headIcon.backgroundColor = randBack(nil);
     cell.clickRegion.releasedBlock = ^(id object){
         EZDEBUG(@"region clicked");
-        [[EZMessageCenter getInstance]postEvent:EZScreenSlide attached:@(1)];
+        //[[EZMessageCenter getInstance]postEvent:EZScreenSlide attached:@(1)];
+        EZPerson* person = [_contacts objectAtIndex:indexPath.row];
+        EZDEBUG(@"Person name:%@, %@", person.name, person.personID);
+        //[self dismissViewControllerAnimated:YES completion:^(){
+        
+        //}];
+        [weakSelf.navigationController popViewControllerAnimated:YES];
+        if(weakSelf.completedBlock){
+            weakSelf.completedBlock(person);
+        }
+
     };
     cell.headIcon.releasedBlock = ^(id object){
         EZDEBUG(@"Header clicked");

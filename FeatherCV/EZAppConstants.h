@@ -47,7 +47,7 @@
 #define shaderSkinColor vec3(0.73,0.73,0.51)
 
 
-#define longShaderSkinColor vec3(0.83,0.83, 0.61)
+#define longShaderSkinColor vec3(0.78,0.78, 0.56)
 
 #define shortShaderSkinColor vec3(0.63, 0.63, 0.41)
 
