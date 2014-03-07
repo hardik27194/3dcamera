@@ -199,7 +199,7 @@
 - (void) setupAppearance
 {
     //Remove the drop shadow
-    [[UINavigationBar appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName : [UIColor whiteColor]}];
+    [[UINavigationBar appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName : [UIColor whiteColor], NSFontAttributeName: [UIFont systemFontOfSize:18]}];
     [[UIBarButtonItem appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName : [UIColor whiteColor]} forState:UIControlStateNormal];
     [[UINavigationBar appearance] setShadowImage:[[UIImage alloc] init]];
     //[[UINavigationBar appearance] set]

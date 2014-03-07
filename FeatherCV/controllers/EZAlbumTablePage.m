@@ -30,6 +30,7 @@
 #import "EZSimpleClick.h"
 #import "EZCenterButton.h"
 #import "EZContactTablePage.h"
+#import "EZShapeButton.h"
 
 static int photoCount = 1;
 @interface EZAlbumTablePage ()
@@ -427,39 +428,11 @@ static int photoCount = 1;
     //[commButton setTitle:@"通讯录" forState:UIControlStateNormal];
     
     //self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(pickPhotoType:)];
-    dispatch_later(0.2, ^(){
+    //dispatch_later(0.2, ^(){
         //[self raiseRegister];
         
-    CGRect bounds = [UIScreen mainScreen].bounds;
-    EZCenterButton* clickView = [[EZCenterButton alloc] initWithFrame:CGRectMake((320.0 - EZCenterSmallRadius)/2.0, bounds.size.height - EZCenterSmallRadius - 2.0, EZCenterSmallRadius, EZCenterSmallRadius) cycleRadius:20 lineWidth:5];
-                                     
-    clickView.enableTouchEffects = false;
-    clickView.releasedBlock = ^(EZCenterButton* obj){
-            [obj animateButton:0.5 lineWidth:13 completed:^(id obj){
-                //EZDEBUG(@"Before raise camera, %i", (int)self);
-                [self raiseCamera];
-                //EZDEBUG(@"The button clicked");
-            }];
-    };
-    clickView.longPressBlock = ^(EZCenterButton* obj){
-        EZDEBUG(@"Long press clicked");
-        [[EZDataUtil getInstance] jumpCycleAnimation:^(id obj){
-            EZContactTablePage* contactPage = [[EZContactTablePage alloc] init];
-            //contactPage.transitioningDelegate =
-            [self.navigationController pushViewController:contactPage animated:YES];
-            contactPage.completedBlock = ^(id obj){
-                [weakSelf switchFriend:obj];
-            };
-        }];
-    };
-    clickView.center = CGPointMake(160, bounds.size.height - (30 + 5));
-    [TopView addSubview:clickView];
-    UIView* statusBarBackground = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 20)];
-    statusBarBackground.backgroundColor = EZStatusBarBackgroundColor;
-    //[TopView addSubview:statusBarBackground];
-    [EZDataUtil getInstance].barBackground = statusBarBackground;
-    [EZDataUtil getInstance].centerButton = clickView;
-    });
+   
+    //});
 
 }
 
@@ -593,34 +566,41 @@ static int photoCount = 1;
     [super viewDidAppear:animated];
     self.navigationController.delegate = self;
     EZUIUtility.sharedEZUIUtility.cameraClickButton.pressedBlock = _cameraClicked;
+    __weak EZAlbumTablePage* weakSelf = self;
+    if(_alreadyExecuted){
+        return;
+    }
+    _alreadyExecuted = true;
+    CGRect bounds = [UIScreen mainScreen].bounds;
+    EZCenterButton* clickView = [[EZCenterButton alloc] initWithFrame:CGRectMake((CurrentScreenWidth - EZCenterSmallRadius)/2.0, bounds.size.height - EZCenterSmallRadius - 6.0, EZCenterSmallRadius, EZCenterSmallRadius) cycleRadius:20 lineWidth:5];
     
-    
-    /**
-    [UIImageView preloadImageURL:str2url(@"http://192.168.1.102:8080/static/79661d8d26c00668ac4c215373fdf12e.jpg") success:^(UIImage* image){
-        EZDEBUG(@"view loaded");
-        EZClickImage* view = [[EZClickImage alloc] initWithFrame:CGRectMake(0, 200, 100, 100)];
-        view.image = image;
-        [UIImageView preloadImageURL:str2url(@"http://192.168.1.102:8080/static/79661d8d26c00668ac4c215373fdf12e.jpg") success:^(UIImage* img){
-            EZDEBUG(@"success immediately");
-        } failed:^(NSError* err){
-        
+    clickView.enableTouchEffects = false;
+    clickView.releasedBlock = ^(EZCenterButton* obj){
+        [obj animateButton:0.5 lineWidth:13 completed:^(id obj){
+            //EZDEBUG(@"Before raise camera, %i", (int)self);
+            [self raiseCamera];
+            //EZDEBUG(@"The button clicked");
         }];
-        //[self.view addSubview:view];
-        view.releasedBlock = ^(id obj){
-            [[EZDataUtil getInstance] queryPhotos:0 pageSize:5 success:^(NSArray* photos){
-                EZDEBUG(@"fetch back count:%i", photos.count);
-                EZPhoto* first = [photos objectAtIndex:0];
-                EZDEBUG(@"PhotoID:%@, relationsSize:%i", first.photoID, first.photoRelations.count);
-                EZPhoto* matchedPhoto = [first.photoRelations objectAtIndex:0];
-                EZDEBUG(@"Matched photo:%@, screenURL:%@", matchedPhoto.photoID, matchedPhoto.screenURL);
-            } failure:^(id err){
-                EZDEBUG(@"query photo error:%@", err);
-            }];
-        };
-    } failed:^(id err){
-        EZDEBUG(@"encounter error:%@", err);
-    }];
-    **/
+    };
+    clickView.longPressBlock = ^(EZCenterButton* obj){
+        EZDEBUG(@"Long press clicked");
+        [[EZDataUtil getInstance] jumpCycleAnimation:^(id obj){
+            EZContactTablePage* contactPage = [[EZContactTablePage alloc] init];
+            //contactPage.transitioningDelegate =
+            [self.navigationController pushViewController:contactPage animated:YES];
+            contactPage.completedBlock = ^(id obj){
+                [weakSelf switchFriend:obj];
+            };
+        }];
+    };
+    clickView.center = CGPointMake(160, bounds.size.height - (30 + 5));
+    [TopView addSubview:clickView];
+    //EZDEBUG(@"View will Appear:%@", NSStringFromCGRect(TopView.frame));
+    UIView* statusBarBackground = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 20)];
+    statusBarBackground.backgroundColor = EZStatusBarBackgroundColor;
+    //[TopView addSubview:statusBarBackground];
+    [EZDataUtil getInstance].barBackground = statusBarBackground;
+    [EZDataUtil getInstance].centerButton = clickView;
     
 }
 
@@ -782,6 +762,8 @@ static int photoCount = 1;
     EZPhoto* myPhoto = cp.photo;
     EZPhoto* switchPhoto = [cp.photo.photoRelations objectAtIndex:0];
     
+    EZPerson* frontPerson = pid2person(myPhoto.personID);
+    EZPerson* backPerson = pid2person(switchPhoto.personID);
     EZDEBUG(@"myPhoto image size:%@, screenURL:%@, isFront:%i", NSStringFromCGSize(myPhoto.size), myPhoto.screenURL, cp.isFront);
     // Configure the cell...
     //[cell displayImage:[myPhoto getLocalImage]];
@@ -819,8 +801,10 @@ static int photoCount = 1;
             EZDEBUG(@"dismiss current view");
             [obj dismissViewControllerAnimated:YES completion:nil];
             [EZDataUtil getInstance].centerButton.alpha = 1.0;
+            macroHideStatusBar(NO);
         };
         [EZDataUtil getInstance].centerButton.alpha = 0.0;
+        macroHideStatusBar(YES);
 
     };
     EZPerson* person = nil;
@@ -837,10 +821,24 @@ static int photoCount = 1;
         [self setChatInfo:cell displayPhoto:otherSide person:person];
     }
     
-    [cell.headIcon setImageWithURL:str2url(person.avatar)];
-    cell.authorName.text = person.name;
+    cell.moreButton.releasedBlock = ^(id obj){
+        //NSString* someText = self.textView.text;
+        EZDEBUG(@"more clicked");
+        NSArray* dataToShare = @[@"我爱老哈哈"];  // ...or whatever pieces of data you want to share.
+        UIActivityViewController* activityViewController =
+        [[UIActivityViewController alloc] initWithActivityItems:dataToShare
+                                          applicationActivities:nil];
+        [self presentViewController:activityViewController animated:YES completion:^{
+            EZDEBUG(@"Completed sharing");
+        }];
+    };
+    cell.authorName.text = frontPerson.name;
+    cell.otherName.text = backPerson.name;
+    [cell.headIcon setImageWithURL:str2url(frontPerson.avatar)];
+    [cell.otherIcon setImageWithURL:str2url(backPerson.avatar)];
     return cell;
 }
+
 
 - (void) setChatInfo:(EZPhotoCell*)cell displayPhoto:(EZPhoto*)photo person:(EZPerson*)person
 {
@@ -913,8 +911,8 @@ static int photoCount = 1;
             EZPerson* person = pid2person(photo.personID);
             EZDEBUG(@"person id:%@, name:%@", photo.personID, person.name);
             [self setChatInfo:weakCell displayPhoto:photo person:person];
-            [weakCell.headIcon setImageWithURL:str2url(person.avatar)];
-            weakCell.authorName.text = person.name;
+            //[weakCell.headIcon setImageWithURL:str2url(person.avatar)];
+            //weakCell.authorName.text = person.name;
             //EZDEBUG(@"rotation completed:%i", (int)[snapShot superview]);
         }];}
        );
@@ -928,8 +926,8 @@ static int photoCount = 1;
         }
         EZPerson* person = pid2person(photo.personID);
         [self setChatInfo:weakCell displayPhoto:photo person:pid2person(photo.personID)];
-        [weakCell.headIcon setImageWithURL:str2url(person.avatar)];
-        weakCell.authorName.text = person.name;
+        //[weakCell.headIcon setImageWithURL:str2url(person.avatar)];
+        //weakCell.authorName.text = person.name;
 
     }
     cp.isFront = !cp.isFront;

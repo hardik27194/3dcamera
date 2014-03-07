@@ -647,7 +647,7 @@
     [super viewDidLoad];
     
     self.view.backgroundColor = VinesGray;
-    //[[UIApplication sharedApplication] setStatusBarHidden:YES];
+    //
     _senseRotate = true;
     //_recordedMotions = [[NSMutableArray alloc] init];
     _flashView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
@@ -2347,7 +2347,8 @@
     EZDEBUG(@"image size:%f, %f, matchPhotoID:%@", currentFilteredVideoFrame.size.width, currentFilteredVideoFrame.size.height, _shotPhoto.photoID);
     //EZPhoto* tmpMatch = _matchedPhoto;
     disPhoto =  [self createPhoto:currentFilteredVideoFrame orgData:photoMeta shotPhoto:_shotPhoto];
-    
+    _takingPhoto = false;
+    _toolBarRegion.alpha = 1;
     return currentFilteredVideoFrame;
 }
 

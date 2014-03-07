@@ -14,6 +14,7 @@
 #import "EZExtender.h"
 #import "UIImageView+AFNetworking.h"
 #import "EZSimpleClick.h"
+#import "EZShapeButton.h"
 
 #define kHeartRadius 35
 
@@ -55,6 +56,22 @@
         [_container addSubview:_clickHeart];
         //_clickHeart.backgroundColor = randBack(nil);
         **/
+        
+        _otherIcon = [[EZClickImage alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 105, smallIconRadius, smallIconRadius)];
+        _otherIcon.backgroundColor = randBack(nil);
+        [_otherIcon enableRoundImage];
+        [_otherIcon enableTouchEffects];
+        [self.container addSubview:_otherIcon];
+        
+        _otherName = [[UILabel alloc] initWithFrame:CGRectMake(50, CurrentScreenHeight - 105, 140, 30)];
+        [_otherName setTextColor:[UIColor whiteColor]];
+        _otherName.font = [UIFont boldSystemFontOfSize:15];
+        [_otherName enableShadow:[UIColor blackColor]];
+        [self.container addSubview:_otherName];
+
+        _moreButton = [[EZShapeButton alloc] initWithFrame:CGRectMake(CurrentScreenWidth - 70, CurrentScreenHeight - 55, 60, 44)];
+        [self.container addSubview:_moreButton];
+        
         _headIcon = [[EZClickImage alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 55, smallIconRadius, smallIconRadius)];
         _headIcon.backgroundColor = randBack(nil);
         [_headIcon enableRoundImage];
@@ -73,15 +90,29 @@
         //[self.contentView addSubview:_feedbackRegion];
         [_rotateContainer addSubview:_frontImage];
         
-        
+        [self createTimeLabel];
         //[_frontImage addSubview:_toolRegion];
         //[_rotateContainer addSubview:_toolRegion];
         //_container.enableTouchEffects = NO;
-        _chatUnit = [[EZChatUnit alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 140, CurrentScreenWidth, 40)];
+        _chatUnit = [[EZChatUnit alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 200, CurrentScreenWidth, 40)];
         [_container addSubview:_chatUnit];
         
     }
     return self;
+}
+
+
+- (void) createTimeLabel
+{
+    _photoDate = [[UILabel alloc] initWithFrame:CGRectMake(0, 125, 160, 21)];
+    _photoDate.font = [UIFont systemFontOfSize:13];
+    _photoDate.textAlignment = NSTextAlignmentCenter;
+    _photoDate.textColor = [UIColor whiteColor];
+    _photoDate.backgroundColor = [UIColor clearColor];
+    //[self addSubview:_textDate];
+    [_photoDate enableShadow:[UIColor blackColor]];
+    _photoDate.layer.cornerRadius = 3.0;
+    [_container addSubview:_photoDate];
 }
 
 - (UIView*) createRotateContainer:(CGRect)rect

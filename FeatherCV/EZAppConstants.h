@@ -18,6 +18,8 @@
 #define EZRotateAnimDuration 0.5
 //RGBCOLOR(0, 197, 213);
 
+#define macroHideStatusBar(flag) [[UIApplication sharedApplication] setStatusBarHidden:flag]
+
 #define CurrentScreenWidth [UIScreen mainScreen].bounds.size.width 
 
 #define CurrentScreenHeight [UIScreen mainScreen].bounds.size.height

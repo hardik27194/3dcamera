@@ -39,6 +39,8 @@
 
 #define FeedbackRegionRect CGRectMake(0,380, 300, 40)
 
+@class EZShapeButton;
+
 @interface EZPhotoCell : UITableViewCell
 
 @property (nonatomic, assign) int currentPos;
@@ -69,6 +71,13 @@
 
 @property (nonatomic, strong) UILabel* authorName;
 
+@property (nonatomic, strong) EZClickImage* otherIcon;
+
+@property (nonatomic, strong) UILabel* otherName;
+
+@property (nonatomic, strong) UILabel* photoDate;
+
+@property (nonatomic, strong) EZShapeButton* moreButton;
 //The icon which represent the relationship between the headIcon and other icons
 //Which could be lock or other icons.
 @property (nonatomic, strong) EZClickImage* linkIcon;
@@ -128,6 +137,8 @@
 - (void) adjustCellSize:(CGSize)size;
 
 - (UIView*) createDupContainer:(UIImage*)img;
+
+- (void) setTimeStr:(NSString*)timeStr;
 
 - (id) init;
 

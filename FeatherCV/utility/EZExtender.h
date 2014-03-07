@@ -95,7 +95,7 @@ typedef void  (^ IterateOperation)(id obj);
 
 - (void) enableTextWrap;
 
-- (void) enableShadow:(UIColor*)color;
+//- (void) enableShadow:(UIColor*)color;
 
 @end
 
@@ -203,6 +203,8 @@ typedef void  (^ IterateOperation)(id obj);
 - (CGFloat) centerY;
 
 - (void) setCenterX:(CGFloat)x;
+
+- (void) enableShadow:(UIColor*)color;
 
 - (void) setCenterY:(CGFloat)y;
 
