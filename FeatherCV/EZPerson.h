@@ -37,6 +37,9 @@
 //You can add key-value pair to listen to this value.
 @property (nonatomic, assign) BOOL isQuerying;
 
+//Used to sort the user in the array.
+@property (nonatomic, strong) NSDate* lastActive;
+
 - (NSDictionary*) toJson;
 
 - (void) fromJson:(NSDictionary*)dict;

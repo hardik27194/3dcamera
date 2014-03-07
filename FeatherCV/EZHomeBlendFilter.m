@@ -37,6 +37,7 @@ NSString *const kHomeBlendFragmentShaderString = SHADER_STRING
  uniform lowp int imageMode;
  uniform lowp int showFace;
  uniform lowp float miniRealRatio;
+ uniform lowp float maxRealRatio;
  uniform lowp int skinColorFlag;
  
  const lowp vec4  kRGBToYPrime = vec4 (0.299, 0.587, 0.114, 0.0);
@@ -102,26 +103,9 @@ NSString *const kHomeBlendFragmentShaderString = SHADER_STRING
              skColor = longShaderSkinColor;
          }
          lowp float colorDist = calcHue(blurredImageColor, skColor);
-         //lowp float lineDist = calcLineDist(sharpImageColor);
-         //lowp vec3 darkColor = vec3(0.35);
-         //lowp float brightness = dot(sharpImageColor.rgb, W);
-         //brightness = brightness * brightness;
-         //finalEdgeRatio = finalEdgeRatio * (1.0 - brightness);
-         //colorDist * sharpImageColor +  (1.0 - colorDist) *
+         lowp float changeGap =miniRealRatio + (maxRealRatio - miniRealRatio) * colorDist;
          
-         //if(finalEdgeRatio > 0.08){
-         //    finalEdgeRatio = 1.0;
-         //}
-         //finalEdgeRatio = finalEdgeRatio * 2.0;
-         
-         //else if(finalEdgeRatio < 0.2){
-         //    finalEdgeRatio = 0.0;
-         //}
-         //finalEdgeRatio = min(finalEdgeRatio * lineDist, 1.0);
-         //gl_FragColor = colorDist * sharpImageColor +  (1.0 - colorDist) * (sharpImageColor * finalEdgeRatio + (1.0 - finalEdgeRatio) * (sharpImageColor*blurRatio + (1.0 - blurRatio)*blurredImageColor));// finalEdgeRatio + (1.0 - finalEdgeRatio) * vec4(0.5);
-         //blurRatio = 0.0;
-         colorDist = min(1.0, colorDist + miniRealRatio);
-         gl_FragColor = colorDist * sharpImageColor +  (1.0 - colorDist) * (sharpImageColor*blurRatio + (1.0 - blurRatio)*blurredImageColor);
+         gl_FragColor = changeGap * sharpImageColor +  (1.0 - changeGap) * (sharpImageColor*blurRatio + (1.0 - blurRatio)*blurredImageColor);
      //gl_FragColor = blurredImageColor;
      }else if(imageMode == 1){
          gl_FragColor = blurredImageColor;
@@ -360,6 +344,12 @@ NSString *const kFaceBlurFragmentShaderString = SHADER_STRING
 {
     _miniRealRatio = miniRealRatio;
     [_combineFilter setFloat:miniRealRatio forUniformName:@"miniRealRatio"];
+}
+
+- (void) setMaxRealRatio:(CGFloat)maxRealRatio
+{
+    _maxRealRatio = maxRealRatio;
+    [_combineFilter setFloat:_maxRealRatio forUniformName:@"maxRealRatio"];
 }
 
 - (void) setImageMode:(int)imageMode

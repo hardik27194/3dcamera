@@ -60,7 +60,8 @@
     _currentQueryUsers = [[NSMutableDictionary alloc] init];
     _pendingPersonCall = [[NSMutableDictionary alloc] init];
     _timeFormatter = [[NSDateFormatter alloc] init];
-    
+    _joinedUsers = [[NSMutableSet alloc] init];
+    _notJoinedUsers = [[NSMutableSet alloc] init];
     _totalCover = [[EZClickView alloc] initWithFrame:[UIScreen mainScreen].bounds];
     _totalCover.enableTouchEffects = false;
     _totalCover.backgroundColor = [UIColor clearColor];
@@ -158,6 +159,11 @@
             //[_currentQueryUsers setValue:ps forKey:ps.personID];
             [_pendingUserQuery removeObject:ps.personID];
             [self callPendingQuery:ps];
+            if(ps.joined){
+                [_joinedUsers addObject:ps.personID];
+            }else{
+                [_notJoinedUsers addObject:ps.personID];
+            }
         }
         _queryingCount = false;
     } failure:^(id obj){
@@ -188,11 +194,23 @@
     for(int i = 0; i < json.count; i++){
         NSDictionary* dict = [json objectAtIndex:i];
         EZPerson* ps = [persons objectAtIndex:i];
+        NSString* localName = ps.name;
         [ps fromJson:dict];
-        EZDEBUG(@"jointed time :%@", ps.joinedTime);
+        int joinFlag = [[dict objectForKey:@"joined"] intValue];
+        if( joinFlag != 1 && localName){
+            ps.name = localName;
+        }
+        if(joinFlag == 1){
+            [_joinedUsers addObject:ps.personID];
+        }else if(joinFlag == 0){
+            [_notJoinedUsers addObject:ps.personID];
+        }
+        [_currentQueryUsers setObject:ps forKey:ps.personID];
+        EZDEBUG(@"jointed time :%@ ", ps.joinedTime);
     }
 }
 
+//Upload Contacts.
 - (void) uploadContacts:(NSArray*)contacts success:(EZEventBlock)succss failure:(EZEventBlock)failure
 {
     
@@ -200,12 +218,11 @@
     for(EZPerson* ps in contacts){
         [arr addObject:[ps toJson]];
     }
-    [EZNetworkUtility postJson:@"person/info" parameters:arr complete:^(NSArray* array){
+    [EZNetworkUtility postJson:@"person/info" parameters:@{@"cmd":@"upload",@"persons":arr} complete:^(NSArray* array){
+        EZDEBUG(@"All the returned info:%@", array);
         [self populatePersons:array persons:contacts];
         succss(array);
-    } failblk:^(id err){
-        EZDEBUG(@"error:%@", err);
-    }];
+    } failblk:failure];
 }
 
 - (void) registerUser:(NSDictionary*)person success:(EZEventBlock)success error:(EZEventBlock)error
@@ -216,6 +233,7 @@
         self.currentLoginPerson = person;
         EZDEBUG(@"Returned person id:%@", person.personID);
         success(person);
+        [[EZMessageCenter getInstance] postEvent:EZUserAuthenticated attached:nil];
     } failblk:error];
 }
 
@@ -228,6 +246,7 @@
         self.currentLoginPerson = person;
         EZDEBUG(@"Mocked person id:%@", person.personID);
         success(person);
+        [[EZMessageCenter getInstance] postEvent:EZUserAuthenticated attached:nil];
     } failblk:error];
 }
 
@@ -254,13 +273,23 @@
 
 }
 //
-- (void) queryPhotos:(int)page pageSize:(int)pageSize  success:(EZEventBlock)success failure:(EZEventBlock)failure
+- (void) queryPhotos:(int)page pageSize:(int)pageSize otherID:(NSString *)otherID success:(EZEventBlock)success failure:(EZEventBlock)failure
 {
-    [EZNetworkUtility postParameterAsJson:@"photo/info" parameters:@{@"cmd":@"query",
-                                                         @"startPage":@(page),
-                                                         @"pageSize":@(pageSize)
-                                                         }
-                     complete:^(NSArray* photos){
+    NSDictionary* parameters = @{
+                        @"cmd":@"query",
+                        @"startPage":@(page),
+                        @"pageSize":@(pageSize)
+                        };
+
+    if(otherID){
+        parameters = @{
+          @"cmd":@"query",
+          @"startPage":@(page),
+          @"pageSize":@(pageSize),
+          @"otherID":otherID
+          };
+    }
+    [EZNetworkUtility postParameterAsJson:@"photo/info" parameters:parameters complete:^(NSArray* photos){
                          EZDEBUG(@"Photo size:%i",photos.count);
                          NSMutableArray* res = [[NSMutableArray alloc] initWithCapacity:photos.count];
                          for(NSDictionary* dict in photos){
@@ -311,6 +340,26 @@
         [res addObject:[obj toJson]];
     }
     return res;
+}
+
+- (void) exchangeWithPerson:(NSString*)matchPersonID success:(EZEventBlock)success failure:(EZEventBlock)failure
+{
+    EZDEBUG(@"Begin call exchange photo");
+    //NSDictionary* dict = [photo toJson];
+    NSDictionary* dict = nil;
+    if(matchPersonID){
+        dict = @{@"personID":matchPersonID} ;
+    }else{
+        dict = @{};
+    }
+    
+    [EZNetworkUtility postJson:@"photo/exchange" parameters:dict complete:^(id ph){
+        EZPhoto* pt = [[EZPhoto alloc] init];
+        [pt fromJson:ph];
+        EZDEBUG(@"returned photo screen:%@", pt.screenURL);
+        success(pt);
+    } failblk:failure];
+    
 }
 
 //I will exchange photo with other user
@@ -480,6 +529,22 @@
     });
 }
 
+- (NSArray*) getSortedPersons:(EZEventBlock)successBlck
+{
+    NSMutableArray* pids = [[NSMutableArray alloc] initWithArray:[_joinedUsers allObjects]];
+    NSMutableArray* res = [[NSMutableArray alloc] init];
+    [pids addObjectsFromArray:_notJoinedUsers.allObjects];
+    if(pids.count){
+        for(NSString* pid in pids){
+            EZPerson* ps = [_currentQueryUsers objectForKey:pid];
+            [res addObject:ps];
+        }
+    }else{
+        [self getPhotoBooks:successBlck];
+    }
+    return res;
+}
+
 
 - (void) loadPhotoBooks
 {
@@ -547,26 +612,41 @@
                                                      person.name = name;
                                                      person.mobile = phone;
                                                      person.email = email;
-                                                     if(i % 2 == 0){
-                                                         person.joined = true;
-                                                         person.avatar = [EZFileUtil fileToURL:@"header_1.png"].absoluteString;
+                                                     //if(i % 2 == 0){
+                                                     //    person.joined = true;
+                                                     //    person.avatar = [EZFileUtil fileToURL:@"header_1.png"].absoluteString;
                                                          
-                                                     }else{
-                                                         person.joined = false;
-                                                         person.avatar = [EZFileUtil fileToURL:@"header_2.png"].absoluteString;
+                                                     //}else{
+                                                     //    person.joined = false;
+                                                     //    person.avatar = [EZFileUtil fileToURL:@"header_2.png"].absoluteString;
                                                          
-                                                     }
+                                                     //}
                                                      [res addObject:person];
                                                  }
                                                  
                                                  EZDEBUG(@"Completed photobook reading, will call back now");
-                                                 [[EZMessageCenter getInstance] postEvent:EZGetContacts attached:res];
+                                                 //[[EZMessageCenter getInstance] postEvent:EZGetContacts attached:res];
                                                  [_contacts addObjectsFromArray:res];
+                                                 
+                                                 EZEventBlock uploadBlock = ^(id obj){
+                                                     [self uploadContacts:res success:^(NSArray* persons){
+                                                         EZDEBUG(@"uploaded person successful");
+                                                     } failure:^(id err){
+                                                         EZDEBUG(@"error when upload contacts");
+                                                     }];
+                                                 };
+                                                 if(_currentPersonID){
+                                                     uploadBlock(nil);
+                                                 }else{
+                                                     [[EZMessageCenter getInstance] registerEvent:EZUserAuthenticated block:uploadBlock];
+                                                 }
                                                 });
     });
     //return res;
 }
 
+
+//- (void) uplo
 
 //Read the Contacts list out
 - (void) getPhotoBooks:(EZEventBlock)blk
@@ -730,7 +810,6 @@
         ps.personID = personID;
         ps.isQuerying = true;
         [_currentQueryUsers setObject:ps forKey:personID];
-        
     }
     if(ps.isQuerying){
         [_pendingUserQuery addObject:personID];

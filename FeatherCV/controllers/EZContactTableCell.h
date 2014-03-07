@@ -19,4 +19,8 @@
 //The place will get clicked 
 @property (nonatomic, strong) EZClickView* clickRegion;
 
+@property (nonatomic, strong) UIButton* inviteButton;
+
+@property (nonatomic, strong) EZEventBlock inviteClicked;
+
 @end

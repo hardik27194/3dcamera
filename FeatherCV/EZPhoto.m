@@ -56,6 +56,14 @@
     return res;
 }
 
+- (NSArray*) relationsUserID
+{
+    NSMutableArray* res = [[NSMutableArray alloc] init];
+    for(EZPhoto* pt in _photoRelations){
+        [res addObject:pt.personID];
+    }
+    return res;
+}
 
 - (NSDictionary*) toJson
 {
@@ -75,6 +83,7 @@
              @"createdTime":_createdTime?isoDateFormat(_createdTime):@"",
              @"conversations":[self conversationToJson],
              @"photoRelations":[self relationsToJson],
+             @"relationUsers":[self relationsUserID],
              @"liked":_liked.count?_liked:@[]
                  };
     }else{
@@ -92,6 +101,7 @@
                  @"createdTime":_createdTime?isoDateFormat(_createdTime):@"",
                  @"conversations":[self conversationToJson],
                  @"photoRelations":[self relationsToJson],
+                 @"relationUsers":[self relationsUserID],
                  @"liked":_liked.count?_liked:@[]
                  };
 

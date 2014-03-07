@@ -102,7 +102,15 @@
       @"personID":currentID?currentID:@""
     };
     
+    
+    UIActivityIndicatorView* activity = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    
+    activity.center = self.view.center;
+    [self.view addSubview:activity];
+    [activity startAnimating];
     [[EZDataUtil getInstance] registerUser:registerInfo success:^(EZPerson* person){
+        [activity stopAnimating];
+        [activity removeFromSuperview];
         EZDEBUG(@"Register success");
         if(_completedBlock){
             _completedBlock(person);
@@ -122,6 +130,8 @@
         };
     } error:^(id err){
         EZDEBUG(@"Register error:%@", err);
+        [activity stopAnimating];
+        [activity removeFromSuperview];
         [[EZUIUtility sharedEZUIUtility] raiseInfoWindow:@"注册失败" info:@"请检查后重试"];
     }];
     

@@ -95,19 +95,33 @@ NSString *const EZGaussianSharpenFragmentShaderString = SHADER_STRING
      //mediump vec3 sharpGap = textureColor * 4.0 - (leftTextureColor  + rightTextureColor + topTextureColor + bottomTextureColor);
      highp float sharpDist = distance(centralColor.rgb, sum.rgb);
      lowp float sharpenBar = 0.1;
+     lowp float lowBar = sharpDist * sharpDist;
      if(sharpDist < sharpenBar){
          sharpDist = sharpDist * sharpDist;
      }else{
-         sharpDist = sharpenBar + (sharpDist - sharpenBar) * 1.8;
+         sharpDist = lowBar + (sharpDist - sharpenBar) * 3.0;
     }
      mediump float sharpenRatio = 1.0;
      //lowp float colorDist = calcHue(centralColor.rgb);
      //sharpDist = sharpDist * sharpenRatio;
-     if(sharpDist > 0.25){
-         sharpDist = 0.25 + (sharpDist - 0.25) * 0.2;
+     //if(sharpDist > 0.25){
+     //    sharpDist = 0.25 + (sharpDist - 0.25) * 0.5;
+     //}
+     sharpDist = min(0.4, sharpDist);
+     lowp vec3 colorGap = (centralColor.rgb - sum.rgb) * sharpDist;
+     if(colorGap.r > 0.0){
+         colorGap.r = colorGap.r / 3.3;
      }
-     sharpDist = min(0.3, sharpDist);
-     gl_FragColor = vec4(vec3(centralColor.rgb + (centralColor.rgb - sum.rgb) * sharpDist), centralColor.w);
+     
+     if(colorGap.g > 0.0){
+         colorGap.g = colorGap.g / 3.3;
+     }
+     
+     if(colorGap.b > 0.0){
+         colorGap.b = colorGap.b / 3.3;
+     }
+     
+     gl_FragColor = vec4(vec3(centralColor.rgb + colorGap), centralColor.w);
      //gl_FragColor = orgColor;
      //gl_FragColor = vec4(vec3(sharpDist), centralColor.w);
  }

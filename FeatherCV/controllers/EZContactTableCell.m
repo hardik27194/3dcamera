@@ -26,13 +26,26 @@
         _clickRegion = [[EZClickView alloc] initWithFrame:CGRectMake(0, 0, 320, cellHeight)];
         [self.contentView addSubview:_clickRegion];
 
-        _headIcon = [[EZClickImage alloc] initWithFrame:CGRectMake(265, (cellHeight - 40)/2, 40, 40)];
+        _headIcon = [[EZClickImage alloc] initWithFrame:CGRectMake(265, (cellHeight - 40)/2.0, 40, 40)];
         [_headIcon enableRoundImage];
         [self.contentView addSubview:_headIcon];
+        
+        _inviteButton = [[UIButton alloc] initWithFrame:CGRectMake(200, (cellHeight - 40)/2.0, 40, 60)];
+        [_inviteButton setTitle:@"邀请" forState:UIControlStateNormal];
+        [_inviteButton setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
+        [_inviteButton addTarget:self action:@selector(inviteClicked:) forControlEvents:UIControlEventTouchUpInside];
+        [self.contentView addSubview:_inviteButton];
         self.backgroundColor =[UIColor clearColor];
         self.contentView.backgroundColor = [UIColor clearColor];
     }
     return self;
+}
+
+- (void) inviteClicked:(id)obj
+{
+    if(_inviteClicked){
+        _inviteClicked(self);
+    }
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated

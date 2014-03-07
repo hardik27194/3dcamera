@@ -72,6 +72,56 @@ static int photoCount = 1;
     return self;
 }
 
+- (void) setCurrentUser:(EZPerson *)currentUser
+{
+    EZDEBUG(@"Will change the user from:%@ to %@", _currentUser, currentUser);
+    
+    if([currentUser.personID isEqualToString:currentLoginID]){
+        if(_currentUser){
+            _currentUser = nil;
+            self.title = @"羽毛";
+            [_combinedPhotos removeAllObjects];
+        }else{
+            return;
+        }
+    }else if(![currentUser.personID isEqualToString:_currentUser.personID]){
+        self.title = currentUser.name;
+        _currentUser = currentUser;
+        [_combinedPhotos removeAllObjects];
+    }else{
+        return;
+    }
+    [self loadMorePhoto:^(id obj){
+        if(!_combinedPhotos.count){
+            [self.tableView reloadData];
+        }
+    } reload:YES];
+
+}
+
+
+- (void) loadMorePhoto:(EZEventBlock)completed reload:(BOOL)reload
+{
+    int pageStart = _combinedPhotos.count/photoPageSize;
+    EZDEBUG(@"Will load from %i", pageStart);
+    [[EZDataUtil getInstance] queryPhotos:pageStart pageSize:photoPageSize otherID:_currentUser.personID success:^(NSArray* arr){
+        //EZDEBUG(@"Reloaded about %i rows of data, inset:%@", arr.count, NSStringFromUIEdgeInsets(self.tableView.contentInset));
+        [self reloadRows:arr reload:reload];
+        if(completed){
+            completed(nil);
+        }
+        //[self.refreshControl endRefreshing];
+    } failure:^(id err){
+        //animBlock();
+        EZDEBUG(@"Error query photo from:%i", pageStart);
+        //[self.refreshControl endRefreshing];
+        if(completed){
+            completed(nil);
+        }
+    }];
+
+}
+
 - (UIView*) createSeperate:(CGRect)orgBound
 {
     UIView* seperate = [[UIView alloc] initWithFrame:CGRectMake(orgBound.origin.x, orgBound.size.height - 2, orgBound.size.width, 2)];
@@ -104,15 +154,6 @@ static int photoCount = 1;
 - (void) viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    //[[self navigationController] setNavigationBarHidden:NO animated:NO];
-   
-    //if(![EZDataUtil getInstance].barBackground.superview)
-    //    [TopView addSubview:[EZDataUtil getInstance].barBackground];
-    //_moreButton.alpha = 0.0;
-    //[self.navigationController.navigationBar addSubview:_moreButton];
-    //[UIView animateWithDuration:0.3 animations:^(){
-    //    _moreButton.alpha = 1.0;
-    //}];
 }
 
 - (void) viewWillDisappear:(BOOL)animated
@@ -222,6 +263,7 @@ static int photoCount = 1;
             [self switchImage:cell displayPhoto:cp front:cp.photo back:switchPhoto animate:NO];
         } failure:nil];
     }
+    EZDEBUG(@"animFlip is done");
 }
 
 - (void) scrollToBottom
@@ -237,11 +279,11 @@ static int photoCount = 1;
 {
     EZDEBUG(@"cancel get called:%i", _newlyCreated);
     if(imageCount){
-        dispatch_later(0.1, ^(){
+        dispatch_later(0.2, ^(){
             [self scrollToBottom];
-            dispatch_later(0.1, ^(){
-            [self animateFlip];
-            });
+            //dispatch_later(0.1, ^(){
+            //[self animateFlip];
+            //});
 
         });
     }
@@ -260,6 +302,7 @@ static int photoCount = 1;
     //controller.prefersStatusBarHidden = TRUE;
     camera.transitioningDelegate = _cameraAnimation;
     camera.delegate = self;
+    camera.personID = _currentUser.personID;
     //if(camera.isFrontCamera){
     //    [camera switchCamera];
     //}
@@ -299,19 +342,9 @@ static int photoCount = 1;
     //[_allEntries removeAllObjects];
     //[self.tableView reloadData];
     //[self refresh];
-    
-    EZDEBUG(@"Refreshed get called:%i", state);
-    int pageStart = _combinedPhotos.count/photoPageSize;
-    EZDEBUG(@"Will load from %i", pageStart);
-    [[EZDataUtil getInstance] queryPhotos:pageStart pageSize:photoPageSize success:^(NSArray* arr){
-        //EZDEBUG(@"Reloaded about %i rows of data, inset:%@", arr.count, NSStringFromUIEdgeInsets(self.tableView.contentInset));
-        [self reloadRows:arr];
+    [self loadMorePhoto:^(id obj){
         [self.refreshControl endRefreshing];
-    } failure:^(id err){
-        //animBlock();
-        EZDEBUG(@"Error query photo from:%i", pageStart);
-         [self.refreshControl endRefreshing];
-    }];
+    } reload:NO];
 }
 
 - (void) testTextInput
@@ -400,16 +433,20 @@ static int photoCount = 1;
         [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:_combinedPhotos.count-1 inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
     }];
     
+    [[EZMessageCenter getInstance] registerEvent:EZSetAlbumUser block:^(EZPerson* person){
+        [self setCurrentUser:person];
+    }];
+    
     [[EZMessageCenter getInstance] registerEvent:EZTriggerCamera block:^(id obj){
         //[weakSelf raiseCamera];
     }];
     
     
     EZDEBUG(@"The login personID:%@, getID:%@", [EZDataUtil getInstance].currentPersonID, [[EZDataUtil getInstance] getCurrentPersonID]);
-    [[EZDataUtil getInstance] queryPhotos:0 pageSize:photoPageSize success:^(NSArray* arr){
+    [[EZDataUtil getInstance] queryPhotos:0 pageSize:photoPageSize otherID:_currentUser.personID success:^(NSArray* arr){
         EZDEBUG(@"returned length:%i", arr.count);
         //[_combinedPhotos addObjectsFromArray:arr];
-        [self reloadRows:arr];
+        [self reloadRows:arr reload:YES];
         dispatch_later(0.1,
          ^(){
             [self scrollToBottom];
@@ -481,7 +518,7 @@ static int photoCount = 1;
     return false;
 }
 
-- (void) reloadRows:(NSArray*)photos
+- (void) reloadRows:(NSArray*)photos reload:(BOOL)reload
 {
     for(EZPhoto* pt in photos){
         if(! [self existed:pt.photoID]){
@@ -509,10 +546,15 @@ static int photoCount = 1;
             //EZDEBUG(@"after size:%f, %f", ep.size.width, ep.size.height);
             //success(ed);
             [_combinedPhotos insertObject:ed atIndex:0];
-            [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationTop];
+            if(!reload){
+                [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationTop];
+            }
             //[self.tableView reloadData];
         //}];
         }
+    }
+    if(photos.count && reload){
+        [self.tableView reloadData];
     }
 }
 
@@ -687,7 +729,7 @@ static int photoCount = 1;
 }
 
 
-
+/**
 - (void) uploadAndExchange:(EZPhoto*)photo sucess:(EZEventBlock)block failed:(EZEventBlock)failed
 {
     EZDEBUG(@"Uploaded for photoID:%@, uploaded:%i", photo.photoID, photo.uploaded);
@@ -698,12 +740,12 @@ static int photoCount = 1;
             EZDEBUG(@"Photo upload failed, will try it again later");
         }];
     }
-    [[EZDataUtil getInstance] exchangePhoto:photo success:^(EZPhoto* pt){
+    [[EZDataUtil getInstance] exchangeWithperson:nil success:^(EZPhoto* pt){
         block(pt);
     } failure:failed];
 
 }
-
+**/
 
 - (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
 {

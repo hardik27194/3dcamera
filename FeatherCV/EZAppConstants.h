@@ -48,6 +48,9 @@
 
 #define shaderSkinColor vec3(0.73,0.73,0.51)
 
+//The purpose of this even is to setup the Current Album user, so that user could load
+//The photo shared with this user
+#define EZSetAlbumUser @"EZSetAlbumUser"
 
 #define longShaderSkinColor vec3(0.78,0.78, 0.56)
 
@@ -82,11 +85,11 @@
 
 #define isoStr2Date(curStr) [[EZDataUtil getInstance].isoFormatter dateFromString:curStr]
 
-//#define baseUploadURL @"http://127.0.0.1:8080/upload"
+//#define baseUploadURL @"http://10.0.1.6:8080/upload"
 //#define baseUploadURL @"http://192.168.1.102:8080/upload"
 #define baseUploadURL @"http://www.enjoyxue.com:8080/upload"
 
-//#define baseServiceURL @"http://127.0.0.1:8080/"
+//#define baseServiceURL @"http://10.0.1.6:8080/"
 //#define baseServiceURL @"http://192.168.1.102:8080/"
 #define baseServiceURL @"http://www.enjoyxue.com:8080/"
 
@@ -129,6 +132,9 @@
 
 #define EZZoomoutAlbum @"EZZoomoutAlbum"
 #define EZZoominAlbum @"EZZoominAlbum"
+
+//Doesn't gurantee that the user is a mock or official user
+#define EZUserAuthenticated @"EZUserAuthenticated"
 
 
 #define EZCenterBigRadius 60.0

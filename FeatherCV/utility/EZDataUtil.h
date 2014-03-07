@@ -72,6 +72,10 @@
 
 @property (nonatomic, strong) NSMutableDictionary* currentQueryUsers;
 
+@property (nonatomic, strong) NSMutableSet* joinedUsers;
+
+@property (nonatomic, strong) NSMutableSet* notJoinedUsers;
+
 @property (nonatomic, strong) UIImageView* prefetchImage;
 
 @property (nonatomic, strong) NSDateFormatter* timeFormatter;
@@ -100,6 +104,9 @@
 //Will load data for user
 - (void) loadFriends:(EZEventBlock)success failure:(EZEventBlock)failure;
 
+//If all the photo book uploaded, then I could get from the map immediately.
+//Else i will call the old method.
+- (NSArray*) getSortedPersons:(EZEventBlock)successBlck;
 //called at logout, so that no user trace will left.
 - (void) cleanLogin;
 //Should I give the person id or what?
@@ -108,7 +115,9 @@
 
 - (void) prefetchImage:(NSString*) url success:(EZEventBlock)success failure:(EZEventBlock)failure;
 
-- (void) exchangePhoto:(EZPhoto*)photo success:(EZEventBlock)success failure:(EZEventBlock)failure;
+//- (void) exchangePhoto:(EZPhoto*)photo success:(EZEventBlock)success failure:(EZEventBlock)failure;
+
+- (void) exchangeWithPerson:(NSString*)matchPersonID success:(EZEventBlock)success failure:(EZEventBlock)failure;
 //Why this method?
 //Normally, the person is already in the cache by check the photos.
 - (EZPerson*) getPerson:(NSString*)personID;
@@ -177,7 +186,7 @@
 
 - (void) cancelPrematchPhoto:(EZPhoto*)photo success:(EZEventBlock)success failure:(EZEventBlock)failure;
 
-- (void) queryPhotos:(int)page pageSize:(int)pageSize  success:(EZEventBlock)success failure:(EZEventBlock)failure;
+- (void) queryPhotos:(int)page pageSize:(int)pageSize otherID:(NSString*)otherID success:(EZEventBlock)success failure:(EZEventBlock)failure;
 
 //Will check if any new photo in the album.
 //I will use the filename as hash?

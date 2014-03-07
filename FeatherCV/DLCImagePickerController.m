@@ -198,6 +198,23 @@
     outputJPEGQuality,
     requestedImageSize;
 
+
+- (EZColorBrighter*) createRedEnhanceFilter
+{
+    EZColorBrighter* res = [[EZColorBrighter alloc] init];
+    res.redEnhanceLevel = 0.65; //0.725
+    res.redRatio = 0.95;
+    
+    res.blueEnhanceLevel = 0.6;
+    res.blueRatio = 0.2;
+    
+    res.greenEnhanceLevel = 0.6;//0.8
+    res.greenRatio = 1.3;
+    
+    return res;
+}
+
+
 -(void) prepareStaticFilter:(EZFaceResultObj*)fobj image:(UIImage*)img{
     _detectFace = false;
     
@@ -226,15 +243,21 @@
         [sharpenGaussian addTarget:finalBlendFilter];
         [finalBlendFilter addTarget:filter];
         
-        secBlendFilter.blurFilter.distanceNormalizationFactor = 20.0;
-        secBlendFilter.blurFilter.blurSize = 3.0;
-        secBlendFilter.miniRealRatio = 0.1;
+        //res.redEnhanceLevel = 0.65; //0.725
+        redEnhanceFilter.redRatio = 1.15;
+        redEnhanceFilter.greenRatio = 1.5;
+        
+        secBlendFilter.blurFilter.distanceNormalizationFactor = 25.0;
+        secBlendFilter.blurFilter.blurSize = 2.8;
+        secBlendFilter.miniRealRatio = 0.2;
+        secBlendFilter.maxRealRatio = 1.0;
         secBlendFilter.imageMode = 0;
         secBlendFilter.skinColorFlag = 1;
         
-        finalBlendFilter.blurFilter.distanceNormalizationFactor = 10.0;
-        finalBlendFilter.blurFilter.blurSize = 0.3;//fobj.orgRegion.size.width;
-        finalBlendFilter.miniRealRatio = 0;
+        finalBlendFilter.blurFilter.distanceNormalizationFactor = 6.0;
+        finalBlendFilter.blurFilter.blurSize = 0.4;//fobj.orgRegion.size.width;
+        finalBlendFilter.miniRealRatio = 0.0;
+        finalBlendFilter.maxRealRatio = 0.8;
         finalBlendFilter.imageMode = 0;
         finalBlendFilter.skinColorFlag = 1;
         //finalBlendFilter.showFace = 1;
@@ -242,7 +265,8 @@
         //finalBlendFilter.smallBlurFilter.blurSize = blurAspectRatio * blurCycle;
         EZDEBUG(@"Will adjusted Face");
     }else{
-        [tongFilter addTarget:filter];
+        [tongFilter addTarget:sharpenGaussian];
+        [sharpenGaussian addTarget:filter];
         //[hueFilter addTarget:filter];
         EZDEBUG(@"No face find out");
     }
@@ -421,7 +445,7 @@
 //Will match the photo
 - (void) startPreFetch:(EZPhoto*)localPhoto imageSuccess:(EZEventBlock)imageSuccess
 {
-    [[EZDataUtil getInstance] exchangePhoto:nil success:^(EZPhoto* pt){
+    [[EZDataUtil getInstance] exchangeWithPerson:_personID success:^(EZPhoto* pt){
         EZDEBUG("Find prematched photo:%@, srcID:%@, uploaded flag:%i", pt.screenURL, pt.srcPhotoID, pt.uploaded);
         UIImageView* uw = [UIImageView new];
         [uw preloadImageURL:str2url(pt.screenURL) success:^(UIImage* obj){
@@ -580,20 +604,6 @@
     return resFilter;
 }
 
-- (EZColorBrighter*) createRedEnhanceFilter
-{
-    EZColorBrighter* res = [[EZColorBrighter alloc] init];
-    res.redEnhanceLevel = 0.65; //0.725
-    res.redRatio = 0.95;
-    
-    res.blueEnhanceLevel = 0.6;
-    res.blueRatio = 0.2;
-    
-    res.greenEnhanceLevel = 0.6;//0.8
-    res.greenRatio = 1.3;
-    
-    return res;
-}
 
 - (void) setupFlashFilter
 {
@@ -2301,6 +2311,8 @@
 - (void) triggerUpload
 {
     EZDEBUG(@"trigger pending upload");
+    //No need to flip it any more
+    disPhoto.isFront = false;
     [[EZDataUtil getInstance].pendingUploads addObject:disPhoto.photo];
 }
 

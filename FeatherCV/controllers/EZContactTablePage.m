@@ -41,8 +41,9 @@
         self.view.backgroundColor = BlurBackground;
         self.title = @"朋友";
         [self.tableView registerClass:[EZContactTableCell class] forCellReuseIdentifier:@"Cell"];
+        _contacts = [[NSMutableArray alloc] init];
         //_contacts = [[NSMutableArray alloc] init];
-        _contacts = [EZDataUtil getInstance].contacts;
+        //_contacts = [EZDataUtil getInstance].contacts;
     }
     return self;
 }
@@ -61,6 +62,23 @@
     [EZUIUtility sharedEZUIUtility].stopRotationRaise = false;
 }
 
+- (void) loadPersonInfos
+{
+    _contacts = (NSMutableArray*)[[EZDataUtil getInstance] getSortedPersons:^(NSArray* arr){
+        if(currentLoginUser){
+            [_contacts addObject:currentLoginUser];
+        }
+        if(arr){
+            [_contacts addObjectsFromArray:arr];
+            [self.tableView reloadData];
+        }
+    }];
+    [_contacts insertObject:currentLoginUser atIndex:0];
+    if(_contacts.count){
+        [self.tableView reloadData];
+    }
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -77,6 +95,11 @@
         _contacts = [EZDataUtil getInstance].contacts;
         [self.tableView reloadData];
     }];
+    
+    dispatch_later(0.3, ^(){
+        [self loadPersonInfos];
+    });
+    
 }
 
 
@@ -132,12 +155,23 @@
         //[self dismissViewControllerAnimated:YES completion:^(){
         
         //}];
-        [weakSelf.navigationController popViewControllerAnimated:YES];
-        if(weakSelf.completedBlock){
-            weakSelf.completedBlock(person);
-        }
-
+        //if(person.joined){
+            [weakSelf.navigationController popViewControllerAnimated:YES];
+            //if(weakSelf.completedBlock){
+            //    weakSelf.completedBlock(person);
+            //}
+            [[EZMessageCenter getInstance] postEvent:EZSetAlbumUser attached:person];
+        //}
     };
+    if(person.joined){
+        cell.inviteButton.hidden = YES;
+    }else{
+        cell.inviteButton.hidden = false;
+        cell.inviteClicked = ^(id obj){
+            EZDEBUG(@"SEND SMS");
+        };
+    }
+    
     cell.headIcon.releasedBlock = ^(id object){
         EZDEBUG(@"Header clicked");
     };

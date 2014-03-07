@@ -217,6 +217,8 @@ typedef enum {
 @property (nonatomic, assign) BOOL turnedImage;
 
 @property (nonatomic, assign) BOOL firstTime;
+
+@property (nonatomic, assign) NSString* personID;
 //This method will change the turnStatus
 - (void) captureTurnedImage;
 -(void) becomeVisible:(BOOL)isFront;

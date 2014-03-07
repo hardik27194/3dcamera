@@ -43,6 +43,9 @@
 
 @property (nonatomic, assign) CGFloat miniRealRatio;
 
+@property (nonatomic, assign) CGFloat maxRealRatio;
+
+
 @property (nonatomic, assign) CGFloat edgeRatio;
 //@property (readwrite, nonatomic) NSArray* skinColors;
 @property (nonatomic, strong) NSArray* faceRegion;
