@@ -65,6 +65,8 @@
     _totalCover = [[EZClickView alloc] initWithFrame:[UIScreen mainScreen].bounds];
     _totalCover.enableTouchEffects = false;
     _totalCover.backgroundColor = [UIColor clearColor];
+    _sortedUsers = [[NSMutableArray alloc] init];
+    _sortedUserSets = [[NSMutableSet alloc] init];
     [_timeFormatter setDateStyle:NSDateFormatterShortStyle];
     [_timeFormatter setTimeStyle:NSDateFormatterShortStyle];
     [_timeFormatter setDoesRelativeDateFormatting:YES];
@@ -531,11 +533,23 @@
 
 - (NSArray*) getSortedPersons:(EZEventBlock)successBlck
 {
-    NSMutableArray* pids = [[NSMutableArray alloc] initWithArray:[_joinedUsers allObjects]];
     NSMutableArray* res = [[NSMutableArray alloc] init];
+    NSMutableArray* pids = [[NSMutableArray alloc] init];
+    [pids addObject:currentLoginID];
+    [pids addObjectsFromArray:_sortedUsers];
+    [pids addObjectsFromArray:[_joinedUsers allObjects]];
     [pids addObjectsFromArray:_notJoinedUsers.allObjects];
-    if(pids.count){
-        for(NSString* pid in pids){
+    [_sortedUserSets removeAllObjects];
+    NSMutableArray* sortedPids = [[NSMutableArray alloc] init];
+    for(NSString* pid in pids){
+        if(![_sortedUserSets containsObject:pid]){
+            [_sortedUserSets addObject:pid];
+            [sortedPids addObject:pid];
+        }
+    }
+    
+    if(sortedPids.count){
+        for(NSString* pid in sortedPids){
             EZPerson* ps = [_currentQueryUsers objectForKey:pid];
             [res addObject:ps];
         }
@@ -839,6 +853,13 @@
 - (void) getConversation:(int)combineID success:(EZEventBlock)success failure:(EZEventBlock)failure
 {
    
+}
+
+//Will be used to adjust the squence.
+- (void) adjustActivity:(NSString*)personID
+{
+    [_sortedUsers removeObject:personID];
+    [_sortedUsers insertObject:personID atIndex:0];
 }
 
 //The converstation will add to the relationship.

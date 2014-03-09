@@ -31,7 +31,8 @@
 #import "EZCenterButton.h"
 #import "EZContactTablePage.h"
 #import "EZShapeButton.h"
-
+#import "EZAnimationUtil.h"
+#import "EZBlurAnimator.h"
 static int photoCount = 1;
 @interface EZAlbumTablePage ()
 
@@ -816,10 +817,39 @@ static int photoCount = 1;
     }else{
         [cell.frontImage setImageWithURL:str2url(switchPhoto.screenURL)];
     }
+    
+    __weak EZAlbumTablePage* weakSelf = self;
     __weak EZPhotoCell* weakCell = cell;
     cell.frontImage.tappedBlock = ^(id obj){
-        EZDEBUG(@"Cell Released clicked");
+        //EZDEBUG(@"Cell Released clicked");
         //[[EZUIUtility sharedEZUIUtility] raiseInfoWindow:@"测试" info:@"好好测"];
+        //UIImage* img = [weakCell.frontImage createBlurImage:60];
+        //EZDEBUG(@"Cell tapped, the size is:%@", NSStringFromCGSize(img.size));
+        //UIImageView* imgView = [[UIImageView alloc] initWithImage:img];
+        //[weakCell.frontImage addSubview:imgView];
+        /**
+        EZBlurAnimator* ba = [[EZBlurAnimator alloc] initWithFrame:weakCell.frontImage.frame];
+        [weakCell addSubview:ba];
+        ba.tintColor = RGBA(255, 128, 128, 50);
+        [ba animateBlur:0.0 to:70.0 duration:1.0 srcView:weakCell.frontImage completed:^(EZBlurAnimator* blur){
+            [blur animateBlur:70.0 to:0 duration:0.5 srcView:weakCell.frontImage completed:^(EZBlurAnimator* blurred){
+                [blurred removeFromSuperview];
+            }];
+        }];
+        **/
+        
+        //UIImage* img = [tableView contentAsImage];
+        
+        /**
+        UIImage* img = [weakCell createBlurImage:70.0];
+        
+        EZDEBUG(@"image size:%@", NSStringFromCGSize(img.size));
+        
+        UIImageView* blurview = [[UIImageView alloc] initWithFrame:CGRectMake(0, 100, 100, 100)];
+        blurview.backgroundColor = [UIColor redColor];
+        blurview.image = img;
+        [TopView addSubview:blurview];
+         **/
         if(switchPhoto){
             [self switchImage:weakCell displayPhoto:cp front:myPhoto back:switchPhoto animate:YES];
         }

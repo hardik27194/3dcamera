@@ -27,12 +27,13 @@
     //Set anchor points for the views
     UIImageView* blurredView = nil;
     if (self.type == AnimationTypePresent) {
-        blurredView = [fromViewController.view createBlurImageView];
+        blurredView =[[UIImageView alloc]initWithImage:[fromViewController.view createBlurImage:70.0]];
         
         //[self setAnchorPoint:CGPointMake(1.0, 0.5) forView:toViewController.view];
         //[self setAnchorPoint:CGPointMake(0.0, 0.5) forView:fromViewController.view];
         blurredView.tag = blurViewTag;
-        [toViewController.view insertSubview:blurredView atIndex:0];
+        //[toViewController.view insertSubview:blurredView atIndex:0];
+        [toViewController.view  insertSubview:blurredView atIndex:0];
         blurredView.y = - blurredView.height;
         toViewController.view.clipsToBounds = true;
         [containerView addSubview:toViewController.view];

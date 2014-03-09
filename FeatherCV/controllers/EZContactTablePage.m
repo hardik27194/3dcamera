@@ -29,7 +29,8 @@
     self.tableView.dataSource = self;
     self.tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
     self.tableView.delegate = self;
-    self.tableView.backgroundColor = RGBA(255, 255, 255, 128);
+    //self.tableView.backgroundColor = RGBA(255, 255, 255, 128);
+    self.tableView.backgroundColor = [UIColor clearColor];
     [self.view addSubview:self.tableView];
 }
 
@@ -38,7 +39,7 @@
     self = [super init];
     if (self) {
         // Custom initialization
-        self.view.backgroundColor = BlurBackground;
+        self.view.backgroundColor = [UIColor clearColor];
         self.title = @"朋友";
         [self.tableView registerClass:[EZContactTableCell class] forCellReuseIdentifier:@"Cell"];
         _contacts = [[NSMutableArray alloc] init];
@@ -65,15 +66,15 @@
 - (void) loadPersonInfos
 {
     _contacts = (NSMutableArray*)[[EZDataUtil getInstance] getSortedPersons:^(NSArray* arr){
-        if(currentLoginUser){
-            [_contacts addObject:currentLoginUser];
-        }
+        //if(currentLoginUser){
+        //    [_contacts addObject:currentLoginUser];
+        //}
         if(arr){
             [_contacts addObjectsFromArray:arr];
             [self.tableView reloadData];
         }
     }];
-    [_contacts insertObject:currentLoginUser atIndex:0];
+    //[_contacts insertObject:currentLoginUser atIndex:0];
     if(_contacts.count){
         [self.tableView reloadData];
     }
@@ -165,11 +166,13 @@
     };
     if(person.joined){
         cell.inviteButton.hidden = YES;
+        cell.headIcon.hidden = NO;
     }else{
         cell.inviteButton.hidden = false;
         cell.inviteClicked = ^(id obj){
             EZDEBUG(@"SEND SMS");
         };
+        cell.headIcon.hidden = YES;
     }
     
     cell.headIcon.releasedBlock = ^(id object){

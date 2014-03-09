@@ -139,6 +139,9 @@ typedef void  (^ IterateOperation)(id obj);
 
 @interface UIView(EZPrivate)
 
+- (UIImage*) createBlurImage:(CGFloat)blurRadius;
+
+- (void) blurSwitch:(UIView*)src dest:(UIView*)dest blurRadius:(CGFloat)radius duration:(CGFloat)duration complete:(EZEventBlock)completion;
 
 - (void) runSpinAnimation:(CGFloat)duration rotations:(CGFloat)rotations repeat:(float)repeat;
 

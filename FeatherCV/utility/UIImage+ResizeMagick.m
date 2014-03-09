@@ -202,13 +202,6 @@ static inline CGSize swapWidthAndHeight(CGSize size)
     return resizedImage;
 }
 
-- (UIImage*) createBlurImage:(CGFloat)blurSize
-{
-    CIFilter *filter = [CIFilter filterWithName:@"CIGaussianBlur"];
-    [filter setValue:[self CIImage] forKey:kCIInputImageKey];
-    [filter setValue:[NSNumber numberWithFloat:blurSize] forKey:@"inputRadius"];
-    return [UIImage imageWithCIImage:filter.outputImage];
-}
 
 - (UIImage*) croppedImageWithRect: (CGRect) rect {
 

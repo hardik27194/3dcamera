@@ -9,17 +9,17 @@
 #import "EZAnimationUtil.h"
 
 
-void animateAllSubscribedAppliedFunction(const void *value, void *context);
+//void animateAllSubscribedAppliedFunction(const void *value, void *context);
 
-
+/**
 void animateAllSubscribedAppliedFunction(const void *value, void *context) {
     NSObject<EZAnimInterface>* anim = (__bridge NSObject<EZAnimInterface> *)value;
 	if([anim animate]){
-        [[EZAnimationUtil sharedEZAnimationUtil] removeAnimations:anim];
+        [[EZAnimationUtil sharedEZAnimationUtil] removeAnimation:anim];
     };
     //[(__bridge NSObject<EZAnimInterface> *)value animate];
 }
-
+**/
 
 @implementation EZAnimationUtil
 
@@ -39,12 +39,12 @@ SINGLETON_FOR_CLASS(EZAnimationUtil)
 
 //This is a thread safe way of doing things?
 //If it is I will be very happy
-- (void) addAnimation:(NSObject<EZAnimInterface> *)object {
+- (void) addAnimation:(EZAnimateBlock)object {
 	//CFSetAddValue(_animations, (__bridge const void*)object);
     [_array addObject:object];
 }
 
-- (void) removeAnimations:(NSObject<EZAnimInterface> *)object {
+- (void) removeAnimation:(EZAnimateBlock)object {
 	//CFSetRemoveValue(_animations, (__bridge const void*)object);
     [_array removeObject:object];
 }
@@ -53,8 +53,8 @@ SINGLETON_FOR_CLASS(EZAnimationUtil)
 	if(!_pauseAnimation){
         //CFSetApplyFunction(_animations, animateAllSubscribedAppliedFunction, NULL);
         for(int i = 0; i < _array.count; i++){
-            NSObject<EZAnimInterface>* anim = [_array objectAtIndex:i];
-            BOOL completed = [anim animate];
+            EZAnimateBlock anim = [_array objectAtIndex:i];
+            BOOL completed = anim();
             if(completed){
                 [_array removeObjectAtIndex:i];
                 --i;

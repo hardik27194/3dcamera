@@ -66,6 +66,11 @@
 //A good change to use the KV listener.
 @property (nonatomic, strong) NSMutableArray* pendingPhotos;
 
+//Act as a hashed Link list
+@property (nonatomic, strong) NSMutableArray* sortedUsers;
+
+@property (nonatomic, strong) NSMutableSet* sortedUserSets;
+
 @property (nonatomic, strong) NSMutableSet* pendingUserQuery;
 
 @property (nonatomic, strong) NSMutableDictionary* pendingPersonCall;
@@ -151,6 +156,8 @@
 //Get converstaion regarding this photo
 - (void) getConversation:(int)combineID success:(EZEventBlock)success failure:(EZEventBlock)failure;
 
+//Adjust the sequence for the users
+- (void) adjustActivity:(NSString*)personID;
 //The Photo object will returned.
 //How about thumbnail.
 //Should we generate it dynamically.

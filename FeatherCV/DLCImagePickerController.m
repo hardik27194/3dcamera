@@ -447,6 +447,8 @@
 {
     [[EZDataUtil getInstance] exchangeWithPerson:_personID success:^(EZPhoto* pt){
         EZDEBUG("Find prematched photo:%@, srcID:%@, uploaded flag:%i", pt.screenURL, pt.srcPhotoID, pt.uploaded);
+        //Mean this user get used once, will adjust it's sequence
+        [[EZDataUtil getInstance] adjustActivity:pt.personID];
         UIImageView* uw = [UIImageView new];
         [uw preloadImageURL:str2url(pt.screenURL) success:^(UIImage* obj){
             EZDEBUG(@"preload success:%@", pt.screenURL);

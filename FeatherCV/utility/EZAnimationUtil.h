@@ -23,7 +23,10 @@ SINGLETON_FOR_HEADER(EZAnimationUtil)
 @property (nonatomic, readonly, assign) CFMutableSetRef animations;
 @property (nonatomic, readonly, strong) CADisplayLink *displayLink;
 @property (nonatomic, readonly, assign) BOOL pauseAnimation;
-- (void) addAnimation:(NSObject<EZAnimInterface> *)object;
-- (void) removeAnimations:(NSObject<EZAnimInterface> *)object;
+//- (void) addAnimation:(NSObject<EZAnimInterface> *)object;
+//- (void) removeAnimations:(NSObject<EZAnimInterface> *)object;
+- (void) addAnimation:(EZAnimateBlock)animBlock;
+
+- (void) removeAnimation:(EZAnimateBlock)animBlock;
 
 @end

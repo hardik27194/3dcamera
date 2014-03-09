@@ -32,6 +32,7 @@
 		184ADD7718C4C20F00367527 /* EZUIApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = 184ADD7618C4C20F00367527 /* EZUIApplication.m */; };
 		184ADD8018C8692000367527 /* featherpage.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 184ADD7F18C8692000367527 /* featherpage.jpg */; };
 		184ADD8318C8ACA300367527 /* EZShapeButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 184ADD8218C8ACA200367527 /* EZShapeButton.m */; };
+		184ADD8618CB490E00367527 /* EZBlurAnimator.m in Sources */ = {isa = PBXBuildFile; fileRef = 184ADD8518CB490E00367527 /* EZBlurAnimator.m */; };
 		184DBE7218B8D8A400239F0F /* EZSkinSharpen.m in Sources */ = {isa = PBXBuildFile; fileRef = 184DBE7118B8D8A400239F0F /* EZSkinSharpen.m */; };
 		184DBE7718BB476F00239F0F /* EZSimpleClick.m in Sources */ = {isa = PBXBuildFile; fileRef = 184DBE7618BB476F00239F0F /* EZSimpleClick.m */; };
 		184DBE7918BB51DB00239F0F /* EZErrorInfo.strings in Resources */ = {isa = PBXBuildFile; fileRef = 184DBE7818BB51DB00239F0F /* EZErrorInfo.strings */; };
@@ -332,6 +333,8 @@
 		184ADD7F18C8692000367527 /* featherpage.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = featherpage.jpg; sourceTree = "<group>"; };
 		184ADD8118C8ACA200367527 /* EZShapeButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZShapeButton.h; sourceTree = "<group>"; };
 		184ADD8218C8ACA200367527 /* EZShapeButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZShapeButton.m; sourceTree = "<group>"; };
+		184ADD8418CB490E00367527 /* EZBlurAnimator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZBlurAnimator.h; sourceTree = "<group>"; };
+		184ADD8518CB490E00367527 /* EZBlurAnimator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZBlurAnimator.m; sourceTree = "<group>"; };
 		184DBE7018B8D8A400239F0F /* EZSkinSharpen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZSkinSharpen.h; sourceTree = "<group>"; };
 		184DBE7118B8D8A400239F0F /* EZSkinSharpen.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZSkinSharpen.m; sourceTree = "<group>"; };
 		184DBE7518BB476F00239F0F /* EZSimpleClick.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZSimpleClick.h; sourceTree = "<group>"; };
@@ -1096,6 +1099,8 @@
 				18C0E76D1861A0FF00D694CE /* EZSoundEffect.m */,
 				18F58B5818716C19006CB966 /* EZGradientLayerView.h */,
 				18F58B5918716C19006CB966 /* EZGradientLayerView.m */,
+				184ADD8418CB490E00367527 /* EZBlurAnimator.h */,
+				184ADD8518CB490E00367527 /* EZBlurAnimator.m */,
 				181608C518B4E38600DD5995 /* EZAnimationUtil.h */,
 				181608C618B4E38600DD5995 /* EZAnimationUtil.m */,
 				181608CA18B4EA9F00DD5995 /* EZRotateAnimation.h */,
@@ -1530,6 +1535,7 @@
 				181608C718B4E38600DD5995 /* EZAnimationUtil.m in Sources */,
 				18E746F118A4A26A0023967B /* AFURLResponseSerialization.m in Sources */,
 				18E746F418A4A26A0023967B /* UIActivityIndicatorView+AFNetworking.m in Sources */,
+				184ADD8618CB490E00367527 /* EZBlurAnimator.m in Sources */,
 				18E746F318A4A26A0023967B /* AFNetworkActivityIndicatorManager.m in Sources */,
 				18A36FF31855C1F50022F0A8 /* DLCGrayscaleContrastFilter.m in Sources */,
 				18F58B7C187AF205006CB966 /* EZFaceResultObj.m in Sources */,

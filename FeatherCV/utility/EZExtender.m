@@ -11,6 +11,7 @@
 #import "AFNetworking.h"
 #import <QuartzCore/QuartzCore.h>
 #import "EZAppConstants.h"
+#import "EZAnimationUtil.h"
 
 static NSArray* starList;
 
@@ -527,6 +528,100 @@ NSString* doubleString(NSString* str)
     self.layer.cornerRadius = self.bounds.size.width/2;
     self.contentMode  = UIViewContentModeScaleAspectFill;
     self.clipsToBounds = YES;
+}
+
+- (uint32_t) calBlurKernel:(CGFloat)blurRadius
+{
+	uint32_t radius = (uint32_t)floor(blurRadius * 3. * sqrt(2 * M_PI) / 4 + 0.5);
+	radius += (radius + 1) % 2;
+	return radius;
+}
+
+
+- (void) blurSwitch:(UIView*)src dest:(UIView*)dest blurRadius:(CGFloat)radius duration:(CGFloat)duration complete:(EZEventBlock)completion
+{
+    [[EZAnimationUtil sharedEZAnimationUtil] addAnimation:^(){
+        
+        return 1;
+    }];
+    
+}
+
+- (UIImage*) createBlurImage:(CGFloat)blurRadius
+{
+    return [[[UIImageView alloc] initWithImage:[self contentAsImage]] createBlurImageInner:blurRadius];
+}
+
+- (UIImage*) createBlurImageInner:(CGFloat)blurRadius
+{
+    
+    //UIImage* contentImage = [self contentAsImage];
+    CGFloat scaleFactor = 1.0;
+    CGRect visibleRect = self.frame;
+	CGSize bufferSize = CGSizeMake(self.bounds.size.width * scaleFactor, self.bounds.size.height * scaleFactor);
+	if (bufferSize.width == 0 || bufferSize.height == 0) {
+		return nil;
+	}
+	CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+	
+	CGContextRef effectInContext = CGBitmapContextCreate(NULL, bufferSize.width, bufferSize.height, 8, bufferSize.width * 8, colorSpace, kCGImageAlphaPremultipliedLast | kCGBitmapByteOrder32Big);
+	
+	CGContextRef effectOutContext = CGBitmapContextCreate(NULL, bufferSize.width, bufferSize.height, 8, bufferSize.width * 8, colorSpace, kCGImageAlphaPremultipliedLast | kCGBitmapByteOrder32Big);
+	
+	CGColorSpaceRelease(colorSpace);
+	
+	CGContextConcatCTM(effectInContext, (CGAffineTransform){
+		1, 0, 0, -1, 0, bufferSize.height
+	});
+	CGContextScaleCTM(effectInContext,  scaleFactor, scaleFactor);
+	CGContextTranslateCTM(effectInContext, -visibleRect.origin.x, -visibleRect.origin.y);
+	
+
+	vImage_Buffer effectInBuffer = (vImage_Buffer){
+		.data = CGBitmapContextGetData(effectInContext),
+		.width = CGBitmapContextGetWidth(effectInContext),
+		.height = CGBitmapContextGetHeight(effectInContext),
+		.rowBytes = CGBitmapContextGetBytesPerRow(effectInContext)
+	};
+	
+	vImage_Buffer effectOutBuffer = (vImage_Buffer){
+		.data = CGBitmapContextGetData(effectOutContext),
+		.width = CGBitmapContextGetWidth(effectOutContext),
+		.height = CGBitmapContextGetHeight(effectOutContext),
+		.rowBytes = CGBitmapContextGetBytesPerRow(effectOutContext)
+	};
+    
+
+    //CGContextRef effectInContext = CGContextRetain(_effectInContext);
+	//CGContextRef effectOutContext = CGContextRetain(_effectOutContext);
+	//vImage_Buffer effectInBuffer = _effectInBuffer;
+	//vImage_Buffer effectOutBuffer = _effectOutBuffer;
+	
+	//self.hidden = YES;
+	[self.layer renderInContext:effectInContext];
+    //UIGraphicsPushContext(effectInContext);
+    //BOOL updateSuccess = [self drawViewHierarchyInRect:self.bounds afterScreenUpdates:NO];
+    //UIGraphicsPopContext();
+    //[self.layer renderInContext:effectInContext];
+    //EZDEBUG(@"update Success:%i", updateSuccess);
+    //CGContextDrawImage(effectInContext, self.bounds, contentImage.CGImage);
+    //self.hidden = NO;
+
+	uint32_t blurKernel = [self calBlurKernel:blurRadius];
+	
+	vImageBoxConvolve_ARGB8888(&effectInBuffer, &effectOutBuffer, NULL, 0, 0, blurKernel, blurKernel, 0, kvImageEdgeExtend);
+	vImageBoxConvolve_ARGB8888(&effectOutBuffer, &effectInBuffer, NULL, 0, 0, blurKernel, blurKernel, 0, kvImageEdgeExtend);
+	vImageBoxConvolve_ARGB8888(&effectInBuffer, &effectOutBuffer, NULL, 0, 0, blurKernel, blurKernel, 0, kvImageEdgeExtend);
+	
+	CGImageRef outImage = CGBitmapContextCreateImage(effectOutContext);
+	//self.layer.contents = (__bridge id)(outImage);
+    UIImage* res = [[UIImage alloc] initWithCGImage:outImage];
+	CGImageRelease(outImage);
+    
+	CGContextRelease(effectInContext);
+	CGContextRelease(effectOutContext);
+    
+    return res;
 }
 
 
