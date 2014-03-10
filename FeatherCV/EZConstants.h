@@ -147,7 +147,7 @@ alpha:(a)/255.0f]
 #define AddTopView(view) [UIApplication addTopView:view]
 
 
-#define PlaceHolderSmall [UIImage imageNamed:@"user-icon-placeholder-60"]
+#define PlaceHolderSmall [UIImage imageNamed:@"head_icon"]
 #define PlaceHolderMiddle [UIImage imageNamed:@"user-icon-placeholder-100"]
 #define PlaceHolderLarge [UIImage imageNamed:@"user-icon-placeholder-120"]
 #define PlaceHolderLargest [UIImage imageNamed:@"user-icon-placeholder-310"]

@@ -446,7 +446,7 @@ static int photoCount = 1;
     //self.tableView.contentInset = UIEdgeInsetsMake(-64, 0, 0, 0);
     EZDEBUG(@"Before change:%i", self.edgesForExtendedLayout);
     //self.edgesForExtendedLayout = UIRectEdgeAll;
-    //self.tableView.backgroundColor = RGBCOLOR(230, 231, 226);
+    self.tableView.backgroundColor = VinesGray;
     //self.tableView.backgroundColor = VinesGray; //[UIColor blackColor];
     //self.tableView.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"featherPage"]];
     //[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];

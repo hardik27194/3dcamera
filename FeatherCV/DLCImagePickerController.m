@@ -249,7 +249,7 @@
         
         secBlendFilter.blurFilter.distanceNormalizationFactor = 22.0;
         secBlendFilter.blurFilter.blurSize = 2.8;
-        secBlendFilter.miniRealRatio = 0.25;
+        secBlendFilter.miniRealRatio = 0.0;
         secBlendFilter.maxRealRatio = 1.0;
         secBlendFilter.imageMode = 0;
         secBlendFilter.skinColorFlag = 1;
@@ -659,6 +659,7 @@
     [super viewDidLoad];
     
     self.view.backgroundColor = VinesGray;
+    self.cameraRotateContainer.backgroundColor = VinesGray;
     //
     _senseRotate = true;
     //_recordedMotions = [[NSMutableArray alloc] init];
@@ -685,15 +686,6 @@
     smallSharpenFilter.sharpenSize = 1.6;
     smallSharpenFilter.sharpenRatio = 0.2;
     smallSharpenFilter.sharpenBar = 0.1;
-    
-    
-    //sharpenGaussian = [[EZSharpenGaussian alloc] init];
-    //sharpenGaussianSec = [[EZSharpenGaussian alloc] init];
-    
-    //sharpenFilter.sharpness = 0.3;
-    
-    //set background color
-    //self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"micro_carbon"]];
     
     self.photoBar.backgroundColor = [UIColor colorWithPatternImage:
                                      [UIImage imageNamed:@"photo_bar"]];
@@ -737,6 +729,27 @@
     [self setupUI];
     [self createTextField];
     [self setupKeyboard];
+    //[_toolBarRegion addObserver:self forKeyPath:@"alpha" options:0 context:nil];
+    //[_toolBarRegion addObserver:self forKeyPath:@"hidden" options:0 context:nil];
+    //[_inputTextRegion setOb]
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change
+context:(void *)context
+{
+    EZDEBUG(@"Keypath is:%@, thread Call:%@", keyPath, [NSThread callStackSymbols]);
+    if ([keyPath isEqual:@"alpha"]) {
+        NSNumber* changedName = [change objectForKey:NSKeyValueChangeNewKey];
+        // do something with the changedName - call a method or update the UI here
+        //self.nameLabel.text = changedName;
+        EZDEBUG(@"Current alpha is:%f", changedName.floatValue);
+    }else if([keyPath isEqual:@"hidden"]){
+        NSNumber* changedName = [change objectForKey:NSKeyValueChangeNewKey];
+        // do something with the changedName - call a method or update the UI here
+        //self.nameLabel.text = changedName;
+        EZDEBUG(@"Current hidden is:%i", changedName.intValue);
+    }
+
 }
 
 - (void) longCoverStart
@@ -938,6 +951,7 @@
         //[self hideKeyboard:NO];
     };
     keyboardRaiseHandler = ^(id obj){
+        
         EZKeyboadUtility* keyUtil = [EZKeyboadUtility getInstance];
         CGRect keyFrame = [keyUtil keyboardFrameToView:weakSelf.view];
         CGFloat smallGap = keyUtil.gapHeight;
@@ -950,12 +964,14 @@
             [weakSelf.view addSubview:cancelKeyboard];
             [weakSelf liftWithBottom:-keyFrame.size.height time:0.3 complete:nil];
         }
+        //[EZDataUtil getInstance].centerButton.alpha = 0.0;
     };
     
     keyboardHideHandler = ^(id obj){
         [cancelKeyboard removeFromSuperview];
         //[weakSelf liftWithBottom:-keyFrame.size.height time:0.6];
         [weakSelf hideKeyboard:weakSelf.hideTextInput complete:nil];
+        //[EZDataUtil getInstance].centerButton.alpha = 1.0;
         
     };
     //[[EZMessageCenter getInstance] registerEvent:EZ block:
@@ -994,6 +1010,11 @@
     [UIView animateWithDuration:timeval delay:0.0 options:UIViewAnimationOptionCurveLinear  animations:^(){
         //[[EZDataUtil getInstance].centerButton moveY:delta];
         [self.view moveY:delta];
+        //if(delta < 0){
+        //    textInputRegion.y = CurrentScreenHeight - textInputRegion.height;
+        //}else{
+        //    textInputRegion.y = CurrentScreenHeight - 120;
+        //}
         //cancelButton
     } completion:^(BOOL completed){
         if(complete){
@@ -1014,11 +1035,22 @@
 {
     CGRect bounds = [UIScreen mainScreen].applicationFrame;
     textInputRegion = [[UIView alloc] initWithFrame:CGRectMake(0, CurrentScreenHeight, 320, 44)];
-    textInputRegion.backgroundColor = [UIColor whiteColor];
-    _textField = [[UITextField alloc] initWithFrame:CGRectMake(5, 0, 310, 44)];
+    //textInputRegion.backgroundColor = [UIColor whiteColor];
+    textInputRegion.backgroundColor = [UIColor clearColor];
+    
+    _authorIcon = [[EZClickImage alloc] initWithFrame:CGRectMake(5, (44 - smallIconRadius)/2.0, smallIconRadius, smallIconRadius)];
+    [_authorIcon enableRoundImage];
+    _authorIcon.enableTouchEffects = false;
+    _authorIcon.image = PlaceHolderSmall;
+    [_authorIcon setImageWithURL:str2url(currentLoginUser.avatar)];
+    [textInputRegion addSubview:_authorIcon];
+    _textField = [[UITextField alloc] initWithFrame:CGRectMake(50, 0, 310, 44)];
     _textField.placeholder = macroControlInfo(@"Say something");
     _textField.delegate = self;
     _textField.returnKeyType = UIReturnKeySend;
+    _textField.keyboardAppearance = UIKeyboardAppearanceLight;
+    [_textField setTextColor:[UIColor whiteColor]];
+    [_textField enableShadow:[UIColor blackColor]];
     //cancelText = [[UIButton alloc] initWithFrame:CGRectMake(255, 0, 60, 44)];
     //[cancelText setTitle:macroControlInfo(@"Cancel-Text") forState:UIControlStateNormal];
     //[cancelText setTitleColor:RGBCOLOR(128, 128, 128) forState:UIControlStateNormal];
@@ -1061,7 +1093,7 @@
         [chatText enableTextWrap];
         chatRegion.y = bound.size.height;
         EZDEBUG(@"show avatar:%@", currentLoginUser.avatar);
-        [authorIcon setImageWithURL:str2url(currentLoginUser.avatar)];
+        [_authorIcon setImageWithURL:str2url(currentLoginUser.avatar)];
         [self.view addSubview:chatRegion];
         dispatch_later(0.3, ^(){
         [UIView animateWithDuration:0.35 delay:0.0 usingSpringWithDamping:0.5 initialSpringVelocity:0.5 options:0 animations:^(){
@@ -1086,6 +1118,7 @@
     return true;
 }
 
+
 - (void) showTextField:(BOOL)show
 {
     EZDEBUG(@"show text field:%i", show);
@@ -1094,15 +1127,15 @@
     [UIView animateWithDuration:0.3 delay:0.0 options:UIViewAnimationOptionCurveEaseOut  animations:^(){
         if(show){
             //_toolBarRegion.y = _toolBarRegion.frame.origin.y - 44;
-            textInputRegion.y = CurrentScreenHeight - 44;
+            textInputRegion.y = CurrentScreenHeight - 150;
             //[[EZDataUtil getInstance].centerButton moveY:-44];
-            _toolBarRegion.alpha = 0;
-            [EZDataUtil getInstance].centerButton.alpha = 0;
+            //_toolBarRegion.alpha = 0;
+            //[EZDataUtil getInstance].centerButton.alpha = 0;
         }else{
             textInputRegion.y = CurrentScreenHeight;
-            _toolBarRegion.alpha = 1.0;
+            //_toolBarRegion.alpha = 1.0;
             //[[EZDataUtil getInstance].centerButton moveY:44];
-            [EZDataUtil getInstance].centerButton.alpha = 1.0;
+            //[EZDataUtil getInstance].centerButton.alpha = 1.0;
         }
     } completion:^(BOOL completed){
         
@@ -1916,7 +1949,7 @@
     [self removeAllTargets];
     staticPicture = nil;
     [self prepareRotateImage:currentImage];
-    //[self showTextField:YES];
+    [self showTextField:YES];
     if(_shotPhoto.photoRelations.count){
         EZPhoto* matched = [_shotPhoto.photoRelations objectAtIndex:0];
         EZDEBUG(@"prefetch image:%@", matched.screenURL);
@@ -1924,12 +1957,6 @@
         [[EZDataUtil getInstance] prefetchImage:matched.screenURL success:^(UIImage* image){
             //[rotateView.layer removeAllAnimations];
             EZDEBUG(@"image fetched back");
-            //dispatch_later(0.5,
-                        //^(){
-                               //[self stopRotateImage:image];
-                        //       _showOther = YES;
-            
-                         //  });
             _otherImage = image;
             _flipStatus = kStoredPhoto;
              //[self rotateCurrentImage:image];
@@ -2297,7 +2324,7 @@
         isStatic = YES;
         _turnedImage = FALSE;
         [self changeButtonStatus:YES];
-        _toolBarRegion.alpha = 0;
+        _toolBarRegion.alpha = 0.0;
         _isImageWithFlash = NO;
         [self prepareForCapture];
     }else{
@@ -2306,9 +2333,9 @@
             [self savePhoto];
             [self changePhoto];
             //[self fakeAnimation:nil];
-            cancelButton.hidden = YES;
+            //cancelButton.hidden = YES;
         }else{
-            cancelButton.hidden = NO;
+            //cancelButton.hidden = NO;
             [[EZMessageCenter getInstance]postEvent:EZTakePicture attached:disPhoto];
             [self completedProcess];
             //[self fakeAnimation];
@@ -2396,7 +2423,7 @@
     //EZPhoto* tmpMatch = _matchedPhoto;
     disPhoto =  [self createPhoto:currentFilteredVideoFrame orgData:photoMeta shotPhoto:_shotPhoto];
     _takingPhoto = false;
-    _toolBarRegion.alpha = 1;
+    _toolBarRegion.alpha = 1.0;
     return currentFilteredVideoFrame;
 }
 

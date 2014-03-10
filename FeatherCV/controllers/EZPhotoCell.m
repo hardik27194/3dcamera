@@ -27,10 +27,10 @@
     EZDEBUG(@"InitStyle get called:%i, id:%@", style, reuseIdentifier);
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
-        self.contentView.backgroundColor = [UIColor clearColor];
+        self.contentView.backgroundColor = VinesGray;//[UIColor clearColor];
         // Initialization code
         _container = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, CurrentScreenHeight)];
-        //_container.backgroundColor = VinesGray;
+        _container.backgroundColor = VinesGray;
         //_container.backgroundColor = [UIColor clearColor];
         
         //_container.layer.cornerRadius = 5;
@@ -39,8 +39,8 @@
         //UIImage* img = [UIImage imageNamed:@"featherpage.jpg"];
        
         _rotateContainer = [self createRotateContainer:CGRectMake(0, 0, CurrentScreenWidth,CurrentScreenHeight)];
-        //_rotateContainer.backgroundColor = VinesGray;
-        _rotateContainer.backgroundColor = [UIColor clearColor];
+        _rotateContainer.backgroundColor = VinesGray;
+        //_rotateContainer.backgroundColor = [UIColor clearColor];
         
         [_container addSubview:_rotateContainer];
         //_rotateContainer.backgroundColor = [UIColor redColor];
@@ -129,7 +129,7 @@
     EZSimpleClick* frontImage = [[EZSimpleClick alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, CurrentScreenHeight)];
     frontImage.contentMode = UIViewContentModeScaleAspectFill;
     frontImage.clipsToBounds = true;
-    frontImage.backgroundColor = [UIColor whiteColor];
+    frontImage.backgroundColor = VinesGray;
     //[frontImage enableRoundImage];
     return frontImage;
 }

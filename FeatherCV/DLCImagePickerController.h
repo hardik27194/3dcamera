@@ -12,6 +12,8 @@
 #import "EZSoundEffect.h"
 #import "EZFaceResultObj.h"
 
+@class EZClickImage;
+
 typedef enum {
     kNormalMode,
     kSelfShotMode,
@@ -171,6 +173,8 @@ typedef enum {
 @property (nonatomic, assign) BOOL isFrontCamera;
 
 @property (nonatomic, assign) BOOL isVisible;
+
+@property (nonatomic, strong) EZClickImage* authorIcon;
 
 //This is the image which shot with torch, I will render it with torch filter
 @property (nonatomic, assign) BOOL isImageWithFlash;

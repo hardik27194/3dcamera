@@ -52,13 +52,13 @@
 //The photo shared with this user
 #define EZSetAlbumUser @"EZSetAlbumUser"
 
-#define longShaderSkinColor vec3(0.78,0.78, 0.25)
+#define longShaderSkinColor vec3(0.9,0.9, 0.0)
 
 #define shortShaderSkinColor vec3(0.63, 0.63, 0.41)
 
 #define shaderSkinRange 0.4
 
-#define VinesGray RGBCOLOR(230, 231, 226)
+#define VinesGray RGBCOLOR(190, 180, 180)
 
 #define CellBackground [UIColor blueColor]
 
@@ -98,7 +98,7 @@
 
 #define reachableDomain @"www.enjoyzhi.com"
 
-#define placeholdImage [UIImage imageNamed:@"user-icon-placeholder-60"] 
+#define placeholdImage [UIImage imageNamed:@"head_icon"] 
 //This is from show hair.
 //Who will manage the session.
 //From Mobile's perspective, I should handle the session.
