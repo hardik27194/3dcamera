@@ -7,6 +7,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="DLCImagePickerController">
             <connections>
+                <outlet property="cameraRotateContainer" destination="9Dl-nz-0ou" id="bZb-by-GzY"/>
                 <outlet property="imageView" destination="7" id="43"/>
                 <outlet property="view" destination="4" id="42"/>
             </connections>
@@ -16,16 +17,23 @@
             <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <view contentMode="scaleAspectFill" id="7" customClass="GPUImageView">
+                <view contentMode="scaleToFill" id="9Dl-nz-0ou" userLabel="cameraRotate">
                     <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                    <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
-                    <gestureRecognizers/>
-                    <connections>
-                        <outletCollection property="gestureRecognizers" destination="51" appends="YES" id="52"/>
-                        <outletCollection property="gestureRecognizers" destination="89" appends="YES" id="90"/>
-                        <outletCollection property="gestureRecognizers" destination="PKg-eo-d4s" appends="YES" id="SUR-9u-wQy"/>
-                    </connections>
+                    <subviews>
+                        <view contentMode="scaleAspectFill" id="7" customClass="GPUImageView">
+                            <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                            <gestureRecognizers/>
+                            <connections>
+                                <outletCollection property="gestureRecognizers" destination="51" appends="YES" id="52"/>
+                                <outletCollection property="gestureRecognizers" destination="PKg-eo-d4s" appends="YES" id="SUR-9u-wQy"/>
+                                <outletCollection property="gestureRecognizers" destination="89" appends="YES" id="90"/>
+                            </connections>
+                        </view>
+                    </subviews>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                 </view>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>

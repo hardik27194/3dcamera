@@ -104,7 +104,7 @@
 //Any finger pressed will trigger this event.
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    UITouch* touch = [touches anyObject];
+    _touch = [touches anyObject];
     _fingerPressed = true;
     _longPressedCalled = false;
     if(_longPressBlock){
@@ -120,7 +120,7 @@
     }
     [self pressed];
     if(_pressedBlock){
-        _pressedBlock(touch);
+        _pressedBlock(self);
     }
     
 }
@@ -143,12 +143,12 @@
 //- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event;
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    UITouch* touch = [touches anyObject];
+    _touch = [touches anyObject];
     _fingerPressed = false;
     [self unpressed];
     if(!_longPressedCalled){
         if(_releasedBlock){
-            _releasedBlock(touch);
+            _releasedBlock(self);
         }
     }
 }

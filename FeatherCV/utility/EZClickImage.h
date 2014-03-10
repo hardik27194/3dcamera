@@ -31,4 +31,6 @@
 
 @property (nonatomic, strong) UIView* pressedView;
 
+@property (nonatomic, strong) UITouch* touch;
+
 @end

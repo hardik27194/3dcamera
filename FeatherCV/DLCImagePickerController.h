@@ -77,7 +77,7 @@ typedef enum {
 @property (nonatomic, strong) EZEventBlock frontCameraCompleted;
 
 @property (nonatomic, assign) EZCameraTurnStatus turnStatus;
-@property (nonatomic, weak) IBOutlet GPUImageView *imageView;
+@property (nonatomic, strong) IBOutlet GPUImageView *imageView;
 @property (nonatomic, weak) id <DLCImagePickerDelegate> delegate;
 
 @property (nonatomic, weak) IBOutlet UISlider* redPoint;
@@ -219,6 +219,8 @@ typedef enum {
 @property (nonatomic, assign) BOOL firstTime;
 
 @property (nonatomic, assign) NSString* personID;
+
+@property (nonatomic, weak) IBOutlet UIView* cameraRotateContainer;
 //This method will change the turnStatus
 - (void) captureTurnedImage;
 -(void) becomeVisible:(BOOL)isFront;

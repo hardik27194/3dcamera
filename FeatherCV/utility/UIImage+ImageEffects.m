@@ -150,6 +150,66 @@
    return [img croppedImageWithRect:rect];
 }
 
+- (uint32_t) calBlurKernel:(CGFloat)blurRadius
+{
+	uint32_t radius = (uint32_t)floor(blurRadius * 3. * sqrt(2 * M_PI) / 4 + 0.5);
+	radius += (radius + 1) % 2;
+	return radius;
+}
+
+- (UIImage*) createBlurImage:(CGFloat)blurSize
+{
+    //UIImage* contentImage = [self contentAsImage];
+    CGFloat scaleFactor = 1.0;
+    //CGRect visibleRect = self.size;
+	CGSize bufferSize = self.size;//CGSizeMake(self.bounds.size.width * scaleFactor, self.bounds.size.height * scaleFactor);
+	if (bufferSize.width == 0 || bufferSize.height == 0) {
+		return nil;
+	}
+	UIGraphicsBeginImageContextWithOptions(self.size, NO, [[UIScreen mainScreen] scale]);
+    CGContextRef effectInContext = UIGraphicsGetCurrentContext();
+	
+	CGContextScaleCTM(effectInContext, 1.0, -1.0);
+    CGContextTranslateCTM(effectInContext, 0, -self.size.height);
+    CGContextDrawImage(effectInContext,CGRectMake(0, 0, bufferSize.width, bufferSize.height), self.CGImage);
+    
+    
+	vImage_Buffer effectInBuffer = (vImage_Buffer){
+		.data = CGBitmapContextGetData(effectInContext),
+		.width = CGBitmapContextGetWidth(effectInContext),
+		.height = CGBitmapContextGetHeight(effectInContext),
+		.rowBytes = CGBitmapContextGetBytesPerRow(effectInContext)
+	};
+	
+    UIGraphicsBeginImageContextWithOptions(self.size, NO, [[UIScreen mainScreen] scale]);
+    CGContextRef effectOutContext = UIGraphicsGetCurrentContext();
+
+	vImage_Buffer effectOutBuffer = (vImage_Buffer){
+		.data = CGBitmapContextGetData(effectOutContext),
+		.width = CGBitmapContextGetWidth(effectOutContext),
+		.height = CGBitmapContextGetHeight(effectOutContext),
+		.rowBytes = CGBitmapContextGetBytesPerRow(effectOutContext)
+	};
+    
+    
+	uint32_t blurKernel = [self calBlurKernel:blurSize];
+	
+	vImageBoxConvolve_ARGB8888(&effectInBuffer, &effectOutBuffer, NULL, 0, 0, blurKernel, blurKernel, 0, kvImageEdgeExtend);
+	vImageBoxConvolve_ARGB8888(&effectOutBuffer, &effectInBuffer, NULL, 0, 0, blurKernel, blurKernel, 0, kvImageEdgeExtend);
+	vImageBoxConvolve_ARGB8888(&effectInBuffer, &effectOutBuffer, NULL, 0, 0, blurKernel, blurKernel, 0, kvImageEdgeExtend);
+	
+	CGImageRef outImage = CGBitmapContextCreateImage(effectOutContext);
+	//self.layer.contents = (__bridge id)(outImage);
+    UIImage* res = [[UIImage alloc] initWithCGImage:outImage];
+	CGImageRelease(outImage);
+    
+	CGContextRelease(effectInContext);
+	CGContextRelease(effectOutContext);
+    
+    return res;
+
+}
+
 
 - (UIImage*) createCIBlurImage:(CGFloat)blurSize
 {

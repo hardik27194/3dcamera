@@ -10,12 +10,12 @@
 #import "EZAppConstants.h"
 #import "EZClickView.h"
 //#import "DLCImagePickerController.h"
-
+#import <MessageUI/MessageUI.h>
 
 @class EZShapeCover;
 //Put UI related functionality here
 //@class EZClickView;
-@interface EZUIUtility : NSObject<UIImagePickerControllerDelegate, UINavigationControllerDelegate>
+@interface EZUIUtility : NSObject<UIImagePickerControllerDelegate, UINavigationControllerDelegate, MFMessageComposeViewControllerDelegate>
 
 @property (nonatomic, assign) BOOL cameraRaised;
 
@@ -25,6 +25,8 @@
 @property (nonatomic, assign) BOOL triggerBySlide;
 
 @property (nonatomic, strong) EZEventBlock completed;
+
+@property (nonatomic, strong) EZEventBlock messageCompletion;
 
 @property (nonatomic, strong) NSMutableArray* showMenuItems;
 
@@ -48,6 +50,8 @@
 - (UIImagePickerController*) getCamera:(BOOL)isAlbum slide:(BOOL)slide completed:(EZEventBlock)block;
 
 - (void) raiseCamera:(BOOL)isAlbum controller:(UIViewController *)controller completed:(EZEventBlock)block allowEditing:(BOOL)allowEditing;
+
+- (void) sendMessge:(NSString*)phone content:(NSString*)content presenter:(UIViewController*)presenter completed:(EZEventBlock)completed;
 
 - (void) enableProximate:(BOOL)enable;
 //Why do I use this?

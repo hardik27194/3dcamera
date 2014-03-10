@@ -13,6 +13,7 @@
 #import "EZClickImage.h"
 #import "EZMessageCenter.h"
 #import "EZUIUtility.h"
+#import "EZCenterButton.h"
 
 @interface EZContactTablePage ()
 
@@ -55,12 +56,14 @@
     [super viewWillAppear:animated];
     //Pervent the camera from raising again
     [EZUIUtility sharedEZUIUtility].stopRotationRaise = true;
+    [EZDataUtil getInstance].centerButton.hidden = YES;
 }
 
 - (void) viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
     [EZUIUtility sharedEZUIUtility].stopRotationRaise = false;
+    //[EZDataUtil getInstance].centerButton.hidden = NO;
 }
 
 - (void) loadPersonInfos
@@ -80,10 +83,13 @@
     }
 }
 
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     //[self reloadPersons];
+    
+    /**
     [[EZMessageCenter getInstance] registerEvent:EZGetContacts block:^(NSArray* persons){
         EZDEBUG(@"Get person, count:%i", persons.count);
         //[_contacts addObjectsFromArray:persons];
@@ -96,7 +102,7 @@
         _contacts = [EZDataUtil getInstance].contacts;
         [self.tableView reloadData];
     }];
-    
+    **/
     dispatch_later(0.3, ^(){
         [self loadPersonInfos];
     });
@@ -151,18 +157,18 @@
     cell.clickRegion.releasedBlock = ^(id object){
         EZDEBUG(@"region clicked");
         //[[EZMessageCenter getInstance]postEvent:EZScreenSlide attached:@(1)];
-        EZPerson* person = [_contacts objectAtIndex:indexPath.row];
+        EZPerson* person = [weakSelf.contacts objectAtIndex:indexPath.row];
         EZDEBUG(@"Person name:%@, %@", person.name, person.personID);
         //[self dismissViewControllerAnimated:YES completion:^(){
         
         //}];
-        //if(person.joined){
+        if(person.joined){
             [weakSelf.navigationController popViewControllerAnimated:YES];
             //if(weakSelf.completedBlock){
             //    weakSelf.completedBlock(person);
             //}
             [[EZMessageCenter getInstance] postEvent:EZSetAlbumUser attached:person];
-        //}
+        }
     };
     if(person.joined){
         cell.inviteButton.hidden = YES;
@@ -170,7 +176,8 @@
     }else{
         cell.inviteButton.hidden = false;
         cell.inviteClicked = ^(id obj){
-            EZDEBUG(@"SEND SMS");
+            //EZDEBUG(@"SEND SMS");
+            [[EZUIUtility sharedEZUIUtility] sendMessge:person.mobile content:[NSString stringWithFormat: macroControlInfo(@"%@, this app is cool"), person.name] presenter:weakSelf completed:nil];
         };
         cell.headIcon.hidden = YES;
     }

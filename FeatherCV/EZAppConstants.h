@@ -52,7 +52,7 @@
 //The photo shared with this user
 #define EZSetAlbumUser @"EZSetAlbumUser"
 
-#define longShaderSkinColor vec3(0.78,0.78, 0.56)
+#define longShaderSkinColor vec3(0.78,0.78, 0.25)
 
 #define shortShaderSkinColor vec3(0.63, 0.63, 0.41)
 
@@ -84,6 +84,9 @@
 #define isoDateFormat(curDate) [[EZDataUtil getInstance].isoFormatter stringFromDate:curDate]
 
 #define isoStr2Date(curStr) [[EZDataUtil getInstance].isoFormatter dateFromString:curStr]
+
+
+#define inviteMessageURL @"http://www.enjoyxue.com:8080/"
 
 //#define baseUploadURL @"http://10.0.1.6:8080/upload"
 //#define baseUploadURL @"http://192.168.1.102:8080/upload"

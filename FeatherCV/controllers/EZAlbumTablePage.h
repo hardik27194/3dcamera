@@ -42,6 +42,8 @@
 @property (nonatomic, strong) UILabel* dailyCount;
 @property (nonatomic, strong) UIView* container;
 
+@property (nonatomic, assign) BOOL notFirstTime;
+
 @property (nonatomic, assign) UIEdgeInsets prevInsets;
 
 @property (nonatomic, strong) UIView* anotherView;

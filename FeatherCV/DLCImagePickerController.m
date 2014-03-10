@@ -247,15 +247,15 @@
         redEnhanceFilter.redRatio = 1.15;
         redEnhanceFilter.greenRatio = 1.5;
         
-        secBlendFilter.blurFilter.distanceNormalizationFactor = 25.0;
+        secBlendFilter.blurFilter.distanceNormalizationFactor = 22.0;
         secBlendFilter.blurFilter.blurSize = 2.8;
-        secBlendFilter.miniRealRatio = 0.2;
+        secBlendFilter.miniRealRatio = 0.25;
         secBlendFilter.maxRealRatio = 1.0;
         secBlendFilter.imageMode = 0;
         secBlendFilter.skinColorFlag = 1;
         
-        finalBlendFilter.blurFilter.distanceNormalizationFactor = 6.0;
-        finalBlendFilter.blurFilter.blurSize = 0.4;//fobj.orgRegion.size.width;
+        finalBlendFilter.blurFilter.distanceNormalizationFactor = 9.0;
+        finalBlendFilter.blurFilter.blurSize = 0.3;//fobj.orgRegion.size.width;
         finalBlendFilter.miniRealRatio = 0.0;
         finalBlendFilter.maxRealRatio = 0.8;
         finalBlendFilter.imageMode = 0;
@@ -1185,6 +1185,7 @@
         //roundBackground.frame = imageView.frame;
         //rotateContainer.y = adjustedY;
         toolRegionY = _toolBarRegion.frame.origin.y;
+        //[EZDataUtil getInstance].centerButton.transform = CGAffineTransformMakeScale(1.3, 1.3);
     }
 
 }
@@ -1349,6 +1350,8 @@
     //[[UIApplication sharedApplication] setStatusBarHidden:false];
     [EZDataUtil getInstance].centerButton.releasedBlock = _oldReleaseBlock;
     [EZDataUtil getInstance].centerButton.pressedBlock = _oldPressBlock;
+    //[EZDataUtil getInstance].centerButton.transform = CGAffineTransformIdentity;
+    //[EZDataUtil getInstance].centerButton
 }
 
 -(void) setupCamera {
@@ -1410,7 +1413,9 @@
     CGFloat height = CurrentScreenWidth * ratio;
     CGFloat centerY = CurrentScreenHeight/2.0 - CenterUpShift;
     CGPoint centerPoint = CGPointMake(CurrentScreenWidth/2.0, centerY);
+    _cameraRotateContainer.frame = CGRectMake(0, 0, CurrentScreenWidth, CurrentScreenHeight);
     imageView.frame = CGRectMake(0 ,0 ,CurrentScreenWidth ,CurrentScreenHeight);
+    
     //imageView.center = centerPoint;
     EZDEBUG(@"imageView.bounds:%@, ratio:%f, height:%f, centerY:%f", NSStringFromCGRect(imageView.frame), ratio, height, centerY);
     //[shapeCover digHole:310 center:centerPoint color:[UIColor blackColor] opacity:1.0];
@@ -1747,17 +1752,46 @@
 
 - (void) switchCameraOnly {
     //[self.cameraToggleButton setEnabled:NO];
-    [stillCamera rotateCamera];
+    EZDEBUG(@"Will use animation blur to turn");
+    UIImage* orgImage = orgFiler.imageFromCurrentlyProcessedOutput;
+    orgImage = [orgImage resizedImageWithMaximumSize:CGSizeMake(orgImage.size.width/6.0, orgImage.size.height/6.0)];
+    UIImageView* blurred =[[UIImageView alloc] initWithFrame:imageView.frame];
+    blurred.contentMode = UIViewContentModeScaleAspectFill;
+    blurred.image = [orgImage createBlurImage:70];
+    [stillCamera stopCameraCapture];
+    [_cameraRotateContainer insertSubview:blurred belowSubview:imageView];
+    
+    //UIImageView* curView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 100, 100, 100)];
+    //curView.backgroundColor = [UIColor redColor];
+    //curView.image = blurred.image;
+    EZDEBUG(@"Blurred image size:%@", NSStringFromCGSize(blurred.image.size));
+    //[TopView addSubview:curView];
+    [UIView flipTransition:imageView dest:blurred container:_cameraRotateContainer isLeft:YES duration:0.5 complete:^(id completed){
+        
+        [[EZMessageCenter getInstance] registerEvent:EZCameraIsReady block:^(id obj){
+            EZDEBUG(@"Camera is ready get called is main:%i", [NSThread isMainThread]);
+            
+            [UIView animateWithDuration:0.5 animations:^(){
+                blurred.alpha = 0;
+            } completion:^(BOOL completed){
+                [blurred removeFromSuperview];
+            }];
+        } once:YES];
+        [stillCamera rotateCamera];
+        [_cameraRotateContainer insertSubview:imageView belowSubview:blurred];
+        [stillCamera startCameraCapture];
+        if ([UIImagePickerController isSourceTypeAvailable: UIImagePickerControllerSourceTypeCamera] && stillCamera) {
+            if ([stillCamera.inputCamera hasFlash] && [stillCamera.inputCamera hasTorch]) {
+                [self.flashToggleButton setEnabled:YES];
+            } else {
+                [self.flashToggleButton setEnabled:NO];
+            }
+        }
+        
+    }];
     //[self.cameraToggleButton setEnabled:YES];
     
-    if ([UIImagePickerController isSourceTypeAvailable: UIImagePickerControllerSourceTypeCamera] && stillCamera) {
-        if ([stillCamera.inputCamera hasFlash] && [stillCamera.inputCamera hasTorch]) {
-            [self.flashToggleButton setEnabled:YES];
-        } else {
-            [self.flashToggleButton setEnabled:NO];
-        }
-    }
-
+    
 }
 -(void) prepareForCapture {
     __weak DLCImagePickerController* weakSelf = self;

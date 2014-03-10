@@ -10,6 +10,7 @@
 #import <MobileCoreServices/UTCoreTypes.h>
 #import "EZMessageCenter.h"
 #import "EZShapeCover.h"
+#import <MessageUI/MessageUI.h>
 
 #define ColorTransparent 80
 @implementation EZUIUtility
@@ -22,6 +23,28 @@ SINGLETON_FOR_CLASS(EZUIUtility)
     _cameraRaised = false;
     _colors = @[RGBA(255, 0, 0, ColorTransparent), RGBA(127, 127, 0, ColorTransparent), RGBA(127, 0, 127, ColorTransparent), RGBA(0, 255, 0, ColorTransparent), RGBA(0, 0, 255, ColorTransparent)];
     return self;
+}
+
+- (void) sendMessge:(NSString *)phone content:(NSString *)content presenter:(UIViewController*)presenter completed:(EZEventBlock)completed
+{
+    MFMessageComposeViewController *controller = [[MFMessageComposeViewController alloc] init];
+    if([MFMessageComposeViewController canSendText])
+    {
+        _messageCompletion = completed;
+        controller.body = content;
+        controller.recipients = [NSArray arrayWithObjects:phone, nil];
+        controller.messageComposeDelegate = self;
+        [presenter presentViewController:controller animated:YES completion:nil];
+    }
+}
+
+- (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result
+{
+    EZDEBUG(@"Finish message compose:%i", result);
+    [controller dismissViewControllerAnimated:YES completion:nil];
+    if(_completed){
+        _completed(@(result));
+    }
 }
 
 

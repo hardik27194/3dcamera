@@ -248,6 +248,7 @@ static inline CGSize swapWidthAndHeight(CGSize size)
     return result;
 }
 
+
 -(UIImage*) rotateByOrientation:(UIImageOrientation)orientation
 {
     CGImageRef imgRef = self.CGImage;
