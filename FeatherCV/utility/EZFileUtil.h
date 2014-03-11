@@ -45,9 +45,17 @@ static EZLRUMap* imageCaches;
 
 + (NSString*) saveImageToCacheWithName:(UIImage*)img filename:(NSString*)filename;
 + (NSString*) saveImageToCache:(UIImage*)img;
+
+//nil mean not exist, string mean yes.
++ (NSString*) isExistInCache:(NSString*)fileName;
+
 + (NSArray*) saveImagesToCache:(NSArray*)uiImages;
 
++ (NSString*) saveImageToCache:(UIImage*)img filename:(NSString *)filename;
+
 + (NSString*) saveToAlbum:(UIImage*)image meta:(NSDictionary*)meta;
+
++ (NSString*) fileURLToFullPath:(NSString*)url;
 //It is to remove all the audio file on the iPad
 //So I could use the directory space for other purpose.
 + (void) removeAllAudioFiles;
@@ -73,7 +81,7 @@ static EZLRUMap* imageCaches;
 
 //I will save the data to cache, so that I can upload it later
 //On trouble I could think of is that the cache file will get removed. 
-+ (NSString*) saveToCache:(NSData*)data filename:(NSString*)filename;
+//+ (NSString*) saveToCache:(NSData*)data filename:(NSString*)filename;
 
 + (NSString*) saveToDocument:(NSData*)data filename:(NSString*)filename;
 

@@ -21,6 +21,8 @@
 #import "UIImageView+AFNetworking.h"
 #import "EZRegisterController.h"
 #import "EZCenterButton.h"
+#import "EZDownloadHolder.h"
+#import "AFNetworking.h"
 
 
 @implementation EZAlbumResult
@@ -38,6 +40,7 @@
     });
     return instance;
 }
+
 
 
 - (id) init
@@ -67,6 +70,8 @@
     _totalCover.backgroundColor = [UIColor clearColor];
     _sortedUsers = [[NSMutableArray alloc] init];
     _sortedUserSets = [[NSMutableSet alloc] init];
+    _downloadedImages = [[NSMutableDictionary alloc] init];
+    _imageSerializer = [AFImageResponseSerializer serializer];
     [_timeFormatter setDateStyle:NSDateFormatterShortStyle];
     [_timeFormatter setTimeStyle:NSDateFormatterShortStyle];
     [_timeFormatter setDoesRelativeDateFormatting:YES];
@@ -401,6 +406,117 @@
 
 }
 
+//I will load the small image first, then the large image
+- (void) serialPreload:(NSString*)fullURL
+{
+    NSString* thumbURL = url2thumb(fullURL);
+    [self preloadImage:thumbURL success:^(NSString* thumbURL){
+        EZDEBUG(@"Load thumb success:%@", thumbURL);
+        [self preloadImage:fullURL success:nil failed:nil];
+    } failed:nil];
+}
+
+- (void) serialLoad:(NSString*)fullURL fullOk:(EZEventBlock)fullBlock thumbOk:(EZEventBlock)thumbOk pending:(EZEventBlock)pending failure:(EZEventBlock)failure
+{
+    NSString* localFull = [self preloadImage:fullURL success:fullBlock failed:failure];
+    if(localFull){
+        fullBlock(localFull);
+    }else{
+        NSString* thumbURL = url2thumb(fullURL);
+        NSString* localThumb = [self preloadImage:thumbURL success:thumbOk failed:failure];
+        if(localThumb){
+            thumbOk(localThumb);
+        }else{
+            pending(nil);
+        }
+    }
+}
+
+
+- (void) downloadImage:(NSString*)fullURL downloader:(EZDownloadHolder*)holder
+{
+    //EZDEBUG(@"downloadImage get called");
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:str2url(fullURL)];
+    [request addValue:@"image/*" forHTTPHeaderField:@"Accept"];
+    
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    manager.responseSerializer = _imageSerializer;
+    
+    __weak EZDownloadHolder* weakHolder = holder;
+    holder.requestOperation = [manager HTTPRequestOperationWithRequest:request success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        UIImage* download = responseObject;
+        EZDEBUG("Image size:%@", NSStringFromCGSize(download.size));
+        if(responseObject){
+            NSString* filePath = [EZFileUtil saveImageToCache:download filename:holder.filename];
+            NSString* fileURL = [NSString stringWithFormat:@"file://%@", filePath];
+            weakHolder.downloaded = fileURL;
+            [weakHolder callSuccess];
+        }else{
+            [weakHolder callFailure:@"fail to download"];
+        }
+        weakHolder.isDownloading = false;
+        
+    }
+    failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        EZDEBUG(@"fail to download:%@, error:%@", fullURL, error);
+        [weakHolder callFailure:error];
+        weakHolder.isDownloading = false;
+    }];//[[AFHTTPRequestOperation alloc] initWithRequest:request];
+    //EZDEBUG(@"request object:%i", (int)holder);
+    [holder.requestOperation start];
+    //[holder.requestOperation ]
+
+}
+
+
+- (NSString*) fileNameFromURL:(NSString*)url
+{
+    NSRange range = [url rangeOfString:@"/" options:NSBackwardsSearch];
+    if(range.location != NSNotFound){
+        //NSRange fetchHead;
+        //fetchHead.length = range.location;
+        //fetchHead.location = 0;
+        //NSString* header = [normalURL substringToIndex:range.location];
+        NSString* ender = [url substringFromIndex:range.location + 1];
+        //res =[NSString stringWithFormat:@"%@%@%@",header,@"tb",ender];
+        //EZDEBUG(@"Substring is:%@", res);
+        return ender;
+    }
+    return url;
+}
+
+//Return local file name
+- (NSString*) preloadImage:(NSString*)fullURL success:(EZEventBlock)success failed:(EZEventBlock)failed
+{
+    EZDownloadHolder* holder =  [_downloadedImages objectForKey:fullURL];
+    if(holder == nil){
+        NSString* fileName = [self fileNameFromURL:fullURL];
+        holder = [[EZDownloadHolder alloc] init];
+        [_downloadedImages setObject:holder forKey:fullURL];
+        holder.filename = fileName;
+        holder.downloaded = [EZFileUtil isExistInCache:fileName];
+    }
+    EZDEBUG(@"File in cache:%@", holder.downloaded);
+    if(!holder.downloaded){
+        //return holder.downloaded;
+        [holder insertSuccess:success];
+        [holder insertFailure:failed];
+        //EZDEBUG(@"not downloaded success size:%i, failure size:%i, holder:%i", holder.success.count, holder.failures.count, (int)holder);
+        //[EZNetworkUtility download:fullURL complete:^(NSData* image){
+            
+        //} failblk:^(NSError* err){
+        
+        //}];
+        if(!holder.isDownloading){
+            holder.isDownloading = true;
+            [self downloadImage:fullURL downloader:holder];
+        }
+        return nil;
+    }else{
+        return holder.downloaded;
+    }
+}
+
 - (void) uploadAvatar:(UIImage*)img success:(EZEventBlock)success failure:(EZEventBlock)failure
 {
     
@@ -414,6 +530,30 @@
         EZDEBUG(@"The uploaded percent:%f", percent);
     }];
 }
+
+
+- (NSString*) urlToThumbURL:(NSString *)normalURL
+{
+    //NSArray* splitted = [normalURL componentsSeparatedByString:@"/"];
+    NSString* res = nil;
+    //if(splitted.count > 0){
+    //NSString* fileName = [splitted objectAtIndex:splitted.count - 1];
+    //NSArray* splitStrs = [normalURL componentsSeparatedByString:@"."];
+    
+    //NSString* changedFileName = [NSString stringWithFormat:@"%@tb", [splitStrs objectAtIndex:splitStrs.count - 2]];
+    NSRange range = [normalURL rangeOfString:@"." options:NSBackwardsSearch];
+    if(range.location != NSNotFound){
+        //NSRange fetchHead;
+        //fetchHead.length = range.location;
+        //fetchHead.location = 0;
+        NSString* header = [normalURL substringToIndex:range.location];
+        NSString* ender = [normalURL substringFromIndex:range.location];
+        res =[NSString stringWithFormat:@"%@%@%@",header,@"tb",ender];
+        EZDEBUG(@"Substring is:%@", res);
+    }
+    return res;
+}
+
 - (void) uploadPhoto:(EZPhoto*)photo success:(EZEventBlock)success failure:(EZEventBlock)failure
 {
     //NSDictionary* jsonInfo = [photo toJson];
@@ -427,10 +567,16 @@
             success(photo);
         } error:failure progress:^(CGFloat percent){
             EZDEBUG(@"The uploaded percent:%f", percent);
+            if(photo.progress){
+                photo.progress(@(percent));
+            }
         }];
     }else{
         EZDEBUG(@"photo have no id, waiting for id");
         failure(@"Need id to upload");
+        if(photo.progress){
+            photo.progress(nil);
+        }
     }
 }
 
@@ -1180,6 +1326,26 @@
                 photo.uploadInfoSuccess = TRUE;
                 photo.photoID = photoID;
                 --_uploadingTasks;
+                if(!photo.uploadPhotoSuccess && photo.photoID){
+                    ++_uploadingTasks;
+                    EZDEBUG(@"Will start upload photo content for:%@", photo.photoID);
+                    [[EZDataUtil getInstance] uploadPhoto:photo success:^(id info){
+                        EZDEBUG(@"uploaded success:%@", info);
+                        photo.uploadPhotoSuccess = TRUE;
+                        photo.uploaded = TRUE;
+                        photo.progress = nil;
+                        if(photo.uploadSuccess){
+                            photo.uploadSuccess(nil);
+                        }
+                        photo.uploadSuccess = nil;
+                        --_uploadingTasks;
+                    } failure:^(id err){
+                        EZDEBUG(@"failed to upload content:%@", err);
+                        --_uploadingTasks;
+                    }];
+                }
+
+                
             } failure:^(id err){
                 EZDEBUG(@"failed to upload info for photoID:%@, :%@",photo.photoID, err);
                 --_uploadingTasks;
@@ -1192,6 +1358,7 @@
                 EZDEBUG(@"uploaded success:%@", info);
                 photo.uploadPhotoSuccess = TRUE;
                 photo.uploaded = TRUE;
+                photo.progress = nil;
                 --_uploadingTasks;
             } failure:^(id err){
                 EZDEBUG(@"failed to upload content:%@", err);

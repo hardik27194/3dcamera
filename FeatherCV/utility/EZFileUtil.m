@@ -473,6 +473,10 @@
     NSString* fullPath = [EZFileUtil saveToCache:img.toJpegData filename:filename];
     return fullPath;
 }
++ (NSString*) fileURLToFullPath:(NSString*)url
+{
+    return [url substringFromIndex:7];
+}
 
 + (NSString*) saveImageToCache:(UIImage*)img
 {
@@ -482,6 +486,23 @@
     return fullPath;
 }
 
+//nil mean not exist, string mean yes.
++ (NSString*) isExistInCache:(NSString*)fileName
+{
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    NSString *documentsPath = [paths objectAtIndex:0]; //Get the docs directory
+    NSString *fullPath = [documentsPath stringByAppendingPathComponent:fileName];
+    if([[NSFileManager defaultManager] fileExistsAtPath:fullPath]){
+        return [@"file://" stringByAppendingString:fullPath];
+    }
+    return nil;
+}
+
++ (NSString*) saveImageToCache:(UIImage*)img filename:(NSString *)filename
+{
+    NSString* fullPath = [EZFileUtil saveToCache:img.toJpegData filename:filename];
+    return fullPath;
+}
 
 + (void) storeImageFile:(UIImage*)image file:(NSString*)file
 {
@@ -545,14 +566,12 @@
 {
     NSError* error = nil;
     NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[fileURL path] error:&error];
-    int fileSize = [fileAttributes fileSize];
-    return fileSize;
+    return (NSInteger)[fileAttributes fileSize];
 }
 
 //Save data to cache;
 //more general.
 //Return the full path, so that we could use later.
-
 + (NSString*) saveToCache:(NSData*)data filename:(NSString*)filename
 {
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);

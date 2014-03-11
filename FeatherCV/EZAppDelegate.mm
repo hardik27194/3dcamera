@@ -34,6 +34,8 @@
 #import "LFDisplayBridge.h"
 #import "EZAnimationUtil.h"
 #import "EZKeyboadUtility.h"
+#import "UIImageView+AFNetworking.h"
+
 
 @implementation EZAppDelegate
 
@@ -249,16 +251,9 @@
 
 - (void) setupNetwork
 {
-    NSURLCache *URLCache = [[NSURLCache alloc] initWithMemoryCapacity:4 * 1024 * 1024 diskCapacity:20 * 1024 * 1024 diskPath:nil];
+    NSURLCache *URLCache = [[NSURLCache alloc] initWithMemoryCapacity:4 * 1024 * 1024 diskCapacity:100 * 1024 * 1024 diskPath:nil];
     [NSURLCache setSharedURLCache:URLCache];
     
-    NSMutableArray* muArr = [[NSMutableArray alloc] initWithArray:@[@(1),@(2),@(3),@(4)]];
-    for(int i = 0; i < muArr.count; i ++){
-        EZDEBUG(@"remove:%i", [[muArr objectAtIndex:i] integerValue]);
-        [muArr removeObjectAtIndex:i];
-        --i;
-    }
-                             
     AFNetworkReachabilityManager* manager = [AFNetworkReachabilityManager managerForDomain:reachableDomain];
     [[AFNetworkActivityIndicatorManager sharedManager] setEnabled:YES];
     
@@ -294,7 +289,8 @@
     _cameraRaised = false;
     ///[EZDataUtil getInstance].currentPersonID = @"52f783d7e7b5b9dd9c28f1cc";
     [EZTestSuites testAll];
-    
+    NSString* thumb = url2thumb(@"http://cool.guy/cool.jpg");
+    EZDEBUG(@"The thumb url is:%@", thumb);
     //CFTimeInterval startTime = CACurrentMediaTime();
     //perform some action
     //EZDEBUG(@"first value:%f", startTime);
@@ -311,7 +307,7 @@
                                           }];
     **/
     //[EZDataUtil getInstance].currentPersonID = nil;
-    //[EZDataUtil getInstance].currentPersonID = nil;
+    //[EZDataUtil getInstance].currentPersonID = @"531e7cd5e7b5b9f911342692";
     if(![[EZDataUtil getInstance] getCurrentPersonID]){
        /**
         [[EZDataUtil getInstance] registerMockUser:^(EZPerson* ps){

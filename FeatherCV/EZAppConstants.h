@@ -32,7 +32,13 @@
 
 #define smallIconRadius 35
 
+#define url2thumb(url) [[EZDataUtil getInstance] urlToThumbURL:url]
+
 #define pid2person(pid) [[EZDataUtil getInstance] getPersonByID:pid success:nil]
+
+#define preloadimage(url) [[EZDataUtil getInstance] serialPreload:url]
+
+//#define preloadcallback(url, success, failure) [[EZDataUtil getInstance] preloadImage
 
 #define macroControlInfo(keyName) NSLocalizedStringFromTable(keyName, @"UIControlInfo", nil)
 
@@ -52,7 +58,7 @@
 //The photo shared with this user
 #define EZSetAlbumUser @"EZSetAlbumUser"
 
-#define longShaderSkinColor vec3(0.9,0.9, 0.0)
+#define longShaderSkinColor vec3(0.9,0.9, 0.1)
 
 #define shortShaderSkinColor vec3(0.63, 0.63, 0.41)
 

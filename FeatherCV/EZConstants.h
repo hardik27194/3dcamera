@@ -168,6 +168,9 @@ alpha:(a)/255.0f]
 #define uid2person(uid) [[EZUserUtil getInstance] id2user:uid]
 #define currentLoginUser [EZDataUtil getInstance].currentLoginPerson
 #define str2url(strs) [NSURL URLWithString:strs]
+#define url2fullpath(url) [EZFileUtil fileURLToFullPath:url]
+
+#define fileurl2image(url) [UIImage imageWithContentsOfFile:url2fullpath(url)]
 #define radians(degree) degree*M_PI/180
 #define str2cover(str) [[EZUserUtil getInstance] getCoverURL:str]
 #define file2url(filename) [[NSURL fileURLWithPath:filename] absoluteString]

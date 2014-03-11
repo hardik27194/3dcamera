@@ -127,6 +127,7 @@
     _shareStatus = [[dict objectForKey:@"shareStatus"] intValue];
     _createdTime = isoStr2Date([dict objectForKey:@"createdTime"]);
     _screenURL = [dict objectForKey:@"screenURL"];
+    _thumbURL = url2thumb(_screenURL);
     _conversations = [self conversationFromJson:[dict objectForKey:@"conversations"]];
     _liked =[NSMutableArray arrayWithArray:[dict objectForKey:@"liked"]];
     CGFloat width = [[dict objectForKey:@"width"] floatValue];

@@ -13,6 +13,7 @@
 #import "EZRaiseAnimation.h"
 #import "EZModalRaiseAnimation.h"
 #import "EZModalDissolveAnimation.h"
+#import "EZCameraNaviAnimation.h"
 
 
 @class EZDisplayPhoto;
@@ -65,6 +66,10 @@
 @property (nonatomic, strong) EZModalDissolveAnimation* detailAnimation;
 
 @property (nonatomic, strong) EZRaiseAnimation* raiseAnimation;
+
+@property (nonatomic, assign) BOOL isPushCamera;
+
+@property (nonatomic, strong) EZCameraNaviAnimation* cameraNaviAnim;
 //This is a successful pattern I have explored several years ago.
 @property (nonatomic, strong) EZQueryBlock queryBlock;
 

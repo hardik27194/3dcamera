@@ -247,17 +247,17 @@
         redEnhanceFilter.redRatio = 1.15;
         redEnhanceFilter.greenRatio = 1.5;
         
-        secBlendFilter.blurFilter.distanceNormalizationFactor = 22.0;
+        secBlendFilter.blurFilter.distanceNormalizationFactor = 20.0;
         secBlendFilter.blurFilter.blurSize = 2.8;
-        secBlendFilter.miniRealRatio = 0.0;
-        secBlendFilter.maxRealRatio = 1.0;
+        secBlendFilter.miniRealRatio = 0.3;
+        secBlendFilter.maxRealRatio = 0.3;
         secBlendFilter.imageMode = 0;
         secBlendFilter.skinColorFlag = 1;
         
         finalBlendFilter.blurFilter.distanceNormalizationFactor = 9.0;
-        finalBlendFilter.blurFilter.blurSize = 0.3;//fobj.orgRegion.size.width;
+        finalBlendFilter.blurFilter.blurSize = 0.5;//fobj.orgRegion.size.width;
         finalBlendFilter.miniRealRatio = 0.0;
-        finalBlendFilter.maxRealRatio = 0.8;
+        finalBlendFilter.maxRealRatio = 1.0;
         finalBlendFilter.imageMode = 0;
         finalBlendFilter.skinColorFlag = 1;
         //finalBlendFilter.showFace = 1;
@@ -729,6 +729,13 @@
     [self setupUI];
     [self createTextField];
     [self setupKeyboard];
+    _progressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleDefault];
+    _progressView.frame = CGRectMake(10, 64, CurrentScreenWidth-20, 10);
+    //_progressView.backgroundColor = [UIColor redColor];
+    _progressView.progressTintColor = [UIColor whiteColor];
+    _progressView.trackTintColor = [UIColor clearColor];
+    _progressView.hidden = YES;
+    [self.view addSubview:_progressView];
     //[_toolBarRegion addObserver:self forKeyPath:@"alpha" options:0 context:nil];
     //[_toolBarRegion addObserver:self forKeyPath:@"hidden" options:0 context:nil];
     //[_inputTextRegion setOb]
@@ -1081,39 +1088,6 @@ context:(void *)context
 {
     CGRect bound = self.view.bounds;
     EZDEBUG(@"Should return:%@", _textField.text);
-    _hideTextInput = false;
-    if(![_textField.text isEmpty]){
-        [disPhoto.photo.conversations addObject:@{
-                                                  @"text":_textField.text,
-                                                  @"date":[NSDate date]
-                                                }];
-        EZDEBUG(@"added input to photo:%@", disPhoto.photo.conversations);
-        [self createChatRegion];
-        chatText.text = _textField.text;
-        [chatText enableTextWrap];
-        chatRegion.y = bound.size.height;
-        EZDEBUG(@"show avatar:%@", currentLoginUser.avatar);
-        [_authorIcon setImageWithURL:str2url(currentLoginUser.avatar)];
-        [self.view addSubview:chatRegion];
-        dispatch_later(0.3, ^(){
-        [UIView animateWithDuration:0.35 delay:0.0 usingSpringWithDamping:0.5 initialSpringVelocity:0.5 options:0 animations:^(){
-            chatRegion.y =  bound.size.height - (bound.size.height - 320)/2.0 + 10.0;
-        } completion:^(BOOL completed){
-            //[chatRegion removeFromSuperview];
-        }];
-        });
-        _textField.text = @"";
-
-        
-    }
-    _hideTextInput = true;
-    dispatch_later(2.0, ^(){
-            //[self savePhoto];
-            //[self retakePhoto:nil];
-            [self takePhoto:nil];
-            [chatRegion removeFromSuperview];
-            //[self showTextField:NO];
-    });
     [textFd resignFirstResponder];
     return true;
 }
@@ -1172,7 +1146,7 @@ context:(void *)context
     _configButton.center = CGPointMake(315 - 30 - 5, 80 - 35);
     
     _toolBarRegion = [[UIView alloc] initWithFrame:CGRectMake(0, bound.size.height - 80, 320, 80)];
-    _toolBarRegion.backgroundColor = [UIColor clearColor];
+    _toolBarRegion.backgroundColor = [UIColor clearColor];//[UIColor blackColor];
     [_toolBarRegion addSubview:cancelButton];
     [_toolBarRegion addSubview:_configButton];
     [self.view addSubview:_toolBarRegion];
@@ -1180,14 +1154,14 @@ context:(void *)context
     rotateContainer = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, CurrentScreenHeight)];
     //[rotateContainer enableRoundImage];
     rotateContainer.alpha = 0.0;
-    [self.view addSubview:rotateContainer];
+    [self.view insertSubview:rotateContainer belowSubview:_toolBarRegion];
     
     rotateView = [[EZClickImage alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, CurrentScreenHeight)];
     rotateView.contentMode = UIViewContentModeScaleAspectFill;
     //[rotateView enableRoundImage];
     //rotateView.alpha = 1.0;
     rotateView.pressedBlock = ^(id obj){
-        [weakSelf changePhoto];
+        //[weakSelf changePhoto];
         
     };
     [rotateContainer addSubview:rotateView];
@@ -1950,6 +1924,28 @@ context:(void *)context
     staticPicture = nil;
     [self prepareRotateImage:currentImage];
     [self showTextField:YES];
+    
+    if(_shotPhoto.photoRelations.count){
+        EZPhoto* matched = [_shotPhoto.photoRelations objectAtIndex:0];
+        EZDEBUG(@"prefetch image:%@", matched.screenURL);
+        preloadimage(matched.screenURL);
+    }else{
+        EZDEBUG(@"Not find match photo");
+    }
+
+    EZDEBUG(@"started spin animation");
+    isStatic = true;
+    [self changeButtonStatus:YES];
+    _toolBarRegion.alpha = 1.0;
+    if(_coverStatus == kCoverShotting){
+        _coverStatus = kCoverInit;
+    }
+    //_takingPhoto = false;
+    [blackCover removeFromSuperview];
+}
+
+- (void) oldDownload
+{
     if(_shotPhoto.photoRelations.count){
         EZPhoto* matched = [_shotPhoto.photoRelations objectAtIndex:0];
         EZDEBUG(@"prefetch image:%@", matched.screenURL);
@@ -1959,7 +1955,7 @@ context:(void *)context
             EZDEBUG(@"image fetched back");
             _otherImage = image;
             _flipStatus = kStoredPhoto;
-             //[self rotateCurrentImage:image];
+            //[self rotateCurrentImage:image];
         } failure:^(id err){
             EZDEBUG(@"Failed to get image:%@, url:%@", err, matched.screenURL);
             //[self hideRotateImage];
@@ -1971,13 +1967,7 @@ context:(void *)context
         //    [self stopRotateImage:nil];
         //});
     }
-    EZDEBUG(@"started spin animation");
-    isStatic = true;
-    if(_coverStatus == kCoverShotting){
-        _coverStatus = kCoverInit;
-    }
-    //_takingPhoto = false;
-    [blackCover removeFromSuperview];
+
 }
 
 - (CGSize) adjustEdgeWidth:(CGSize)imageSize orientation:(UIImageOrientation)orienation
@@ -2101,14 +2091,6 @@ context:(void *)context
 
 - (void) changePhoto
 {
-    /**
-    if(_flipStatus == kTakedPhoto){
-        [self startRotateImage:nil];
-        [self startPreFetch:_shotPhoto imageSuccess:^(UIImage* img){
-            [self stopRotateImage:img];
-        }];
-    }
-     **/
     if(_flipStatus != kTakedPhoto){
         EZDEBUG(@"Quit for not take photo");
         return;
@@ -2116,11 +2098,54 @@ context:(void *)context
     EZDEBUG(@"Showother:%i", _showOther);
     if(_showOther){
         _showOther = false;
-        [self rotateCurrentImage:disPhoto.photo.getScreenImage];
+        [self rotateCurrentImage:disPhoto.photo.getScreenImage imageURL:nil blur:NO completed:nil];
         [self showTextField:YES];
     }else{
         _showOther = true;
-        [self rotateCurrentImage:_otherImage];
+        EZPhoto* matched = [disPhoto.photo.photoRelations objectAtIndex:0];
+        EZPerson* matchedPerson = pid2person(matched.personID);
+        __block BOOL loaded = false;
+        [[EZDataUtil getInstance] serialLoad:matched.screenURL fullOk:^(NSString* localURL){
+            EZDEBUG(@"image loaded full:%i, url:%@", loaded, localURL);
+            if(!loaded){
+                loaded = true;
+                [self rotateCurrentImage:fileurl2image(localURL) imageURL:nil blur:NO completed:^(id obj){
+                    _textField.hidden = YES;
+                    [_authorIcon setImageWithURL:str2url(matchedPerson.avatar)];
+                    [self showTextField:YES];
+                    disPhoto.isFront = false;
+                    [[EZMessageCenter getInstance]postEvent:EZTakePicture attached:disPhoto];
+                    dispatch_later(1.0, ^(){
+                        [self innerCancel:YES];
+                    });
+                }];
+            }else{
+                UIView* snapShot = [rotateView snapshotViewAfterScreenUpdates:NO];
+                [rotateView addSubview:snapShot];
+                [rotateView setImageWithURL:str2url(localURL)];
+                [UIView animateWithDuration:0.3 animations:^(){
+                    snapShot.alpha = 0;
+                } completion:^(BOOL completed){
+                    [snapShot removeFromSuperview];
+                }];
+            }
+        } thumbOk:^(NSString* localURL){
+            EZDEBUG(@"image loaded blur:%i, url:%@", loaded, localURL);
+            /**
+            if(!loaded){
+                loaded = true;
+                [self rotateCurrentImage:fileurl2image(localURL) imageURL:nil blur:YES completed:^(id obj){
+                    _textField.hidden = YES;
+                    [_authorIcon setImageWithURL:str2url(matchedPerson.avatar)];
+                    [self showTextField:YES];
+                }];
+            }
+             **/
+        } pending:^(id obj){
+            EZDEBUG(@"pending get called");
+        } failure:^(id err){
+            EZDEBUG(@"failure get called");
+        }];
         [self showTextField:NO];
     }
 }
@@ -2149,15 +2174,31 @@ context:(void *)context
      **/
 }
 
-- (void) rotateCurrentImage:(UIImage*)image
+         
+
+- (void) rotateCurrentImage:(UIImage*)image imageURL:(NSString*)url blur:(BOOL)blur completed:(EZEventBlock)block
 {
     UIView* snapView = [rotateView snapshotViewAfterScreenUpdates:NO];
     [rotateContainer insertSubview:snapView aboveSubview:rotateView];
-    rotateView.image = image;
+    
+    if(image){
+        rotateView.image = image;
+    }else{
+        [rotateView setImageWithURL:str2url(url)];
+    }
+    
+    if(blur){
+        UIImage* blurred = [rotateView createBlurImage:70.0];
+        EZDEBUG(@"blurred size:%@", NSStringFromCGSize(blurred.size));
+        rotateView.image = blurred;
+    }
     roundBackground.alpha = 1.0;
     [UIView flipTransition:snapView dest:rotateView container:rotateContainer isLeft:YES duration:EZRotateAnimDuration complete:^(id obj){
         [snapView removeFromSuperview];
         roundBackground.alpha = 0.0;
+        if(block){
+            block(nil);
+        }
     }];
 }
 //Don't rotate, only get rotation ready.
@@ -2317,6 +2358,7 @@ context:(void *)context
     }
     [self.photoCaptureButton setEnabled:NO];
     if (!isStatic) {
+        _isUploading = false;
         _detectedFaceObj = nil;
         _takingPhoto = TRUE;
         _showOther = NO;
@@ -2326,34 +2368,71 @@ context:(void *)context
         [self changeButtonStatus:YES];
         _toolBarRegion.alpha = 0.0;
         _isImageWithFlash = NO;
+        [_progressView setProgress:0.0 animated:NO];
         [self prepareForCapture];
     }else{
         if(!_isSaved){
-            _isSaved = true;
-            [self savePhoto];
-            [self changePhoto];
+            _toolBarRegion.alpha = 0.0;
+            //_isSaved = true;
+            if(!_isUploading){
+                _isUploading = true;
+                _progressView.hidden = NO;
+                [_progressView setProgress:0.0 animated:YES];
+                [self savePhoto:^(NSNumber* number){
+                    EZDEBUG(@"save upload progress:%f, thread:%i", number.floatValue, [NSThread isMainThread]);
+                    if(number){
+                        //_progressView.progress = number.floatValue;
+                        [_progressView setProgress:number.floatValue animated:YES];
+                    }else{
+                        EZDEBUG(@"failed to upload");
+                        _progressView.hidden = YES;
+                        _isSaved = TRUE;
+                    }
+                } uploadSuccess:^(id obj){
+                    //if(number.floatValue >= 1.0){
+                    _progressView.hidden = YES;
+                    [self changePhoto];
+                    _isSaved = TRUE;
+                }];
+            }
             //[self fakeAnimation:nil];
             //cancelButton.hidden = YES;
         }else{
             //cancelButton.hidden = NO;
-            [[EZMessageCenter getInstance]postEvent:EZTakePicture attached:disPhoto];
-            [self completedProcess];
+            //[[EZMessageCenter getInstance]postEvent:EZTakePicture attached:disPhoto];
+            //[self completedProcess];
             //[self fakeAnimation];
             //[self fakeAnimation:nil];
             //[self retakePhoto:nil];
             //[self changeButtonStatus:NO];
-            [self innerCancel];
+            //[self innerCancel:NO];
         }
     }
 }
 
-- (void) savePhoto
+- (void) addChatInfo:(EZPhoto*)photo
+{
+    _hideTextInput = false;
+    if(![_textField.text isEmpty]){
+        [photo.conversations addObject:@{
+                            @"text":_textField.text,
+                            @"date":[NSDate date]
+        }];
+    }
+    EZDEBUG(@"added input to photo:%@", photo.conversations);
+}
+
+- (void) savePhoto:(EZEventBlock)progress uploadSuccess:(EZEventBlock)uploadSuccess
 {
     _flipStatus = kTakedPhoto;
     ++_imageCount;
     //[self confirmCurrentMatch];
     //[self showTextField:NO];
     //[self hideKeyboard];
+    disPhoto.photo.startUpload = true;
+    disPhoto.photo.progress = progress;
+    disPhoto.photo.uploadSuccess = uploadSuccess;
+    [self addChatInfo:disPhoto.photo];
     [self triggerUpload];
     //_savedPhoto = _shotPhoto;
     _shotPhoto = nil;
@@ -2377,6 +2456,7 @@ context:(void *)context
     //No need to flip it any more
     disPhoto.isFront = false;
     [[EZDataUtil getInstance].pendingUploads addObject:disPhoto.photo];
+    [[EZDataUtil getInstance] uploadPendingPhoto];
 }
 
 //Mean all the upload and things completed.
@@ -2398,7 +2478,7 @@ context:(void *)context
     [[EZDataUtil getInstance].pendingUploads addObject:disPhoto.photo];
     [[EZDataUtil getInstance] uploadPendingPhoto];
     EZDEBUG(@"complete pending call");
-    [self innerCancel];
+    [self innerCancel:NO];
      EZDEBUG(@"The photoID to update is:%@, prevMatched count:%i", disPhoto.photo.photoID, matchedPhotos.count);
     //for(EZPhoto* ph in matchedPhotos){
     //    [self cancelPrematchPhoto:ph];
@@ -2423,7 +2503,7 @@ context:(void *)context
     //EZPhoto* tmpMatch = _matchedPhoto;
     disPhoto =  [self createPhoto:currentFilteredVideoFrame orgData:photoMeta shotPhoto:_shotPhoto];
     _takingPhoto = false;
-    _toolBarRegion.alpha = 1.0;
+    //_toolBarRegion.alpha = 1.0;
     return currentFilteredVideoFrame;
 }
 
@@ -2569,13 +2649,13 @@ context:(void *)context
     
 }
 
-- (void) innerCancel
+- (void) innerCancel:(BOOL)animated
 {
     EZUIUtility.sharedEZUIUtility.cameraClickButton.releasedBlock = nil;
     //[self dismissViewControllerAnimated:YES completion:^(){
     //    EZDEBUG(@"DLCCamera Will get dismissed");
     //}];
-    [self.navigationController popViewControllerAnimated:YES];
+    [self.navigationController popViewControllerAnimated:animated];
     //[self cancelPrematchPhoto];
     [self.delegate imagePickerControllerDidCancel:self imageCount:_imageCount];
 }
@@ -2596,7 +2676,7 @@ context:(void *)context
         rotateView.image = nil;
         [self changeButtonStatus:NO];
     }else{
-        [self innerCancel];
+        [self innerCancel:YES];
     }
     //[self cancelPrematchPhoto:currentPhoto];
     [self cancelAll:currentPhoto];

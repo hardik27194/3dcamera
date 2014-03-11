@@ -64,6 +64,8 @@ typedef enum {
 
 @property (nonatomic, strong) NSString* assetURL;
 
+@property (nonatomic, strong) NSString* thumbURL;
+
 //If the image uploaded or not?
 //If not will retry.
 @property (nonatomic, assign) BOOL uploaded;
@@ -117,6 +119,11 @@ typedef enum {
 
 //Upload the photo file itself success
 @property (nonatomic, assign) BOOL uploadPhotoSuccess;
+
+//Will get called when upload have progress
+@property (nonatomic, strong) EZEventBlock progress;
+
+@property (nonatomic, strong) EZEventBlock uploadSuccess;
 
 //@property (nonatomic, assign) BOOL pendingMatch;
 

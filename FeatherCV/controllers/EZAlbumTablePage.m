@@ -103,6 +103,34 @@ static int photoCount = 1;
 }
 
 
+- (void) downloadCache
+{
+    NSString* imageURL = @"http://www.enjoyxue.com:8080/static/531c871521ae7a4796b65b39/bf354b7d788345b2794985b576fcea5b.jpg";
+    NSString* url = [[EZDataUtil getInstance] preloadImage:imageURL success:^(id success){
+        EZDEBUG(@"successfully downloaded:%@", success);
+        NSString* secURL = [[EZDataUtil getInstance] preloadImage:imageURL success:nil failed:nil];
+        EZDEBUG(@"Should return immediately:%@", secURL);
+        
+        dispatch_later(0.5, ^(){
+            UIImageView* imageShow = [[UIImageView alloc] initWithFrame:CGRectMake(0, 100, 100, 100)];
+            imageShow.backgroundColor = [UIColor redColor];
+            //[imageShow setImageURL:str2url(secURL)];
+            [imageShow setImageWithURL:str2url(secURL)];
+            [TopView addSubview:imageShow];
+        });
+    } failed:^(NSError* err){
+        EZDEBUG(@"failed to download:%@", err);
+    }];
+    
+    url = [[EZDataUtil getInstance] preloadImage:imageURL success:^(id success){
+        EZDEBUG(@"second successfully downloaded:%@", success);
+    } failed:^(NSError* err){
+        EZDEBUG(@"second failed to download:%@", err);
+    }];
+    
+    EZDEBUG(@"Immdiatedly returned image:%@", url);
+}
+
 - (void) loadMorePhoto:(EZEventBlock)completed reload:(BOOL)reload
 {
     int pageStart = _combinedPhotos.count/photoPageSize;
@@ -310,12 +338,13 @@ static int photoCount = 1;
     DLCImagePickerController* camera = [[DLCImagePickerController alloc] init];
     //}
     //controller.prefersStatusBarHidden = TRUE;
-    camera.transitioningDelegate = _cameraAnimation;
+    //camera.transitioningDelegate = _cameraAnimation;
     camera.delegate = self;
     camera.personID = _currentUser.personID;
     //if(camera.isFrontCamera){
     //    [camera switchCamera];
     //}
+    _isPushCamera = NO;
     EZDEBUG(@"before present");
     //[self presentViewController:camera animated:TRUE completion:^(){
     //    EZDEBUG(@"Presentation completed");
@@ -457,12 +486,13 @@ static int photoCount = 1;
     _cameraAnimation = [[EZModalRaiseAnimation alloc] init];
     
     _detailAnimation = [[EZModalDissolveAnimation alloc] init];
+    _cameraNaviAnim = [[EZCameraNaviAnimation alloc] init];
     EZDEBUG(@"Query block is:%i",(int)_queryBlock);
 
     [[EZMessageCenter getInstance] registerEvent:EZTakePicture block:^(EZDisplayPhoto* dp){
         EZDEBUG(@"A photo get generated");
         [_combinedPhotos addObject:dp];
-        [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:_combinedPhotos.count-1 inSection:0]] withRowAnimation:UITableViewRowAnimationBottom];
+        [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:_combinedPhotos.count-1 inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
         //[self.tableView a]
     }];
     
@@ -691,6 +721,7 @@ static int photoCount = 1;
         [[EZDataUtil getInstance] jumpCycleAnimation:^(id obj){
             EZContactTablePage* contactPage = [[EZContactTablePage alloc] init];
             //contactPage.transitioningDelegate =
+            _isPushCamera = false;
             [self.navigationController pushViewController:contactPage animated:YES];
             contactPage.completedBlock = ^(id obj){
                 [weakSelf switchFriend:obj];
@@ -874,8 +905,9 @@ static int photoCount = 1;
     EZDEBUG(@"Will display front image");
     if(cp.isFront){
         [cell.frontImage setImage:[myPhoto getScreenImage]];
+        preloadimage(switchPhoto.screenURL);
     }else{
-        [cell.frontImage setImageWithURL:str2url(switchPhoto.screenURL)];
+        [self loadImage:cell url:switchPhoto.screenURL];
     }
     
     __weak EZAlbumTablePage* weakSelf = self;
@@ -910,6 +942,10 @@ static int photoCount = 1;
         blurview.image = img;
         [TopView addSubview:blurview];
          **/
+        //[self downloadCache];
+        //NSString* fullURL = @"http://192.168.1.102:8080/static/f256d841ebf3b5210ecf137e9d6336e8.jpg";
+        //[[EZDataUtil getInstance] serialPreload:fullURL];
+        
         EZDEBUG(@"Table The content insets:%@", NSStringFromUIEdgeInsets(weakSelf.tableView.contentInset));
         if(switchPhoto){
             [weakSelf switchImage:weakCell displayPhoto:cp front:myPhoto back:switchPhoto animate:YES];
@@ -936,13 +972,14 @@ static int photoCount = 1;
         [UIView animateWithDuration:0.3 animations:^(){
             fullView.alpha = 1.0;
         }];
+        __weak EZClickImage* weakFull = fullView;
         fullView.releasedBlock = ^(UIView* obj){
             EZDEBUG(@"dismiss current view");
             //[obj dismissViewControllerAnimated:YES completion:nil];
             [UIView animateWithDuration:0.3 animations:^(){
-                obj.alpha = 0;
+                weakFull.alpha = 0;
             } completion:^(BOOL completed){
-                [obj removeFromSuperview];
+                [weakFull removeFromSuperview];
                 macroHideStatusBar(NO);
             }];
             //[EZDataUtil getInstance].centerButton.alpha = 1.0;
@@ -982,6 +1019,52 @@ static int photoCount = 1;
     [cell.headIcon setImageWithURL:str2url(frontPerson.avatar)];
     [cell.otherIcon setImageWithURL:str2url(backPerson.avatar)];
     return cell;
+}
+
+- (void) loadImage:(EZPhotoCell*)weakCell  url:(NSString*)secondURL
+{
+    //NSString* secondURL = @"http://192.168.1.102:8080/static/5666df6256e9504dd8b5f6a4b21edbac.jpg";
+    UIActivityIndicatorView* ai = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+    ai.center = weakCell.frontImage.center;
+    __block BOOL loaded = false;
+    
+    [[EZDataUtil getInstance] serialLoad:secondURL fullOk:^(NSString* localURL){
+        EZDEBUG(@"image loaded full:%i, url:%@", loaded, localURL);
+        if(!loaded){
+            loaded = true;
+            [ai stopAnimating];
+            [ai removeFromSuperview];
+            //[weakCell.frontImage setImageWithURL:str2url(fullURL)];
+            weakCell.frontImage.image = fileurl2image(localURL);
+        }else{
+            UIView* snapShot = [weakCell.frontImage snapshotViewAfterScreenUpdates:NO];
+            [weakCell.frontImage addSubview:snapShot];
+            //[weakCell setImageWithURL:str2url(localURL)];
+            weakCell.frontImage.image = fileurl2image(localURL);
+            [UIView animateWithDuration:0.3 animations:^(){
+                snapShot.alpha = 0;
+            } completion:^(BOOL completed){
+                [snapShot removeFromSuperview];
+            }];
+        }
+    } thumbOk:^(NSString* localURL){
+        EZDEBUG(@"image loaded blur:%i, url:%@", loaded, localURL);
+        if(!loaded){
+            loaded = true;
+            [ai stopAnimating];
+            [ai removeFromSuperview];
+            UIImage* blurred = [fileurl2image(localURL) createBlurImage:70.0];
+            weakCell.frontImage.image = blurred;
+        }
+    } pending:^(id obj){
+        [weakCell.frontImage addSubview:ai];
+        [ai startAnimating];
+    } failure:^(id err){
+        EZDEBUG(@"failure get called");
+        EZDEBUG(@"err:%@", err);
+        [ai stopAnimating];
+        [ai removeFromSuperview];
+    }];
 }
 
 
@@ -1042,9 +1125,10 @@ static int photoCount = 1;
         UIView* snapShot = [weakCell.frontImage snapshotViewAfterScreenUpdates:YES];
         snapShot.frame = weakCell.frontImage.frame;
         [weakCell.rotateContainer addSubview:snapShot];
+        
         if(cp.isFront){
             photo = back;
-            [weakCell.frontImage setImageWithURL:str2url(back.screenURL)];
+            [self loadImage:weakCell url:photo.screenURL];
         }else{
             photo = front;
             [weakCell.frontImage setImage:[front getScreenImage]];
@@ -1069,7 +1153,7 @@ static int photoCount = 1;
             photo = front;
             [weakCell.frontImage setImage:[front getScreenImage]];
         }
-        EZPerson* person = pid2person(photo.personID);
+        //EZPerson* person = pid2person(photo.personID);
         [self setChatInfo:weakCell displayPhoto:photo person:pid2person(photo.personID)];
         //[weakCell.headIcon setImageWithURL:str2url(person.avatar)];
         //weakCell.authorName.text = person.name;
@@ -1193,13 +1277,24 @@ static int photoCount = 1;
 -(id<UIViewControllerAnimatedTransitioning>)navigationController:(UINavigationController *)navigationController animationControllerForOperation:(UINavigationControllerOperation)operation fromViewController:(UIViewController *)fromVC toViewController:(UIViewController *)toVC {
     
     EZDEBUG(@"Exactly before transition");
+    
     switch (operation) {
         case UINavigationControllerOperationPush:
-            _raiseAnimation.type = AnimationTypePresent;
-            return  _raiseAnimation;
+            if(_isPushCamera){
+                _cameraNaviAnim.type = AnimationTypePresent;
+                return _cameraNaviAnim;
+            }else{
+                _raiseAnimation.type = AnimationTypePresent;
+                return  _raiseAnimation;
+            }
         case UINavigationControllerOperationPop:
-            _raiseAnimation.type = AnimationTypeDismiss;
-            return _raiseAnimation;
+            if(_isPushCamera){
+                _cameraNaviAnim.type = AnimationTypeDismiss;
+                return _cameraNaviAnim;
+            }else{
+                _raiseAnimation.type = AnimationTypeDismiss;
+                return _raiseAnimation;
+            }
         default: return nil;
     }
     

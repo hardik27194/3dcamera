@@ -110,6 +110,8 @@ typedef enum {
 //The place which will hold all the tool bar
 @property (nonatomic, strong) UIView* toolBarRegion;
 
+@property (nonatomic, strong) UIView* toolBarNewRegion;
+
 
 @property (nonatomic, weak) IBOutlet UIView *topBar;
 //This view act as a flash for the self shot camera.
@@ -128,6 +130,8 @@ typedef enum {
 //If the image have saved
 @property (nonatomic, assign) BOOL isSaved;
 
+@property (nonatomic, assign) BOOL isUploading;
+
 @property (nonatomic, strong) EZSoundEffect* pageTurn;
 @property (nonatomic, strong) EZSoundEffect* shotReady;
 @property (nonatomic, strong) EZSoundEffect* shotVoice;
@@ -135,6 +139,7 @@ typedef enum {
 @property (nonatomic, strong) NSMutableArray* storedMotionDelta;
 @property (nonatomic, assign) BOOL quitFaceDetection;
 @property (nonatomic, assign) EZShotMode shotMode;
+@property (nonatomic, strong) UIProgressView* progressView;
 
 @property (nonatomic, assign) int imageCount;
 @property (nonatomic, assign) EZFlipStatus flipStatus;

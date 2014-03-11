@@ -35,6 +35,8 @@
 		184ADD8618CB490E00367527 /* EZBlurAnimator.m in Sources */ = {isa = PBXBuildFile; fileRef = 184ADD8518CB490E00367527 /* EZBlurAnimator.m */; };
 		184ADD8818CC656E00367527 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 184ADD8718CC656E00367527 /* MessageUI.framework */; };
 		184ADD8A18CD691300367527 /* head_icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 184ADD8918CD691300367527 /* head_icon@2x.png */; };
+		184ADD8D18CDA96200367527 /* EZDownloadHolder.m in Sources */ = {isa = PBXBuildFile; fileRef = 184ADD8C18CDA96200367527 /* EZDownloadHolder.m */; };
+		184ADD9218CF045A00367527 /* EZCameraNaviAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = 184ADD9118CF045A00367527 /* EZCameraNaviAnimation.m */; };
 		184DBE7218B8D8A400239F0F /* EZSkinSharpen.m in Sources */ = {isa = PBXBuildFile; fileRef = 184DBE7118B8D8A400239F0F /* EZSkinSharpen.m */; };
 		184DBE7718BB476F00239F0F /* EZSimpleClick.m in Sources */ = {isa = PBXBuildFile; fileRef = 184DBE7618BB476F00239F0F /* EZSimpleClick.m */; };
 		184DBE7918BB51DB00239F0F /* EZErrorInfo.strings in Resources */ = {isa = PBXBuildFile; fileRef = 184DBE7818BB51DB00239F0F /* EZErrorInfo.strings */; };
@@ -339,6 +341,10 @@
 		184ADD8518CB490E00367527 /* EZBlurAnimator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZBlurAnimator.m; sourceTree = "<group>"; };
 		184ADD8718CC656E00367527 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		184ADD8918CD691300367527 /* head_icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "head_icon@2x.png"; sourceTree = "<group>"; };
+		184ADD8B18CDA96200367527 /* EZDownloadHolder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZDownloadHolder.h; sourceTree = "<group>"; };
+		184ADD8C18CDA96200367527 /* EZDownloadHolder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZDownloadHolder.m; sourceTree = "<group>"; };
+		184ADD9018CF045A00367527 /* EZCameraNaviAnimation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZCameraNaviAnimation.h; sourceTree = "<group>"; };
+		184ADD9118CF045A00367527 /* EZCameraNaviAnimation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZCameraNaviAnimation.m; sourceTree = "<group>"; };
 		184DBE7018B8D8A400239F0F /* EZSkinSharpen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZSkinSharpen.h; sourceTree = "<group>"; };
 		184DBE7118B8D8A400239F0F /* EZSkinSharpen.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZSkinSharpen.m; sourceTree = "<group>"; };
 		184DBE7518BB476F00239F0F /* EZSimpleClick.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZSimpleClick.h; sourceTree = "<group>"; };
@@ -751,6 +757,8 @@
 				1866ADB318979C7400DB46E2 /* EZModalRaiseAnimation.m */,
 				181608D818B714B900DD5995 /* EZModalDissolveAnimation.h */,
 				181608D918B714B900DD5995 /* EZModalDissolveAnimation.m */,
+				184ADD9018CF045A00367527 /* EZCameraNaviAnimation.h */,
+				184ADD9118CF045A00367527 /* EZCameraNaviAnimation.m */,
 			);
 			name = animation;
 			sourceTree = "<group>";
@@ -1116,6 +1124,8 @@
 				184DBE7618BB476F00239F0F /* EZSimpleClick.m */,
 				184ADD8118C8ACA200367527 /* EZShapeButton.h */,
 				184ADD8218C8ACA200367527 /* EZShapeButton.m */,
+				184ADD8B18CDA96200367527 /* EZDownloadHolder.h */,
+				184ADD8C18CDA96200367527 /* EZDownloadHolder.m */,
 			);
 			path = utility;
 			sourceTree = "<group>";
@@ -1539,6 +1549,7 @@
 				1866ADB418979C7400DB46E2 /* EZModalRaiseAnimation.m in Sources */,
 				181903F7187FFC64001FC370 /* EZHomeGaussianFilter.m in Sources */,
 				18E34693183DF54400C9D89D /* FeatherCV.xcdatamodeld in Sources */,
+				184ADD9218CF045A00367527 /* EZCameraNaviAnimation.m in Sources */,
 				18E746F718A4A26A0023967B /* UIImageView+AFNetworking.m in Sources */,
 				181608C718B4E38600DD5995 /* EZAnimationUtil.m in Sources */,
 				18E746F118A4A26A0023967B /* AFURLResponseSerialization.m in Sources */,
@@ -1563,6 +1574,7 @@
 				18E34729183DFA3300C9D89D /* EZBaseCollectionPage.m in Sources */,
 				1866ADC71898F0DB00DB46E2 /* LFGlassView.m in Sources */,
 				18E34724183DFA3300C9D89D /* EZAlbumTablePage.m in Sources */,
+				184ADD8D18CDA96200367527 /* EZDownloadHolder.m in Sources */,
 				1866ADAA18966E7000DB46E2 /* BaseAnimation.m in Sources */,
 				184DBE7218B8D8A400239F0F /* EZSkinSharpen.m in Sources */,
 				181608DA18B714B900DD5995 /* EZModalDissolveAnimation.m in Sources */,

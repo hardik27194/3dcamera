@@ -83,7 +83,11 @@
 
 @property (nonatomic, strong) UIImageView* prefetchImage;
 
+@property (nonatomic, strong) NSMutableDictionary* downloadedImages;
+
 @property (nonatomic, strong) NSDateFormatter* timeFormatter;
+
+@property (nonatomic, strong) AFHTTPResponseSerializer* imageSerializer;
 
 @property (nonatomic, strong) EZClickView* contactButton;
 
@@ -162,6 +166,8 @@
 //How about thumbnail.
 //Should we generate it dynamically.
 //Maybe we should.
+- (NSString*) urlToThumbURL:(NSString*)normalURL;
+
 - (void) uploadPhoto:(EZPhoto*)photo success:(EZEventBlock)success failure:(EZEventBlock)failure;
 
 - (void) uploadAvatar:(UIImage*)img success:(EZEventBlock)success failure:(EZEventBlock)failure;
@@ -228,6 +234,15 @@
 
 - (void) loadPhotoBooks;
 
+
+//For the preload image, if I have local url in the cache, I will return it immediately.
+//Otherwise, I will dump use the thumbnail.
+- (NSString*) preloadImage:(NSString*)fullURL success:(EZEventBlock)success failed:(EZEventBlock)failed;
+
+//I will load the small image first, then the large image
+- (void) serialPreload:(NSString*)fullURL;
+
+- (void) serialLoad:(NSString*)fullURL fullOk:(EZEventBlock)fullBlock thumbOk:(EZEventBlock)thumbOk pending:(EZEventBlock)pending failure:(EZEventBlock)failure;
 //Will upload each pending photo
 //Remove the photo from the array, once it is successfuls
 
