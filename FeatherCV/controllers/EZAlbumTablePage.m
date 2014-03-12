@@ -907,7 +907,7 @@ static int photoCount = 1;
     [[cell viewWithTag:animateCoverViewTag] removeFromSuperview];
     EZDEBUG(@"Will display front image");
     if(cp.isFront){
-        [cell.frontImage setImage:[myPhoto getScreenImage]];
+        [self loadFrontImage:cell photo:myPhoto file:myPhoto.assetURL];
         preloadimage(switchPhoto.screenURL);
     }else{
         [self loadImage:cell url:switchPhoto.screenURL];
@@ -916,38 +916,6 @@ static int photoCount = 1;
     __weak EZAlbumTablePage* weakSelf = self;
     __weak EZPhotoCell* weakCell = cell;
     cell.frontImage.tappedBlock = ^(id obj){
-        //EZDEBUG(@"Cell Released clicked");
-        //[[EZUIUtility sharedEZUIUtility] raiseInfoWindow:@"测试" info:@"好好测"];
-        //UIImage* img = [weakCell.frontImage createBlurImage:60];
-        //EZDEBUG(@"Cell tapped, the size is:%@", NSStringFromCGSize(img.size));
-        //UIImageView* imgView = [[UIImageView alloc] initWithImage:img];
-        //[weakCell.frontImage addSubview:imgView];
-        /**
-        EZBlurAnimator* ba = [[EZBlurAnimator alloc] initWithFrame:weakCell.frontImage.frame];
-        [weakCell addSubview:ba];
-        ba.tintColor = RGBA(255, 128, 128, 50);
-        [ba animateBlur:0.0 to:70.0 duration:1.0 srcView:weakCell.frontImage completed:^(EZBlurAnimator* blur){
-            [blur animateBlur:70.0 to:0 duration:0.5 srcView:weakCell.frontImage completed:^(EZBlurAnimator* blurred){
-                [blurred removeFromSuperview];
-            }];
-        }];
-        **/
-        
-        //UIImage* img = [tableView contentAsImage];
-        
-        /**
-        UIImage* img = [weakCell createBlurImage:70.0];
-        
-        EZDEBUG(@"image size:%@", NSStringFromCGSize(img.size));
-        
-        UIImageView* blurview = [[UIImageView alloc] initWithFrame:CGRectMake(0, 100, 100, 100)];
-        blurview.backgroundColor = [UIColor redColor];
-        blurview.image = img;
-        [TopView addSubview:blurview];
-         **/
-        //[self downloadCache];
-        //NSString* fullURL = @"http://192.168.1.102:8080/static/f256d841ebf3b5210ecf137e9d6336e8.jpg";
-        //[[EZDataUtil getInstance] serialPreload:fullURL];
         
         EZDEBUG(@"Table The content insets:%@", NSStringFromUIEdgeInsets(weakSelf.tableView.contentInset));
         if(switchPhoto){
@@ -1039,6 +1007,17 @@ static int photoCount = 1;
      //   }
     //});
     return cell;
+}
+
+- (void) loadFrontImage:(EZPhotoCell*)weakCell photo:(EZPhoto*)photo file:(NSString*)assetURL
+{
+    if([EZFileUtil isFileExist:assetURL isURL:NO]){
+        EZDEBUG("File exist");
+        [weakCell.frontImage setImage:[photo getScreenImage]];
+    }else{
+        EZDEBUG(@"file not exist load from url:%@", photo.screenURL);
+        [self loadImage:weakCell url:photo.screenURL];
+    }
 }
 
 - (void) loadImage:(EZPhotoCell*)weakCell  url:(NSString*)secondURL
@@ -1151,7 +1130,8 @@ static int photoCount = 1;
             [self loadImage:weakCell url:photo.screenURL];
         }else{
             photo = front;
-            [weakCell.frontImage setImage:[front getScreenImage]];
+            //[weakCell.frontImage setImage:[front getScreenImage]];
+            [self loadFrontImage:weakCell photo:front file:front.assetURL];
         }
     
         dispatch_later(0.15, ^(){
@@ -1168,10 +1148,11 @@ static int photoCount = 1;
     }else{
         if(cp.isFront){
             photo = back;
-            [weakCell.frontImage setImageWithURL:str2url(back.screenURL)];
+            [self loadImage:weakCell url:photo.screenURL];
         }else{
             photo = front;
-            [weakCell.frontImage setImage:[front getScreenImage]];
+            //[weakCell.frontImage setImage:[front getScreenImage]];
+            [self loadFrontImage:weakCell photo:front file:front.assetURL];
         }
         //EZPerson* person = pid2person(photo.personID);
         [self setChatInfo:weakCell displayPhoto:photo person:pid2person(photo.personID)];

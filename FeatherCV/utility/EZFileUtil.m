@@ -498,6 +498,13 @@
     return nil;
 }
 
+//This should be full File URL
++ (BOOL) isFileExist:(NSString*)fileName isURL:(BOOL)isURL
+{
+    NSString* fullPath = isURL?[fileName substringFromIndex:7]:fileName;
+    return [[NSFileManager defaultManager] fileExistsAtPath:fullPath];
+}
+
 + (NSString*) saveImageToCache:(UIImage*)img filename:(NSString *)filename
 {
     NSString* fullPath = [EZFileUtil saveToCache:img.toJpegData filename:filename];

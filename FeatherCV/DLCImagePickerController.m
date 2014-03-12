@@ -2131,6 +2131,7 @@ context:(void *)context
                 loaded = true;
                 [self rotateCurrentImage:fileurl2image(localURL) imageURL:nil blur:NO completed:^(id obj){
                     _textField.hidden = YES;
+                    _textPlaceHolder.hidden = YES;
                     [_authorIcon setImageWithURL:str2url(matchedPerson.avatar)];
                     [self showTextField:YES];
                     disPhoto.isFront = false;
@@ -2531,7 +2532,9 @@ context:(void *)context
 - (EZDisplayPhoto*) createPhoto:(UIImage*)img orgData:(NSDictionary*)orgdata shotPhoto:(EZPhoto*)shotPhoto
 {
     
-    NSString* storedURL = [EZFileUtil saveImageToDocument:img];
+    NSString* storedURL = [EZFileUtil saveImageToCache:img];
+    
+    //[EZFileUtil saveImageToDocument:img];
     EZDEBUG(@"Stored file name:%@", storedURL);
     EZDisplayPhoto* displayPhoto = [[EZDisplayPhoto alloc] init];
     displayPhoto.isFront = true;

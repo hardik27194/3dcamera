@@ -49,6 +49,9 @@ static EZLRUMap* imageCaches;
 //nil mean not exist, string mean yes.
 + (NSString*) isExistInCache:(NSString*)fileName;
 
+//This should be full File URL
++ (BOOL) isFileExist:(NSString*)fileName isURL:(BOOL)isURL;
+
 + (NSArray*) saveImagesToCache:(NSArray*)uiImages;
 
 + (NSString*) saveImageToCache:(UIImage*)img filename:(NSString *)filename;
