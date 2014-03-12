@@ -247,21 +247,22 @@
         redEnhanceFilter.redRatio = 1.15;
         redEnhanceFilter.greenRatio = 1.5;
         
-        secBlendFilter.blurFilter.distanceNormalizationFactor = 20.0;
-        secBlendFilter.blurFilter.blurSize = 2.8;
-        secBlendFilter.miniRealRatio = 0.3;
-        secBlendFilter.maxRealRatio = 0.3;
+        secBlendFilter.blurFilter.distanceNormalizationFactor = 25.0;
+        secBlendFilter.blurFilter.blurSize = 3.0;
+        secBlendFilter.miniRealRatio = 0.2;
+        secBlendFilter.maxRealRatio = 0.5;
         secBlendFilter.imageMode = 0;
         secBlendFilter.skinColorFlag = 1;
         
-        finalBlendFilter.blurFilter.distanceNormalizationFactor = 9.0;
-        finalBlendFilter.blurFilter.blurSize = 0.5;//fobj.orgRegion.size.width;
+        finalBlendFilter.blurFilter.distanceNormalizationFactor = 10.0;
+        finalBlendFilter.blurFilter.blurSize = 0.4;//fobj.orgRegion.size.width;
         finalBlendFilter.miniRealRatio = 0.0;
         finalBlendFilter.maxRealRatio = 1.0;
         finalBlendFilter.imageMode = 0;
         finalBlendFilter.skinColorFlag = 1;
         //finalBlendFilter.showFace = 1;
         finalBlendFilter.faceRegion = @[@(fobj.orgRegion.origin.x), @(fobj.orgRegion.origin.x + fobj.orgRegion.size.width), @(fobj.orgRegion.origin.y), @(fobj.orgRegion.origin.y + fobj.orgRegion.size.height)];
+        secBlendFilter.blurFilter.blurSize = 2.8 * fobj.orgRegion.size.width;
         //finalBlendFilter.smallBlurFilter.blurSize = blurAspectRatio * blurCycle;
         EZDEBUG(@"Will adjusted Face");
     }else{
@@ -1052,10 +1053,17 @@ context:(void *)context
     [_authorIcon setImageWithURL:str2url(currentLoginUser.avatar)];
     [textInputRegion addSubview:_authorIcon];
     _textField = [[UITextField alloc] initWithFrame:CGRectMake(50, 0, 310, 44)];
-    _textField.placeholder = macroControlInfo(@"Say something");
+    //_textField.placeholder = macroControlInfo(@"Say something");
+    
     _textField.delegate = self;
     _textField.returnKeyType = UIReturnKeySend;
     _textField.keyboardAppearance = UIKeyboardAppearanceLight;
+    
+    _textPlaceHolder = [[UILabel alloc] initWithFrame:_textField.frame];
+    [_textPlaceHolder setTextColor:[UIColor whiteColor]];
+    [_textPlaceHolder enableShadow:[UIColor blackColor]];
+    [_textPlaceHolder setFont:_textField.font];
+    _textPlaceHolder.text = macroControlInfo(@"Say something");
     [_textField setTextColor:[UIColor whiteColor]];
     [_textField enableShadow:[UIColor blackColor]];
     //cancelText = [[UIButton alloc] initWithFrame:CGRectMake(255, 0, 60, 44)];
@@ -1063,6 +1071,7 @@ context:(void *)context
     //[cancelText setTitleColor:RGBCOLOR(128, 128, 128) forState:UIControlStateNormal];
     //[cancelText addTarget:self action:@selector(cancelText:) forControlEvents:UIControlEventTouchUpInside];
     //[textInputRegion addSubview:cancelText];
+    [textInputRegion addSubview:_textPlaceHolder];
     [textInputRegion addSubview:_textField];
     [self.view addSubview:textInputRegion];
 }
@@ -1077,6 +1086,7 @@ context:(void *)context
 - (void)textFieldDidBeginEditing:(UITextField *)textField
 {
     EZDEBUG(@"Rotate back");
+    _textPlaceHolder.hidden = YES;
     //if(!_turnedImage){
     //    _turnedImage = TRUE;
         //[self rotateCurrentImage:[disPhoto.photo getScreenImage]];
@@ -1086,17 +1096,23 @@ context:(void *)context
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textFd
 {
-    CGRect bound = self.view.bounds;
+
     EZDEBUG(@"Should return:%@", _textField.text);
     [textFd resignFirstResponder];
     return true;
+}
+
+- (void) textFieldDidEndEditing:(UITextField *)textField
+{
+    if([textField.text isEmpty]){
+        _textPlaceHolder.hidden = NO;
+    }
 }
 
 
 - (void) showTextField:(BOOL)show
 {
     EZDEBUG(@"show text field:%i", show);
-    CGRect bounds = [UIScreen mainScreen].applicationFrame;
     //usingSpringWithDamping:0.5 initialSpringVelocity:0.5
     [UIView animateWithDuration:0.3 delay:0.0 options:UIViewAnimationOptionCurveEaseOut  animations:^(){
         if(show){
@@ -1170,6 +1186,8 @@ context:(void *)context
     topBar.backgroundColor = RGBA(255, 255, 255, 128);
     _oldPressBlock = [EZDataUtil getInstance].centerButton.pressedBlock;
     _oldReleaseBlock = [EZDataUtil getInstance].centerButton.releasedBlock;
+    [EZDataUtil getInstance].centerButton.radius = EZInnerCycleRadius;
+    [[EZDataUtil getInstance].centerButton setNeedsDisplay];
     [EZDataUtil getInstance].centerButton.releasedBlock = nil;
     [EZDataUtil getInstance].centerButton.pressedBlock = ^(EZCenterButton* obj){
         [obj animateButton:0.3 lineWidth:13 completed:^(id obj){
@@ -1357,6 +1375,8 @@ context:(void *)context
     //[[UIApplication sharedApplication] setStatusBarHidden:false];
     [EZDataUtil getInstance].centerButton.releasedBlock = _oldReleaseBlock;
     [EZDataUtil getInstance].centerButton.pressedBlock = _oldPressBlock;
+    [EZDataUtil getInstance].centerButton.radius = EZOuterCycleRadius;
+    [[EZDataUtil getInstance].centerButton setNeedsDisplay];
     //[EZDataUtil getInstance].centerButton.transform = CGAffineTransformIdentity;
     //[EZDataUtil getInstance].centerButton
 }

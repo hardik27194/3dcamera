@@ -216,6 +216,7 @@ typedef enum {
 @property (nonatomic, assign) CGSize cameraAspectSize;
 
 @property (nonatomic, strong) UITextField* textField;
+@property (nonatomic, strong) UILabel* textPlaceHolder;
 
 @property (nonatomic, strong) EZEventBlock oldPressBlock;
 @property (nonatomic, strong) EZEventBlock oldReleaseBlock;

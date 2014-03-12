@@ -212,6 +212,7 @@
     [[UINavigationBar appearance] setBackgroundImage:gradientImage44 forBarMetrics:UIBarMetricsDefault];
     [[UINavigationBar appearance] setBackgroundImage:gradientImage44 forBarMetrics:UIBarMetricsLandscapePhone];
     
+    /**
     [[EZMessageCenter getInstance] registerEvent:EZStatusBarChange block:^(NSNumber* status){
         EZDEBUG(@"Status bar changed:%i", status.intValue);
         if(status.intValue == 1){
@@ -220,6 +221,7 @@
             [EZDataUtil getInstance].barBackground.alpha = 1;
         }
     }];
+     **/
     /**
     [[UINavigationBar appearance] setTitleTextAttributes:
      [NSDictionary dictionaryWithObjectsAndKeys:

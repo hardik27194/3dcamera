@@ -177,9 +177,7 @@
         _radius = _srcRadius;
     }
     [self setNeedsDisplay];
-    dispatch_later(frameRate, ^(){
-        [self tick];
-    });
+    [self performSelector:@selector(tick) withObject:Nil afterDelay:frameRate];
 }
 
 

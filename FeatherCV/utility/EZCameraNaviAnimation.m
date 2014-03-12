@@ -27,20 +27,28 @@
         //[toViewController.view  insertSubview:blurredView atIndex:0];
         //blurredView.y = - blurredView.height;
         //toViewController.view.clipsToBounds = true;
+        [containerView insertSubview:toViewController.view belowSubview:fromViewController.view];
+        [UIView animateWithDuration:[self transitionDuration:transitionContext] animations:^(){
+            fromViewController.view.alpha = 0.0;
+        } completion:^(BOOL finish){
+            //[fromViewController.view removeFromSuperview];
+            [transitionContext completeTransition:YES];
+        }];
     } else if (self.type == AnimationTypeDismiss) {
-    
-    
+        toViewController.view.alpha = 1.0;
+        [containerView insertSubview:toViewController.view belowSubview:fromViewController.view];
+        [UIView animateWithDuration:[self transitionDuration:transitionContext] animations:^(){
+            fromViewController.view.alpha = 0.0;
+        } completion:^(BOOL finish){
+            //[fromViewController.view removeFromSuperview];
+            [transitionContext completeTransition:YES];
+        }];
     }
     
-    [containerView insertSubview:toViewController.view belowSubview:fromViewController.view];
+    
     //[containerView addSubview:fromViewController.view];
     //toViewController.view.y = beginY;
-    [UIView animateWithDuration:[self transitionDuration:transitionContext] animations:^(){
-        fromViewController.view.alpha = 0.0;
-    } completion:^(BOOL finish){
-        //[fromViewController.view removeFromSuperview];
-        [transitionContext completeTransition:YES];
-    }];
+    
 
 }
 

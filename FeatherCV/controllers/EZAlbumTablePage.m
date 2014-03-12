@@ -262,6 +262,7 @@ static int photoCount = 1;
     //if(_menuClicked){
     //    _menuClicked(Nil);
     //}
+    _isPushCamera = false;
     EZContactTablePage* contactPage = [[EZContactTablePage alloc] init];
     [self.navigationController pushViewController:contactPage animated:YES];
 }
@@ -344,7 +345,7 @@ static int photoCount = 1;
     //if(camera.isFrontCamera){
     //    [camera switchCamera];
     //}
-    _isPushCamera = NO;
+    _isPushCamera = YES;
     EZDEBUG(@"before present");
     //[self presentViewController:camera animated:TRUE completion:^(){
     //    EZDEBUG(@"Presentation completed");
@@ -705,8 +706,10 @@ static int photoCount = 1;
         return;
     }
     _alreadyExecuted = true;
+    [self.refreshControl setPosition:CGPointMake(230, 25)];
     CGRect bounds = [UIScreen mainScreen].bounds;
-    EZCenterButton* clickView = [[EZCenterButton alloc] initWithFrame:CGRectMake((CurrentScreenWidth - EZCenterSmallRadius)/2.0, bounds.size.height - EZCenterSmallRadius - 6.0, EZCenterSmallRadius, EZCenterSmallRadius) cycleRadius:20 lineWidth:5];
+    self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 0, 0);
+    EZCenterButton* clickView = [[EZCenterButton alloc] initWithFrame:CGRectMake((CurrentScreenWidth - EZCenterSmallRadius)/2.0, bounds.size.height - EZCenterSmallRadius - 6.0, EZCenterSmallRadius, EZCenterSmallRadius) cycleRadius:EZOuterCycleRadius lineWidth:3];
     
     clickView.enableTouchEffects = false;
     clickView.releasedBlock = ^(EZCenterButton* obj){
@@ -952,9 +955,13 @@ static int photoCount = 1;
         }
     };
     
-    
+    __block BOOL longPressed = false;
     cell.frontImage.longPressed = ^(id obj){
-        
+        if(longPressed){
+            EZDEBUG(@"Quit for pressed");
+            return;
+        }
+        longPressed = TRUE;
         EZClickImage* fullView = [[EZClickImage alloc] initWithFrame:[UIScreen mainScreen].bounds];
         fullView.contentMode = UIViewContentModeScaleAspectFill;
         fullView.image = weakCell.frontImage.image;
@@ -968,6 +975,7 @@ static int photoCount = 1;
         //    [sc dismissViewControllerAnimated:YES completion:nil];
         //};
         fullView.alpha = 0;
+        macroHideStatusBar(YES);
         [TopView addSubview:fullView];
         [UIView animateWithDuration:0.3 animations:^(){
             fullView.alpha = 1.0;
@@ -975,18 +983,23 @@ static int photoCount = 1;
         __weak EZClickImage* weakFull = fullView;
         fullView.releasedBlock = ^(UIView* obj){
             EZDEBUG(@"dismiss current view");
+            longPressed = false;
             //[obj dismissViewControllerAnimated:YES completion:nil];
             [UIView animateWithDuration:0.3 animations:^(){
                 weakFull.alpha = 0;
             } completion:^(BOOL completed){
+                EZDEBUG(@"remove fullView:%i",(int)weakFull);
                 [weakFull removeFromSuperview];
-                macroHideStatusBar(NO);
+                 macroHideStatusBar(YES);
+                CGFloat offsetY = indexPath.row * CurrentScreenHeight;
+                //CGPoint offset = weakSelf.tableView.contentOffset;
+                weakSelf.tableView.contentOffset = CGPointMake(0, offsetY);
             }];
             //[EZDataUtil getInstance].centerButton.alpha = 1.0;
             
         };
         //[EZDataUtil getInstance].centerButton.alpha = 0.0;
-        macroHideStatusBar(YES);
+        
 
     };
     EZPerson* person = nil;
@@ -1018,6 +1031,13 @@ static int photoCount = 1;
     cell.otherName.text = backPerson.name;
     [cell.headIcon setImageWithURL:str2url(frontPerson.avatar)];
     [cell.otherIcon setImageWithURL:str2url(backPerson.avatar)];
+    //dispatch_later(0.3, ^(){
+    //    if(indexPath.row == 0){
+    //        CGFloat offsetY = indexPath.row * CurrentScreenHeight;
+            //CGPoint offset = weakSelf.tableView.contentOffset;
+     //       weakSelf.tableView.contentOffset = CGPointMake(0, offsetY);
+     //   }
+    //});
     return cell;
 }
 
@@ -1222,7 +1242,7 @@ static int photoCount = 1;
     _isScrolling = true;
 }
 
-- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
+- (void)scrollViewDidEndDraggingOld:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
 {
     EZDEBUG(@"End dragging point:%@, size:%@, refreshing:%i", NSStringFromCGPoint(scrollView.contentOffset), NSStringFromCGSize(scrollView.contentSize), self.refreshControl.refreshing);
     _isScrolling = false;
@@ -1238,7 +1258,7 @@ static int photoCount = 1;
     //if(decelerate) return;
     //[self scrollViewDidEndDecelerating:scrollView];
 }
-- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
+- (void)scrollViewDidEndDeceleratingOld:(UIScrollView *)scrollView
 {
     EZDEBUG(@"DidEndDecelerating point:%@, size:%@, refreshing:%i", NSStringFromCGPoint(scrollView.contentOffset), NSStringFromCGSize(scrollView.contentSize), self.refreshControl.refreshing);
     //_isScrolling = false;

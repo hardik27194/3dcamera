@@ -58,7 +58,7 @@
 //The photo shared with this user
 #define EZSetAlbumUser @"EZSetAlbumUser"
 
-#define longShaderSkinColor vec3(0.9,0.9, 0.1)
+#define longShaderSkinColor vec3(0.7,0.7, 0.3)
 
 #define shortShaderSkinColor vec3(0.63, 0.63, 0.41)
 
@@ -149,6 +149,11 @@
 #define EZCenterBigRadius 60.0
 
 #define EZCenterSmallRadius 70.0
+
+#define EZOuterCycleRadius  15.0
+
+#define EZInnerCycleRadius 22.0
+
 
 #define AllResizeMask UIViewAutoresizingFlexibleBottomMargin|UIViewAutoresizingFlexibleTopMargin|UIViewAutoresizingFlexibleLeftMargin|UIViewAutoresizingFlexibleRightMargin|UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight
 
