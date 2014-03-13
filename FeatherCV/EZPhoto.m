@@ -147,6 +147,17 @@
     }
 }
 
+- (void) fromLocalJson:(NSDictionary*)dict
+{
+    EZDEBUG(@"from local json raw string:%@", dict);
+    _uploadInfoSuccess = [[dict objectForKey:@"uploadInfoSuccess"] integerValue];
+    _uploadPhotoSuccess = [[dict objectForKey:@"uploadPhotoSuccess"] integerValue];
+    _deleted = [[dict objectForKey:@"deleted"] integerValue];
+    [self fromJson:dict];
+}
+
+
+
 - (void) fromJson:(NSDictionary*)dict
 {
     EZDEBUG(@"json raw string:%@", dict);

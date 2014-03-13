@@ -193,7 +193,7 @@
     filtersBackgroundImageView,
     photoBar,
     topBar,
-    disPhoto,
+    //disPhoto,
     //blurOverlayView,
     outputJPEGQuality,
     requestedImageSize;
@@ -250,12 +250,12 @@
         secBlendFilter.blurFilter.distanceNormalizationFactor = 25.0;
         secBlendFilter.blurFilter.blurSize = 3.0;
         secBlendFilter.miniRealRatio = 0.0;
-        secBlendFilter.maxRealRatio = 0.8;
+        secBlendFilter.maxRealRatio = 1.0;
         secBlendFilter.imageMode = 0;
         secBlendFilter.skinColorFlag = 1;
         
         finalBlendFilter.blurFilter.distanceNormalizationFactor = 10.0;
-        finalBlendFilter.blurFilter.blurSize = 0.4;//fobj.orgRegion.size.width;
+        finalBlendFilter.blurFilter.blurSize = 0.5;//fobj.orgRegion.size.width;
         finalBlendFilter.miniRealRatio = 0.0;
         finalBlendFilter.maxRealRatio = 0.8;
         finalBlendFilter.imageMode = 0;
@@ -840,7 +840,6 @@ context:(void *)context
 -(void)viewDidLoadOld {
     [EZUIUtility sharedEZUIUtility].cameraRaised = true;
     [super viewDidLoad];
-    
     //self.view.backgroundColor = [UIColor whiteColor];
     //[[UIApplication sharedApplication] setStatusBarHidden:YES];
     _senseRotate = true;
@@ -872,7 +871,6 @@ context:(void *)context
     
     sharpenGaussian = [[EZSharpenGaussian alloc] init];
     sharpenGaussianSec = [[EZSharpenGaussian alloc] init];
-    
     //sharpenFilter.sharpness = 0.3;
     
     //set background color
@@ -2143,8 +2141,10 @@ context:(void *)context
                     _textPlaceHolder.hidden = YES;
                     [_authorIcon setImageWithURL:str2url(matchedPerson.avatar)];
                     [self showTextField:YES];
-                    disPhoto.isFront = false;
-                    [[EZMessageCenter getInstance]postEvent:EZTakePicture attached:disPhoto];
+                    //disPhoto.isFront = false;
+                    EZDisplayPhoto* dp = [self createDisplayPhoto:_shotPhoto];
+                    dp.isFront = false;
+                    [[EZMessageCenter getInstance]postEvent:EZTakePicture attached:dp];
                     dispatch_later(1.0, ^(){
                         [self innerCancel:YES];
                     });
@@ -2175,6 +2175,9 @@ context:(void *)context
             EZDEBUG(@"pending get called");
         } failure:^(id err){
             EZDEBUG(@"failure get called");
+            EZDisplayPhoto* dp = [self createDisplayPhoto:_shotPhoto];
+            dp.isFront = true;
+            [[EZMessageCenter getInstance]postEvent:EZTakePicture attached:dp];
         }];
         [self showTextField:NO];
     }
@@ -2447,8 +2450,8 @@ context:(void *)context
                     weakSelf.progressView.hidden = YES;
                     [[EZUIUtility sharedEZUIUtility] raiseInfoWindow:@"上传失败" info:@"羽毛正在重试"];
                     //[weakSelf changePhoto];
-                    weakSelf.disPhoto.isFront = TRUE;
-                    [[EZMessageCenter getInstance]postEvent:EZTakePicture attached:weakSelf.disPhoto];
+                    EZDisplayPhoto* dp = [weakSelf createDisplayPhoto:weakSelf.shotPhoto];
+                    [[EZMessageCenter getInstance]postEvent:EZTakePicture attached:dp];
                     dispatch_later(1.0, ^(){
                         [weakSelf innerCancel:YES];
                     });
@@ -2507,13 +2510,13 @@ context:(void *)context
     //[self confirmCurrentMatch];
     //[self showTextField:NO];
     //[self hideKeyboard];
-    disPhoto.photo.startUpload = true;
-    disPhoto.photo.progress = progress;
-    disPhoto.photo.uploadSuccess = uploadSuccess;
-    [self addChatInfo:disPhoto.photo];
+    _shotPhoto.startUpload = true;
+    _shotPhoto.progress = progress;
+    _shotPhoto.uploadSuccess = uploadSuccess;
+    [self addChatInfo:_shotPhoto];
     [self triggerUpload];
     //_savedPhoto = _shotPhoto;
-    _shotPhoto = nil;
+    //_shotPhoto = nil;
     
 }
 
@@ -2556,7 +2559,7 @@ context:(void *)context
     
     EZDEBUG(@"image size:%f, %f, matchPhotoID:%@", currentFilteredVideoFrame.size.width, currentFilteredVideoFrame.size.height, _shotPhoto.photoID);
     //EZPhoto* tmpMatch = _matchedPhoto;
-    disPhoto =  [self createPhoto:currentFilteredVideoFrame orgData:photoMeta shotPhoto:_shotPhoto];
+    [self createPhoto:currentFilteredVideoFrame orgData:photoMeta shotPhoto:_shotPhoto];
     _takingPhoto = false;
     //_toolBarRegion.alpha = 1.0;
     return currentFilteredVideoFrame;
@@ -2565,19 +2568,21 @@ context:(void *)context
 - (EZDisplayPhoto*) createDisplayPhoto:(EZPhoto*)photo
 {
     EZDisplayPhoto* displayPhoto = [[EZDisplayPhoto alloc] init];
+    displayPhoto.photo = photo;
     displayPhoto.isFront = true;
+    return displayPhoto;
 }
 
 
-- (EZDisplayPhoto*) createPhoto:(UIImage*)img orgData:(NSDictionary*)orgdata shotPhoto:(EZPhoto*)shotPhoto
+- (void) createPhoto:(UIImage*)img orgData:(NSDictionary*)orgdata shotPhoto:(EZPhoto*)shotPhoto
 {
     
     NSString* storedURL = [EZFileUtil saveImageToCache:img];
     
     //[EZFileUtil saveImageToDocument:img];
     EZDEBUG(@"Stored file name:%@", storedURL);
-    EZDisplayPhoto* displayPhoto = [[EZDisplayPhoto alloc] init];
-    displayPhoto.isFront = true;
+    //EZDisplayPhoto* displayPhoto = [[EZDisplayPhoto alloc] init];
+    //displayPhoto.isFront = true;
     //EZPhoto* ep = [[EZPhoto alloc] init];
     //ed.pid = ++[EZDataUtil getInstance].photoCount;
     EZPhoto* ep = shotPhoto;
@@ -2586,16 +2591,14 @@ context:(void *)context
     ep.assetURL = storedURL;
     ep.isLocal = true;
     ep.createdTime = [NSDate date];
-    displayPhoto.photo = ep;
-    displayPhoto.photo.personID = currentLoginUser.personID;
+    //displayPhoto.photo = ep;
+    //displayPhoto.photo.personID = currentLoginUser.personID;
     //EZDEBUG(@"Before size");
     ep.size = img.size;//[result defaultRepresentation].dimensions;
     //Why setup the flag here?
     //Because the user will interact with the photo from now on
     ep.matchCompleted = TRUE;
     EZDEBUG(@"after size:%f, %f", ep.size.width, ep.size.height);
-    //success(displayPhoto);
-    return displayPhoto;
 }
 
 - (void) createPhotoNewOld:(UIImage*)img orgData:(NSDictionary*)orgdata shotPhoto:(EZPhoto*)shotPhoto success:(EZEventBlock)success
@@ -2735,6 +2738,14 @@ context:(void *)context
         if(_takingPhoto){
             return;
         }
+        //I will delete
+        currentPhoto.deleted = true;
+        [self cancelAll:currentPhoto];
+        [self showTextField:false];
+        //self.hideTextInput
+        //_shotPhoto = [[EZPhoto alloc] init];
+        //_shotPhoto.personID = currentLoginID;
+        //_shotPhoto.photoRelations = currentPhoto.photoRelations;
         _flipStatus = kTakingPhoto;
         [self retakePhoto:nil];
         //This will trigger the view update?
@@ -2742,9 +2753,11 @@ context:(void *)context
         [self changeButtonStatus:NO];
     }else{
         [self innerCancel:YES];
+        currentPhoto.deleted = true;
+        [self cancelAll:currentPhoto];
     }
     //[self cancelPrematchPhoto:currentPhoto];
-    [self cancelAll:currentPhoto];
+    
 }
 
 - (void) quit:(id)sender

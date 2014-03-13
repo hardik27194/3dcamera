@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="3401" systemVersion="13B42" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="LocalPersons" representedClassName="LocalPersons" syncable="YES">
+        <attribute name="lastActive" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="mobile" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="payloads" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="payloads" optional="YES" attributeType="Transformable" syncable="YES"/>
         <attribute name="personID" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
     <entity name="LocalPhotos" representedClassName="LocalPhotos" syncable="YES">

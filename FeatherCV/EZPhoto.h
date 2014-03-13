@@ -151,6 +151,8 @@ typedef enum {
 
 - (NSDictionary*) toJson;
 
+- (void) fromLocalJson:(NSDictionary*)dict;
+
 - (NSDictionary*) toLocalJson;
 
 - (void) fromJson:(NSDictionary*)dict;

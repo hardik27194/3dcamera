@@ -101,6 +101,8 @@
 
 @property (nonatomic, strong) EZEventBlock timerBlock;
 
+@property (nonatomic, assign) int uploadingTasks;
+
 
 //Check the current status
 - (BOOL) canUpload;
@@ -149,6 +151,8 @@
 //Whether we allow the login page to show off or not.
 - (void) triggerLogin:(EZEventBlock)success failure:(EZEventBlock)failure reason:(NSString*)reason isLogin:(BOOL)isLogin;
 
+
+- (void) deletePhoto:(EZPhoto *)photoInfo success:(EZEventBlock)success failure:(EZEventBlock)failure;
 //This method will enable the user to upload all it's contacts information to the server.
 //The server will get the uploaded information and return a list which update the current user information.
 //What, I should do?
@@ -240,8 +244,6 @@
 - (void) readAlbumInBackground:(int)start limit:(int)limit;
 
 - (void) loadPhotoBooks;
-
-
 //For the preload image, if I have local url in the cache, I will return it immediately.
 //Otherwise, I will dump use the thumbnail.
 - (NSString*) preloadImage:(NSString*)fullURL success:(EZEventBlock)success failed:(EZEventBlock)failed;
@@ -261,7 +263,6 @@
 
 - (void) storeAllPhotos:(NSArray*)photo;
 
-@property (nonatomic, assign) int uploadingTasks;
-
+- (void) addDeleteTask:(EZPhoto*)photo;
 
 @end

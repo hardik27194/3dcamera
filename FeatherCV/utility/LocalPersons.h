@@ -14,6 +14,7 @@
 
 @property (nonatomic, retain) NSString * personID;
 @property (nonatomic, retain) NSString * mobile;
-@property (nonatomic, retain) NSString * payloads;
+@property (nonatomic, retain) NSDictionary * payloads;
+@property (nonatomic, retain) NSDate* lastActive;
 
 @end

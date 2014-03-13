@@ -322,6 +322,21 @@
     } failblk:failure];
 }
 
+
+- (void) deletePhoto:(EZPhoto *)photoInfo success:(EZEventBlock)success failure:(EZEventBlock)failure
+{
+    NSDictionary* jsons =@{@"cmd":@"delete",@"photoID":photoInfo.photoID};
+    EZDEBUG(@"upload info:%@", jsons);
+    [EZNetworkUtility postParameterAsJson:@"photo/info" parameters:jsons complete:^(id infos){
+        success(nil);
+    } failblk:^(NSError* err){
+        EZDEBUG(@"Error:%@", err);
+        if(failure){
+            failure(err);
+        }
+    }];
+}
+
 //Only upload the photo messsage, without upload the image
 //Make sure this is upload messgae function call.
 //Don't return anything, but the photoID
@@ -1334,6 +1349,21 @@
 //Remove the photo from the array, once it is successfuls
 //Should we differentitate uploaded information and uploaded file itself?
 //Let's this method call on a time out fash.
+- (void) addDeleteTask:(EZPhoto*)photo
+{
+    photo.deleted = TRUE;
+    [_pendingUploads addObject:photo];
+    /**
+    if(photo.uploadPhotoSuccess){
+        
+    }else
+    if(photo.uploadInfoSuccess){
+        //[_pendingUploads addObject:photo];
+        
+    }
+    **/
+}
+
 - (void) uploadPendingPhoto
 {
     if(_uploadingTasks > 0){
@@ -1351,9 +1381,32 @@
             EZDEBUG(@"photo upload pending");
             continue;
         }
+        
+        if(photo.deleted){
+            if(photo.photoID){
+                ++ _uploadingTasks;
+                EZDEBUG(@"Will delete:%@", photo.photoID);
+                [self deletePhoto:photo success:^(id info){
+                    EZDEBUG(@"deleted success");
+                    [_pendingUploads removeObject:photo];
+                    -- _uploadingTasks;
+                    
+                } failure:^(id err){
+                    EZDEBUG(@"failed to delete");
+                    -- _uploadingTasks;
+                }];
+            }else{
+                EZDEBUG(@"need to delete a photo without id");
+                [_pendingUploads removeObject:photo];
+            }
+            continue;
+        }
+        
         if(photo.uploadPhotoSuccess){
             [_pendingUploads removeObject:photo];
+            continue;
         }
+
         if(!photo.photoID){
             EZDEBUG(@"Will start upload info for:%@", photo.photoID);
             ++_uploadingTasks;
@@ -1394,7 +1447,7 @@
                     photo.progress(nil);
                 }
             }];
-        }
+        }else
         if(!photo.uploadPhotoSuccess && photo.photoID){
             ++_uploadingTasks;
             EZDEBUG(@"Will start upload photo content for:%@", photo.photoID);
@@ -1447,7 +1500,7 @@
         //LocalPhotos* lp = [[EZCoreAccessor getClientAccessor] create:[LocalPhotos class]];
         //if([photo.payloads isKindOfClass:[NSDictionary class]]){
             EZPhoto* ph = [[EZPhoto alloc] init];
-            [ph fromJson:photo.payloads];
+            [ph fromLocalJson:photo.payloads];
             ph.localPhoto = photo;
             [res addObject:ph];
         //}else{
