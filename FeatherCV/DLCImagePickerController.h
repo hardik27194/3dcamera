@@ -152,7 +152,7 @@ typedef enum {
 @property (nonatomic, strong) EZSoundEffect* pageTurn;
 @property (nonatomic, strong) EZSoundEffect* shotReady;
 @property (nonatomic, strong) EZSoundEffect* shotVoice;
-@property (nonatomic, strong) EZDisplayPhoto* disPhoto;
+//@property (nonatomic, strong) EZDisplayPhoto* disPhoto;
 
 @property (nonatomic, strong) NSMutableArray* storedMotionDelta;
 @property (nonatomic, assign) BOOL quitFaceDetection;

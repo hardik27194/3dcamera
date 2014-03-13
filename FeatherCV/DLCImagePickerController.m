@@ -2127,11 +2127,11 @@ context:(void *)context
     EZDEBUG(@"Showother:%i", _showOther);
     if(_showOther){
         _showOther = false;
-        [self rotateCurrentImage:disPhoto.photo.getScreenImage imageURL:nil blur:NO completed:nil];
+        [self rotateCurrentImage:_shotPhoto.getScreenImage imageURL:nil blur:NO completed:nil];
         [self showTextField:YES];
     }else{
         _showOther = true;
-        EZPhoto* matched = [disPhoto.photo.photoRelations objectAtIndex:0];
+        EZPhoto* matched = [_shotPhoto.photoRelations objectAtIndex:0];
         EZPerson* matchedPerson = pid2person(matched.personID);
         __block BOOL loaded = false;
         [[EZDataUtil getInstance] serialLoad:matched.screenURL fullOk:^(NSString* localURL){
@@ -2532,36 +2532,13 @@ context:(void *)context
 {
     EZDEBUG(@"trigger pending upload");
     //No need to flip it any more
-    disPhoto.isFront = false;
-    [[EZDataUtil getInstance].pendingUploads addObject:disPhoto.photo];
+    //disPhoto.isFront = false;
+    [[EZDataUtil getInstance].pendingUploads addObject:_shotPhoto];
     [[EZDataUtil getInstance] uploadPendingPhoto];
 }
 
 //Mean all the upload and things completed.
-- (void) completedProcess
-{
-    //disPhoto.photo.personID = currentLoginID;
-    EZDEBUG(@"Complete process, photo id is:%@, %@", disPhoto.photo.personID, currentLoginID);
-    [self.delegate imagePickerController:self didFinishPickingMediaWithInfo:@{@"displayPhoto":disPhoto}];
-    disPhoto.photo.startUpload = TRUE;
-    [[EZDataUtil getInstance] uploadPendingPhoto];
-}
 
-//Mean I accept current image with a match
-- (void) confirmCurrentMatch
-{
-    EZDEBUG(@"before store the image");
-    [self.delegate imagePickerController:self didFinishPickingMediaWithInfo:@{@"displayPhoto":disPhoto}];
-    EZDEBUG(@"pending upload");
-    [[EZDataUtil getInstance].pendingUploads addObject:disPhoto.photo];
-    [[EZDataUtil getInstance] uploadPendingPhoto];
-    EZDEBUG(@"complete pending call");
-    [self innerCancel:NO];
-     EZDEBUG(@"The photoID to update is:%@, prevMatched count:%i", disPhoto.photo.photoID, matchedPhotos.count);
-    //for(EZPhoto* ph in matchedPhotos){
-    //    [self cancelPrematchPhoto:ph];
-    //}
-}
 
 - (UIImage*) getPhotoAndUpload
 {
@@ -2583,6 +2560,12 @@ context:(void *)context
     _takingPhoto = false;
     //_toolBarRegion.alpha = 1.0;
     return currentFilteredVideoFrame;
+}
+
+- (EZDisplayPhoto*) createDisplayPhoto:(EZPhoto*)photo
+{
+    EZDisplayPhoto* displayPhoto = [[EZDisplayPhoto alloc] init];
+    displayPhoto.isFront = true;
 }
 
 
