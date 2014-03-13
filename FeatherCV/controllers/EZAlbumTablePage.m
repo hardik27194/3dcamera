@@ -40,6 +40,141 @@ static int photoCount = 1;
 
 @implementation EZAlbumTablePage
 
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    static NSString *CellIdentifier = @"PhotoCell";
+    EZPhotoCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    EZDisplayPhoto* cp = [_combinedPhotos objectAtIndex:indexPath.row];
+    cell.backgroundColor = VinesGray;
+    
+    //This is for later update purpose. great, let's get whole thing up and run.
+    cell.currentPos = indexPath.row;
+    //EZCombinedPhoto* curPhoto = [cp.combinedPhotos objectAtIndex:cp.selectedCombinePhoto];
+    EZPhoto* myPhoto = cp.photo;
+    EZPhoto* switchPhoto = [cp.photo.photoRelations objectAtIndex:0];
+    
+    EZPerson* frontPerson = pid2person(myPhoto.personID);
+    EZPerson* backPerson = pid2person(switchPhoto.personID);
+    EZDEBUG(@"myPhoto image size:%@, screenURL:%@, isFront:%i", NSStringFromCGSize(myPhoto.size), myPhoto.screenURL, cp.isFront);
+    // Configure the cell...
+    //[cell displayImage:[myPhoto getLocalImage]];
+    [[cell viewWithTag:animateCoverViewTag] removeFromSuperview];
+    EZDEBUG(@"Will display front image");
+    if(cp.isFront){
+        [self loadFrontImage:cell photo:myPhoto file:myPhoto.assetURL];
+        preloadimage(switchPhoto.screenURL);
+    }else{
+        [self loadImage:cell url:switchPhoto.screenURL];
+    }
+    
+    __weak EZAlbumTablePage* weakSelf = self;
+    __weak EZPhotoCell* weakCell = cell;
+    //__block NSString* staticFile = nil;
+    cell.frontImage.tappedBlock = ^(id obj){
+        //NSArray* stored = [[EZDataUtil getInstance] readStoredPhotos];
+        //EZDEBUG(@"Stored photo is:%i", stored.count);
+        //for(EZPhoto* pt in stored){
+        //    EZDEBUG(@"id:%@, url:%@, created:%@", pt.photoID, pt.screenURL, pt.createdTime);
+        //}
+        
+        //EZPhoto* myPhoto = [[EZPhoto alloc] init];
+        //myPhoto.photoID = @"any";
+        //myPhoto.createdTime = [NSDate date];
+        //myPhoto.screenURL = @"cool";
+        //[[EZDataUtil getInstance] storeAllPhotos:@[myPhoto]];
+        if(switchPhoto){
+            [weakSelf switchImage:weakCell displayPhoto:cp front:myPhoto back:switchPhoto animate:YES];
+        }
+    };
+    
+    __block BOOL longPressed = false;
+    cell.frontImage.longPressed = ^(id obj){
+        if(longPressed){
+            EZDEBUG(@"Quit for pressed");
+            return;
+        }
+        longPressed = TRUE;
+        EZClickImage* fullView = [[EZClickImage alloc] initWithFrame:[UIScreen mainScreen].bounds];
+        fullView.contentMode = UIViewContentModeScaleAspectFill;
+        fullView.image = weakCell.frontImage.image;
+        fullView.enableTouchEffects = NO;
+        EZDEBUG(@"Long press called %@", NSStringFromCGRect(fullView.bounds));
+        //EZScrollController* sc = [[EZScrollController alloc] initWithDetail:fullView];
+        //sc.transitioningDelegate = self.detailAnimation;
+        //[self.navigationController presentViewController:sc animated:YES completion:nil];
+        //fullView.pressedBlock = ^(id obj){
+        //    EZDEBUG(@"presssed");
+        //    [sc dismissViewControllerAnimated:YES completion:nil];
+        //};
+        fullView.alpha = 0;
+        macroHideStatusBar(YES);
+        [TopView addSubview:fullView];
+        [UIView animateWithDuration:0.3 animations:^(){
+            fullView.alpha = 1.0;
+        }];
+        __weak EZClickImage* weakFull = fullView;
+        fullView.releasedBlock = ^(UIView* obj){
+            EZDEBUG(@"dismiss current view");
+            longPressed = false;
+            //[obj dismissViewControllerAnimated:YES completion:nil];
+            [UIView animateWithDuration:0.3 animations:^(){
+                weakFull.alpha = 0;
+            } completion:^(BOOL completed){
+                EZDEBUG(@"remove fullView:%i",(int)weakFull);
+                [weakFull removeFromSuperview];
+                macroHideStatusBar(YES);
+                CGFloat offsetY = indexPath.row * CurrentScreenHeight;
+                //CGPoint offset = weakSelf.tableView.contentOffset;
+                weakSelf.tableView.contentOffset = CGPointMake(0, offsetY);
+            }];
+            //[EZDataUtil getInstance].centerButton.alpha = 1.0;
+            
+        };
+        //[EZDataUtil getInstance].centerButton.alpha = 0.0;
+        
+        
+    };
+    EZPerson* person = nil;
+    if(cp.isFront){
+        person = pid2person(cp.photo.personID);
+        EZDEBUG(@"I will display front image: person id:%@, name:%@", cp.photo.personID, person.name);
+        [self setChatInfo:cell displayPhoto:cp.photo person:person];
+    }else{
+        EZPhoto* otherSide = nil;
+        if(cp.photo.photoRelations.count){
+            otherSide = [cp.photo.photoRelations objectAtIndex:0];
+        }
+        person = [[EZDataUtil getInstance] getPersonByID:otherSide.personID success:nil];
+        [self setChatInfo:cell displayPhoto:otherSide person:person];
+    }
+    
+    cell.moreButton.releasedBlock = ^(id obj){
+        //NSString* someText = self.textView.text;
+        EZDEBUG(@"more clicked");
+        NSArray* dataToShare = @[@"我爱老哈哈"];  // ...or whatever pieces of data you want to share.
+        UIActivityViewController* activityViewController =
+        [[UIActivityViewController alloc] initWithActivityItems:dataToShare
+                                          applicationActivities:nil];
+        [self presentViewController:activityViewController animated:YES completion:^{
+            EZDEBUG(@"Completed sharing");
+        }];
+    };
+    cell.authorName.text = frontPerson.name;
+    cell.otherName.text = backPerson.name;
+    [cell.headIcon setImageWithURL:str2url(frontPerson.avatar)];
+    [cell.otherIcon setImageWithURL:str2url(backPerson.avatar)];
+    //dispatch_later(0.3, ^(){
+    //    if(indexPath.row == 0){
+    //        CGFloat offsetY = indexPath.row * CurrentScreenHeight;
+    //CGPoint offset = weakSelf.tableView.contentOffset;
+    //       weakSelf.tableView.contentOffset = CGPointMake(0, offsetY);
+    //   }
+    //});
+    return cell;
+}
+
+
 
 -(id)initWithQueryBlock:(EZQueryBlock)queryBlock
 {
@@ -131,6 +266,18 @@ static int photoCount = 1;
     EZDEBUG(@"Immdiatedly returned image:%@", url);
 }
 
+- (void) storeCurrent
+{
+    if(_currentUser == nil){
+        EZDEBUG(@"Will store current user");
+        NSMutableArray* res = [[NSMutableArray alloc] init];
+        for(EZDisplayPhoto* dp in _combinedPhotos){
+            [res addObject:dp.photo];
+        }
+        [[EZDataUtil getInstance] storeAllPhotos:res];
+    }
+}
+
 - (void) loadMorePhoto:(EZEventBlock)completed reload:(BOOL)reload
 {
     int pageStart = _combinedPhotos.count/photoPageSize;
@@ -185,13 +332,15 @@ static int photoCount = 1;
 - (void) viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
+    //[[UINavigationBar appearance] setBackgroundImage:ClearBarImage forBarMetrics:UIBarMetricsDefault];
+    //[self.navigationController.view addSubview:[EZDataUtil getInstance].naviBarBlur];
     EZDEBUG(@"initial content inset:%@", NSStringFromUIEdgeInsets(self.tableView.contentInset));
 }
 
 - (void) viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
+    //[[UINavigationBar appearance] setBackgroundImage:nil forBarMetrics:UIBarMetricsDefault];
     //[_moreButton removeFromSuperview];
     //[[EZDataUtil getInstance].barBackground removeFromSuperview];
     //_menuView.height = 0;
@@ -201,6 +350,8 @@ static int photoCount = 1;
 {
     //[EZDataUtil getInstance].centerButton.hidden = YES;
 }
+
+
 
 
 - (UIView*) createMenuView:(NSArray*)menuNames
@@ -460,6 +611,15 @@ static int photoCount = 1;
     [self.tableView addSubview:chatRegion];
 }
 
+- (NSArray*) wrapPhotos:(NSArray*)photos
+{
+    NSMutableArray* res = [[NSMutableArray alloc] init];
+    for(EZPhoto* pt in photos){
+        [res addObject:[self wrapPhoto:pt]];
+    }
+    return res;
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -469,6 +629,7 @@ static int photoCount = 1;
     
     self.refreshControl = [[UIRefreshControl alloc] init];
     [self.refreshControl addTarget:self action:@selector(refreshInvoked:forState:)forControlEvents:UIControlEventValueChanged];
+    self.tableView.indicatorStyle = UIScrollViewIndicatorStyleWhite;
     //self.tableView.y = - 20;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.pagingEnabled = YES;
@@ -513,6 +674,9 @@ static int photoCount = 1;
     
     
     EZDEBUG(@"The login personID:%@, getID:%@", [EZDataUtil getInstance].currentPersonID, [[EZDataUtil getInstance] getCurrentPersonID]);
+    
+    [_combinedPhotos addObjectsFromArray:[self wrapPhotos:[[EZDataUtil getInstance] getStoredPhotos]]];
+    EZDEBUG(@"The stored photo is %i", _combinedPhotos.count);
     [[EZDataUtil getInstance] queryPhotos:0 pageSize:photoPageSize otherID:_currentUser.personID success:^(NSArray* arr){
         EZDEBUG(@"returned length:%i", arr.count);
         //[_combinedPhotos addObjectsFromArray:arr];
@@ -540,6 +704,10 @@ static int photoCount = 1;
         
    
     //});
+    
+    [EZDataUtil getInstance].timerBlock = ^(id obj){
+        [self storeCurrent];
+    };
 
 }
 
@@ -588,6 +756,15 @@ static int photoCount = 1;
     return false;
 }
 
+- (EZDisplayPhoto*) wrapPhoto:(EZPhoto*)photo
+{
+    EZDisplayPhoto* ed = [[EZDisplayPhoto alloc] init];
+    ed.isFront = true;
+    ed.photo = photo;
+    photo.isLocal = true;
+    return ed;
+}
+
 - (void) reloadRows:(NSArray*)photos reload:(BOOL)reload
 {
     int count = 0;
@@ -595,34 +772,7 @@ static int photoCount = 1;
         if(! [self existed:pt.photoID]){
             count ++;
              EZDEBUG(@"Transfer the image to EZDisplayPhoto successfully, personID:%@",pt.personID);
-        //[[EZDataUtil getInstance] assetURLToAsset:str2url(pt.assetURL) success:^(ALAsset* result){
-           
-            EZDisplayPhoto* ed = [[EZDisplayPhoto alloc] init];
-            ed.isFront = true;
-            ed.photo = pt;
-            //EZPhoto* ep = [[EZPhoto alloc] init];
-            //ed.pid = ++[EZDataUtil getInstance].photoCount;
-            //ep.photoID = _matchedPhoto.srcPhotoID;
-            //ep.photoRelations = @[_matchedPhoto];
-            //pt.asset = result;
-            //ep.assetURL = assetURL.absoluteString;
-            pt.isLocal = true;
-            //ed.photo = ep;
-            //ed.photo.owner = [EZDataUtil getInstance].currentLoginPerson;
-            //ed.photo.personID = currentLoginUser.personID;
-            //EZDEBUG(@"Before size");
-            //ep.size = [result defaultRepresentation].dimensions;
-            
-            //[self preMatchPhoto];
-            //[[EZMessageCenter getInstance]postEvent:EZTakePicture attached:ed];
-            //EZDEBUG(@"after size:%f, %f", ep.size.width, ep.size.height);
-            //success(ed);
-            [_combinedPhotos insertObject:ed atIndex:0];
-            //if(!reload){
-            //    [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationTop];
-            //}
-            //[self.tableView reloadData];
-        //}];
+            [_combinedPhotos insertObject:[self wrapPhoto:pt] atIndex:0];
         }
     }
     if(count && !reload){
@@ -884,130 +1034,6 @@ static int photoCount = 1;
     _alertClicked = nil;
 }
 
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    static NSString *CellIdentifier = @"PhotoCell";
-    EZPhotoCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    cell.selectionStyle = UITableViewCellSelectionStyleNone;
-    EZDisplayPhoto* cp = [_combinedPhotos objectAtIndex:indexPath.row];
-    cell.backgroundColor = VinesGray;
-    
-    //This is for later update purpose. great, let's get whole thing up and run.
-    cell.currentPos = indexPath.row;
-    //EZCombinedPhoto* curPhoto = [cp.combinedPhotos objectAtIndex:cp.selectedCombinePhoto];
-    EZPhoto* myPhoto = cp.photo;
-    EZPhoto* switchPhoto = [cp.photo.photoRelations objectAtIndex:0];
-    
-    EZPerson* frontPerson = pid2person(myPhoto.personID);
-    EZPerson* backPerson = pid2person(switchPhoto.personID);
-    EZDEBUG(@"myPhoto image size:%@, screenURL:%@, isFront:%i", NSStringFromCGSize(myPhoto.size), myPhoto.screenURL, cp.isFront);
-    // Configure the cell...
-    //[cell displayImage:[myPhoto getLocalImage]];
-    [[cell viewWithTag:animateCoverViewTag] removeFromSuperview];
-    EZDEBUG(@"Will display front image");
-    if(cp.isFront){
-        [self loadFrontImage:cell photo:myPhoto file:myPhoto.assetURL];
-        preloadimage(switchPhoto.screenURL);
-    }else{
-        [self loadImage:cell url:switchPhoto.screenURL];
-    }
-    
-    __weak EZAlbumTablePage* weakSelf = self;
-    __weak EZPhotoCell* weakCell = cell;
-    cell.frontImage.tappedBlock = ^(id obj){
-        
-        EZDEBUG(@"Table The content insets:%@", NSStringFromUIEdgeInsets(weakSelf.tableView.contentInset));
-        if(switchPhoto){
-            [weakSelf switchImage:weakCell displayPhoto:cp front:myPhoto back:switchPhoto animate:YES];
-        }
-    };
-    
-    __block BOOL longPressed = false;
-    cell.frontImage.longPressed = ^(id obj){
-        if(longPressed){
-            EZDEBUG(@"Quit for pressed");
-            return;
-        }
-        longPressed = TRUE;
-        EZClickImage* fullView = [[EZClickImage alloc] initWithFrame:[UIScreen mainScreen].bounds];
-        fullView.contentMode = UIViewContentModeScaleAspectFill;
-        fullView.image = weakCell.frontImage.image;
-        fullView.enableTouchEffects = NO;
-        EZDEBUG(@"Long press called %@", NSStringFromCGRect(fullView.bounds));
-        //EZScrollController* sc = [[EZScrollController alloc] initWithDetail:fullView];
-        //sc.transitioningDelegate = self.detailAnimation;
-        //[self.navigationController presentViewController:sc animated:YES completion:nil];
-        //fullView.pressedBlock = ^(id obj){
-        //    EZDEBUG(@"presssed");
-        //    [sc dismissViewControllerAnimated:YES completion:nil];
-        //};
-        fullView.alpha = 0;
-        macroHideStatusBar(YES);
-        [TopView addSubview:fullView];
-        [UIView animateWithDuration:0.3 animations:^(){
-            fullView.alpha = 1.0;
-        }];
-        __weak EZClickImage* weakFull = fullView;
-        fullView.releasedBlock = ^(UIView* obj){
-            EZDEBUG(@"dismiss current view");
-            longPressed = false;
-            //[obj dismissViewControllerAnimated:YES completion:nil];
-            [UIView animateWithDuration:0.3 animations:^(){
-                weakFull.alpha = 0;
-            } completion:^(BOOL completed){
-                EZDEBUG(@"remove fullView:%i",(int)weakFull);
-                [weakFull removeFromSuperview];
-                 macroHideStatusBar(YES);
-                CGFloat offsetY = indexPath.row * CurrentScreenHeight;
-                //CGPoint offset = weakSelf.tableView.contentOffset;
-                weakSelf.tableView.contentOffset = CGPointMake(0, offsetY);
-            }];
-            //[EZDataUtil getInstance].centerButton.alpha = 1.0;
-            
-        };
-        //[EZDataUtil getInstance].centerButton.alpha = 0.0;
-        
-
-    };
-    EZPerson* person = nil;
-    if(cp.isFront){
-        person = pid2person(cp.photo.personID);
-        EZDEBUG(@"I will display front image: person id:%@, name:%@", cp.photo.personID, person.name);
-        [self setChatInfo:cell displayPhoto:cp.photo person:person];
-    }else{
-        EZPhoto* otherSide = nil;
-        if(cp.photo.photoRelations.count){
-            otherSide = [cp.photo.photoRelations objectAtIndex:0];
-        }
-        person = [[EZDataUtil getInstance] getPersonByID:otherSide.personID success:nil];
-        [self setChatInfo:cell displayPhoto:otherSide person:person];
-    }
-    
-    cell.moreButton.releasedBlock = ^(id obj){
-        //NSString* someText = self.textView.text;
-        EZDEBUG(@"more clicked");
-        NSArray* dataToShare = @[@"我爱老哈哈"];  // ...or whatever pieces of data you want to share.
-        UIActivityViewController* activityViewController =
-        [[UIActivityViewController alloc] initWithActivityItems:dataToShare
-                                          applicationActivities:nil];
-        [self presentViewController:activityViewController animated:YES completion:^{
-            EZDEBUG(@"Completed sharing");
-        }];
-    };
-    cell.authorName.text = frontPerson.name;
-    cell.otherName.text = backPerson.name;
-    [cell.headIcon setImageWithURL:str2url(frontPerson.avatar)];
-    [cell.otherIcon setImageWithURL:str2url(backPerson.avatar)];
-    //dispatch_later(0.3, ^(){
-    //    if(indexPath.row == 0){
-    //        CGFloat offsetY = indexPath.row * CurrentScreenHeight;
-            //CGPoint offset = weakSelf.tableView.contentOffset;
-     //       weakSelf.tableView.contentOffset = CGPointMake(0, offsetY);
-     //   }
-    //});
-    return cell;
-}
 
 - (void) loadFrontImage:(EZPhotoCell*)weakCell photo:(EZPhoto*)photo file:(NSString*)assetURL
 {

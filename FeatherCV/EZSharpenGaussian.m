@@ -13,7 +13,7 @@ NSString *const EZGaussianSharpenVertexShaderString = SHADER_STRING
  attribute vec4 position;
  attribute vec4 inputTextureCoordinate;
  
- const int GAUSSIAN_SAMPLES = 13;
+ const int GAUSSIAN_SAMPLES = 9;
  
  uniform float texelWidthOffset;
  uniform float texelHeightOffset;
@@ -47,7 +47,7 @@ NSString *const EZGaussianSharpenFragmentShaderString = SHADER_STRING
 (
  uniform sampler2D inputImageTexture;
  
- const lowp int GAUSSIAN_SAMPLES = 13;
+ const lowp int GAUSSIAN_SAMPLES = 9;
  
  varying highp vec2 textureCoordinate;
  varying highp vec2 blurCoordinates[GAUSSIAN_SAMPLES];
@@ -75,31 +75,31 @@ NSString *const EZGaussianSharpenFragmentShaderString = SHADER_STRING
      sum += texture2D(inputImageTexture, blurCoordinates[0]) * 0.05;
      sum += texture2D(inputImageTexture, blurCoordinates[1]) * 0.09;
      sum += texture2D(inputImageTexture, blurCoordinates[2]) * 0.12;
-     sum += texture2D(inputImageTexture, blurCoordinates[3]) * 0.12;
-     sum += texture2D(inputImageTexture, blurCoordinates[4]) * 0.15;
-     sum += texture2D(inputImageTexture, blurCoordinates[5]) * 0.15;
-     lowp vec4 centralColor = texture2D(inputImageTexture, blurCoordinates[6]);
+     //sum += texture2D(inputImageTexture, blurCoordinates[3]) * 0.12;
+     //sum += texture2D(inputImageTexture, blurCoordinates[4]) * 0.15;
+     sum += texture2D(inputImageTexture, blurCoordinates[3]) * 0.15;
+     lowp vec4 centralColor = texture2D(inputImageTexture, blurCoordinates[4]);
      //sum +=                                     centralColor * 0.18;
      
-     sum += texture2D(inputImageTexture, blurCoordinates[6]) * 0.18;
-     sum += texture2D(inputImageTexture, blurCoordinates[7]) * 0.15;
-     sum += texture2D(inputImageTexture, blurCoordinates[8]) * 0.15;
-     sum += texture2D(inputImageTexture, blurCoordinates[9]) * 0.12;
-     sum += texture2D(inputImageTexture, blurCoordinates[10]) * 0.12;
-     sum += texture2D(inputImageTexture, blurCoordinates[11]) * 0.09;
-     sum += texture2D(inputImageTexture, blurCoordinates[12]) * 0.05;
+     sum += texture2D(inputImageTexture, blurCoordinates[4]) * 0.18;
+     //sum += texture2D(inputImageTexture, blurCoordinates[7]) * 0.15;
+     sum += texture2D(inputImageTexture, blurCoordinates[5]) * 0.15;
+     //sum += texture2D(inputImageTexture, blurCoordinates[9]) * 0.12;
+     sum += texture2D(inputImageTexture, blurCoordinates[6]) * 0.12;
+     sum += texture2D(inputImageTexture, blurCoordinates[7]) * 0.09;
+     sum += texture2D(inputImageTexture, blurCoordinates[8]) * 0.05;
      
-     sum = sum/1.54;
+     sum = sum/1.0;
      
      //sum += texture2D(inputImageTexture, blurCoordinates[10]) * 0.05
      //mediump vec3 sharpGap = textureColor * 4.0 - (leftTextureColor  + rightTextureColor + topTextureColor + bottomTextureColor);
      highp float sharpDist = distance(centralColor.rgb, sum.rgb);
-     lowp float sharpenBar = 0.1;
+     lowp float sharpenBar = 0.05;
      lowp float lowBar = sharpDist * sharpDist;
      if(sharpDist < sharpenBar){
-         sharpDist = sharpDist * sharpDist;
+         sharpDist = lowBar;
      }else{
-         sharpDist = lowBar + (sharpDist - sharpenBar) * 3.0;
+         sharpDist = lowBar + (sharpDist - sharpenBar) * 15.0;
     }
      mediump float sharpenRatio = 1.0;
      //lowp float colorDist = calcHue(centralColor.rgb);
@@ -107,7 +107,12 @@ NSString *const EZGaussianSharpenFragmentShaderString = SHADER_STRING
      //if(sharpDist > 0.25){
      //    sharpDist = 0.25 + (sharpDist - 0.25) * 0.5;
      //}
-     sharpDist = min(0.4, sharpDist);
+     sharpDist = min(0.6, sharpDist);
+     
+     if(sharpDist < 0.2){
+         sharpDist = 0.0;
+     }
+     
      lowp vec3 colorGap = (centralColor.rgb - sum.rgb) * sharpDist;
      if(colorGap.r > 0.0){
          colorGap.r = colorGap.r / 3.3;

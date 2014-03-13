@@ -24,6 +24,10 @@
 #import "EZDownloadHolder.h"
 #import "AFNetworking.h"
 
+#import "EZCoreAccessor.h"
+#import "LocalPersons.h"
+#import "LocalPhotos.h"
+
 
 @implementation EZAlbumResult
 
@@ -75,6 +79,9 @@
     [_timeFormatter setDateStyle:NSDateFormatterShortStyle];
     [_timeFormatter setTimeStyle:NSDateFormatterShortStyle];
     [_timeFormatter setDoesRelativeDateFormatting:YES];
+    _currentPhotos = [[NSMutableArray alloc] init];
+    _naviBarBlur = [[LFGlassView alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, 64)];
+    _naviBarBlur.blurRadius = 20.0;
     return self;
 }
 
@@ -434,6 +441,33 @@
 
 
 - (void) downloadImage:(NSString*)fullURL downloader:(EZDownloadHolder*)holder
+{
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:str2url(fullURL)];
+    //AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    NSString* filePath = [EZFileUtil getCacheFileName:holder.filename];
+    AFHTTPRequestOperation *operation = [manager HTTPRequestOperationWithRequest:request success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        EZDEBUG(@"successfully downloaded");
+        NSString* fileURL = [NSString stringWithFormat:@"file://%@", filePath];
+        holder.downloaded = fileURL;
+        [holder callSuccess];
+        holder.isDownloading = false;
+        //NSLog(@"SUCCCESSFULL IMG RETRIEVE to %@!",path);
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        EZDEBUG(@"fail to download:%@, error:%@", fullURL, error);
+        [holder callFailure:error];
+        holder.isDownloading = false;
+        // Deal with failure
+    }];//[[AFHTTPRequestOperation alloc] initWithRequest:request];
+                                         
+   // NSString* path=[@"/PATH/TO/APP" stringByAppendingPathComponent: imageNameToDisk];
+    operation.outputStream = [NSOutputStream outputStreamToFileAtPath:filePath append:NO];
+    [operation start];
+    EZDEBUG(@"Should started the downloading.");
+}
+
+
+- (void) downloadImageOld:(NSString*)fullURL downloader:(EZDownloadHolder*)holder
 {
     //EZDEBUG(@"downloadImage get called");
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:str2url(fullURL)];
@@ -1389,5 +1423,49 @@
     
 
 }
+
+//Read all the photos stored in the local database
+- (NSArray*) getStoredPhotos
+{
+    NSArray* photos = [[EZCoreAccessor getClientAccessor] fetchAll:[LocalPhotos class] sortField:nil];
+    NSMutableArray* res = [[NSMutableArray alloc] init];
+    EZDEBUG(@"Stored photos count:%i", photos.count);
+    for(LocalPhotos* photo in photos){
+        //LocalPhotos* lp = [[EZCoreAccessor getClientAccessor] create:[LocalPhotos class]];
+        //if([photo.payloads isKindOfClass:[NSDictionary class]]){
+            EZPhoto* ph = [[EZPhoto alloc] init];
+            [ph fromJson:photo.payloads];
+            ph.localPhoto = photo;
+            [res addObject:ph];
+        //}else{
+        //    EZDEBUG(@"Some broken data:%@", photo.payloads);
+        //}
+    }
+    return res;
+}
+
+- (void) storeAll
+{
+    [self storeAllPhotos:_currentPhotos];
+}
+
+- (void) storeAllPhotos:(NSArray*)photos
+{
+    for(EZPhoto* ph in photos){
+        LocalPhotos* lp = ph.localPhoto;
+        if(lp){
+            EZDEBUG(@"store old objects");
+        }else{
+            lp = [[EZCoreAccessor getClientAccessor] create:[LocalPhotos class]];
+            ph.localPhoto = lp;
+        }
+        EZDEBUG(@"is inserted:%i", lp.isInserted);
+        lp.payloads = [ph toLocalJson].mutableCopy;
+        lp.photoID = ph.photoID;
+        
+    }
+    [[EZCoreAccessor getClientAccessor] saveContext];
+}
+
 
 @end

@@ -47,6 +47,16 @@
     return res;
 }
 
+
+- (NSArray*) localRelationsToJson
+{
+    NSMutableArray* res = [[NSMutableArray alloc] init];
+    for(EZPhoto* pt in _photoRelations){
+        [res addObject:[pt toLocalJson]];
+    }
+    return res;
+}
+
 - (NSArray*) relationsToJson
 {
     NSMutableArray* res = [[NSMutableArray alloc] init];
@@ -63,6 +73,30 @@
         [res addObject:pt.personID];
     }
     return res;
+}
+
+//Have different needs
+- (NSDictionary*) toLocalJson
+{
+    return @{
+             //@"id":_photoID,
+             @"photoID":null2Empty(_photoID),
+             @"personID":null2Empty(_personID),
+             @"assetURL":null2Empty(_assetURL),
+             @"longtitude":@(_longitude),
+             @"latitude":@(_latitude),
+             @"altitude":@(_altitude),
+             @"uploaded":@(_uploaded),
+             @"shareStatus":@(_shareStatus),
+             @"width":@(_size.width),
+             @"height":@(_size.height),
+             @"createdTime":_createdTime?isoDateFormat(_createdTime):@"",
+             @"conversations":[self conversationToJson],
+             @"photoRelations":[self localRelationsToJson],
+             @"relationUsers":[self relationsUserID],
+             @"screenURL":null2Empty([self screenURL]),
+             @"liked":_liked.count?_liked:@[]
+             };
 }
 
 - (NSDictionary*) toJson
@@ -84,6 +118,7 @@
              @"conversations":[self conversationToJson],
              @"photoRelations":[self relationsToJson],
              @"relationUsers":[self relationsUserID],
+             //@"screenURL":[self screenURL],
              @"liked":_liked.count?_liked:@[]
                  };
     }else{
@@ -102,6 +137,7 @@
                  @"conversations":[self conversationToJson],
                  @"photoRelations":[self relationsToJson],
                  @"relationUsers":[self relationsUserID],
+                 //@"screenURL":[self screenURL],
                  @"liked":_liked.count?_liked:@[]
                  };
 

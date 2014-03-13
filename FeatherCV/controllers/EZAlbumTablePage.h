@@ -101,6 +101,8 @@
 @property (nonatomic, strong) EZEventBlock menuClicked;
 
 @property (nonatomic, assign) BOOL alreadyExecuted;
+
+- (void) storeCurrent;
 //Where do we begin
 //It used to save the memory consumption
 - (void) raiseCamera;

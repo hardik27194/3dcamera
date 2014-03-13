@@ -58,7 +58,11 @@
 //The photo shared with this user
 #define EZSetAlbumUser @"EZSetAlbumUser"
 
-#define longShaderSkinColor vec3(0.7,0.7, 0.3)
+#define BlackBarImage [UIImage imageWithColor:RGBA(0, 0, 0, 50)]
+
+#define ClearBarImage [UIImage imageWithColor:RGBA(0, 0, 0, 0)]
+
+#define longShaderSkinColor vec3(0.7,0.7, 0.1)
 
 #define shortShaderSkinColor vec3(0.63, 0.63, 0.41)
 

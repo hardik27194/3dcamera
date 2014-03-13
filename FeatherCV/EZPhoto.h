@@ -18,9 +18,13 @@ typedef enum {
 
 @class ALAsset;
 @class EZPerson;
+@class LocalPhotos;
 @interface EZPhoto : NSObject
 
 //@property (nonatomic, assign) int photoID;
+//For any stored object, we will have this id. 
+//@property (nonatomic, strong) NSManagedObjectID* objectID;
+@property (nonatomic, strong) LocalPhotos* localPhoto;
 
 @property (nonatomic, strong) NSString* photoID;
 
@@ -143,6 +147,8 @@ typedef enum {
 - (void) getAsyncImage:(EZEventBlock)block;
 
 - (NSDictionary*) toJson;
+
+- (NSDictionary*) toLocalJson;
 
 - (void) fromJson:(NSDictionary*)dict;
 

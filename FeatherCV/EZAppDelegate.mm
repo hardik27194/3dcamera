@@ -35,6 +35,7 @@
 #import "EZAnimationUtil.h"
 #import "EZKeyboadUtility.h"
 #import "UIImageView+AFNetworking.h"
+#import "EZCoreAccessor.h"
 
 
 @implementation EZAppDelegate
@@ -206,11 +207,13 @@
     [[UINavigationBar appearance] setShadowImage:[[UIImage alloc] init]];
     //[[UINavigationBar appearance] set]
     //[[UINavigationBar appearance] setBarTintColor:RGBCOLOR(0, 197, 213)];
-    [[UINavigationBar appearance] setBarTintColor:[UIColor clearColor]];
+    //[[UINavigationBar appearance] setBarTintColor:[UIColor clearColor]];
     [[UIBarButtonItem appearance] setTintColor:[UIColor whiteColor]];
-    UIImage *gradientImage44 = [UIImage imageWithColor:RGBA(0, 0, 0, 0)];
-    [[UINavigationBar appearance] setBackgroundImage:gradientImage44 forBarMetrics:UIBarMetricsDefault];
-    [[UINavigationBar appearance] setBackgroundImage:gradientImage44 forBarMetrics:UIBarMetricsLandscapePhone];
+    //UIImage *gradientImage44 =
+    
+    [[UINavigationBar appearance] setBackgroundImage:ClearBarImage forBarMetrics:UIBarMetricsDefault];
+    //[[UINavigationBar appearance] setBackgroundImage:ClearBarImage forBarMetrics:UIBarMetricsLandscapePhone];
+    //[[UINavigationBar]]
     
     /**
     [[EZMessageCenter getInstance] registerEvent:EZStatusBarChange block:^(NSNumber* status){
@@ -284,15 +287,19 @@
 {
     [[EZDataUtil getInstance] uploadPendingPhoto];
     [[EZDataUtil getInstance] queryPendingPerson];
-}
+    //[[EZDataUtil getInstance] storeAll];
+    if([EZDataUtil getInstance].timerBlock){
+        [EZDataUtil getInstance].timerBlock(nil);
+    }
+   }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     _cameraRaised = false;
     ///[EZDataUtil getInstance].currentPersonID = @"52f783d7e7b5b9dd9c28f1cc";
     [EZTestSuites testAll];
-    NSString* thumb = url2thumb(@"http://cool.guy/cool.jpg");
-    EZDEBUG(@"The thumb url is:%@", thumb);
+    //NSString* thumb = url2thumb(@"http://cool.guy/cool.jpg");
+    //EZDEBUG(@"The thumb url is:%@", thumb);
     //CFTimeInterval startTime = CACurrentMediaTime();
     //perform some action
     //EZDEBUG(@"first value:%f", startTime);
@@ -310,6 +317,7 @@
     **/
     //[EZDataUtil getInstance].currentPersonID = nil;
     //[EZDataUtil getInstance].currentPersonID = @"531e7cd5e7b5b9f911342692";
+    //[EZCoreAccessor cleanClientDB];
     if(![[EZDataUtil getInstance] getCurrentPersonID]){
        /**
         [[EZDataUtil getInstance] registerMockUser:^(EZPerson* ps){

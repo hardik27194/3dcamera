@@ -13,6 +13,7 @@
 #import "EZPhoto.h"
 #import "EZCombinedPhoto.h"
 #import "EZConversation.h"
+#import "LFGlassView.h"
 
 @class EZCenterButton;
 @interface EZAlbumResult : NSObject
@@ -85,7 +86,11 @@
 
 @property (nonatomic, strong) NSMutableDictionary* downloadedImages;
 
+@property (nonatomic, strong) NSMutableArray* currentPhotos;
+
 @property (nonatomic, strong) NSDateFormatter* timeFormatter;
+
+@property (nonatomic, strong) LFGlassView* naviBarBlur;
 
 @property (nonatomic, strong) AFHTTPResponseSerializer* imageSerializer;
 
@@ -93,6 +98,8 @@
 
 //People can use this cover whenever he want.
 @property (nonatomic, strong) EZClickView* totalCover;
+
+@property (nonatomic, strong) EZEventBlock timerBlock;
 
 
 //Check the current status
@@ -245,6 +252,14 @@
 - (void) serialLoad:(NSString*)fullURL fullOk:(EZEventBlock)fullBlock thumbOk:(EZEventBlock)thumbOk pending:(EZEventBlock)pending failure:(EZEventBlock)failure;
 //Will upload each pending photo
 //Remove the photo from the array, once it is successfuls
+
+
+//Read all the photos stored in the local database
+- (NSArray*) getStoredPhotos;
+
+- (void) storeAll;
+
+- (void) storeAllPhotos:(NSArray*)photo;
 
 @property (nonatomic, assign) int uploadingTasks;
 

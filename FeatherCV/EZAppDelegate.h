@@ -19,6 +19,9 @@
 
 @property (nonatomic, assign) BOOL cameraRaised;
 
+//The block will get executed at the timer. 
+@property (nonatomic, strong) EZEventBlock timerBlock;
+
 - (void)saveContext;
 - (NSURL *)applicationDocumentsDirectory;
 

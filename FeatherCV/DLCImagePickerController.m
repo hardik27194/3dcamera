@@ -73,7 +73,7 @@
 
 #define liveTongSetting @[pointValue(0.0, 0.0), pointValue(0.125, 0.125), pointValue(0.25, 0.25), pointValue(0.5, 0.525), pointValue(0.75, 0.770), pointValue(1.0, 1.0)]
 
-#define faceTongSetting @[pointValue(0.0, 0.0), pointValue(0.125, 0.135), pointValue(0.25, 0.275), pointValue(0.5, 0.54), pointValue(0.75, 0.770), pointValue(1.0, 1.0)]
+#define faceTongSetting @[pointValue(0.0, 0.0), pointValue(0.125, 0.125), pointValue(0.25, 0.255), pointValue(0.5, 0.540), pointValue(0.75, 0.770), pointValue(1.0, 1.0)]
 
 
 
@@ -249,15 +249,15 @@
         
         secBlendFilter.blurFilter.distanceNormalizationFactor = 25.0;
         secBlendFilter.blurFilter.blurSize = 3.0;
-        secBlendFilter.miniRealRatio = 0.2;
-        secBlendFilter.maxRealRatio = 0.5;
+        secBlendFilter.miniRealRatio = 0.0;
+        secBlendFilter.maxRealRatio = 0.8;
         secBlendFilter.imageMode = 0;
         secBlendFilter.skinColorFlag = 1;
         
-        finalBlendFilter.blurFilter.distanceNormalizationFactor = 10.0;
+        finalBlendFilter.blurFilter.distanceNormalizationFactor = 15.0;
         finalBlendFilter.blurFilter.blurSize = 0.4;//fobj.orgRegion.size.width;
         finalBlendFilter.miniRealRatio = 0.0;
-        finalBlendFilter.maxRealRatio = 1.0;
+        finalBlendFilter.maxRealRatio = 0.8;
         finalBlendFilter.imageMode = 0;
         finalBlendFilter.skinColorFlag = 1;
         //finalBlendFilter.showFace = 1;

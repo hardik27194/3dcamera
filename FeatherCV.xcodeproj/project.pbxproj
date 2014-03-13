@@ -37,6 +37,9 @@
 		184ADD8A18CD691300367527 /* head_icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 184ADD8918CD691300367527 /* head_icon@2x.png */; };
 		184ADD8D18CDA96200367527 /* EZDownloadHolder.m in Sources */ = {isa = PBXBuildFile; fileRef = 184ADD8C18CDA96200367527 /* EZDownloadHolder.m */; };
 		184ADD9218CF045A00367527 /* EZCameraNaviAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = 184ADD9118CF045A00367527 /* EZCameraNaviAnimation.m */; };
+		184ADD9518D045BA00367527 /* LocalPersons.m in Sources */ = {isa = PBXBuildFile; fileRef = 184ADD9418D045BA00367527 /* LocalPersons.m */; };
+		184ADD9818D045BD00367527 /* LocalPhotos.m in Sources */ = {isa = PBXBuildFile; fileRef = 184ADD9718D045BD00367527 /* LocalPhotos.m */; };
+		184ADD9B18D046EC00367527 /* EZCoreAccessor.m in Sources */ = {isa = PBXBuildFile; fileRef = 184ADD9A18D046EC00367527 /* EZCoreAccessor.m */; };
 		184DBE7218B8D8A400239F0F /* EZSkinSharpen.m in Sources */ = {isa = PBXBuildFile; fileRef = 184DBE7118B8D8A400239F0F /* EZSkinSharpen.m */; };
 		184DBE7718BB476F00239F0F /* EZSimpleClick.m in Sources */ = {isa = PBXBuildFile; fileRef = 184DBE7618BB476F00239F0F /* EZSimpleClick.m */; };
 		184DBE7918BB51DB00239F0F /* EZErrorInfo.strings in Resources */ = {isa = PBXBuildFile; fileRef = 184DBE7818BB51DB00239F0F /* EZErrorInfo.strings */; };
@@ -345,6 +348,12 @@
 		184ADD8C18CDA96200367527 /* EZDownloadHolder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZDownloadHolder.m; sourceTree = "<group>"; };
 		184ADD9018CF045A00367527 /* EZCameraNaviAnimation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZCameraNaviAnimation.h; sourceTree = "<group>"; };
 		184ADD9118CF045A00367527 /* EZCameraNaviAnimation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZCameraNaviAnimation.m; sourceTree = "<group>"; };
+		184ADD9318D045BA00367527 /* LocalPersons.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LocalPersons.h; path = utility/LocalPersons.h; sourceTree = "<group>"; };
+		184ADD9418D045BA00367527 /* LocalPersons.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LocalPersons.m; path = utility/LocalPersons.m; sourceTree = "<group>"; };
+		184ADD9618D045BD00367527 /* LocalPhotos.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LocalPhotos.h; path = utility/LocalPhotos.h; sourceTree = "<group>"; };
+		184ADD9718D045BD00367527 /* LocalPhotos.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LocalPhotos.m; path = utility/LocalPhotos.m; sourceTree = "<group>"; };
+		184ADD9918D046EC00367527 /* EZCoreAccessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZCoreAccessor.h; sourceTree = "<group>"; };
+		184ADD9A18D046EC00367527 /* EZCoreAccessor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZCoreAccessor.m; sourceTree = "<group>"; };
 		184DBE7018B8D8A400239F0F /* EZSkinSharpen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZSkinSharpen.h; sourceTree = "<group>"; };
 		184DBE7118B8D8A400239F0F /* EZSkinSharpen.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZSkinSharpen.m; sourceTree = "<group>"; };
 		184DBE7518BB476F00239F0F /* EZSimpleClick.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZSimpleClick.h; sourceTree = "<group>"; };
@@ -1211,6 +1220,12 @@
 		18E3473A183DFA6A00C9D89D /* dataobjects */ = {
 			isa = PBXGroup;
 			children = (
+				184ADD9918D046EC00367527 /* EZCoreAccessor.h */,
+				184ADD9A18D046EC00367527 /* EZCoreAccessor.m */,
+				184ADD9618D045BD00367527 /* LocalPhotos.h */,
+				184ADD9718D045BD00367527 /* LocalPhotos.m */,
+				184ADD9318D045BA00367527 /* LocalPersons.h */,
+				184ADD9418D045BA00367527 /* LocalPersons.m */,
 				18E3473B183DFA7300C9D89D /* EZPhoto.h */,
 				18E3473C183DFA7300C9D89D /* EZPhoto.m */,
 				18E3473D183DFA7300C9D89D /* EZCombinedPhoto.h */,
@@ -1541,6 +1556,7 @@
 				1866ADAD18966E7000DB46E2 /* ShuffleAnimation.m in Sources */,
 				18E746F918A4A26A0023967B /* UIWebView+AFNetworking.m in Sources */,
 				18E34781183DFAA400C9D89D /* EZMessageCenter.m in Sources */,
+				184ADD9818D045BD00367527 /* LocalPhotos.m in Sources */,
 				18E3472F183DFA3400C9D89D /* EZDummyPage.m in Sources */,
 				18E3477B183DFAA400C9D89D /* EZExtender.m in Sources */,
 				184ADD7418C4B40D00367527 /* EZAvatarView.m in Sources */,
@@ -1598,6 +1614,7 @@
 				182A551018645374003D4A01 /* EZFaceBlurFilter2.m in Sources */,
 				181903FD1882980E001FC370 /* EZHomeEdgeFilter.m in Sources */,
 				18E34777183DFAA400C9D89D /* EZCrossHair.m in Sources */,
+				184ADD9B18D046EC00367527 /* EZCoreAccessor.m in Sources */,
 				18E746F818A4A26A0023967B /* UIProgressView+AFNetworking.m in Sources */,
 				18E3472C183DFA3300C9D89D /* EZViewContainer.m in Sources */,
 				18E746EC18A4A26A0023967B /* AFHTTPSessionManager.m in Sources */,
@@ -1647,6 +1664,7 @@
 				18E34728183DFA3300C9D89D /* EZContactsPage.m in Sources */,
 				18E3477C183DFAA400C9D89D /* EZFileUtil.m in Sources */,
 				184ADD7718C4C20F00367527 /* EZUIApplication.m in Sources */,
+				184ADD9518D045BA00367527 /* LocalPersons.m in Sources */,
 				18E34726183DFA3300C9D89D /* EZScrollContainer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

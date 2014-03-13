@@ -204,7 +204,7 @@ alpha:(a)/255.0f]
 //When the image are downloading, we will use this image as place holder
 #define imageholder [UIImage imageNamed:@"head_holder"]
 
-#define CoreDBModel @"Feather"
+#define CoreDBModel @"FeatherCV"
 
 
 #define ClientDB @"feather.sqllite"
