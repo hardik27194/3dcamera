@@ -73,7 +73,7 @@
 
 #define liveTongSetting @[pointValue(0.0, 0.0), pointValue(0.125, 0.125), pointValue(0.25, 0.25), pointValue(0.5, 0.525), pointValue(0.75, 0.770), pointValue(1.0, 1.0)]
 
-#define faceTongSetting @[pointValue(0.0, 0.0), pointValue(0.125, 0.125), pointValue(0.25, 0.255), pointValue(0.5, 0.540), pointValue(0.75, 0.770), pointValue(1.0, 1.0)]
+#define faceTongSetting @[pointValue(0.0, 0.0), pointValue(0.125, 0.125), pointValue(0.25, 0.26), pointValue(0.5, 0.550), pointValue(0.75, 0.780), pointValue(1.0, 1.0)]
 
 
 

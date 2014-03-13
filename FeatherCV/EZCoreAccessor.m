@@ -188,21 +188,21 @@ static NSMutableDictionary* accessors;
 }
 
 //If passing nil, System will use "name" to sort the result.
-- (NSArray*) fetchAll:(Class)classType sortField:(NSString*)fieldName
+- (NSArray*) fetchAll:(Class)classType sortField:(NSString*)fieldName ascending:(BOOL)ascending
 {
     EZDEBUG(@"Fetch %@, sortField:%@",classType, fieldName);
-    return [self fetchObject:classType byPredicate:nil withSortField:fieldName];
+    return [self fetchObject:classType byPredicate:nil withSortField:fieldName ascending:ascending];
 }
 
 //Fetch object by the specified predication
-- (NSArray*) fetchObject:(Class)classType byPredicate:(NSPredicate*)predicate withSortField:(NSString *)sortField
+- (NSArray*) fetchObject:(Class)classType byPredicate:(NSPredicate*)predicate withSortField:(NSString *)sortField ascending:(BOOL)ascending
 {
     NSFetchRequest* request = [[NSFetchRequest alloc] init];
     NSEntityDescription* entity = [NSEntityDescription entityForName:[classType description] inManagedObjectContext:context];
     [request setEntity:entity];
     [request setPredicate:predicate];
     if(sortField){
-        NSSortDescriptor* sortDescriptor = [[NSSortDescriptor alloc] initWithKey:sortField ascending:YES];
+        NSSortDescriptor* sortDescriptor = [[NSSortDescriptor alloc] initWithKey:sortField ascending:ascending];
         NSArray* descriptors = [NSArray arrayWithObject:sortDescriptor];
         [request setSortDescriptors:descriptors];
 

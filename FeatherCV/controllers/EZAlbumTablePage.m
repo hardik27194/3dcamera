@@ -456,21 +456,21 @@ static int photoCount = 1;
     EZDEBUG(@"animFlip is done");
 }
 
-- (void) scrollToBottom
+- (void) scrollToBottom:(BOOL)animated
 {
     EZDEBUG(@"Scroll to bottom");
     if(!_combinedPhotos.count){
         return;
     }
-    [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:_combinedPhotos.count - 1 inSection:0] atScrollPosition:UITableViewScrollPositionBottom animated:YES];
+    [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:_combinedPhotos.count - 1 inSection:0] atScrollPosition:UITableViewScrollPositionBottom animated:animated];
 }
 
 - (void)imagePickerControllerDidCancel:(DLCImagePickerController *)picker imageCount:(int)imageCount
 {
     EZDEBUG(@"cancel get called:%i", _newlyCreated);
     if(imageCount){
-        dispatch_later(0.2, ^(){
-            [self scrollToBottom];
+        dispatch_later(0.1, ^(){
+            [self scrollToBottom:NO];
             //dispatch_later(0.1, ^(){
             //[self animateFlip];
             //});
@@ -615,7 +615,7 @@ static int photoCount = 1;
 {
     NSMutableArray* res = [[NSMutableArray alloc] init];
     for(EZPhoto* pt in photos){
-        [res addObject:[self wrapPhoto:pt]];
+        [res insertObject:[self wrapPhoto:pt] atIndex:0];
     }
     return res;
 }
@@ -677,20 +677,22 @@ static int photoCount = 1;
     
     [_combinedPhotos addObjectsFromArray:[self wrapPhotos:[[EZDataUtil getInstance] getStoredPhotos]]];
     EZDEBUG(@"The stored photo is %i", _combinedPhotos.count);
-    [[EZDataUtil getInstance] queryPhotos:0 pageSize:photoPageSize otherID:_currentUser.personID success:^(NSArray* arr){
+    [[EZDataUtil getInstance] queryPhotos:_combinedPhotos.count pageSize:photoPageSize otherID:_currentUser.personID success:^(NSArray* arr){
         EZDEBUG(@"returned length:%i", arr.count);
         //[_combinedPhotos addObjectsFromArray:arr];
-        [self reloadRows:arr reload:YES];
+        [self reloadRows:arr reload:NO];
         dispatch_later(0.1,
          ^(){
-            [self scrollToBottom];
+             [self scrollToBottom:YES];
         });
     } failure:^(NSError* err){
         EZDEBUG(@"Error detail:%@", err);
     }];
     
     
-    
+    dispatch_later(0.3, ^(){
+        [self scrollToBottom:YES];
+    });
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"通讯录" style:UIBarButtonItemStylePlain target:self action:@selector(showMenu:)];
 
     //UIBarButtonItem* barItem = [[UIBarButtonItem alloc] initWithTitle:@"通讯录" style:UIBarButtonItemStylePlain target:self action:@selector(showMenu:)];

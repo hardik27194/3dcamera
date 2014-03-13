@@ -14,5 +14,6 @@
 
 @property (nonatomic, retain) NSMutableDictionary * payloads;
 @property (nonatomic, retain) NSString * photoID;
+@property (nonatomic, retain) NSDate* createdTime;
 
 @end

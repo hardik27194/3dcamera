@@ -48,7 +48,7 @@
 - (BOOL) remove:(NSManagedObject*)po;
 
 //If passing nil, System will use "name" to sort the result.
-- (NSArray*) fetchAll:(Class)classType sortField:(NSString*)fieldName;
+- (NSArray*) fetchAll:(Class)classType sortField:(NSString*)fieldName ascending:(BOOL)ascending;
 
 - (id) fetchByID:(NSManagedObjectID*)oid;
 
@@ -57,7 +57,7 @@
 - (NSArray*) fetchObject:(Class)classType begin:(NSInteger)begin limit:(NSInteger)limit;
 
 //Fetch object by the specified predication
-- (NSArray*) fetchObject:(Class)classType byPredicate:(NSPredicate*)predicate withSortField:(NSString*)sortField;
+- (NSArray*) fetchObject:(Class)classType byPredicate:(NSPredicate*)predicate withSortField:(NSString*)sortField ascending:(BOOL)ascending;
 
 - (id) initWithDBName:(NSString*)dbName modelName:(NSString*)modelName;
 

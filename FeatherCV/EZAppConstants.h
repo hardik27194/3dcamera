@@ -62,7 +62,7 @@
 
 #define ClearBarImage [UIImage imageWithColor:RGBA(0, 0, 0, 0)]
 
-#define longShaderSkinColor vec3(0.7,0.7, 0.1)
+#define longShaderSkinColor vec3(0.75,0.75, 0.1)
 
 #define shortShaderSkinColor vec3(0.63, 0.63, 0.41)
 

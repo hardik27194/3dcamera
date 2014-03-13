@@ -1427,7 +1427,7 @@
 //Read all the photos stored in the local database
 - (NSArray*) getStoredPhotos
 {
-    NSArray* photos = [[EZCoreAccessor getClientAccessor] fetchAll:[LocalPhotos class] sortField:nil];
+    NSArray* photos = [[EZCoreAccessor getClientAccessor] fetchAll:[LocalPhotos class] sortField:@"createdTime" ascending:NO];
     NSMutableArray* res = [[NSMutableArray alloc] init];
     EZDEBUG(@"Stored photos count:%i", photos.count);
     for(LocalPhotos* photo in photos){
@@ -1462,6 +1462,7 @@
         EZDEBUG(@"is inserted:%i", lp.isInserted);
         lp.payloads = [ph toLocalJson].mutableCopy;
         lp.photoID = ph.photoID;
+        lp.createdTime = ph.createdTime;
         
     }
     [[EZCoreAccessor getClientAccessor] saveContext];
