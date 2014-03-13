@@ -59,6 +59,14 @@ typedef enum {
     kCoverShotting
 }EZCoverStatus;
 
+typedef enum {
+    kInitialUploading,
+    kUploading,
+    kUploadingSuccess,
+    kUploadingFailure
+}EZUploadingStatus;
+
+
 @class EZPhoto;
 @class EZDisplayPhoto;
 @class DLCImagePickerController;
@@ -102,10 +110,19 @@ typedef enum {
 @property (nonatomic, weak) IBOutlet UIButton *libraryToggleButton;
 @property (nonatomic, weak) IBOutlet UIButton *flashToggleButton;
 @property (nonatomic, weak) IBOutlet UIButton *retakeButton;
+@property (nonatomic, strong) EZEventBlock captureComplete;
 
 @property (nonatomic, weak) IBOutlet UIScrollView *filterScrollView;
 @property (nonatomic, weak) IBOutlet UIImageView *filtersBackgroundImageView;
 @property (nonatomic, weak) IBOutlet UIView *photoBar;
+
+@property (nonatomic, assign) EZUploadingStatus uploadStatus;
+
+@property (nonatomic, strong) EZEventBlock uploadSuccessBlock;
+
+@property (nonatomic, strong) EZEventBlock uploadFailureBlock;
+
+@property (nonatomic, strong) UIButton* upperCancel;
 
 //The place which will hold all the tool bar
 @property (nonatomic, strong) UIView* toolBarRegion;
@@ -135,6 +152,7 @@ typedef enum {
 @property (nonatomic, strong) EZSoundEffect* pageTurn;
 @property (nonatomic, strong) EZSoundEffect* shotReady;
 @property (nonatomic, strong) EZSoundEffect* shotVoice;
+@property (nonatomic, strong) EZDisplayPhoto* disPhoto;
 
 @property (nonatomic, strong) NSMutableArray* storedMotionDelta;
 @property (nonatomic, assign) BOOL quitFaceDetection;

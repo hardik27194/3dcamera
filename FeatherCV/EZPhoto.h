@@ -124,6 +124,9 @@ typedef enum {
 //Upload the photo file itself success
 @property (nonatomic, assign) BOOL uploadPhotoSuccess;
 
+//Mean I will delte this photo from server.
+@property (nonatomic, assign) BOOL deleted;
+
 //Will get called when upload have progress
 @property (nonatomic, strong) EZEventBlock progress;
 

@@ -95,7 +95,10 @@
              @"photoRelations":[self localRelationsToJson],
              @"relationUsers":[self relationsUserID],
              @"screenURL":null2Empty([self screenURL]),
-             @"liked":_liked.count?_liked:@[]
+             @"liked":_liked.count?_liked:@[],
+             @"uploadInfoSuccess":@(_uploadInfoSuccess),
+             @"uploadPhotoSuccess":@(_uploadPhotoSuccess),
+             @"deleted":@(_deleted)
              };
 }
 

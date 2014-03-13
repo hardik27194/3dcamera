@@ -73,7 +73,7 @@
 
 #define liveTongSetting @[pointValue(0.0, 0.0), pointValue(0.125, 0.125), pointValue(0.25, 0.25), pointValue(0.5, 0.525), pointValue(0.75, 0.770), pointValue(1.0, 1.0)]
 
-#define faceTongSetting @[pointValue(0.0, 0.0), pointValue(0.125, 0.125), pointValue(0.25, 0.26), pointValue(0.5, 0.550), pointValue(0.75, 0.780), pointValue(1.0, 1.0)]
+#define faceTongSetting @[pointValue(0.0, 0.0), pointValue(0.125, 0.125), pointValue(0.25, 0.27), pointValue(0.5, 0.550), pointValue(0.75, 0.780), pointValue(1.0, 1.0)]
 
 
 
@@ -126,7 +126,6 @@
     UIView* rotateContainer;
     UIView* roundBackground;
     
-    EZDisplayPhoto* disPhoto;
     //For the edge detectors
     NSArray* edgeDectectors;
     NSArray* edgeDectectorNames;
@@ -194,6 +193,7 @@
     filtersBackgroundImageView,
     photoBar,
     topBar,
+    disPhoto,
     //blurOverlayView,
     outputJPEGQuality,
     requestedImageSize;
@@ -254,7 +254,7 @@
         secBlendFilter.imageMode = 0;
         secBlendFilter.skinColorFlag = 1;
         
-        finalBlendFilter.blurFilter.distanceNormalizationFactor = 15.0;
+        finalBlendFilter.blurFilter.distanceNormalizationFactor = 10.0;
         finalBlendFilter.blurFilter.blurSize = 0.4;//fobj.orgRegion.size.width;
         finalBlendFilter.miniRealRatio = 0.0;
         finalBlendFilter.maxRealRatio = 0.8;
@@ -737,6 +737,11 @@
     _progressView.trackTintColor = [UIColor clearColor];
     _progressView.hidden = YES;
     [self.view addSubview:_progressView];
+    _upperCancel = [[UIButton alloc] initWithFrame:CGRectMake(-10, 0, 60, 44)];
+    [_upperCancel setTitle:@"退出" forState:UIControlStateNormal];
+    [_upperCancel setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:_upperCancel];
+    [_upperCancel addTarget:self action:@selector(cancelClicked:) forControlEvents:UIControlEventTouchUpInside];
     //[_toolBarRegion addObserver:self forKeyPath:@"alpha" options:0 context:nil];
     //[_toolBarRegion addObserver:self forKeyPath:@"hidden" options:0 context:nil];
     //[_inputTextRegion setOb]
@@ -1308,6 +1313,7 @@ context:(void *)context
     if(!capturingBlack){
         capturingBlack = [[UIView alloc] initWithFrame:imageView.bounds];
         capturingBlack.backgroundColor = [UIColor blackColor];
+    
     }
     [imageView addSubview:capturingBlack];
 }
@@ -1962,6 +1968,9 @@ context:(void *)context
     }
     //_takingPhoto = false;
     [blackCover removeFromSuperview];
+    if(_captureComplete){
+        _captureComplete(nil);
+    }
 }
 
 - (void) oldDownload
@@ -2377,8 +2386,10 @@ context:(void *)context
         EZDEBUG(@"are Taking Photo");
         return;
     }
+    __weak DLCImagePickerController* weakSelf = self;
     [self.photoCaptureButton setEnabled:NO];
     if (!isStatic) {
+        _uploadStatus = kInitialUploading;
         _isUploading = false;
         _detectedFaceObj = nil;
         _takingPhoto = TRUE;
@@ -2386,39 +2397,85 @@ context:(void *)context
         _isSaved = NO;
         isStatic = YES;
         _turnedImage = FALSE;
+        _uploadSuccessBlock = nil;
+        _uploadFailureBlock = nil;
         [self changeButtonStatus:YES];
         _toolBarRegion.alpha = 0.0;
         _isImageWithFlash = NO;
-        [_progressView setProgress:0.0 animated:NO];
+        CGFloat progressStart = 0.2;
+        [_progressView setProgress:progressStart animated:NO];
+        _captureComplete = ^(id obj){
+            EZDEBUG(@"photo captured, we will upload");
+            weakSelf.uploadStatus = kUploading;
+            [weakSelf savePhoto:^(NSNumber* number){
+                EZDEBUG(@"the upload progress:%f, thread:%i", number.floatValue, [NSThread isMainThread]);
+                if(number){
+                    //_progressView.progress = number.floatValue;
+                    [weakSelf.progressView setProgress:progressStart + number.floatValue * 0.5 animated:YES];
+                }else{
+                    EZDEBUG(@"failed to upload");
+                    //weakSelf.progressView.hidden = YES;
+                    weakSelf.uploadStatus = kUploadingFailure;
+                    if(weakSelf.uploadFailureBlock){
+                        EZDEBUG(@"I will call the failure");
+                        weakSelf.uploadFailureBlock(nil);
+                    }
+                    
+                }
+            } uploadSuccess:^(id sender){
+                EZDEBUG(@"upload success");
+                //weakSelf.progressView.hidden = YES;
+                weakSelf.uploadStatus = kUploadingSuccess;
+                if(weakSelf.uploadSuccessBlock){
+                    weakSelf.uploadSuccessBlock(nil);
+                }
+            
+            }];
+        };
         [self prepareForCapture];
     }else{
-        if(!_isSaved){
+        //Mean the upload started, at least mean the photo already stored.
+        if(_uploadStatus != kInitialUploading){
             _toolBarRegion.alpha = 0.0;
+            
             //_isSaved = true;
             if(!_isUploading){
                 _isUploading = true;
                 _progressView.hidden = NO;
-                [_progressView setProgress:0.0 animated:YES];
-                [self savePhoto:^(NSNumber* number){
-                    EZDEBUG(@"save upload progress:%f, thread:%i", number.floatValue, [NSThread isMainThread]);
-                    if(number){
-                        //_progressView.progress = number.floatValue;
-                        [_progressView setProgress:number.floatValue animated:YES];
-                    }else{
-                        EZDEBUG(@"failed to upload");
-                        _progressView.hidden = YES;
-                        _isSaved = TRUE;
-                    }
-                } uploadSuccess:^(id obj){
-                    //if(number.floatValue >= 1.0){
-                    _progressView.hidden = YES;
-                    [self changePhoto];
-                    _isSaved = TRUE;
-                }];
+                _uploadFailureBlock = ^(id obj){
+                    EZDEBUG(@"failure upload");
+                    weakSelf.progressView.hidden = YES;
+                    [[EZUIUtility sharedEZUIUtility] raiseInfoWindow:@"上传失败" info:@"羽毛正在重试"];
+                    //[weakSelf changePhoto];
+                    weakSelf.disPhoto.isFront = TRUE;
+                    [[EZMessageCenter getInstance]postEvent:EZTakePicture attached:weakSelf.disPhoto];
+                    dispatch_later(1.0, ^(){
+                        [weakSelf innerCancel:YES];
+                    });
+                };
+                
+                _uploadSuccessBlock = ^(id obj){
+                    [weakSelf.progressView setProgress:1.0 animated:YES];
+                    [weakSelf changePhoto];
+                    dispatch_later(0.2, ^(){
+                        weakSelf.progressView.hidden = YES;
+                    });
+                };
+                if(_uploadStatus == kUploading){
+                    EZDEBUG(@"have nothing to do");
+                }else if(_uploadStatus == kUploadingFailure){
+                    EZDEBUG(@"directly call failure");
+                    _uploadFailureBlock(nil);
+                }else if(_uploadStatus == kUploadingSuccess){
+                    EZDEBUG(@"directly call success");
+                    _uploadSuccessBlock(nil);
+                }
+                
             }
             //[self fakeAnimation:nil];
             //cancelButton.hidden = YES;
         }else{
+            EZDEBUG(@"Need to wait the photo storage ready");
             //cancelButton.hidden = NO;
             //[[EZMessageCenter getInstance]postEvent:EZTakePicture attached:disPhoto];
             //[self completedProcess];
@@ -2656,12 +2713,14 @@ context:(void *)context
     if(staticFlag){
         //self.cancelButton.hidden = FALSE;
         [self.cancelButton setTitle:@"重拍" forState:UIControlStateNormal];
+        [_upperCancel setTitle:@"重拍" forState:UIControlStateNormal];
         //[self.photoCaptureButton setTitle:@"保存" forState:UIControlStateNormal];
         [self.configButton setTitle:@"保存" forState:UIControlStateNormal];
         [self.photoCaptureButton setEnabled:YES];
         self.configButton.hidden = YES;
     }else{
         [self.cancelButton setTitle:@"退出" forState:UIControlStateNormal];
+        [_upperCancel setTitle:@"退出" forState:UIControlStateNormal];
         //self.cancelButton.hidden = TRUE;
         //[self.photoCaptureButton setTitle:@"按这里拍摄" forState:UIControlStateNormal];
         //self.configButton.hidden = NO;

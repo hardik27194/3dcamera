@@ -523,6 +523,10 @@
 - (NSString*) preloadImage:(NSString*)fullURL success:(EZEventBlock)success failed:(EZEventBlock)failed
 {
     EZDownloadHolder* holder =  [_downloadedImages objectForKey:fullURL];
+    if(fullURL == nil){
+        //failed(@"Null URL");
+        return nil;
+    }
     if(holder == nil){
         NSString* fileName = [self fileNameFromURL:fullURL];
         holder = [[EZDownloadHolder alloc] init];
@@ -1376,6 +1380,9 @@
                     } failure:^(id err){
                         EZDEBUG(@"failed to upload content:%@", err);
                         --_uploadingTasks;
+                        if(photo.progress){
+                            photo.progress(nil);
+                        }
                     }];
                 }
 
@@ -1383,6 +1390,9 @@
             } failure:^(id err){
                 EZDEBUG(@"failed to upload info for photoID:%@, :%@",photo.photoID, err);
                 --_uploadingTasks;
+                if(photo.progress){
+                    photo.progress(nil);
+                }
             }];
         }
         if(!photo.uploadPhotoSuccess && photo.photoID){
@@ -1397,6 +1407,9 @@
             } failure:^(id err){
                 EZDEBUG(@"failed to upload content:%@", err);
                 --_uploadingTasks;
+                if(photo.progress){
+                    photo.progress(nil);
+                }
             }];
         }
     }

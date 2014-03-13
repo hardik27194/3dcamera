@@ -109,7 +109,7 @@ NSString *const EZGaussianSharpenFragmentShaderString = SHADER_STRING
      //}
      sharpDist = min(0.6, sharpDist);
      
-     if(sharpDist < 0.2){
+     if(sharpDist < 0.3){
          sharpDist = 0.0;
      }
      
