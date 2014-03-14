@@ -11,6 +11,7 @@
 #import "DLCBlurOverlayView.h"
 #import "EZSoundEffect.h"
 #import "EZFaceResultObj.h"
+#import "EZSharpenGaussianNormal.h"
 
 @class EZClickImage;
 
@@ -235,6 +236,8 @@ typedef enum {
 
 @property (nonatomic, strong) UITextField* textField;
 @property (nonatomic, strong) UILabel* textPlaceHolder;
+
+@property (nonatomic, strong) EZSharpenGaussianNormal* sharpenGaussian;
 
 @property (nonatomic, strong) EZEventBlock oldPressBlock;
 @property (nonatomic, strong) EZEventBlock oldReleaseBlock;

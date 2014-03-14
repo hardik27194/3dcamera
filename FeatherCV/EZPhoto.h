@@ -16,6 +16,15 @@ typedef enum {
 } EZShareStatus;
 
 
+typedef enum {
+    kUploadInit,
+    kUploadPhotoInfo,
+    kUploadPhoto,
+    kExchangePhoto,
+    kUploadDone
+} EZUploadStatus;
+
+
 @class ALAsset;
 @class EZPerson;
 @class LocalPhotos;
@@ -119,10 +128,12 @@ typedef enum {
 @property (nonatomic, assign) BOOL matchCompleted;
 
 //Have successfully uploaded the photo information
-@property (nonatomic, assign) BOOL uploadInfoSuccess;
+//@property (nonatomic, assign) BOOL uploadInfoSuccess;
 
 //Upload the photo file itself success
-@property (nonatomic, assign) BOOL uploadPhotoSuccess;
+//@property (nonatomic, assign) BOOL uploadPhotoSuccess;
+@property (nonatomic, assign) EZUploadStatus uploadStatus;
+
 
 //Mean I will delte this photo from server.
 @property (nonatomic, assign) BOOL deleted;
@@ -131,6 +142,8 @@ typedef enum {
 @property (nonatomic, strong) EZEventBlock progress;
 
 @property (nonatomic, strong) EZEventBlock uploadSuccess;
+
+@property (nonatomic, strong) NSString* exchangePersonID;
 
 //@property (nonatomic, assign) BOOL pendingMatch;
 

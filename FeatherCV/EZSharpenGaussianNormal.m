@@ -1,14 +1,14 @@
 //
-//  EZSharpenGaussian.m
+//  EZSharpenGaussianNormal.m
 //  FeatherCV
 //
-//  Created by xietian on 14-2-26.
+//  Created by xietian on 14-3-14.
 //  Copyright (c) 2014年 tiange. All rights reserved.
 //
 
-#import "EZSharpenGaussian.h"
+#import "EZSharpenGaussianNormal.h"
 
-NSString *const EZGaussianSharpenVertexShaderString = SHADER_STRING
+NSString *const EZNormGaussianSharpenVertexShaderString = SHADER_STRING
 (
  attribute vec4 position;
  attribute vec4 inputTextureCoordinate;
@@ -43,7 +43,7 @@ NSString *const EZGaussianSharpenVertexShaderString = SHADER_STRING
 
 
 
-NSString *const EZGaussianSharpenFragmentShaderString = SHADER_STRING
+NSString *const EZNormGaussianSharpenFragmentShaderString = SHADER_STRING
 (
  uniform sampler2D inputImageTexture;
  
@@ -99,17 +99,17 @@ NSString *const EZGaussianSharpenFragmentShaderString = SHADER_STRING
      if(sharpDist < sharpenBar){
          sharpDist = lowBar;
      }else{
-         sharpDist = lowBar + (sharpDist - sharpenBar) * 20.0;
-    }
+         sharpDist = lowBar + (sharpDist - sharpenBar) * 10.0;
+     }
      mediump float sharpenRatio = 1.0;
      //lowp float colorDist = calcHue(centralColor.rgb);
      //sharpDist = sharpDist * sharpenRatio;
      //if(sharpDist > 0.25){
      //    sharpDist = 0.25 + (sharpDist - 0.25) * 0.5;
      //}
-     sharpDist = min(0.6, sharpDist);
+     sharpDist = min(0.3, sharpDist);
      
-     if(sharpDist < 0.3){
+     if(sharpDist < 0.15){
          sharpDist = 0.0;
      }
      
@@ -157,17 +157,17 @@ NSString *const EZSharpenFinalString = SHADER_STRING
      sum += texture2D(inputImageTexture, blurCoordinates[6]) * 0.12;
      sum += texture2D(inputImageTexture, blurCoordinates[7]) * 0.09;
      sum += texture2D(inputImageTexture, blurCoordinates[8]) * 0.05;
-
+     
      gl_FragColor = centralColor;
  }
  );
 
 
-@implementation EZSharpenGaussian
+@implementation EZSharpenGaussianNormal
 
 - (id) init
 {
-    self = [super initWithFirstStageVertexShaderFromString:EZGaussianSharpenVertexShaderString firstStageFragmentShaderFromString:EZGaussianSharpenFragmentShaderString secondStageVertexShaderFromString:EZGaussianSharpenVertexShaderString secondStageFragmentShaderFromString:EZGaussianSharpenFragmentShaderString];
+    self = [super initWithFirstStageVertexShaderFromString:EZNormGaussianSharpenVertexShaderString firstStageFragmentShaderFromString:EZNormGaussianSharpenFragmentShaderString secondStageVertexShaderFromString:EZNormGaussianSharpenVertexShaderString secondStageFragmentShaderFromString:EZNormGaussianSharpenFragmentShaderString];
     self.imageMode = 0;
     return self;
 }

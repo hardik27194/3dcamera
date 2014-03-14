@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "LocalPersons.h"
 
 @interface EZPerson : NSObject
 
@@ -39,6 +40,8 @@
 
 //Used to sort the user in the array.
 @property (nonatomic, strong) NSDate* lastActive;
+
+@property (nonatomic, strong) LocalPersons* localPerson;
 
 - (NSDictionary*) toJson;
 

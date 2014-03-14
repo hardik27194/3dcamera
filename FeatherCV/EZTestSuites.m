@@ -45,6 +45,11 @@
     //[EZTestSuites testSoundEffects];
     //[self testImageProcess];
     //[self testImageStore];
+   
+}
+
++ (void) testPersonQuery
+{
     ReleasedObj* obj = [[ReleasedObj alloc] init];
     obj.name = @"Tian";
     [[EZDataUtil getInstance] uploadAvatar:[UIImage imageNamed:@"header_1"] success:^(NSString* url){
@@ -60,7 +65,7 @@
     [[EZDataUtil getInstance] getPersonByID:@"52f78b93e7b5b9dd9c28f1d1" success:^(EZPerson* ps){
         EZDEBUG(@"Query back person id:%@, isQuerying:%i, name:%@", ps.personID, ps.isQuerying, ps.name);
     }];
-
+    
     [[EZDataUtil getInstance] getPersonByID:@"52f78923e7b5b9dd9c28f1ce" success:^(EZPerson* ps){
         EZDEBUG(@"Second Query back person id:%@, isQuerying:%i, name:%@", ps.personID, ps.isQuerying, ps.name);
     }];

@@ -96,8 +96,8 @@
              @"relationUsers":[self relationsUserID],
              @"screenURL":null2Empty([self screenURL]),
              @"liked":_liked.count?_liked:@[],
-             @"uploadInfoSuccess":@(_uploadInfoSuccess),
-             @"uploadPhotoSuccess":@(_uploadPhotoSuccess),
+             //@"uploadInfoSuccess":@(_uploadInfoSuccess),
+             @"uploadStatus":@(_uploadStatus),
              @"deleted":@(_deleted)
              };
 }
@@ -150,8 +150,8 @@
 - (void) fromLocalJson:(NSDictionary*)dict
 {
     EZDEBUG(@"from local json raw string:%@", dict);
-    _uploadInfoSuccess = [[dict objectForKey:@"uploadInfoSuccess"] integerValue];
-    _uploadPhotoSuccess = [[dict objectForKey:@"uploadPhotoSuccess"] integerValue];
+    _uploadStatus = [[dict objectForKey:@"uploadStatus"] integerValue];
+    //_uploadPhotoSuccess = [[dict objectForKey:@"uploadPhotoSuccess"] integerValue];
     _deleted = [[dict objectForKey:@"deleted"] integerValue];
     [self fromJson:dict];
 }

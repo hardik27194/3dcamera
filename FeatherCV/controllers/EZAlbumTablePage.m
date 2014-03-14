@@ -83,9 +83,12 @@ static int photoCount = 1;
         //myPhoto.createdTime = [NSDate date];
         //myPhoto.screenURL = @"cool";
         //[[EZDataUtil getInstance] storeAllPhotos:@[myPhoto]];
-        if(switchPhoto){
-            [weakSelf switchImage:weakCell displayPhoto:cp front:myPhoto back:switchPhoto animate:YES];
+        //if(switchPhoto){
+        EZPhoto* swPhoto = [myPhoto.photoRelations objectAtIndex:0];
+        if(swPhoto){
+            [weakSelf switchImage:weakCell displayPhoto:cp front:myPhoto back:swPhoto animate:YES];
         }
+        //}
     };
     
     __block BOOL longPressed = false;

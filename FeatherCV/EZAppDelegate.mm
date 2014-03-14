@@ -283,6 +283,33 @@
     //[EZDataUtil getInstance].currentPersonID = @"coolguyMobile";
 }
 
+- (void) setupRecieveNotification
+{
+    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:
+     (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
+    UIRemoteNotificationType enabledTypes = [[UIApplication sharedApplication] enabledRemoteNotificationTypes];
+    EZDEBUG(@"enabled type:%i", enabledTypes);
+}
+
+
+- (void)application:(UIApplication*)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData*)deviceToken
+{
+	const unsigned *tokenBytes = (const unsigned*)[deviceToken bytes];
+    NSString *hexToken = [NSString stringWithFormat:@"%08x%08x%08x%08x%08x%08x%08x%08x",
+                          ntohl(tokenBytes[0]), ntohl(tokenBytes[1]), ntohl(tokenBytes[2]),
+                          ntohl(tokenBytes[3]), ntohl(tokenBytes[4]), ntohl(tokenBytes[5]),
+                          ntohl(tokenBytes[6]), ntohl(tokenBytes[7])];
+    
+    //How to trigger the token ID upload? I can store my TokenID to the NSUserDefaults
+    //So when the token ID is comming, I could upload it.
+    //Let's design the mechanism.
+    //NSInteger currentID = 1;//[EZUserUtil getInstance].getCurrentUser.profile_id;
+    //NSInteger loginID = currentLoginID;
+    
+    [[NSUserDefaults standardUserDefaults] setValue:hexToken forKey:DeviceTokenKey];
+    EZDEBUG(@"Push notificatin id:%@", hexToken);
+}
+
 - (void) uploadPendingImages:(id)obj
 {
     [[EZDataUtil getInstance] uploadPendingPhoto];
@@ -291,13 +318,24 @@
     if([EZDataUtil getInstance].timerBlock){
         [EZDataUtil getInstance].timerBlock(nil);
     }
-   }
+    
+    /**
+    static int count = 1;
+    ++count;
+    NSMutableArray* persons = [[NSMutableArray alloc] init];
+    [persons addObjectsFromArray:[[EZDataUtil getInstance].currentQueryUsers allValues]];
+     //EZDEBUG(@"Will store %i persons", persons.count);
+        //[persons addObjectsFromArray:[[EZDataUtil getInstance].notJoinedUsers allObjects]];
+    [[EZDataUtil getInstance] storeAllPersons:persons];
+     **/
+}
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     _cameraRaised = false;
     ///[EZDataUtil getInstance].currentPersonID = @"52f783d7e7b5b9dd9c28f1cc";
     [EZTestSuites testAll];
+    [self setupRecieveNotification];
     //NSString* thumb = url2thumb(@"http://cool.guy/cool.jpg");
     //EZDEBUG(@"The thumb url is:%@", thumb);
     //CFTimeInterval startTime = CACurrentMediaTime();
@@ -331,6 +369,7 @@
         });
     }
     //[[EZAnimationUtil sharedEZAnimationUtil] addAnimation:self];
+    [[EZDataUtil getInstance] loadAllPersons];
     [self setupAppearance];
     [self setupNetwork];
     //[self enableProximate:YES];

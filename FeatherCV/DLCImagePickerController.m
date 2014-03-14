@@ -71,9 +71,13 @@
 @end
 
 
-#define liveTongSetting @[pointValue(0.0, 0.0), pointValue(0.125, 0.125), pointValue(0.25, 0.25), pointValue(0.5, 0.525), pointValue(0.75, 0.770), pointValue(1.0, 1.0)]
+#define liveTongSetting @[pointValue(0.0, 0.0), pointValue(0.125, 0.125), pointValue(0.25, 0.24), pointValue(0.5, 0.525), pointValue(0.75, 0.770), pointValue(1.0, 1.0)]
 
-#define faceTongSetting @[pointValue(0.0, 0.0), pointValue(0.125, 0.125), pointValue(0.25, 0.27), pointValue(0.5, 0.550), pointValue(0.75, 0.780), pointValue(1.0, 1.0)]
+#define liveRedSetting @[pointValue(0.0, 0.0), pointValue(0.125, 0.12), pointValue(0.25, 0.25), pointValue(0.5, 0.525), pointValue(0.75, 0.770), pointValue(1.0, 1.0)]
+
+#define faceTongSetting @[pointValue(0.0, 0.0), pointValue(0.125, 0.145), pointValue(0.25, 0.31), pointValue(0.5, 0.580), pointValue(0.75, 0.790), pointValue(1.0, 1.0)]
+
+#define faceBlueSetting @[pointValue(0.0, 0.0), pointValue(0.125, 0.125), pointValue(0.25, 0.22), pointValue(0.5, 0.47), pointValue(0.75, 0.72), pointValue(1.0, 1.0)]
 
 
 
@@ -219,9 +223,10 @@
     _detectFace = false;
     
     CGFloat dark = 100;//[self getISOSpeedRating];
-    hueFilter.hue = 350.0;
+    hueFilter.hue = 352.0;
     //GPUImageFilter* firstFilter = nil;
     [tongFilter setRgbCompositeControlPoints:liveTongSetting];
+    [tongFilter setRedControlPoints:liveRedSetting];
     if(dark >= 400){
         //[tongFilter addTarget:darkBlurFilter];
         //firstFilter = (GPUImageFilter*)darkBlurFilter;
@@ -238,26 +243,26 @@
     //GPUImageFilter* imageFilter = secFixColorFilter;
     whiteBalancerFilter.temperature = 5000.0;
     if(!_disableFaceBeautify && (fobj || stillCamera.isFrontFacing || _shotMode == kSelfShotMode)){
-        [tongFilter setRgbCompositeControlPoints:faceTongSetting];
-        [tongFilter addTarget:sharpenGaussian];
-        [sharpenGaussian addTarget:finalBlendFilter];
+        //[tongFilter setRgbCompositeControlPoints:faceTongSetting];
+        [tongFilter addTarget:finalBlendFilter];
+        //[sharpenGaussian addTarget:finalBlendFilter];
         [finalBlendFilter addTarget:filter];
         
         //res.redEnhanceLevel = 0.65; //0.725
         redEnhanceFilter.redRatio = 1.15;
         redEnhanceFilter.greenRatio = 1.5;
         
-        secBlendFilter.blurFilter.distanceNormalizationFactor = 25.0;
+        secBlendFilter.blurFilter.distanceNormalizationFactor = 20.0;
         secBlendFilter.blurFilter.blurSize = 3.0;
         secBlendFilter.miniRealRatio = 0.0;
-        secBlendFilter.maxRealRatio = 1.0;
+        secBlendFilter.maxRealRatio = .9;
         secBlendFilter.imageMode = 0;
         secBlendFilter.skinColorFlag = 1;
         
         finalBlendFilter.blurFilter.distanceNormalizationFactor = 10.0;
-        finalBlendFilter.blurFilter.blurSize = 0.5;//fobj.orgRegion.size.width;
+        finalBlendFilter.blurFilter.blurSize = 1.0;//fobj.orgRegion.size.width;
         finalBlendFilter.miniRealRatio = 0.0;
-        finalBlendFilter.maxRealRatio = 0.8;
+        finalBlendFilter.maxRealRatio = 0.9;
         finalBlendFilter.imageMode = 0;
         finalBlendFilter.skinColorFlag = 1;
         //finalBlendFilter.showFace = 1;
@@ -266,8 +271,9 @@
         //finalBlendFilter.smallBlurFilter.blurSize = blurAspectRatio * blurCycle;
         EZDEBUG(@"Will adjusted Face");
     }else{
-        [tongFilter addTarget:sharpenGaussian];
-        [sharpenGaussian addTarget:filter];
+        [tongFilter addTarget:_sharpenGaussian];
+        [_sharpenGaussian addTarget:filter];
+        //[tongFilter addTarget:filter];
         //[hueFilter addTarget:filter];
         EZDEBUG(@"No face find out");
     }
@@ -315,13 +321,14 @@
     redEnhanceFilter = [self createRedEnhanceFilter];
     //finalBlendFilter = [[EZHomeBlendFilter alloc] initWithFilters];   //[self createFaceBlurFilter];
     //secBlendFilter = [self createFaceBlurFilter];
-    secBlendFilter = [[EZHomeBlendFilter alloc] initWithTongFilter:[self createTongFilter]];
+    GPUImageToneCurveFilter* secTongFilter = [[GPUImageToneCurveFilter alloc] init];
+    secBlendFilter = [[EZHomeBlendFilter alloc] initWithTongFilter:secTongFilter];
     //secBlendFilter.imageMode = 3;
     finalBlendFilter = [[EZHomeBlendFilter alloc] initWithFilter:secBlendFilter];
-    [finalBlendFilter.tongFilter setRgbCompositeControlPoints:faceTongSetting];
-    
+    [secBlendFilter.tongFilter setRgbCompositeControlPoints:faceTongSetting];
+    [secBlendFilter.tongFilter setBlueControlPoints:faceBlueSetting];
     sharpenGaussian = [[EZSharpenGaussian alloc] init];
-    
+    _sharpenGaussian = [[EZSharpenGaussianNormal alloc] init];
     //cycleDarken = [[EZCycleDiminish alloc] init];
     
 }
@@ -484,6 +491,7 @@
     _shotPhoto = [[EZPhoto alloc] init];
     EZPhoto* localPhoto = _shotPhoto;
     _shotPhoto.personID = currentLoginID;
+    _shotPhoto.exchangePersonID = _personID;
     [self startPreFetch:localPhoto imageSuccess:nil];
 }
 
@@ -1696,6 +1704,7 @@ context:(void *)context
     [redEnhanceFilter removeAllTargets];
     [smallSharpenFilter removeAllTargets];
     [bigSharpenFilter removeAllTargets];
+    [_sharpenGaussian removeAllTargets];
     //blur
     [sharpenGaussian removeAllTargets];
     [blurFilter removeAllTargets];
@@ -2448,8 +2457,14 @@ context:(void *)context
                 _uploadFailureBlock = ^(id obj){
                     EZDEBUG(@"failure upload");
                     weakSelf.progressView.hidden = YES;
-                    [[EZUIUtility sharedEZUIUtility] raiseInfoWindow:@"上传失败" info:@"羽毛正在重试"];
+                    //[[EZUIUtility sharedEZUIUtility] raiseInfoWindow:@"上传失败" info:@"羽毛正在重试"];
                     //[weakSelf changePhoto];
+                    UILabel* failureMsg = [[UILabel alloc] initWithFrame:CGRectMake(0, 100, CurrentScreenWidth, 44)];
+                    failureMsg.textAlignment = NSTextAlignmentCenter;
+                    failureMsg.textColor = [UIColor whiteColor];
+                    failureMsg.font = [UIFont boldSystemFontOfSize:17];
+                    failureMsg.text = macroControlInfo(@"Upload failure");
+                    [weakSelf.view addSubview:failureMsg];
                     EZDisplayPhoto* dp = [weakSelf createDisplayPhoto:weakSelf.shotPhoto];
                     [[EZMessageCenter getInstance]postEvent:EZTakePicture attached:dp];
                     dispatch_later(1.0, ^(){
@@ -2510,7 +2525,7 @@ context:(void *)context
     //[self confirmCurrentMatch];
     //[self showTextField:NO];
     //[self hideKeyboard];
-    _shotPhoto.startUpload = true;
+    //_shotPhoto.startUpload = true;
     _shotPhoto.progress = progress;
     _shotPhoto.uploadSuccess = uploadSuccess;
     [self addChatInfo:_shotPhoto];

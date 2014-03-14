@@ -265,4 +265,8 @@
 
 - (void) addDeleteTask:(EZPhoto*)photo;
 
+- (void) storeAllPersons:(NSArray*)persons;
+
+- (void) loadAllPersons;
+
 @end

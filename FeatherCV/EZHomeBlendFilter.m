@@ -63,7 +63,7 @@ NSString *const kHomeBlendFragmentShaderString = SHADER_STRING
  lowp float calcHue(lowp vec4 rawcolor,lowp vec3 skColor)
  {
      highp float fd = distance(rawcolor.rgb, skColor);
-     highp float base = dot(skColor, skColor);
+     highp float base = distance(blueShaderColor, skColor);
      fd = fd / base;
      return min(1.0, fd);
      //return 1.0/(exp((1.5 - distance(rawcolor.rgb, skinColor))) + 1.0);
@@ -284,6 +284,7 @@ NSString *const kFaceBlurFragmentShaderString = SHADER_STRING
     _blurFilter = [[EZHomeBiBlur alloc] init];
     _sharpGaussian = [[EZSharpenGaussian alloc] init];
     _combineFilter = [[GPUImageTwoInputFilter alloc] initWithFragmentShaderFromString:kHomeBlendFragmentShaderString];
+    _tongFilter = tongFilter;
     [self addTarget:tongFilter];
     [tongFilter addTarget:_sharpGaussian];
     [_sharpGaussian addTarget:_blurFilter];

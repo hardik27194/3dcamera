@@ -24,6 +24,7 @@
 		181903FD1882980E001FC370 /* EZHomeEdgeFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 181903FC1882980E001FC370 /* EZHomeEdgeFilter.m */; };
 		1819040018853903001FC370 /* EZDoubleOutFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 181903FF18853903001FC370 /* EZDoubleOutFilter.m */; };
 		181904031885406A001FC370 /* EZBlackAndCropFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 181904021885406A001FC370 /* EZBlackAndCropFilter.m */; };
+		1823DA2E18D2F88600E6E8B3 /* EZSharpenGaussianNormal.m in Sources */ = {isa = PBXBuildFile; fileRef = 1823DA2D18D2F88600E6E8B3 /* EZSharpenGaussianNormal.m */; };
 		182A55091862C735003D4A01 /* libGPUImage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 182A55041862C71A003D4A01 /* libGPUImage.a */; };
 		182A550D18643141003D4A01 /* EZFaceBlurFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 182A550C18643140003D4A01 /* EZFaceBlurFilter.m */; };
 		182A551018645374003D4A01 /* EZFaceBlurFilter2.m in Sources */ = {isa = PBXBuildFile; fileRef = 182A550F18645374003D4A01 /* EZFaceBlurFilter2.m */; };
@@ -326,6 +327,8 @@
 		181903FF18853903001FC370 /* EZDoubleOutFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZDoubleOutFilter.m; sourceTree = "<group>"; };
 		181904011885406A001FC370 /* EZBlackAndCropFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZBlackAndCropFilter.h; sourceTree = "<group>"; };
 		181904021885406A001FC370 /* EZBlackAndCropFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZBlackAndCropFilter.m; sourceTree = "<group>"; };
+		1823DA2C18D2F88600E6E8B3 /* EZSharpenGaussianNormal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZSharpenGaussianNormal.h; sourceTree = "<group>"; };
+		1823DA2D18D2F88600E6E8B3 /* EZSharpenGaussianNormal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZSharpenGaussianNormal.m; sourceTree = "<group>"; };
 		182A54FD1862C717003D4A01 /* GPUImage.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GPUImage.xcodeproj; path = ../../Documents/open_source/GPUImageCV/framework/GPUImage.xcodeproj; sourceTree = "<group>"; };
 		182A550B18643140003D4A01 /* EZFaceBlurFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZFaceBlurFilter.h; sourceTree = "<group>"; };
 		182A550C18643140003D4A01 /* EZFaceBlurFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZFaceBlurFilter.m; sourceTree = "<group>"; };
@@ -839,6 +842,8 @@
 				184DBE8118BDA16E00239F0F /* EZSharpenGaussian.m */,
 				184DBE8718BE2B5800239F0F /* EZChromaBiFilter.h */,
 				184DBE8818BE2B5800239F0F /* EZChromaBiFilter.m */,
+				1823DA2C18D2F88600E6E8B3 /* EZSharpenGaussianNormal.h */,
+				1823DA2D18D2F88600E6E8B3 /* EZSharpenGaussianNormal.m */,
 			);
 			name = camera;
 			sourceTree = "<group>";
@@ -1367,6 +1372,9 @@
 				LastUpgradeCheck = 0500;
 				ORGANIZATIONNAME = tiange;
 				TargetAttributes = {
+					18E34679183DF54400C9D89D = {
+						DevelopmentTeam = FA67K5H8WD;
+					};
 					18E34699183DF54500C9D89D = {
 						TestTargetID = 18E34679183DF54400C9D89D;
 					};
@@ -1568,6 +1576,7 @@
 				184ADD9218CF045A00367527 /* EZCameraNaviAnimation.m in Sources */,
 				18E746F718A4A26A0023967B /* UIImageView+AFNetworking.m in Sources */,
 				181608C718B4E38600DD5995 /* EZAnimationUtil.m in Sources */,
+				1823DA2E18D2F88600E6E8B3 /* EZSharpenGaussianNormal.m in Sources */,
 				18E746F118A4A26A0023967B /* AFURLResponseSerialization.m in Sources */,
 				18E746F418A4A26A0023967B /* UIActivityIndicatorView+AFNetworking.m in Sources */,
 				184ADD8618CB490E00367527 /* EZBlurAnimator.m in Sources */,
@@ -1740,7 +1749,8 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Development IOS Push Services: com.enjoyzhi.Feathers";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development IOS Push Services: com.enjoyzhi.Feathers";
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -1779,7 +1789,8 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Development IOS Push Services: com.enjoyzhi.Feathers";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development IOS Push Services: com.enjoyzhi.Feathers";
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -1790,6 +1801,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -1801,7 +1813,8 @@
 				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Tian Xie (GC586ZT7D3)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Tian Xie (GC586ZT7D3)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					/Users/apple/Dropbox/FeatherCV,
@@ -1815,6 +1828,7 @@
 				);
 				INFOPLIST_FILE = "FeatherCV/FeatherCV-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -1825,7 +1839,8 @@
 				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Tian Xie (GC586ZT7D3)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Tian Xie (GC586ZT7D3)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					/Users/apple/Dropbox/FeatherCV,
@@ -1839,6 +1854,7 @@
 				);
 				INFOPLIST_FILE = "FeatherCV/FeatherCV-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

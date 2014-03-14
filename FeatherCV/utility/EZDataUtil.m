@@ -736,7 +736,8 @@
     NSMutableArray* pids = [[NSMutableArray alloc] init];
     [pids addObject:currentLoginID];
     [pids addObjectsFromArray:_sortedUsers];
-    [pids addObjectsFromArray:[_joinedUsers allObjects]];
+    [pids addObjectsFromArray:_currentQueryUsers.allKeys];
+    //[pids addObjectsFromArray:[_joinedUsers allObjects]];
     [pids addObjectsFromArray:_notJoinedUsers.allObjects];
     [_sortedUserSets removeAllObjects];
     NSMutableArray* sortedPids = [[NSMutableArray alloc] init];
@@ -1377,10 +1378,10 @@
     for(int i = 0; i < uploads.count; i++){
         
         EZPhoto* photo = [uploads objectAtIndex:i];
-        if(!photo.startUpload){
-            EZDEBUG(@"photo upload pending");
-            continue;
-        }
+        //if(!photo.startUpload){
+        //    EZDEBUG(@"photo upload pending");
+        //    continue;
+        //}
         
         if(photo.deleted){
             if(photo.photoID){
@@ -1402,27 +1403,30 @@
             continue;
         }
         
-        if(photo.uploadPhotoSuccess){
+        if(photo.uploadStatus == kUploadDone){
             [_pendingUploads removeObject:photo];
             continue;
         }
-
-        if(!photo.photoID){
+        
+        if(photo.uploadStatus == kUploadInit){
             EZDEBUG(@"Will start upload info for:%@", photo.photoID);
             ++_uploadingTasks;
             [[EZDataUtil getInstance] uploadPhotoInfo:@[photo] success:^(id info){
                 EZDEBUG(@"Update photo info:%@", info);
                 NSString* photoID = [info objectAtIndex:0];
                 EZDEBUG(@"Recieved photoID:%@, currnet photoID:%@", photoID, photo.photoID);
-                photo.uploadInfoSuccess = TRUE;
+                photo.uploadStatus = kUploadPhotoInfo;
                 photo.photoID = photoID;
                 --_uploadingTasks;
-                if(!photo.uploadPhotoSuccess && photo.photoID){
+                if(photo.uploadStatus == kUploadPhotoInfo){
                     ++_uploadingTasks;
                     EZDEBUG(@"Will start upload photo content for:%@", photo.photoID);
                     [[EZDataUtil getInstance] uploadPhoto:photo success:^(id info){
                         EZDEBUG(@"uploaded success:%@", info);
-                        photo.uploadPhotoSuccess = TRUE;
+                        photo.uploadStatus = kExchangePhoto;
+                        if(photo.photoRelations.count){
+                            photo.uploadStatus = kUploadDone;
+                        }
                         photo.uploaded = TRUE;
                         photo.progress = nil;
                         if(photo.uploadSuccess){
@@ -1447,13 +1451,25 @@
                     photo.progress(nil);
                 }
             }];
+        }else if(photo.uploadStatus == kUploadPhoto){
+            ++_uploadingTasks;
+            [self exchangeWithPerson:photo.exchangePersonID success:^(EZPhoto* ph){
+                photo.photoRelations = @[ph];
+                --_uploadingTasks;
+            } failure:^(id err){
+                EZDEBUG(@"Failed to find match photo:%@", err);
+                --_uploadingTasks;
+            }];
         }else
-        if(!photo.uploadPhotoSuccess && photo.photoID){
+        if(photo.uploadStatus == kUploadPhotoInfo){
             ++_uploadingTasks;
             EZDEBUG(@"Will start upload photo content for:%@", photo.photoID);
             [[EZDataUtil getInstance] uploadPhoto:photo success:^(id info){
                 EZDEBUG(@"uploaded success:%@", info);
-                photo.uploadPhotoSuccess = TRUE;
+                photo.uploadStatus = kExchangePhoto;
+                if(photo.photoRelations.count){
+                    photo.uploadStatus = kUploadDone;
+                }
                 photo.uploaded = TRUE;
                 photo.progress = nil;
                 --_uploadingTasks;
@@ -1503,6 +1519,9 @@
             [ph fromLocalJson:photo.payloads];
             ph.localPhoto = photo;
             [res addObject:ph];
+        if(ph.photoRelations.count == 0){
+            [self.pendingUploads addObject:ph];
+        }
         //}else{
         //    EZDEBUG(@"Some broken data:%@", photo.payloads);
         //}
@@ -1533,6 +1552,44 @@
     }
     [[EZCoreAccessor getClientAccessor] saveContext];
 }
+
+
+- (void) storeAllPersons:(NSArray*)persons
+{
+    for(EZPerson* ps in persons){
+        LocalPersons* lp = ps.localPerson;
+        if(lp){
+            EZDEBUG(@"store old persons");
+        }else{
+            lp = [[EZCoreAccessor getClientAccessor] create:[LocalPersons class]];
+            ps.localPerson = lp;
+            lp.personID = ps.personID;
+            lp.lastActive = ps.lastActive;
+            lp.mobile = ps.mobile;
+            lp.payloads = [ps toJson];
+        }
+    }
+    [[EZCoreAccessor getClientAccessor] saveContext];
+}
+
+- (void) loadAllPersons
+{
+    NSArray* persons = [[EZCoreAccessor getClientAccessor] fetchAll:[LocalPersons class] sortField:nil ascending:NO];
+    //NSMutableArray* res = [[NSMutableArray alloc] init];
+    EZDEBUG(@"stored person count:%i", persons.count);
+    for(LocalPersons* ps in persons){
+        //LocalPhotos* lp = [[EZCoreAccessor getClientAccessor] create:[LocalPhotos class]];
+        //if([photo.payloads isKindOfClass:[NSDictionary class]]){
+        EZPerson* ph = [[EZPerson alloc] init];
+        [ph fromJson:ps.payloads];
+        ph.localPerson = ps;
+        //[res addObject:ph];
+        [_currentQueryUsers setObject:ph forKey:ph.personID];
+    }
+    //return res;
+
+}
+
 
 
 @end
