@@ -252,17 +252,17 @@
         redEnhanceFilter.redRatio = 1.15;
         redEnhanceFilter.greenRatio = 1.5;
         
-        secBlendFilter.blurFilter.distanceNormalizationFactor = 20.0;
+        secBlendFilter.blurFilter.distanceNormalizationFactor = 25.0;
         secBlendFilter.blurFilter.blurSize = 3.0;
         secBlendFilter.miniRealRatio = 0.0;
-        secBlendFilter.maxRealRatio = .9;
+        secBlendFilter.maxRealRatio = 1.0;
         secBlendFilter.imageMode = 0;
         secBlendFilter.skinColorFlag = 1;
         
         finalBlendFilter.blurFilter.distanceNormalizationFactor = 10.0;
-        finalBlendFilter.blurFilter.blurSize = 1.0;//fobj.orgRegion.size.width;
+        finalBlendFilter.blurFilter.blurSize = .5;//fobj.orgRegion.size.width;
         finalBlendFilter.miniRealRatio = 0.0;
-        finalBlendFilter.maxRealRatio = 0.9;
+        finalBlendFilter.maxRealRatio = 1.0;
         finalBlendFilter.imageMode = 0;
         finalBlendFilter.skinColorFlag = 1;
         //finalBlendFilter.showFace = 1;

@@ -42,6 +42,7 @@
 @property (nonatomic, strong) UILabel* weekCount;
 @property (nonatomic, strong) UILabel* dailyCount;
 @property (nonatomic, strong) UIView* container;
+@property (nonatomic, strong) UIProgressView* progressBar;
 
 @property (nonatomic, assign) BOOL notFirstTime;
 

@@ -103,6 +103,12 @@ NSString *const kHomeBlendFragmentShaderString = SHADER_STRING
              skColor = longShaderSkinColor;
          }
          lowp float colorDist = calcHue(blurredImageColor, skColor);
+         lowp float middleStart = 0.5;
+         //if(colorDist < 0.5){
+         //    colorDist = colorDist * 0.5;
+         //}else{
+         //    colorDist = 0.25 + (colorDist - 0.5) * 1.5;
+         //}
          lowp float changeGap =miniRealRatio + (maxRealRatio - miniRealRatio) * colorDist;
          
          gl_FragColor = changeGap * sharpImageColor +  (1.0 - changeGap) * (sharpImageColor*blurRatio + (1.0 - blurRatio)*blurredImageColor);

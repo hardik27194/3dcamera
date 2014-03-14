@@ -68,6 +68,11 @@ static int photoCount = 1;
         [self loadImage:cell url:switchPhoto.screenURL];
     }
     
+    
+    EZDEBUG(@"upload status is:%i, photo relation count:%i, object Pointer:%i", myPhoto.uploadStatus, myPhoto.photoRelations.count, (int)myPhoto);
+    if(myPhoto.uploadStatus == kUploadInit){
+        EZDEBUG(@"");
+    }
     __weak EZAlbumTablePage* weakSelf = self;
     __weak EZPhotoCell* weakCell = cell;
     //__block NSString* staticFile = nil;
@@ -697,7 +702,11 @@ static int photoCount = 1;
         [self scrollToBottom:YES];
     });
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"通讯录" style:UIBarButtonItemStylePlain target:self action:@selector(showMenu:)];
-
+    _progressBar = [[UIProgressView alloc] initWithFrame:CGRectMake(10, 64, 300, 10)];
+    _progressBar.progressViewStyle = UIProgressViewStyleDefault;
+    _progressBar.progressTintColor = [UIColor whiteColor];
+    _progressBar.trackTintColor = [UIColor clearColor];
+    
     //UIBarButtonItem* barItem = [[UIBarButtonItem alloc] initWithTitle:@"通讯录" style:UIBarButtonItemStylePlain target:self action:@selector(showMenu:)];
     
     //UIButton* commButton = [[UIButton alloc] initWithFrame:CGRectMake(5, 5, 120, 44)];
@@ -852,6 +861,16 @@ static int photoCount = 1;
 
 }
 
+/**
+- (void) scrollViewDidEndDecelerating:(UIScrollView *)scrollView
+{
+    int pos = self.tableView.contentOffset.y / CurrentScreenHeight;
+    if(pos < _combinedPhotos.count){
+        EZPhoto* photo = [_combinedPhotos objectAtIndex:pos];
+        EZDEBUG(@"Photo status:%i", photo.uploadStatus);
+    }
+}
+**/
 - (void) setupUI
 {
     self.navigationController.delegate = self;
