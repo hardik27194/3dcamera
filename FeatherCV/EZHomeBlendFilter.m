@@ -104,11 +104,11 @@ NSString *const kHomeBlendFragmentShaderString = SHADER_STRING
          }
          lowp float colorDist = calcHue(blurredImageColor, skColor);
          lowp float middleStart = 0.5;
-         //if(colorDist < 0.5){
-         //    colorDist = colorDist * 0.5;
-         //}else{
-         //    colorDist = 0.25 + (colorDist - 0.5) * 1.5;
-         //}
+         if(colorDist < 0.5){
+             colorDist = colorDist * 0.8;
+         }else{
+             colorDist = 0.40 + (colorDist - 0.5) * 1.2;
+         }
          lowp float changeGap =miniRealRatio + (maxRealRatio - miniRealRatio) * colorDist;
          
          gl_FragColor = changeGap * sharpImageColor +  (1.0 - changeGap) * (sharpImageColor*blurRatio + (1.0 - blurRatio)*blurredImageColor);
@@ -288,12 +288,12 @@ NSString *const kFaceBlurFragmentShaderString = SHADER_STRING
     EZDEBUG(@"setup blend filers");
     hasOverriddenAspectRatio = NO;
     _blurFilter = [[EZHomeBiBlur alloc] init];
-    _sharpGaussian = [[EZSharpenGaussian alloc] init];
+    //_sharpGaussian = [[EZSharpenGaussian alloc] init];
     _combineFilter = [[GPUImageTwoInputFilter alloc] initWithFragmentShaderFromString:kHomeBlendFragmentShaderString];
     _tongFilter = tongFilter;
     [self addTarget:tongFilter];
-    [tongFilter addTarget:_sharpGaussian];
-    [_sharpGaussian addTarget:_blurFilter];
+    //[tongFilter addTarget:_sharpGaussian];
+    [tongFilter addTarget:_blurFilter];
     [self addTarget:_combineFilter];
     [_blurFilter addTarget:_combineFilter atTextureLocation:1];
     self.initialFilters = [NSArray arrayWithObjects:tongFilter, _combineFilter, nil];

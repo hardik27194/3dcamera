@@ -244,7 +244,8 @@
     whiteBalancerFilter.temperature = 5000.0;
     if(!_disableFaceBeautify && (fobj || stillCamera.isFrontFacing || _shotMode == kSelfShotMode)){
         //[tongFilter setRgbCompositeControlPoints:faceTongSetting];
-        [tongFilter addTarget:finalBlendFilter];
+        [tongFilter addTarget:_sharpenGaussian];
+        [_sharpenGaussian addTarget:finalBlendFilter];
         //[sharpenGaussian addTarget:finalBlendFilter];
         [finalBlendFilter addTarget:filter];
         

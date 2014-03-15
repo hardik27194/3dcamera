@@ -56,7 +56,7 @@ static int photoCount = 1;
     
     EZPerson* frontPerson = pid2person(myPhoto.personID);
     EZPerson* backPerson = pid2person(switchPhoto.personID);
-    EZDEBUG(@"myPhoto image size:%@, screenURL:%@, isFront:%i", NSStringFromCGSize(myPhoto.size), myPhoto.screenURL, cp.isFront);
+    EZDEBUG(@"myPhoto image size:%@, screenURL:%@, isFront:%i,upload status:%i", NSStringFromCGSize(myPhoto.size), myPhoto.screenURL, cp.isFront, cp.photo.uploadStatus);
     // Configure the cell...
     //[cell displayImage:[myPhoto getLocalImage]];
     [[cell viewWithTag:animateCoverViewTag] removeFromSuperview];
@@ -71,7 +71,13 @@ static int photoCount = 1;
     
     EZDEBUG(@"upload status is:%i, photo relation count:%i, object Pointer:%i", myPhoto.uploadStatus, myPhoto.photoRelations.count, (int)myPhoto);
     if(myPhoto.uploadStatus == kUploadInit){
-        EZDEBUG(@"");
+        EZDEBUG(@"Will register upload success");
+        myPhoto.uploadSuccess = ^(id obj){
+            EZDEBUG(@"upload success, photoRelation:%i", );
+            
+            
+        };
+        
     }
     __weak EZAlbumTablePage* weakSelf = self;
     __weak EZPhotoCell* weakCell = cell;
