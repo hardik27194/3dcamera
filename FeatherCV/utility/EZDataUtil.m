@@ -1426,12 +1426,12 @@
                         photo.uploadStatus = kExchangePhoto;
                         if(photo.photoRelations.count){
                             photo.uploadStatus = kUploadDone;
+                            if(photo.uploadSuccess){
+                                photo.uploadSuccess(photo);
+                            }
                         }
                         photo.uploaded = TRUE;
                         photo.progress = nil;
-                        if(photo.uploadSuccess){
-                            photo.uploadSuccess(nil);
-                        }
                         photo.uploadSuccess = nil;
                         --_uploadingTasks;
                     } failure:^(id err){
@@ -1455,6 +1455,11 @@
             ++_uploadingTasks;
             [self exchangeWithPerson:photo.exchangePersonID success:^(EZPhoto* ph){
                 photo.photoRelations = @[ph];
+                photo.uploadStatus = kUploadDone;
+                if(photo.uploadSuccess){
+                    photo.uploadSuccess(photo);
+                }
+                photo.uploadSuccess = nil;
                 --_uploadingTasks;
             } failure:^(id err){
                 EZDEBUG(@"Failed to find match photo:%@", err);
@@ -1469,6 +1474,8 @@
                 photo.uploadStatus = kExchangePhoto;
                 if(photo.photoRelations.count){
                     photo.uploadStatus = kUploadDone;
+                    photo.uploadSuccess(photo);
+                    photo.uploadSuccess = nil;
                 }
                 photo.uploaded = TRUE;
                 photo.progress = nil;

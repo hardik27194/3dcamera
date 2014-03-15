@@ -67,20 +67,26 @@ static int photoCount = 1;
     }else{
         [self loadImage:cell url:switchPhoto.screenURL];
     }
-    
+    __weak EZAlbumTablePage* weakSelf = self;
+    __weak EZPhotoCell* weakCell = cell;
     
     EZDEBUG(@"upload status is:%i, photo relation count:%i, object Pointer:%i", myPhoto.uploadStatus, myPhoto.photoRelations.count, (int)myPhoto);
     if(myPhoto.uploadStatus == kUploadInit){
         EZDEBUG(@"Will register upload success");
-        myPhoto.uploadSuccess = ^(id obj){
-            EZDEBUG(@"upload success, photoRelation:%i", );
-            
-            
+        myPhoto.uploadSuccess = ^(EZPhoto* returned){
+            EZDEBUG(@"upload success, photoRelation:%i", returned.photoRelations.count);
+            if(cell.currentPos == indexPath.row){
+                EZDEBUG(@"Will rotate the photo");
+                EZPhoto* swPhoto = [returned.photoRelations objectAtIndex:0];
+                if(swPhoto){
+                    [weakSelf switchImage:weakCell displayPhoto:cp front:returned back:swPhoto animate:YES];
+                }
+
+            }
         };
         
     }
-    __weak EZAlbumTablePage* weakSelf = self;
-    __weak EZPhotoCell* weakCell = cell;
+
     //__block NSString* staticFile = nil;
     cell.frontImage.tappedBlock = ^(id obj){
         //NSArray* stored = [[EZDataUtil getInstance] readStoredPhotos];
