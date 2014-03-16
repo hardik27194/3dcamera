@@ -63,12 +63,25 @@
         [_otherIcon enableTouchEffects];
         [self.container addSubview:_otherIcon];
         
-        _otherName = [[UILabel alloc] initWithFrame:CGRectMake(50, CurrentScreenHeight - 105, 140, 30)];
+        _otherName = [[UILabel alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 220, 300, 30)];
         [_otherName setTextColor:[UIColor whiteColor]];
         _otherName.font = [UIFont boldSystemFontOfSize:15];
         [_otherName enableShadow:[UIColor blackColor]];
         [self.container addSubview:_otherName];
 
+        UILabel* andSymbol = [[UILabel alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 185, 20, 20)];
+        [andSymbol setTextColor:[UIColor whiteColor]];
+        andSymbol.font = [UIFont systemFontOfSize:14];
+        [andSymbol enableShadow:[UIColor blackColor]];
+        andSymbol.text = @"&";
+        [self.container addSubview:andSymbol];
+        
+        _authorName = [[UILabel alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 160, 300, 30)];
+        [_authorName setTextColor:[UIColor whiteColor]];
+        _authorName.font = [UIFont boldSystemFontOfSize:15];
+        [_authorName enableShadow:[UIColor blackColor]];
+        [self.container addSubview:_authorName];
+        
         _moreButton = [[EZShapeButton alloc] initWithFrame:CGRectMake(CurrentScreenWidth - 70, CurrentScreenHeight - 55, 60, 44)];
         [self.container addSubview:_moreButton];
         
@@ -78,11 +91,7 @@
         [_headIcon enableTouchEffects];
         [self.container addSubview:_headIcon];
         
-        _authorName = [[UILabel alloc] initWithFrame:CGRectMake(50, CurrentScreenHeight - 55, 140, 30)];
-        [_authorName setTextColor:[UIColor whiteColor]];
-        _authorName.font = [UIFont boldSystemFontOfSize:15];
-        [_authorName enableShadow:[UIColor blackColor]];
-        [self.container addSubview:_authorName];
+       
         
         
         [self.contentView addSubview:_container];

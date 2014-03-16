@@ -28,6 +28,8 @@
 #import "LocalPersons.h"
 #import "LocalPhotos.h"
 
+#import "EZLoginController.h"
+
 
 @implementation EZAlbumResult
 
@@ -640,6 +642,16 @@
 - (void) triggerLogin:(EZEventBlock)success failure:(EZEventBlock)failure reason:(NSString*)reason isLogin:(BOOL)isLogin
 {
     
+    if(isLogin){
+        [EZDataUtil getInstance].centerButton.hidden = YES;
+        EZLoginController* loginCtl = [[EZLoginController alloc] init];
+        UIViewController* presenter = [EZUIUtility topMostController];
+        [presenter presentViewController:loginCtl animated:YES completion:nil];
+        [[EZMessageCenter getInstance] registerEvent:EZUserAuthenticated block:^(EZPerson* ps){
+            EZDEBUG(@"login person:%@", ps.name);
+        }];
+        
+    }else{
     EZRegisterController* registerCtl = [[EZRegisterController alloc] init];
     registerCtl.registerReason.text = reason;
     registerCtl.completedBlock = ^(id obj){
@@ -663,6 +675,7 @@
     [presenter presentViewController:registerCtl animated:YES completion:^(){
         _centerButton.hidden = YES;
     }];
+    }
     
 }
 
@@ -670,8 +683,8 @@
 - (void) loginUser:(NSDictionary*)loginInfo success:(EZEventBlock)success error:(EZEventBlock)error
 {
     [EZNetworkUtility postJson:@"login" parameters:loginInfo complete:^(NSDictionary* dict){
-        EZPerson* person = [[EZPerson alloc] init];
-        [person fromJson:dict];
+        EZPerson* person = [self addPersonToStore:dict isQuerying:NO];//[[EZPerson alloc] init];
+        //[person fromJson:dict];
         self.currentPersonID = person.personID;
         self.currentLoginPerson = person;
         success(person);
@@ -1378,11 +1391,6 @@
     for(int i = 0; i < uploads.count; i++){
         
         EZPhoto* photo = [uploads objectAtIndex:i];
-        //if(!photo.startUpload){
-        //    EZDEBUG(@"photo upload pending");
-        //    continue;
-        //}
-        
         if(photo.deleted){
             if(photo.photoID){
                 ++ _uploadingTasks;
@@ -1422,18 +1430,20 @@
                     ++_uploadingTasks;
                     EZDEBUG(@"Will start upload photo content for:%@", photo.photoID);
                     [[EZDataUtil getInstance] uploadPhoto:photo success:^(id info){
-                        EZDEBUG(@"uploaded success:%@", info);
+                        EZDEBUG(@"uploaded content success:%@, photoRelations:%i", info, photo.photoRelations.count);
                         photo.uploadStatus = kExchangePhoto;
+                        photo.uploaded = TRUE;
+                        photo.progress = nil;
+                        --_uploadingTasks;
                         if(photo.photoRelations.count){
                             photo.uploadStatus = kUploadDone;
                             if(photo.uploadSuccess){
                                 photo.uploadSuccess(photo);
                             }
+                            photo.uploadSuccess = nil;
+                        }else{
+                            [self uploadPendingPhoto];
                         }
-                        photo.uploaded = TRUE;
-                        photo.progress = nil;
-                        photo.uploadSuccess = nil;
-                        --_uploadingTasks;
                     } failure:^(id err){
                         EZDEBUG(@"failed to upload content:%@", err);
                         --_uploadingTasks;
@@ -1451,9 +1461,11 @@
                     photo.progress(nil);
                 }
             }];
-        }else if(photo.uploadStatus == kUploadPhoto){
+        }else if(photo.uploadStatus == kExchangePhoto){
             ++_uploadingTasks;
+            EZDEBUG(@"Will invoke exchange photo");
             [self exchangeWithPerson:photo.exchangePersonID success:^(EZPhoto* ph){
+                EZDEBUG(@"exchange success with:%@", ph.photoID);
                 photo.photoRelations = @[ph];
                 photo.uploadStatus = kUploadDone;
                 if(photo.uploadSuccess){
@@ -1472,14 +1484,19 @@
             [[EZDataUtil getInstance] uploadPhoto:photo success:^(id info){
                 EZDEBUG(@"uploaded success:%@", info);
                 photo.uploadStatus = kExchangePhoto;
-                if(photo.photoRelations.count){
-                    photo.uploadStatus = kUploadDone;
-                    photo.uploadSuccess(photo);
-                    photo.uploadSuccess = nil;
-                }
                 photo.uploaded = TRUE;
                 photo.progress = nil;
                 --_uploadingTasks;
+                if(photo.photoRelations.count){
+                    photo.uploadStatus = kUploadDone;
+                    if(photo.uploadSuccess){
+                        photo.uploadSuccess(photo);
+                    }
+                    photo.uploadSuccess = nil;
+                }else{
+                    [self uploadPendingPhoto];
+                }
+                
             } failure:^(id err){
                 EZDEBUG(@"failed to upload content:%@", err);
                 --_uploadingTasks;

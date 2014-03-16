@@ -19,7 +19,6 @@ typedef enum {
 typedef enum {
     kUploadInit,
     kUploadPhotoInfo,
-    kUploadPhoto,
     kExchangePhoto,
     kUploadDone
 } EZUploadStatus;

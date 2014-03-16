@@ -162,15 +162,8 @@
         //[self dismissViewControllerAnimated:YES completion:^(){
         
         //}];
-        static int StatusBar = 0;
-        if(StatusBar){
-            StatusBar = 0;
-            [[UIApplication sharedApplication] setStatusBarHidden:YES];
-        }else{
-            StatusBar = 1;
-            [[UIApplication sharedApplication] setStatusBarHidden:NO];
-        }
-        /**
+       
+        
         if(person.joined){
             [weakSelf.navigationController popViewControllerAnimated:YES];
             //if(weakSelf.completedBlock){
@@ -178,7 +171,6 @@
             //}
             [[EZMessageCenter getInstance] postEvent:EZSetAlbumUser attached:person];
         }
-         **/
     };
     if(person.joined){
         cell.inviteButton.hidden = YES;

@@ -36,6 +36,9 @@
 
 #define pid2person(pid) [[EZDataUtil getInstance] getPersonByID:pid success:nil]
 
+#define pid2personCall(pid, call) [[EZDataUtil getInstance] getPersonByID:pid success:call]
+
+
 #define preloadimage(url) [[EZDataUtil getInstance] serialPreload:url]
 
 //#define preloadcallback(url, success, failure) [[EZDataUtil getInstance] preloadImage

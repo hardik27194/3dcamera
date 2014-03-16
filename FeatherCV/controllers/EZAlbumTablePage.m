@@ -47,16 +47,14 @@ static int photoCount = 1;
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     EZDisplayPhoto* cp = [_combinedPhotos objectAtIndex:indexPath.row];
     cell.backgroundColor = VinesGray;
-    
+    cell.headIcon.image = nil;
+    cell.otherIcon.image = nil;
     //This is for later update purpose. great, let's get whole thing up and run.
     cell.currentPos = indexPath.row;
     //EZCombinedPhoto* curPhoto = [cp.combinedPhotos objectAtIndex:cp.selectedCombinePhoto];
     EZPhoto* myPhoto = cp.photo;
     EZPhoto* switchPhoto = [cp.photo.photoRelations objectAtIndex:0];
     
-    EZPerson* frontPerson = pid2person(myPhoto.personID);
-    EZPerson* backPerson = pid2person(switchPhoto.personID);
-    EZDEBUG(@"myPhoto image size:%@, screenURL:%@, isFront:%i,upload status:%i", NSStringFromCGSize(myPhoto.size), myPhoto.screenURL, cp.isFront, cp.photo.uploadStatus);
     // Configure the cell...
     //[cell displayImage:[myPhoto getLocalImage]];
     [[cell viewWithTag:animateCoverViewTag] removeFromSuperview];
@@ -69,15 +67,39 @@ static int photoCount = 1;
     }
     __weak EZAlbumTablePage* weakSelf = self;
     __weak EZPhotoCell* weakCell = cell;
-    
+    EZEventBlock otherBlock = ^(EZPerson*  person){
+        if(cell.currentPos == indexPath.row){
+            cell.otherName.text = person.name;
+            [cell.otherIcon setImageWithURL:str2url(person.avatar)];
+        }
+    };
     EZDEBUG(@"upload status is:%i, photo relation count:%i, object Pointer:%i", myPhoto.uploadStatus, myPhoto.photoRelations.count, (int)myPhoto);
-    if(myPhoto.uploadStatus == kUploadInit){
+    _progressBar.hidden = YES;
+    if(myPhoto.uploadStatus != kUploadDone){
         EZDEBUG(@"Will register upload success");
+        [_progressBar setProgress:0.2 animated:YES];
+        _progressBar.hidden = NO;
+        
+        myPhoto.progress = ^(NSNumber* number){
+            if(number){
+                [_progressBar setProgress:0.2 + number.floatValue*0.8 animated:YES];
+            }else{
+                EZDEBUG(@"upload failed");
+            }
+        };
+        
         myPhoto.uploadSuccess = ^(EZPhoto* returned){
             EZDEBUG(@"upload success, photoRelation:%i", returned.photoRelations.count);
+            
             if(cell.currentPos == indexPath.row){
+                [_progressBar setProgress:1.0 animated:YES];
                 EZDEBUG(@"Will rotate the photo");
+                _progressBar.hidden = YES;
                 EZPhoto* swPhoto = [returned.photoRelations objectAtIndex:0];
+                EZPerson* otherPs = pid2personCall(swPhoto.personID, otherBlock);
+                if(otherPs){
+                    otherBlock(otherPs);
+                }
                 if(swPhoto){
                     [weakSelf switchImage:weakCell displayPhoto:cp front:returned back:swPhoto animate:YES];
                 }
@@ -143,7 +165,7 @@ static int photoCount = 1;
             } completion:^(BOOL completed){
                 EZDEBUG(@"remove fullView:%i",(int)weakFull);
                 [weakFull removeFromSuperview];
-                macroHideStatusBar(YES);
+                macroHideStatusBar(NO);
                 CGFloat offsetY = indexPath.row * CurrentScreenHeight;
                 //CGPoint offset = weakSelf.tableView.contentOffset;
                 weakSelf.tableView.contentOffset = CGPointMake(0, offsetY);
@@ -180,17 +202,22 @@ static int photoCount = 1;
             EZDEBUG(@"Completed sharing");
         }];
     };
-    cell.authorName.text = frontPerson.name;
-    cell.otherName.text = backPerson.name;
-    [cell.headIcon setImageWithURL:str2url(frontPerson.avatar)];
-    [cell.otherIcon setImageWithURL:str2url(backPerson.avatar)];
-    //dispatch_later(0.3, ^(){
-    //    if(indexPath.row == 0){
-    //        CGFloat offsetY = indexPath.row * CurrentScreenHeight;
-    //CGPoint offset = weakSelf.tableView.contentOffset;
-    //       weakSelf.tableView.contentOffset = CGPointMake(0, offsetY);
-    //   }
-    //});
+
+    EZEventBlock curBlock = ^(EZPerson*  person){
+        if(cell.currentPos == indexPath.row){
+            cell.authorName.text = person.name;
+            [cell.headIcon setImageWithURL:str2url(person.avatar)];
+        }
+    };
+    
+    EZPerson* backPerson = pid2personCall(switchPhoto.personID, otherBlock);
+    if(backPerson){
+        otherBlock(backPerson);
+    }
+    EZPerson* frontPerson = pid2personCall(myPhoto.personID, curBlock);
+    if(frontPerson){
+        curBlock(frontPerson);
+    }
     return cell;
 }
 
@@ -360,6 +387,7 @@ static int photoCount = 1;
 - (void) viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
+    [TopView addSubview:_progressBar];
     //[[UINavigationBar appearance] setBackgroundImage:nil forBarMetrics:UIBarMetricsDefault];
     //[_moreButton removeFromSuperview];
     //[[EZDataUtil getInstance].barBackground removeFromSuperview];
@@ -709,15 +737,18 @@ static int photoCount = 1;
         EZDEBUG(@"Error detail:%@", err);
     }];
     
-    
-    dispatch_later(0.3, ^(){
-        [self scrollToBottom:YES];
-    });
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"通讯录" style:UIBarButtonItemStylePlain target:self action:@selector(showMenu:)];
     _progressBar = [[UIProgressView alloc] initWithFrame:CGRectMake(10, 64, 300, 10)];
     _progressBar.progressViewStyle = UIProgressViewStyleDefault;
     _progressBar.progressTintColor = [UIColor whiteColor];
     _progressBar.trackTintColor = [UIColor clearColor];
+    
+    _progressBar.hidden = YES;
+    dispatch_later(0.3, ^(){
+        [self scrollToBottom:YES];
+        [TopView addSubview:_progressBar];
+    });
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"通讯录" style:UIBarButtonItemStylePlain target:self action:@selector(showMenu:)];
+    
     
     //UIBarButtonItem* barItem = [[UIBarButtonItem alloc] initWithTitle:@"通讯录" style:UIBarButtonItemStylePlain target:self action:@selector(showMenu:)];
     
@@ -865,6 +896,9 @@ static int photoCount = 1;
     EZDEBUG(@"View did show");
     [super viewDidAppear:animated];
     [EZDataUtil getInstance].centerButton.hidden = NO;
+    if(!_progressBar.superview){
+        [TopView addSubview:_progressBar];
+    }
     if(_notFirstTime){
         return;
     }
@@ -892,7 +926,8 @@ static int photoCount = 1;
         return;
     }
     _alreadyExecuted = true;
-    [self.refreshControl setPosition:CGPointMake(230, 25)];
+    //[self.refreshControl setPosition:CGPointMake(230, 64)];
+    self.refreshControl.y = 64;
     CGRect bounds = [UIScreen mainScreen].bounds;
     self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 0, 0);
     EZCenterButton* clickView = [[EZCenterButton alloc] initWithFrame:CGRectMake((CurrentScreenWidth - EZCenterSmallRadius)/2.0, bounds.size.height - EZCenterSmallRadius - 6.0, EZCenterSmallRadius, EZCenterSmallRadius) cycleRadius:EZOuterCycleRadius lineWidth:3];
@@ -992,6 +1027,27 @@ static int photoCount = 1;
 }
 
 
+/**
+- (CGFloat) tableView:(UITableView *)tableView estimatedHeightForHeaderInSection:(NSInteger)section
+{
+    return 0.0;
+}
+
+- (UIView*) tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
+    UIView* sectionView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, 20)];
+    sectionView.backgroundColor = RGBCOLOR(200, 100, 0);
+    UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, 20)];
+    [label setTextAlignment:NSTextAlignmentCenter];
+    [label setTextColor:[UIColor whiteColor]];
+    label.backgroundColor = [UIColor clearColor];
+    [sectionView addSubview:label];
+    label.text = [NSString stringWithFormat:@"section:%i", section];
+    EZDEBUG(@"return section view:%i", (int)sectionView);
+    return sectionView;
+}
+**/
+ 
 - (void) uploadAllContacts
 {
     [[EZDataUtil getInstance] uploadContacts:[EZDataUtil getInstance].contacts success:^(NSArray* filled){

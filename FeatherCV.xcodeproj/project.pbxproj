@@ -25,6 +25,7 @@
 		1819040018853903001FC370 /* EZDoubleOutFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 181903FF18853903001FC370 /* EZDoubleOutFilter.m */; };
 		181904031885406A001FC370 /* EZBlackAndCropFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 181904021885406A001FC370 /* EZBlackAndCropFilter.m */; };
 		1823DA2E18D2F88600E6E8B3 /* EZSharpenGaussianNormal.m in Sources */ = {isa = PBXBuildFile; fileRef = 1823DA2D18D2F88600E6E8B3 /* EZSharpenGaussianNormal.m */; };
+		1823DA3318D5674F00E6E8B3 /* EZLoginController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1823DA3218D5674F00E6E8B3 /* EZLoginController.m */; };
 		182A55091862C735003D4A01 /* libGPUImage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 182A55041862C71A003D4A01 /* libGPUImage.a */; };
 		182A550D18643141003D4A01 /* EZFaceBlurFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 182A550C18643140003D4A01 /* EZFaceBlurFilter.m */; };
 		182A551018645374003D4A01 /* EZFaceBlurFilter2.m in Sources */ = {isa = PBXBuildFile; fileRef = 182A550F18645374003D4A01 /* EZFaceBlurFilter2.m */; };
@@ -329,6 +330,8 @@
 		181904021885406A001FC370 /* EZBlackAndCropFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZBlackAndCropFilter.m; sourceTree = "<group>"; };
 		1823DA2C18D2F88600E6E8B3 /* EZSharpenGaussianNormal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZSharpenGaussianNormal.h; sourceTree = "<group>"; };
 		1823DA2D18D2F88600E6E8B3 /* EZSharpenGaussianNormal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZSharpenGaussianNormal.m; sourceTree = "<group>"; };
+		1823DA3118D5674F00E6E8B3 /* EZLoginController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZLoginController.h; sourceTree = "<group>"; };
+		1823DA3218D5674F00E6E8B3 /* EZLoginController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZLoginController.m; sourceTree = "<group>"; };
 		182A54FD1862C717003D4A01 /* GPUImage.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GPUImage.xcodeproj; path = ../../Documents/open_source/GPUImageCV/framework/GPUImage.xcodeproj; sourceTree = "<group>"; };
 		182A550B18643140003D4A01 /* EZFaceBlurFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZFaceBlurFilter.h; sourceTree = "<group>"; };
 		182A550C18643140003D4A01 /* EZFaceBlurFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZFaceBlurFilter.m; sourceTree = "<group>"; };
@@ -737,6 +740,8 @@
 				184ADD6E18C4B3DD00367527 /* EZAvatarController.m */,
 				184ADD7218C4B40D00367527 /* EZAvatarView.h */,
 				184ADD7318C4B40D00367527 /* EZAvatarView.m */,
+				1823DA3118D5674F00E6E8B3 /* EZLoginController.h */,
+				1823DA3218D5674F00E6E8B3 /* EZLoginController.m */,
 			);
 			name = login;
 			sourceTree = "<group>";
@@ -1566,6 +1571,7 @@
 				18E34781183DFAA400C9D89D /* EZMessageCenter.m in Sources */,
 				184ADD9818D045BD00367527 /* LocalPhotos.m in Sources */,
 				18E3472F183DFA3400C9D89D /* EZDummyPage.m in Sources */,
+				1823DA3318D5674F00E6E8B3 /* EZLoginController.m in Sources */,
 				18E3477B183DFAA400C9D89D /* EZExtender.m in Sources */,
 				184ADD7418C4B40D00367527 /* EZAvatarView.m in Sources */,
 				18FA529E188CD04D00C91D18 /* EZColorBrighter.m in Sources */,

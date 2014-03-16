@@ -353,19 +353,12 @@
                                           } error:^(NSError* err){
                                           }];
     **/
-    //[EZDataUtil getInstance].currentPersonID = nil;
+    [EZDataUtil getInstance].currentPersonID = nil;
     //[EZDataUtil getInstance].currentPersonID = @"531e7cd5e7b5b9f911342692";
     //[EZCoreAccessor cleanClientDB];
     if(![[EZDataUtil getInstance] getCurrentPersonID]){
-       /**
-        [[EZDataUtil getInstance] registerMockUser:^(EZPerson* ps){
-                                EZDEBUG(@"successfully registerred:%@, personID:%@", ps.mobile, ps.personID);
-                            } error:^(id err){
-                                EZDEBUG(@"Error detail:%@", err);
-        }];
-        **/
         dispatch_later(0.3, ^(){
-        [[EZDataUtil getInstance] triggerLogin:^(EZPerson* ps){} failure:^(id err){} reason:@"请注册" isLogin:NO];
+        [[EZDataUtil getInstance] triggerLogin:^(EZPerson* ps){} failure:^(id err){} reason:@"请注册" isLogin:YES];
         });
     }
     //[[EZAnimationUtil sharedEZAnimationUtil] addAnimation:self];
