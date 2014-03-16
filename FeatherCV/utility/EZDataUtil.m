@@ -641,41 +641,23 @@
 //Login or register can 
 - (void) triggerLogin:(EZEventBlock)success failure:(EZEventBlock)failure reason:(NSString*)reason isLogin:(BOOL)isLogin
 {
+    [EZDataUtil getInstance].centerButton.hidden = YES;
+
     
     if(isLogin){
-        [EZDataUtil getInstance].centerButton.hidden = YES;
         EZLoginController* loginCtl = [[EZLoginController alloc] init];
         UIViewController* presenter = [EZUIUtility topMostController];
         [presenter presentViewController:loginCtl animated:YES completion:nil];
-        [[EZMessageCenter getInstance] registerEvent:EZUserAuthenticated block:^(EZPerson* ps){
-            EZDEBUG(@"login person:%@", ps.name);
-        }];
         
     }else{
-    EZRegisterController* registerCtl = [[EZRegisterController alloc] init];
-    registerCtl.registerReason.text = reason;
-    registerCtl.completedBlock = ^(id obj){
-        //_centerButton.hidden = NO;
-        if(success){
-            success(obj);
-        }
-    };
-    registerCtl.cancelBlock = ^(id obj){
-        //_centerButton.hidden = NO;
-        if(failure){
-            failure(obj);
-        }
-    };
-    
-    registerCtl.dismissBlock = ^(id obj){
-        _centerButton.hidden = NO;
-    };
-    
-    UIViewController* presenter = [EZUIUtility topMostController];
-    [presenter presentViewController:registerCtl animated:YES completion:^(){
-        _centerButton.hidden = YES;
-    }];
+        EZRegisterController* registerCtl = [[EZRegisterController alloc] init];
+        UIViewController* presenter = [EZUIUtility topMostController];
+        [presenter presentViewController:registerCtl animated:YES completion:nil];
     }
+    
+    [[EZMessageCenter getInstance] registerEvent:EZUserAuthenticated block:^(EZPerson* ps){
+        EZDEBUG(@"login person:%@", ps.name);
+    }];
     
 }
 

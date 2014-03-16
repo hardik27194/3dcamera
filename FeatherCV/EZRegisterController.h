@@ -7,39 +7,36 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "EZKeyboardController.h"
 
 #import "EZClickImage.h"
 
-@interface EZRegisterController : UIViewController<UITextFieldDelegate, UIActionSheetDelegate>
+@interface EZRegisterController : EZKeyboardController<UIActionSheetDelegate>
 
-@property (nonatomic, strong) IBOutlet UILabel* registerTitle;
+@property (nonatomic, strong) UILabel* titleInfo;
+//@property (nonatomic, strong) UILabel* introduction;
+@property (nonatomic, strong) UITextView* introduction;
 
-@property (nonatomic, strong) IBOutlet UILabel* registerReason;
+@property (nonatomic, strong) UITextField* name;
 
-@property (nonatomic, strong) IBOutlet UILabel* nameTitle;
+@property (nonatomic, strong) UILabel* namePlaceHolder;
 
-@property (nonatomic, strong) IBOutlet UILabel* mobileTitle;
+@property (nonatomic, strong) UITextField* mobileField;
 
-@property (nonatomic, strong) IBOutlet UILabel* passwordTitle;
+@property (nonatomic, strong) UILabel* mobilePlaceHolder;
 
-@property (nonatomic, strong) IBOutlet UITextField* name;
+@property (nonatomic, strong) UITextField* passwordField;
 
-@property (nonatomic, strong) IBOutlet UITextField* mobile;
+@property (nonatomic, strong) UILabel* passwordPlaceHolder;
 
-@property (nonatomic, strong) IBOutlet UITextField* password;
+@property (nonatomic, strong) UIButton* loginButton;
 
-@property (nonatomic, strong) IBOutlet UIButton* registerButton;
+@property (nonatomic, strong) UIButton* passwordButton;
 
-@property (nonatomic, strong) EZEventBlock completedBlock;
+@property (nonatomic, strong) UIButton* registerButton;
 
-@property (nonatomic, strong) EZEventBlock dismissBlock;
+@property (nonatomic, strong) UIView* seperator;
 
 @property (nonatomic, strong) EZClickImage* uploadAvatar;
-
-//I will have a ErrorInfo definition in this code.
-//Not all block need this detail information.
-@property (nonatomic, strong) EZEventBlock cancelBlock;
-
-- (IBAction) registerClicked:(id)sender;
 
 @end

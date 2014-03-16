@@ -355,10 +355,10 @@
     **/
     [EZDataUtil getInstance].currentPersonID = nil;
     //[EZDataUtil getInstance].currentPersonID = @"531e7cd5e7b5b9f911342692";
-    //[EZCoreAccessor cleanClientDB];
+    [EZCoreAccessor cleanClientDB];
     if(![[EZDataUtil getInstance] getCurrentPersonID]){
         dispatch_later(0.3, ^(){
-        [[EZDataUtil getInstance] triggerLogin:^(EZPerson* ps){} failure:^(id err){} reason:@"请注册" isLogin:YES];
+        [[EZDataUtil getInstance] triggerLogin:^(EZPerson* ps){} failure:^(id err){} reason:@"请注册" isLogin:NO];
         });
     }
     //[[EZAnimationUtil sharedEZAnimationUtil] addAnimation:self];

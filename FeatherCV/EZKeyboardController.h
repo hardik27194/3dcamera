@@ -22,4 +22,9 @@
 
 - (void) liftWithBottom:(CGFloat)deltaGap isSmall:(BOOL)small time:(CGFloat)timeval complete:(EZEventBlock)complete;
 
+
+- (UIView*) createWrap:(CGRect)frame;
+
+- (UILabel*) createPlaceHolder:(UITextField*)textField;
+
 @end

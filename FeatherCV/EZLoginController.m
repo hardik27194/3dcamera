@@ -28,40 +28,6 @@
 }
 
 
-- (void) viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-    //[[EZKeyboadUtility getInstance] add]
-   
-
-}
-
-- (void) viewWillDisappear:(BOOL)animated
-{
-    [super viewWillDisappear:animated];
-}
-
-- (UIView*) createWrap:(CGRect)frame
-{
-    UIView* wrapView = [[UIView alloc] initWithFrame:CGRectMake(frame.origin.x - 19.0, frame.origin.y + 1.0, frame.size.width + 38.0, 38)];
-    wrapView.backgroundColor = [UIColor clearColor];
-    //wrapView.layer.cornerRadius = 19;
-    wrapView.layer.borderColor = [UIColor whiteColor].CGColor;
-    wrapView.layer.borderWidth = 1.0;
-    //[wrapView enableRoundImage];
-    wrapView.layer.cornerRadius = wrapView.height/2.0;
-    return wrapView;
-}
-
-- (UILabel*) createPlaceHolder:(UITextField*)textField
-{
-    UILabel* placeHolder = [[UILabel alloc] initWithFrame:textField.frame];
-    placeHolder.textAlignment = textField.textAlignment;
-    placeHolder.textColor = textField.textColor;
-    placeHolder.font = textField.font;
-    return placeHolder;
-}
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
