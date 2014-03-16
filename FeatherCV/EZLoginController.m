@@ -32,17 +32,13 @@
 {
     [super viewWillAppear:animated];
     //[[EZKeyboadUtility getInstance] add]
-    [super viewWillAppear:animated];
-    [[EZMessageCenter getInstance] registerEvent:EventKeyboardWillRaise block:_keyboardRaiseHandler];
-    [[EZMessageCenter getInstance] registerEvent:EventKeyboardWillHide block:_keyboardHideHandler];
+   
 
 }
 
 - (void) viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    [[EZMessageCenter getInstance] unregisterEvent:EventKeyboardWillRaise forObject:_keyboardRaiseHandler];
-    [[EZMessageCenter getInstance] unregisterEvent:EventKeyboardWillHide forObject:_keyboardHideHandler];
 }
 
 - (UIView*) createWrap:(CGRect)frame
@@ -70,7 +66,7 @@
 {
     [super viewDidLoad];
     self.view.backgroundColor = VinesGray;
-    CGFloat startGap = 100;
+    CGFloat startGap = 0;
     _titleInfo = [[UILabel alloc] initWithFrame:CGRectMake(0, 146.0 + startGap, CurrentScreenWidth, 37)];
     _titleInfo.textAlignment = NSTextAlignmentCenter;
     _titleInfo.textColor = [UIColor whiteColor];
@@ -158,7 +154,7 @@
     [self.view addSubview:_passwordButton];
     [self.view addSubview:_loginButton];
     [self.view addSubview:_seperator];
-    [self setupKeyboard];
+    //[self setupKeyboard];
 	// Do any additional setup after loading the view.
 }
 
@@ -229,8 +225,8 @@
     if(![textField.text isEmpty]){
         if(textField == _mobileField){
             [_passwordField becomeFirstResponder];
-            _currentFocused = _passwordField;
-            [self liftWithBottom:_prevKeyboard isSmall:NO time:0.3 complete:nil];
+            self.currentFocused = _passwordField;
+            [self liftWithBottom:self.prevKeyboard isSmall:NO time:0.3 complete:nil];
         }else if(textField == _passwordField){
             //[_password becomeFirstResponder];
             [self startLogin:_mobileField.text password:_passwordField.text];
@@ -242,7 +238,8 @@
 
 
 - (void) textFieldDidBeginEditing:(UITextField *)textField{
-    _currentFocused = textField;
+    //_currentFocused = textField;
+    [super textFieldDidBeginEditing:textField];
     if(_passwordField == textField){
         _passwordPlaceHolder.hidden = YES;
     }else if(_mobileField == textField){
@@ -264,122 +261,6 @@
     }
     return true;
 }
-
-
-//--- Screen raise logic
-- (void) setupKeyboard
-{
-    __weak EZLoginController* weakSelf = self;
-    CGRect appFrame = [UIScreen mainScreen].applicationFrame;
-    EZClickView* cancelKeyboard = [[EZClickView alloc] initWithFrame:CGRectMake(0, 0, 320, appFrame.size.height)];
-    cancelKeyboard.backgroundColor = [UIColor clearColor];//RGBA(128, 0, 0, 128);
-    cancelKeyboard.enableTouchEffects = false;
-    cancelKeyboard.releasedBlock = ^(id obj){
-        EZDEBUG(@"cancel clicked");
-        //weakSelf.hideTextInput = false;
-        //[weakSelf.textField resignFirstResponder];
-        //[self hideKeyboard:NO];
-        [_currentFocused resignFirstResponder];
-    };
-    _keyboardRaiseHandler = ^(id obj){
-        
-        EZKeyboadUtility* keyUtil = [EZKeyboadUtility getInstance];
-        CGRect keyFrame = [keyUtil keyboardFrameToView:weakSelf.view];
-        CGFloat smallGap = keyUtil.gapHeight;
-        EZDEBUG(@"keyboard raised:%@, appFrame:%@, smallGap:%f",NSStringFromCGRect(keyFrame), NSStringFromCGRect(appFrame), smallGap);
-        
-        if(abs(smallGap) > 0){
-            //[weakSelf lift:smallGap time:0.3 complete:nil];
-            //[weakSelf ]
-            [weakSelf liftWithBottom:smallGap isSmall:YES time:0.3 complete:nil];
-        }else{
-            //weakSelf.toolBarRegion.hidden = TRUE;
-            [weakSelf.view addSubview:cancelKeyboard];
-            [weakSelf liftWithBottom:keyFrame.size.height isSmall:NO  time:0.3 complete:nil];
-        }
-        //[EZDataUtil getInstance].centerButton.alpha = 0.0;
-    };
-    
-    _keyboardHideHandler = ^(id obj){
-        [cancelKeyboard removeFromSuperview];
-        //[weakSelf liftWithBottom:-keyFrame.size.height time:0.6];
-        [weakSelf hideKeyboard:nil];
-        //[EZDataUtil getInstance].centerButton.alpha = 1.0;
-        
-    };
-    //[[EZMessageCenter getInstance] registerEvent:EZ block:
-    //_centerButtonY = [EZDataUtil getInstance].centerButton.frame.origin.y;
-    
-}
-
-//I will check if have the text field or not.
-- (void) hideKeyboard:(EZEventBlock)complete
-{
-    
-    [UIView animateWithDuration:0.4  animations:^(){
-        self.view.y = 0;
-    } completion:^(BOOL completed){
-        if(complete){
-            complete(nil);
-        }
-    }];
-}
-
-- (void) liftWithBottom:(CGFloat)deltaGap isSmall:(BOOL)small time:(CGFloat)timeval complete:(EZEventBlock)complete
-{
-    
-    if(small){
-        
-        CGFloat viewY = self.view.frame.origin.y;
-        CGFloat relativeDelta = deltaGap + viewY;
-        EZDEBUG(@"small gap get called, old y:%f, gap:%f, relative delta:%f", _prevKeyboard, deltaGap, relativeDelta);
-        if(relativeDelta > 0){
-            relativeDelta = 0;
-        }
-        if(viewY < 0.0){
-            [UIView animateWithDuration:0.3 animations:^(){
-                [self.view setY:relativeDelta];
-            } completion:^(BOOL completed){
-                if(complete){
-                    complete(nil);
-                }
-            }];
-        }else if(deltaGap < 0.0){
-            CGRect focusFrame = _currentFocused.frame;
-            CGFloat leftGap = self.view.height - focusFrame.origin.y - focusFrame.size.height;
-            CGFloat delta = leftGap - _prevKeyboard - abs(deltaGap);
-            EZDEBUG(@"Will raise keyboard to:%f, prevKeyboard:%f", delta, _prevKeyboard);
-            if(delta < 0){
-                [UIView animateWithDuration:timeval delay:0.0 options:UIViewAnimationOptionCurveLinear  animations:^(){
-                    [self.view setY:delta];
-                } completion:^(BOOL completed){
-                    if(complete){
-                        complete(nil);
-                    }
-                }];
-            }
-            
-        }
-        
-    }else{
-        CGRect focusFrame = _currentFocused.frame;
-        CGFloat leftGap = self.view.height - focusFrame.origin.y - focusFrame.size.height;
-        EZDEBUG(@"The focused frame is:%@, leftGap:%f", NSStringFromCGRect(focusFrame), leftGap);
-        CGFloat delta = leftGap - deltaGap;
-        _prevKeyboard = deltaGap;
-        if(delta < 0){
-            //textFieldShouldReturn
-            [UIView animateWithDuration:timeval delay:0.0 options:UIViewAnimationOptionCurveLinear  animations:^(){
-                [self.view setY:delta];
-            } completion:^(BOOL completed){
-                if(complete){
-                    complete(nil);
-                }
-            }];
-        }
-    }
-}
-
 
 
 - (void)didReceiveMemoryWarning

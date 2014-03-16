@@ -7,8 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "EZKeyboardController.h"
 
-@interface EZLoginController : UIViewController<UITextFieldDelegate, UIActionSheetDelegate>
+@interface EZLoginController : EZKeyboardController<UIActionSheetDelegate>
 
 
 @property (nonatomic, strong) UILabel* titleInfo;
@@ -32,14 +33,5 @@
 
 @property (nonatomic, strong) UIView* seperator;
 
-//-- Keyboard related functions
-@property (nonatomic, strong) EZEventBlock keyboardRaiseHandler;
-
-@property (nonatomic, strong) EZEventBlock keyboardHideHandler;
-
-@property (nonatomic, strong) UITextField* currentFocused;
-
-@property (nonatomic, assign) CGFloat prevKeyboard;
-//@property (nonatomic, strong) EZEventBlock key
 
 @end
