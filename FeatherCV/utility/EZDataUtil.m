@@ -19,7 +19,7 @@
 #import "EZNetworkUtility.h"
 #import "EZExtender.h"
 #import "UIImageView+AFNetworking.h"
-#import "EZRegisterController.h"
+#import "EZRegisterCtrl.h"
 #import "EZCenterButton.h"
 #import "EZDownloadHolder.h"
 #import "AFNetworking.h"
@@ -643,20 +643,20 @@
 {
     [EZDataUtil getInstance].centerButton.hidden = YES;
 
-    
-    if(isLogin){
-        EZLoginController* loginCtl = [[EZLoginController alloc] init];
-        UIViewController* presenter = [EZUIUtility topMostController];
-        [presenter presentViewController:loginCtl animated:YES completion:nil];
+    //if(isLogin){
+    //    EZLoginController* loginCtl = [[EZLoginController alloc] init];
+    //    UIViewController* presenter = [EZUIUtility topMostController];
+    //    [presenter presentViewController:loginCtl animated:YES completion:nil];
         
-    }else{
-        EZRegisterController* registerCtl = [[EZRegisterController alloc] init];
-        UIViewController* presenter = [EZUIUtility topMostController];
-        [presenter presentViewController:registerCtl animated:YES completion:nil];
-    }
+    //}else{
+    EZRegisterCtrl* registerCtl = [[EZRegisterCtrl alloc] init];
+    UIViewController* presenter = [EZUIUtility topMostController];
+    [presenter presentViewController:registerCtl animated:YES completion:nil];
+    //}
     
     [[EZMessageCenter getInstance] registerEvent:EZUserAuthenticated block:^(EZPerson* ps){
-        EZDEBUG(@"login person:%@", ps.name);
+        EZDEBUG(@"dismiss login person:%@, avatar:%@", ps.name, ps.avatar);
+        [registerCtl dismissViewControllerAnimated:NO completion:nil];
     }];
     
 }

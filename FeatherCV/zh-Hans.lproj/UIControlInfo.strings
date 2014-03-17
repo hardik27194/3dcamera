@@ -14,3 +14,25 @@
 "Cancel-Text" = "取消";
 "Self shot cancelled" = "自拍已取消";
 "%@, this app is cool" = "%@, 我正在玩羽毛相机，你也来试试";
+"Register" = "注册";
+"Login" = "登录";
+
+"Sign up" = "注册";
+
+"Welcome" = "欢迎";
+
+"Name" = "昵称";
+
+"Email" = "邮箱";
+
+"Mobile Number" = "手机号";
+
+"Password" = "密码";
+
+"Choose Avatar" = "选择头像";
+
+"Camera" = "拍摄";
+
+"Album" = "相册";
+
+"Cancel" = "取消";

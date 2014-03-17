@@ -1,17 +1,16 @@
 //
-//  EZRegisterController.h
+//  EZRegisterCtrl.h
 //  FeatherCV
 //
-//  Created by xietian on 14-2-21.
+//  Created by xietian on 14-3-16.
 //  Copyright (c) 2014年 tiange. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
 #import "EZKeyboardController.h"
 
-#import "EZClickImage.h"
+@class EZClickImage;
 
-@interface EZRegisterController : EZKeyboardController<UIActionSheetDelegate>
+@interface EZRegisterCtrl : EZKeyboardController
 
 @property (nonatomic, strong) UILabel* titleInfo;
 //@property (nonatomic, strong) UILabel* introduction;
@@ -38,5 +37,8 @@
 @property (nonatomic, strong) UIView* seperator;
 
 @property (nonatomic, strong) EZClickImage* uploadAvatar;
+
+@property (nonatomic, strong) NSString* avatarURL;
+
 
 @end

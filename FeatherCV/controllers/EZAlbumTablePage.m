@@ -33,6 +33,9 @@
 #import "EZShapeButton.h"
 #import "EZAnimationUtil.h"
 #import "EZBlurAnimator.h"
+
+
+#define  originalTitle  @"Feather"
 static int photoCount = 1;
 @interface EZAlbumTablePage ()
 
@@ -75,16 +78,18 @@ static int photoCount = 1;
     };
     EZDEBUG(@"upload status is:%i, photo relation count:%i, object Pointer:%i", myPhoto.uploadStatus, myPhoto.photoRelations.count, (int)myPhoto);
     _progressBar.hidden = YES;
-    if(myPhoto.uploadStatus != kUploadDone){
+    if(myPhoto.uploadStatus != kUploadDone && !myPhoto.photoRelations.count){
         EZDEBUG(@"Will register upload success");
         [_progressBar setProgress:0.2 animated:YES];
         _progressBar.hidden = NO;
         
         myPhoto.progress = ^(NSNumber* number){
-            if(number){
-                [_progressBar setProgress:0.2 + number.floatValue*0.8 animated:YES];
-            }else{
-                EZDEBUG(@"upload failed");
+            if(cell.currentPos == indexPath.row){
+                if(number){
+                    [_progressBar setProgress:0.2 + number.floatValue*0.8 animated:YES];
+                }else{
+                    EZDEBUG(@"upload failed");
+                }
             }
         };
         
@@ -194,13 +199,17 @@ static int photoCount = 1;
     cell.moreButton.releasedBlock = ^(id obj){
         //NSString* someText = self.textView.text;
         EZDEBUG(@"more clicked");
-        NSArray* dataToShare = @[@"我爱老哈哈"];  // ...or whatever pieces of data you want to share.
-        UIActivityViewController* activityViewController =
-        [[UIActivityViewController alloc] initWithActivityItems:dataToShare
-                                          applicationActivities:nil];
-        [self presentViewController:activityViewController animated:YES completion:^{
-            EZDEBUG(@"Completed sharing");
-        }];
+        //NSArray* dataToShare = @[@"我爱老哈哈"];  // ...or whatever pieces of data you want to share.
+        //NSString *textToShare = self.navigationItem.title;
+        //NSArray *itemsToShare = @[@"", [imagesArray objectAtIndex:afImgViewer.currentImage]];
+        UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:@[weakCell.frontImage.image] applicationActivities:nil];
+        //activityVC.excludedActivityTypes = @[UIActivityTypePrint, UIActivityTypeCopyToPasteboard, UIActivityTypeSaveToCameraRoll   UIActivityTypeAssignToContact]; //or whichever you don't need
+        [self presentViewController:activityVC animated:YES completion:nil];
+        //UIActivityViewController* activityViewController =
+        //[[UIActivityViewController alloc] initWithActivityItems:dataToShare applicationActivities:nil];
+        //[self presentViewController:activityViewController animated:YES completion:^{
+        //    EZDEBUG(@"Completed sharing");
+        //}];
     };
 
     EZEventBlock curBlock = ^(EZPerson*  person){
@@ -226,7 +235,7 @@ static int photoCount = 1;
 -(id)initWithQueryBlock:(EZQueryBlock)queryBlock
 {
     self = [super initWithStyle:UITableViewStylePlain];
-    self.title = @"羽毛";
+    self.title = originalTitle;
     _queryBlock = queryBlock;
     //self.edgesForExtendedLayout=UIRectEdgeNone;
     [self createMoreButton];
@@ -264,7 +273,7 @@ static int photoCount = 1;
     if([currentUser.personID isEqualToString:currentLoginID]){
         if(_currentUser){
             _currentUser = nil;
-            self.title = @"羽毛";
+            self.title = originalTitle;
             [_combinedPhotos removeAllObjects];
         }else{
             return;
@@ -748,7 +757,7 @@ static int photoCount = 1;
         [TopView addSubview:_progressBar];
     });
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"通讯录" style:UIBarButtonItemStylePlain target:self action:@selector(showMenu:)];
-    
+    //self.navigationItem.leftBarButtonItem = [[UI]]
     
     //UIBarButtonItem* barItem = [[UIBarButtonItem alloc] initWithTitle:@"通讯录" style:UIBarButtonItemStylePlain target:self action:@selector(showMenu:)];
     
