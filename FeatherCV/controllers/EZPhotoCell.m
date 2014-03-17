@@ -22,6 +22,8 @@
 
 
 
+
+
 - (id) initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
     EZDEBUG(@"InitStyle get called:%i, id:%@", style, reuseIdentifier);
@@ -31,6 +33,9 @@
         // Initialization code
         _container = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, CurrentScreenHeight)];
         _container.backgroundColor = VinesGray;
+        
+        //Then I can adjust it once for all.
+        CGFloat startPos = -100;
         //_container.backgroundColor = [UIColor clearColor];
         
         //_container.layer.cornerRadius = 5;
@@ -56,42 +61,60 @@
         [_container addSubview:_clickHeart];
         //_clickHeart.backgroundColor = randBack(nil);
         **/
+        _gradientView = [[EZUIUtility sharedEZUIUtility] createGradientView];
+        [self.container addSubview:_gradientView];
         
-        _otherIcon = [[EZClickImage alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 105, smallIconRadius, smallIconRadius)];
+        
+        _otherIcon = [[EZClickImage alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 300 - startPos, smallIconRadius, smallIconRadius)];
         _otherIcon.backgroundColor = randBack(nil);
         [_otherIcon enableRoundImage];
         [_otherIcon enableTouchEffects];
         [self.container addSubview:_otherIcon];
         
-        _otherName = [[UILabel alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 220, 300, 30)];
+        _otherName = [[UILabel alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 265 - startPos, 300, 30)];
         [_otherName setTextColor:[UIColor whiteColor]];
-        _otherName.font = [UIFont boldSystemFontOfSize:15];
+        _otherName.font = [UIFont boldSystemFontOfSize:13];
         [_otherName enableShadow:[UIColor blackColor]];
         [self.container addSubview:_otherName];
+        
+        _otherTalk = [[UILabel alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 250 - startPos, 300, 30)];
+        [_otherTalk setTextColor:[UIColor whiteColor]];
+        _otherTalk.font = [UIFont systemFontOfSize:13];
+        [_otherTalk enableShadow:[UIColor blackColor]];
+        [_otherTalk enableTextWrap];
+        [self.container addSubview:_otherTalk];
 
-        UILabel* andSymbol = [[UILabel alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 185, 20, 20)];
+        UILabel* andSymbol = [[UILabel alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 225 - startPos, 20, 20)];
         [andSymbol setTextColor:[UIColor whiteColor]];
-        andSymbol.font = [UIFont systemFontOfSize:14];
+        andSymbol.font = [UIFont systemFontOfSize:13];
         [andSymbol enableShadow:[UIColor blackColor]];
         andSymbol.text = @"&";
         [self.container addSubview:andSymbol];
         
-        _authorName = [[UILabel alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 160, 300, 30)];
-        [_authorName setTextColor:[UIColor whiteColor]];
-        _authorName.font = [UIFont boldSystemFontOfSize:15];
-        [_authorName enableShadow:[UIColor blackColor]];
-        [self.container addSubview:_authorName];
-        
-        _moreButton = [[EZShapeButton alloc] initWithFrame:CGRectMake(CurrentScreenWidth - 70, CurrentScreenHeight - 55, 60, 44)];
-        [self.container addSubview:_moreButton];
-        
-        _headIcon = [[EZClickImage alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 55, smallIconRadius, smallIconRadius)];
+        _headIcon = [[EZClickImage alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 198 - startPos, smallIconRadius, smallIconRadius)];
         _headIcon.backgroundColor = randBack(nil);
         [_headIcon enableRoundImage];
         [_headIcon enableTouchEffects];
         [self.container addSubview:_headIcon];
         
-       
+        _authorName = [[UILabel alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 163 - startPos, 300, 30)];
+        [_authorName setTextColor:[UIColor whiteColor]];
+        _authorName.font = [UIFont boldSystemFontOfSize:13];
+        [_authorName enableShadow:[UIColor blackColor]];
+        [self.container addSubview:_authorName];
+
+        
+        _ownTalk = [[UILabel alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 148 - startPos, 300, 30)];
+        [_ownTalk setTextColor:[UIColor whiteColor]];
+        _ownTalk.font = [UIFont systemFontOfSize:13];
+        [_ownTalk enableShadow:[UIColor blackColor]];
+        [_ownTalk enableTextWrap];
+        [self.container addSubview:_ownTalk];
+
+        
+        _moreButton = [[EZShapeButton alloc] initWithFrame:CGRectMake(0, 0, 60, 44)];
+        _moreButton.center = CGPointMake(CurrentScreenWidth - 30, CurrentScreenHeight - 27);
+        [self.container addSubview:_moreButton];
         
         
         [self.contentView addSubview:_container];
@@ -103,8 +126,8 @@
         //[_frontImage addSubview:_toolRegion];
         //[_rotateContainer addSubview:_toolRegion];
         //_container.enableTouchEffects = NO;
-        _chatUnit = [[EZChatUnit alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 200, CurrentScreenWidth, 40)];
-        [_container addSubview:_chatUnit];
+        //_chatUnit = [[EZChatUnit alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 200, CurrentScreenWidth, 40)];
+        //[_container addSubview:_chatUnit];
         
     }
     return self;

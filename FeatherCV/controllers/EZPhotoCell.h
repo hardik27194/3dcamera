@@ -77,6 +77,11 @@
 
 @property (nonatomic, strong) UILabel* photoDate;
 
+
+@property (nonatomic, strong) UILabel* ownTalk;
+
+@property (nonatomic, strong) UILabel* otherTalk;
+
 @property (nonatomic, strong) EZShapeButton* moreButton;
 //The icon which represent the relationship between the headIcon and other icons
 //Which could be lock or other icons.
@@ -114,7 +119,10 @@
 @property (nonatomic, assign) BOOL isTurning;
 
 
-@property (nonatomic, strong) EZChatUnit* chatUnit;
+//@property (nonatomic, strong) EZChatUnit* chatUnit;
+
+
+@property (nonatomic, strong) UIView* gradientView;
 //- (void) adjust
 
 - (void) displayPhoto:(NSString*)photo;

@@ -183,7 +183,11 @@ typedef enum {
 
 @property (nonatomic, strong) EZClickView* coverTapView;
 
+@property (nonatomic, strong) EZClickView* shotButton;
+
 @property (nonatomic, assign) BOOL cancelShot;
+
+@property (nonatomic, strong) UIBarButtonItem* leftBarButton;
 //0 mean off
 //1 mean on
 //2 mean auto
@@ -236,6 +240,8 @@ typedef enum {
 
 @property (nonatomic, strong) UITextField* textField;
 @property (nonatomic, strong) UILabel* textPlaceHolder;
+
+@property (nonatomic, strong) EZDisplayPhoto* disPhoto;
 
 @property (nonatomic, strong) EZSharpenGaussianNormal* sharpenGaussian;
 

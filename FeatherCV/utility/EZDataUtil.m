@@ -746,7 +746,9 @@
     if(sortedPids.count){
         for(NSString* pid in sortedPids){
             EZPerson* ps = [_currentQueryUsers objectForKey:pid];
-            [res addObject:ps];
+            if(ps){
+                [res addObject:ps];
+            }
         }
     }else{
         [self getPhotoBooks:successBlck];
@@ -1401,9 +1403,11 @@
         if(photo.uploadStatus == kUploadInit){
             EZDEBUG(@"Will start upload info for:%@", photo.photoID);
             ++_uploadingTasks;
+            //bool haveConversation = photo.conversations.count;
             [[EZDataUtil getInstance] uploadPhotoInfo:@[photo] success:^(id info){
                 EZDEBUG(@"Update photo info:%@", info);
                 NSString* photoID = [info objectAtIndex:0];
+                //photo.conversationUploaded = haveConversation;
                 EZDEBUG(@"Recieved photoID:%@, currnet photoID:%@", photoID, photo.photoID);
                 photo.uploadStatus = kUploadPhotoInfo;
                 photo.photoID = photoID;
@@ -1419,6 +1423,11 @@
                         --_uploadingTasks;
                         if(photo.photoRelations.count){
                             photo.uploadStatus = kUploadDone;
+                            
+                            //if(photo.conversations.count && !photo.conversationUploaded){
+                            //    photo.uploadStatus = kUpdateConversation;
+                            //}
+                            
                             if(photo.uploadSuccess){
                                 photo.uploadSuccess(photo);
                             }
@@ -1450,6 +1459,10 @@
                 EZDEBUG(@"exchange success with:%@", ph.photoID);
                 photo.photoRelations = @[ph];
                 photo.uploadStatus = kUploadDone;
+                
+                //if(photo.conversations.count && !photo.conversationUploaded){
+                //    photo.uploadStatus = kUpdateConversation;
+                //}
                 if(photo.uploadSuccess){
                     photo.uploadSuccess(photo);
                 }
@@ -1471,6 +1484,9 @@
                 --_uploadingTasks;
                 if(photo.photoRelations.count){
                     photo.uploadStatus = kUploadDone;
+                    //if(photo.conversations.count && !photo.conversationUploaded){
+                    //    photo.uploadStatus = kUpdateConversation;
+                    //}
                     if(photo.uploadSuccess){
                         photo.uploadSuccess(photo);
                     }
@@ -1485,6 +1501,20 @@
                 if(photo.progress){
                     photo.progress(nil);
                 }
+            }];
+        }else if(photo.uploadStatus == kUpdateConversation){
+            ++ _uploadingTasks;
+            [[EZDataUtil getInstance] uploadPhotoInfo:@[photo] success:^(id info){
+                EZDEBUG(@"Update photo conversation:%@", info);
+                photo.uploadStatus = kUploadDone;
+                -- _uploadingTasks;
+            }
+            failure:^(id err){
+                EZDEBUG(@"failed to photo conversation:%@, :%@",photo.photoID, err);
+                --_uploadingTasks;
+                //if(photo.progress){
+                //    photo.progress(nil);
+                //}
             }];
         }
     }

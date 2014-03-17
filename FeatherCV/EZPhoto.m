@@ -98,6 +98,7 @@
              @"liked":_liked.count?_liked:@[],
              //@"uploadInfoSuccess":@(_uploadInfoSuccess),
              @"uploadStatus":@(_uploadStatus),
+             @"conversationUpdated":@(_conversationUploaded),
              @"deleted":@(_deleted)
              };
 }
@@ -153,6 +154,7 @@
     _uploadStatus = [[dict objectForKey:@"uploadStatus"] integerValue];
     //_uploadPhotoSuccess = [[dict objectForKey:@"uploadPhotoSuccess"] integerValue];
     _deleted = [[dict objectForKey:@"deleted"] integerValue];
+    _conversationUploaded = [[dict objectForKey:@"conversationUpdated"] integerValue];
     [self fromJson:dict];
 }
 

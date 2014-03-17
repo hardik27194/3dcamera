@@ -9,6 +9,7 @@
 #import "EZKeyboardController.h"
 #import "EZKeyboadUtility.h"
 #import "EZMessageCenter.h"
+#import "UIImage+ImageEffects.h"
 
 
 @interface EZKeyboardController ()
@@ -30,6 +31,14 @@
 {
     [super viewDidLoad];
     [self setupKeyboard];
+    
+    UIImageView* imageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    imageView.image = [UIImage imageNamed:@"background.png"]; //createBlurImage:20];
+    
+    UIView* blackCover = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    blackCover.backgroundColor = RGBA(0, 0, 0, 50);
+    [self.view addSubview:imageView];
+    [self.view addSubview:blackCover];
 	// Do any additional setup after loading the view.
 }
 

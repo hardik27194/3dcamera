@@ -26,6 +26,8 @@
 		1823DA3318D5674F00E6E8B3 /* EZLoginController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1823DA3218D5674F00E6E8B3 /* EZLoginController.m */; };
 		1823DA3618D5A1E000E6E8B3 /* EZKeyboardController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1823DA3518D5A1E000E6E8B3 /* EZKeyboardController.m */; };
 		1823DA3918D5B2AF00E6E8B3 /* EZRegisterCtrl.m in Sources */ = {isa = PBXBuildFile; fileRef = 1823DA3818D5B2AF00E6E8B3 /* EZRegisterCtrl.m */; };
+		1823DA3B18D6ED4300E6E8B3 /* blur_back.png in Resources */ = {isa = PBXBuildFile; fileRef = 1823DA3A18D6ED4300E6E8B3 /* blur_back.png */; };
+		1823DA3D18D6F07500E6E8B3 /* background.png in Resources */ = {isa = PBXBuildFile; fileRef = 1823DA3C18D6F07500E6E8B3 /* background.png */; };
 		182A55091862C735003D4A01 /* libGPUImage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 182A55041862C71A003D4A01 /* libGPUImage.a */; };
 		182A550D18643141003D4A01 /* EZFaceBlurFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 182A550C18643140003D4A01 /* EZFaceBlurFilter.m */; };
 		182A551018645374003D4A01 /* EZFaceBlurFilter2.m in Sources */ = {isa = PBXBuildFile; fileRef = 182A550F18645374003D4A01 /* EZFaceBlurFilter2.m */; };
@@ -333,6 +335,8 @@
 		1823DA3518D5A1E000E6E8B3 /* EZKeyboardController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZKeyboardController.m; sourceTree = "<group>"; };
 		1823DA3718D5B2AF00E6E8B3 /* EZRegisterCtrl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZRegisterCtrl.h; sourceTree = "<group>"; };
 		1823DA3818D5B2AF00E6E8B3 /* EZRegisterCtrl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZRegisterCtrl.m; sourceTree = "<group>"; };
+		1823DA3A18D6ED4300E6E8B3 /* blur_back.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blur_back.png; sourceTree = "<group>"; };
+		1823DA3C18D6F07500E6E8B3 /* background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = background.png; sourceTree = "<group>"; };
 		182A54FD1862C717003D4A01 /* GPUImage.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GPUImage.xcodeproj; path = ../../Documents/open_source/GPUImageCV/framework/GPUImage.xcodeproj; sourceTree = "<group>"; };
 		182A550B18643140003D4A01 /* EZFaceBlurFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZFaceBlurFilter.h; sourceTree = "<group>"; };
 		182A550C18643140003D4A01 /* EZFaceBlurFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZFaceBlurFilter.m; sourceTree = "<group>"; };
@@ -1056,6 +1060,8 @@
 		18E346D4183DF90600C9D89D /* images */ = {
 			isa = PBXGroup;
 			children = (
+				1823DA3C18D6F07500E6E8B3 /* background.png */,
+				1823DA3A18D6ED4300E6E8B3 /* blur_back.png */,
 				184ADD8918CD691300367527 /* head_icon@2x.png */,
 				184ADD7F18C8692000367527 /* featherpage.jpg */,
 				1874D9DB18699385005743FC /* header_2.png */,
@@ -1506,6 +1512,7 @@
 				18E34706183DF9D700C9D89D /* user-icon-placeholder-60@2x.png in Resources */,
 				18E34830183F045900C9D89D /* tian_1.JPG in Resources */,
 				18E34825183F02D600C9D89D /* haarcascade_profileface.xml in Resources */,
+				1823DA3B18D6ED4300E6E8B3 /* blur_back.png in Resources */,
 				18F58B6D18719071006CB966 /* border_bottom.png in Resources */,
 				18C0E76B1861A08700D694CE /* page_turn.aiff in Resources */,
 				18E346F5183DF9C400C9D89D /* half_love_left@2x.png in Resources */,
@@ -1514,6 +1521,7 @@
 				18512A331861BE6300282264 /* shot_voice.aiff in Resources */,
 				18A370221855C2A40022F0A8 /* blur.png in Resources */,
 				18A370241855C2A40022F0A8 /* front-camera.png in Resources */,
+				1823DA3D18D6F07500E6E8B3 /* background.png in Resources */,
 				18E34828183F02D600C9D89D /* haarcascade_upperbody.xml in Resources */,
 				18A370361855C2A40022F0A8 /* dock_bg.png in Resources */,
 				18A3702B1855C2A40022F0A8 /* flash@2x.png in Resources */,

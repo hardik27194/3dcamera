@@ -730,6 +730,8 @@
     skinBrighter = [self createSkinBrighter];
     imageView.backgroundColor = VinesGray;
     imageView.fillMode = kGPUImageFillModePreserveAspectRatioAndFill;
+    UIView* darkenView = [[EZUIUtility sharedEZUIUtility] createGradientView];
+    [self.view addSubview:darkenView];
     EZDEBUG(@"The imageView frame:%@", NSStringFromCGRect(imageView.frame));
     //[self setupEdgeDetector];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
@@ -746,11 +748,13 @@
     _progressView.trackTintColor = [UIColor clearColor];
     _progressView.hidden = YES;
     [self.view addSubview:_progressView];
-    _upperCancel = [[UIButton alloc] initWithFrame:CGRectMake(-10, 0, 60, 44)];
-    [_upperCancel setTitle:@"退出" forState:UIControlStateNormal];
-    [_upperCancel setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:_upperCancel];
-    [_upperCancel addTarget:self action:@selector(cancelClicked:) forControlEvents:UIControlEventTouchUpInside];
+    
+    _leftBarButton = [[UIBarButtonItem alloc] initWithTitle:@"退出" style:UIBarButtonItemStylePlain target:self action:@selector(cancelClicked:)];
+    //_upperCancel = [[UIButton alloc] initWithFrame:CGRectMake(-10, 0, 60, 44)];
+    //[_upperCancel setTitle:@"退出" forState:UIControlStateNormal];
+    //[_upperCancel setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    self.navigationItem.leftBarButtonItem = _leftBarButton;
+    
     //[_toolBarRegion addObserver:self forKeyPath:@"alpha" options:0 context:nil];
     //[_toolBarRegion addObserver:self forKeyPath:@"hidden" options:0 context:nil];
     //[_inputTextRegion setOb]
@@ -995,7 +999,7 @@ context:(void *)context
         
     };
     //[[EZMessageCenter getInstance] registerEvent:EZ block:
-    _centerButtonY = [EZDataUtil getInstance].centerButton.frame.origin.y;
+    //_centerButtonY = [EZDataUtil getInstance].centerButton.frame.origin.y;
     [[EZMessageCenter getInstance] registerEvent:EventKeyboardWillRaise block:keyboardRaiseHandler];
     [[EZMessageCenter getInstance] registerEvent:EventKeyboardWillHide block:keyboardHideHandler];
 
@@ -1196,16 +1200,20 @@ context:(void *)context
     _isFrontCamera = false;
     retakeButton = cancelImage;
     topBar.backgroundColor = RGBA(255, 255, 255, 128);
-    _oldPressBlock = [EZDataUtil getInstance].centerButton.pressedBlock;
-    _oldReleaseBlock = [EZDataUtil getInstance].centerButton.releasedBlock;
-    [EZDataUtil getInstance].centerButton.radius = EZInnerCycleRadius;
-    [[EZDataUtil getInstance].centerButton setNeedsDisplay];
-    [EZDataUtil getInstance].centerButton.releasedBlock = nil;
-    [EZDataUtil getInstance].centerButton.pressedBlock = ^(EZCenterButton* obj){
+    //CGRect bounds = self.view.bounds;
+    //_oldPressBlock = [EZDataUtil getInstance].centerButton.pressedBlock;
+    //_oldReleaseBlock = [EZDataUtil getInstance].centerButton.releasedBlock;
+    _shotButton = [[EZCenterButton alloc] initWithFrame:CGRectMake((CurrentScreenWidth - EZCenterSmallRadius)/2.0, CurrentScreenHeight - EZCenterSmallRadius - 6.0, EZCenterSmallRadius, EZCenterSmallRadius) cycleRadius:EZInnerCycleRadius lineWidth:3];
+    EZDEBUG(@"The shotButton frame:%@", NSStringFromCGRect(_shotButton.frame));
+    //[EZDataUtil getInstance].centerButton.radius = EZInnerCycleRadius;
+    //[[EZDataUtil getInstance].centerButton setNeedsDisplay];
+    //[EZDataUtil getInstance].centerButton.releasedBlock = nil;
+    _shotButton.pressedBlock = ^(EZCenterButton* obj){
         [obj animateButton:0.3 lineWidth:13 completed:^(id obj){
         [weakSelf takePhoto:nil];
         }];
     };
+    [self.view addSubview:_shotButton];
 }
 
 
@@ -1386,10 +1394,10 @@ context:(void *)context
     [[EZMessageCenter getInstance] unregisterEvent:EventKeyboardWillHide forObject:keyboardHideHandler];
     [self hideKeyboard:YES complete:nil];
     //[[UIApplication sharedApplication] setStatusBarHidden:false];
-    [EZDataUtil getInstance].centerButton.releasedBlock = _oldReleaseBlock;
-    [EZDataUtil getInstance].centerButton.pressedBlock = _oldPressBlock;
-    [EZDataUtil getInstance].centerButton.radius = EZOuterCycleRadius;
-    [[EZDataUtil getInstance].centerButton setNeedsDisplay];
+    //[EZDataUtil getInstance].centerButton.releasedBlock = _oldReleaseBlock;
+    //[EZDataUtil getInstance].centerButton.pressedBlock = _oldPressBlock;
+    //[EZDataUtil getInstance].centerButton.radius = EZOuterCycleRadius;
+    //[[EZDataUtil getInstance].centerButton setNeedsDisplay];
     //[EZDataUtil getInstance].centerButton.transform = CGAffineTransformIdentity;
     //[EZDataUtil getInstance].centerButton
 }
@@ -2152,9 +2160,10 @@ context:(void *)context
                     [_authorIcon setImageWithURL:str2url(matchedPerson.avatar)];
                     [self showTextField:YES];
                     //disPhoto.isFront = false;
-                    EZDisplayPhoto* dp = [self createDisplayPhoto:_shotPhoto];
-                    dp.isFront = false;
-                    [[EZMessageCenter getInstance]postEvent:EZTakePicture attached:dp];
+                    //EZDisplayPhoto* dp = [self createDisplayPhoto:_shotPhoto];
+                    //dp.isFront = false;
+                    //[[EZMessageCenter getInstance]postEvent:EZTakePicture attached:dp];
+                    _disPhoto.isFront = false;
                     dispatch_later(1.0, ^(){
                         [self innerCancel:YES];
                     });
@@ -2185,9 +2194,9 @@ context:(void *)context
             EZDEBUG(@"pending get called");
         } failure:^(id err){
             EZDEBUG(@"failure get called");
-            EZDisplayPhoto* dp = [self createDisplayPhoto:_shotPhoto];
-            dp.isFront = true;
-            [[EZMessageCenter getInstance]postEvent:EZTakePicture attached:dp];
+            //EZDisplayPhoto* dp = [self createDisplayPhoto:_shotPhoto];
+            _disPhoto.isFront = true;
+            //[[EZMessageCenter getInstance]postEvent:EZTakePicture attached:dp];
         }];
         [self showTextField:NO];
     }
@@ -2453,8 +2462,13 @@ context:(void *)context
             
             //_isSaved = true;
             if(!_isUploading){
+                [_leftBarButton setTitle:@"返回"];
                 _isUploading = true;
                 _progressView.hidden = NO;
+                
+                _disPhoto = [weakSelf createDisplayPhoto:weakSelf.shotPhoto];
+                [[EZMessageCenter getInstance]postEvent:EZTakePicture attached:_disPhoto];
+                EZDEBUG(@"Current photo converstaion:%@", _shotPhoto.conversations);
                 _uploadFailureBlock = ^(id obj){
                     EZDEBUG(@"failure upload");
                     weakSelf.progressView.hidden = YES;
@@ -2466,19 +2480,23 @@ context:(void *)context
                     failureMsg.font = [UIFont boldSystemFontOfSize:17];
                     failureMsg.text = macroControlInfo(@"Upload failure");
                     [weakSelf.view addSubview:failureMsg];
-                    EZDisplayPhoto* dp = [weakSelf createDisplayPhoto:weakSelf.shotPhoto];
-                    [[EZMessageCenter getInstance]postEvent:EZTakePicture attached:dp];
+                    [weakSelf addChatInfo:weakSelf.shotPhoto];
                     dispatch_later(1.0, ^(){
                         [weakSelf innerCancel:YES];
                     });
                 };
                 
                 _uploadSuccessBlock = ^(id obj){
+                    //EZDEBUG(@"photo conversation:%@", weakSelf.shotPhoto.conversations);
                     [weakSelf.progressView setProgress:1.0 animated:YES];
                     [weakSelf changePhoto];
                     dispatch_later(0.2, ^(){
                         weakSelf.progressView.hidden = YES;
                     });
+                    [weakSelf addChatInfo:weakSelf.shotPhoto];
+                    weakSelf.shotPhoto.uploadStatus = kUpdateConversation;
+                    [[EZDataUtil getInstance].pendingUploads addObject:weakSelf.shotPhoto];
+                    [[EZDataUtil getInstance] uploadPendingPhoto];
                 };
                 if(_uploadStatus == kUploading){
                     EZDEBUG(@"have nothing to do");
@@ -2529,7 +2547,7 @@ context:(void *)context
     //_shotPhoto.startUpload = true;
     _shotPhoto.progress = progress;
     _shotPhoto.uploadSuccess = uploadSuccess;
-    [self addChatInfo:_shotPhoto];
+    //[self addChatInfo:_shotPhoto];
     [self triggerUpload];
     //_savedPhoto = _shotPhoto;
     //_shotPhoto = nil;
@@ -2752,6 +2770,11 @@ context:(void *)context
         //[self stopRotateImage:nil];
         //[self hideRotateImage];
         if(_takingPhoto){
+            return;
+        }
+        
+        if(_isUploading){
+            [self innerCancel:YES];
             return;
         }
         //I will delete

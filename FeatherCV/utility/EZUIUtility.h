@@ -54,6 +54,8 @@
 - (void) sendMessge:(NSString*)phone content:(NSString*)content presenter:(UIViewController*)presenter completed:(EZEventBlock)completed;
 
 - (void) enableProximate:(BOOL)enable;
+
+- (UIView*) createGradientView;
 //Why do I use this?
 //I want to get the controller to present my modal view.
 + (UIViewController*) topMostController;

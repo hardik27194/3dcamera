@@ -20,6 +20,7 @@ typedef enum {
     kUploadInit,
     kUploadPhotoInfo,
     kExchangePhoto,
+    kUpdateConversation,
     kUploadDone
 } EZUploadStatus;
 
@@ -143,6 +144,8 @@ typedef enum {
 @property (nonatomic, strong) EZEventBlock uploadSuccess;
 
 @property (nonatomic, strong) NSString* exchangePersonID;
+
+@property (nonatomic, assign) BOOL conversationUploaded;
 
 //@property (nonatomic, assign) BOOL pendingMatch;
 

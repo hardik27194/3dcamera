@@ -32,8 +32,8 @@
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextClearRect(context, rect);
     
-    CGFloat _radius = 4.0;
-    CGFloat _gap = 5.0;
+    CGFloat _radius = 2.5;
+    CGFloat _gap = 3.0;
     CGFloat diameter = _radius * 2.0;
  
     CGFloat totalLength = diameter * 3 + _gap * 2;

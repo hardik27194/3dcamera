@@ -25,6 +25,33 @@ SINGLETON_FOR_CLASS(EZUIUtility)
     return self;
 }
 
+
+- (UIView*) createGradientView
+{
+    
+    UIView* gradientView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    gradientView.backgroundColor = [UIColor clearColor];
+    gradientView.userInteractionEnabled = FALSE;
+    CAGradientLayer *gradient = [CAGradientLayer layer];
+    gradient.frame = gradientView.bounds;
+    //gradient.cornerRadius = 7;
+    gradient.colors = [NSArray arrayWithObjects:
+                       (id)RGBA(0, 0, 0, 60).CGColor,
+                       (id)RGBA(0, 0, 0, 0).CGColor,
+                       (id)RGBA(0, 0, 0, 0).CGColor,
+                       (id)RGBA(0, 0, 0, 60).CGColor,
+                       nil];
+    gradient.locations = [NSArray arrayWithObjects:
+                          [NSNumber numberWithFloat:0.0f],
+                          [NSNumber numberWithFloat:0.4],
+                          [NSNumber numberWithFloat:0.6],
+                          [NSNumber numberWithFloat:1.0],
+                          nil];
+    
+    [[gradientView layer] insertSublayer:gradient atIndex:0];
+    return gradientView;
+}
+
 - (void) sendMessge:(NSString *)phone content:(NSString *)content presenter:(UIViewController*)presenter completed:(EZEventBlock)completed
 {
     MFMessageComposeViewController *controller = [[MFMessageComposeViewController alloc] init];

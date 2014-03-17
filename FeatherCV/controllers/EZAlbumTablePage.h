@@ -103,6 +103,10 @@
 
 @property (nonatomic, assign) BOOL alreadyExecuted;
 
+@property (nonatomic, strong) EZClickView* leftCyleButton;
+
+@property (nonatomic, strong) EZClickView* rightCycleButton;
+
 - (void) storeCurrent;
 //Where do we begin
 //It used to save the memory consumption

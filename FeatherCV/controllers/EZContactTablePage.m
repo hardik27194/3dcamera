@@ -14,6 +14,7 @@
 #import "EZMessageCenter.h"
 #import "EZUIUtility.h"
 #import "EZCenterButton.h"
+#import "UIImageView+AFNetworking.h"
 
 @interface EZContactTablePage ()
 
@@ -151,7 +152,11 @@
     EZContactTableCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
     
     EZPerson* person = [_contacts objectAtIndex:indexPath.row];
-    cell.name.text = person.name;
+    if(indexPath.row == 0){
+        cell.name.text = @"全部照片";
+    }else{
+        cell.name.text = person.name;
+    }
     //[(UIImageView*)cell.headIcon setImageWithURL:str2url(person.avatar)];
     cell.headIcon.backgroundColor = randBack(nil);
     cell.clickRegion.releasedBlock = ^(id object){
@@ -184,9 +189,15 @@
         cell.headIcon.hidden = YES;
     }
     
+    if(person.avatar){
+        [cell.headIcon setImageWithURL:str2url(person.avatar)];
+    }else{
+        cell.headIcon.image = nil;
+    }
     cell.headIcon.releasedBlock = ^(id object){
         EZDEBUG(@"Header clicked");
     };
+    
     
     EZDEBUG(@"I will show the person:%@, pos:%i", person.name, indexPath.row);
     return cell;

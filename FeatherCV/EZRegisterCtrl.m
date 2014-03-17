@@ -97,7 +97,7 @@
     _titleInfo.font = [UIFont systemFontOfSize:35];
     _titleInfo.text = macroControlInfo(@"Sign up");
     
-    _introduction = [[UITextView alloc] initWithFrame:CGRectMake(30, 120.0 + startGap, CurrentScreenWidth - 30.0 * 2, 40)];
+    _introduction = [[UITextView alloc] initWithFrame:CGRectMake(30, 110.0 + startGap, CurrentScreenWidth - 30.0 * 2, 40)];
     _introduction.textAlignment = NSTextAlignmentCenter;
     _introduction.textColor = [UIColor whiteColor];
     //_introduction.font = [UIFont systemFontOfSize:8];
@@ -347,7 +347,7 @@
         [coverView removeFromSuperview];
         //[self dismissViewControllerAnimated:YES completion:nil];
         //_registerTitle.text = macroControlInfo(@"Register success");
-        [[EZUIUtility sharedEZUIUtility] raiseInfoWindow:macroControlInfo(@"Register success") info: macroControlInfo(@"Congradulation")];
+        //[[EZUIUtility sharedEZUIUtility] raiseInfoWindow:macroControlInfo(@"Register success") info: macroControlInfo(@"Congradulation")];
         
         //[weakSelf dismissViewControllerAnimated:YES completion:nil];
         [[EZMessageCenter getInstance] postEvent:EZUserAuthenticated attached:person];

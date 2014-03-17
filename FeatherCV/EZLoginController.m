@@ -180,7 +180,7 @@
         [activity removeFromSuperview];
         [coverView removeFromSuperview];
         EZDEBUG(@"Login success, name:%@", person);
-        [[EZUIUtility sharedEZUIUtility] raiseInfoWindow:macroControlInfo(@"Login success") info: macroControlInfo(@"Congradulation")];
+        //[[EZUIUtility sharedEZUIUtility] raiseInfoWindow:macroControlInfo(@"Login success") info: macroControlInfo(@"Congradulation")];
         [weakSelf dismissViewControllerAnimated:YES completion:^(){
             [[EZMessageCenter getInstance] postEvent:EZUserAuthenticated attached:person];
         }];

@@ -212,6 +212,7 @@
     //UIImage *gradientImage44 =
     
     [[UINavigationBar appearance] setBackgroundImage:ClearBarImage forBarMetrics:UIBarMetricsDefault];
+    [[UIScrollView appearance] setIndicatorStyle:UIScrollViewIndicatorStyleWhite];
     //[[UINavigationBar appearance] setBackgroundImage:ClearBarImage forBarMetrics:UIBarMetricsLandscapePhone];
     //[[UINavigationBar]]
     
@@ -353,11 +354,11 @@
                                           } error:^(NSError* err){
                                           }];
     **/
-    [EZDataUtil getInstance].currentPersonID = nil;
+    //[EZDataUtil getInstance].currentPersonID = nil;
     //[EZDataUtil getInstance].currentPersonID = @"531e7cd5e7b5b9f911342692";
-    [EZCoreAccessor cleanClientDB];
+    //[EZCoreAccessor cleanClientDB];
     if(![[EZDataUtil getInstance] getCurrentPersonID]){
-        dispatch_later(0.3, ^(){
+        dispatch_later(0.1, ^(){
         [[EZDataUtil getInstance] triggerLogin:^(EZPerson* ps){} failure:^(id err){} reason:@"请注册" isLogin:NO];
         });
     }
