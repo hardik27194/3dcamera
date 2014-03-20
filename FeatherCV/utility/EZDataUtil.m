@@ -27,7 +27,8 @@
 #import "EZCoreAccessor.h"
 #import "LocalPersons.h"
 #import "LocalPhotos.h"
-
+#import "EZMessageCenter.h"
+#import "EZNote.h"
 #import "EZLoginController.h"
 
 
@@ -61,6 +62,7 @@
     _isoFormatter.dateFormat = @"yyyy-MM-dd' 'HH:mm:ss.S";
     _localPhotos = [[NSMutableArray alloc] init];
     _pendingPhotos = [[NSMutableArray alloc] init];
+    _recievedNotify = [[NSMutableDictionary alloc] init];
     //Move to the persistent later.
     //Now keep it simple and stupid
     _pendingUploads = [[NSMutableArray alloc] init];
@@ -84,6 +86,7 @@
     _currentPhotos = [[NSMutableArray alloc] init];
     _naviBarBlur = [[LFGlassView alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, 64)];
     _naviBarBlur.blurRadius = 20.0;
+    _cachedPointer = [[NSMutableDictionary alloc] init];
     return self;
 }
 
@@ -311,10 +314,17 @@
                          for(NSDictionary* dict in photos){
                              EZPhoto* photo = [[EZPhoto alloc] init];
                              [photo fromJson:dict];
-                             if(photo.size.width > 0){
+                             EZDEBUG(@"Photo relationship:%i", photo.photoRelations.count);
+                             if(!photo.photoRelations.count){
                                  [res addObject:photo];
                              }else{
-                                 EZDEBUG(@"Photo is broken:%@", photo.photoID);
+                                 [res addObject:photo];
+                                 for(int i = 1; i < photo.photoRelations.count; i++){
+                                     EZPhoto* ph = [photo copy];//[[EZPhoto alloc] init];
+                                     //[ph fromJson:dict];
+                                     ph.photoRelations = @[[photo.photoRelations objectAtIndex:i]];
+                                     [res addObject:ph];
+                                 }
                              }
                          }
                          if(success){
@@ -371,6 +381,49 @@
         [res addObject:[obj toJson]];
     }
     return res;
+}
+
+- (void) populateNotification:(NSDictionary*)dict
+{
+    NSString* type = [dict objectForKey:@"type"];
+    EZNote* note = [[EZNote alloc] init];
+    [note fromJson:dict];
+    if([@"match" isEqualToString:type]){
+        NSString* photoID = [dict objectForKey:@"srcID"];
+        EZDEBUG(@"source id:%@", photoID);
+        
+    }else if([@"like" isEqualToString:type]){
+        //MongoUtil.save('notes', {'type':'like','personID':str(photo['personID']),'photoID':photoID,"otherID":personID,"like":likeStr})
+        
+        //pid2person(note.otherID);
+        EZDEBUG(@"find like notes, source id:%@", note.otherID);
+    }
+    [[EZMessageCenter getInstance] postEvent:EZRecievedNotes attached:note];
+
+}
+
+- (void) queryNotify
+{
+    EZDEBUG(@"Begin query notify");
+    //NSDictionary* dict = [photo toJson];
+
+    [EZNetworkUtility postJson:@"notify" parameters:nil complete:^(NSArray* notes){
+        EZDEBUG("notes count:%i", notes.count);
+        int count = 0;
+        for(int i = 0; i < notes.count; i++){
+            NSDictionary* dict = [notes objectAtIndex:i];
+            NSDictionary* stored = [_recievedNotify objectForKey:[dict objectForKey:@"noteID"]];
+            if(!stored){
+                EZDEBUG(@"new notes:%@", dict);
+                count ++;
+                [_recievedNotify setObject:dict forKey:@"noteID"];
+                [self populateNotification:dict];
+            }
+        }
+        EZDEBUG(@"no notification count %i", count);
+    } failblk:^(id err){
+        EZDEBUG(@"Failed to query notification");
+    }];
 }
 
 - (void) exchangeWithPerson:(NSString*)matchPersonID success:(EZEventBlock)success failure:(EZEventBlock)failure
@@ -969,30 +1022,33 @@
 
 //Should I give the person id or what?
 //Let's give it. Expose the parameter make the function status free. More easier to debug
-- (void) likedPhoto:(NSString*)combinePhotoID success:(EZEventBlock)success failure:(EZEventBlock)failure
+- (void) likedPhoto:(NSString*)combinePhotoID like:(BOOL)like success:(EZEventBlock)success failure:(EZEventBlock)failure
 {
     EZDEBUG(@"combinePhotoID:%@", combinePhotoID);
     if(!self.currentPersonID){
         //Not login user.
         //
         [self triggerLogin:^(EZPerson* ps){
-            [self rawLikePhoto:combinePhotoID success:success failure:failure];
+            [self rawLikePhoto:combinePhotoID like:(BOOL)like success:success failure:failure];
         } failure:^(id obj){
             //failure(macroControlInfo(@""));
             [[EZUIUtility sharedEZUIUtility] raiseInfoWindow:macroControlInfo(@"register-like-error") info:macroControlInfo(@"Please try it later")];
         } reason:macroControlInfo(@"register-like") isLogin:NO];
     }else{
         EZDEBUG(@"Will like directly");
-        [self rawLikePhoto:combinePhotoID success:success failure:failure];
+        [self rawLikePhoto:combinePhotoID like:like success:success failure:failure];
     }
 
 }
 
 //Will not trigger login.
-- (void) rawLikePhoto:(NSString*)photoID success:(EZEventBlock)success failure:(EZEventBlock)failure
+- (void) rawLikePhoto:(NSString*)photoID like:(BOOL)like success:(EZEventBlock)success failure:(EZEventBlock)failure
 {
-    [EZNetworkUtility postParameterAsJson:@"photo/info" parameters:@{@"cmd":@"like", @"photoID":photoID} complete:^(id info){
+    [EZNetworkUtility postParameterAsJson:@"photo/info" parameters:@{@"cmd":@"like", @"photoID":photoID, @"like":@(like)} complete:^(id info){
         EZDEBUG(@"Like photo result:%@", info);
+        if(success){
+            success(info);
+        }
     } failblk:^(id info){
         if(failure){
             EZDEBUG(@"Like photo error:%@", info);

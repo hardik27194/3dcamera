@@ -55,7 +55,7 @@
 
 #define RotateBackground [UIColor blackColor]
 
-
+#define EZTextRegionPosY (CurrentScreenHeight - 150)
 
 @interface EZMotionRecord : NSObject 
 
@@ -742,10 +742,11 @@
     [self createTextField];
     [self setupKeyboard];
     _progressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleDefault];
-    _progressView.frame = CGRectMake(10, 64, CurrentScreenWidth-20, 10);
+    _progressView.frame = CGRectMake(10, 20, CurrentScreenWidth-20, 10);
     //_progressView.backgroundColor = [UIColor redColor];
     _progressView.progressTintColor = [UIColor whiteColor];
     _progressView.trackTintColor = [UIColor clearColor];
+    _progressView.transform = CGAffineTransformScale(CGAffineTransformIdentity, 1.0, 0.5);
     _progressView.hidden = YES;
     [self.view addSubview:_progressView];
     
@@ -1016,7 +1017,8 @@ context:(void *)context
         }else{
             //[EZDataUtil getInstance].centerButton.y = _centerButtonY - textInputRegion.frame.size.height;
         }
-        self.view.y = 0;
+        //self.view.y = 0;
+        textInputRegion.y = EZTextRegionPosY;
     } completion:^(BOOL completed){
         //_toolBarRegion.hidden = FALSE;
         if(hideTextRegion){
@@ -1033,7 +1035,8 @@ context:(void *)context
     //textFieldShouldReturn
     [UIView animateWithDuration:timeval delay:0.0 options:UIViewAnimationOptionCurveLinear  animations:^(){
         //[[EZDataUtil getInstance].centerButton moveY:delta];
-        [self.view moveY:delta];
+        [textInputRegion moveY:delta];
+        //[_te]
         //if(delta < 0){
         //    textInputRegion.y = CurrentScreenHeight - textInputRegion.height;
         //}else{
@@ -1133,7 +1136,7 @@ context:(void *)context
     [UIView animateWithDuration:0.3 delay:0.0 options:UIViewAnimationOptionCurveEaseOut  animations:^(){
         if(show){
             //_toolBarRegion.y = _toolBarRegion.frame.origin.y - 44;
-            textInputRegion.y = CurrentScreenHeight - 150;
+            textInputRegion.y = EZTextRegionPosY;
             //[[EZDataUtil getInstance].centerButton moveY:-44];
             //_toolBarRegion.alpha = 0;
             //[EZDataUtil getInstance].centerButton.alpha = 0;
@@ -2396,6 +2399,16 @@ context:(void *)context
     return res;
 }
 
+- (void) showErrorInfo:(NSString*)info
+{
+    UILabel* failureMsg = [[UILabel alloc] initWithFrame:CGRectMake(0, 64, CurrentScreenWidth, 44)];
+    failureMsg.textAlignment = NSTextAlignmentCenter;
+    failureMsg.textColor = [UIColor whiteColor];
+    failureMsg.font = [UIFont boldSystemFontOfSize:17];
+    failureMsg.text = info;
+    [self.view addSubview:failureMsg];
+}
+
 -(IBAction) takePhoto:(id)sender{
     smileDetected.alpha = 0;
     [_coverTapView removeFromSuperview];
@@ -2426,6 +2439,7 @@ context:(void *)context
         _isImageWithFlash = NO;
         CGFloat progressStart = 0.2;
         [_progressView setProgress:progressStart animated:NO];
+        //[[EZDataUtil getInstance].cachedPointer setObject:self forKey:@"Camera"];
         _captureComplete = ^(id obj){
             EZDEBUG(@"photo captured, we will upload");
             weakSelf.uploadStatus = kUploading;
@@ -2433,7 +2447,7 @@ context:(void *)context
                 EZDEBUG(@"the upload progress:%f, thread:%i", number.floatValue, [NSThread isMainThread]);
                 if(number){
                     //_progressView.progress = number.floatValue;
-                    [weakSelf.progressView setProgress:progressStart + number.floatValue * 0.5 animated:YES];
+                    [weakSelf.progressView setProgress:progressStart + number.floatValue * 0.8 animated:YES];
                 }else{
                     EZDEBUG(@"failed to upload");
                     //weakSelf.progressView.hidden = YES;
@@ -2442,6 +2456,7 @@ context:(void *)context
                         EZDEBUG(@"I will call the failure");
                         weakSelf.uploadFailureBlock(nil);
                     }
+                    //[[EZDataUtil getInstance].cachedPointer removeObjectForKey:@"Camera"];
                     
                 }
             } uploadSuccess:^(id sender){
@@ -2451,7 +2466,7 @@ context:(void *)context
                 if(weakSelf.uploadSuccessBlock){
                     weakSelf.uploadSuccessBlock(nil);
                 }
-            
+                //[[EZDataUtil getInstance].cachedPointer removeObjectForKey:@"Camera"];
             }];
         };
         [self prepareForCapture];
@@ -2462,24 +2477,44 @@ context:(void *)context
             
             //_isSaved = true;
             if(!_isUploading){
-                [_leftBarButton setTitle:@"返回"];
+                [_leftBarButton setTitle:macroControlInfo(@"Return")];
                 _isUploading = true;
                 _progressView.hidden = NO;
                 
                 _disPhoto = [weakSelf createDisplayPhoto:weakSelf.shotPhoto];
                 [[EZMessageCenter getInstance]postEvent:EZTakePicture attached:_disPhoto];
                 EZDEBUG(@"Current photo converstaion:%@", _shotPhoto.conversations);
+                __block BOOL executedFlag = false;
+                dispatch_later(1.5, ^(){
+                    EZDEBUG(@"Timeout called");
+                    if(executedFlag){
+                        return;
+                    }
+                    executedFlag = true;
+                    [_progressView setProgress:1.0 animated:TRUE];
+                    [weakSelf addChatInfo:weakSelf.shotPhoto];
+                   if(_uploadStatus == kUploadingSuccess){
+                        weakSelf.shotPhoto.uploadStatus = kUpdateConversation;
+                        [[EZDataUtil getInstance].pendingUploads addObject:weakSelf.shotPhoto];
+                        [[EZDataUtil getInstance] uploadPendingPhoto];
+                        EZDEBUG(@"directly call success");
+                        //_uploadSuccessBlock(nil);
+                    }
+                    [weakSelf innerCancel:YES];
+                    
+                });
+                
                 _uploadFailureBlock = ^(id obj){
                     EZDEBUG(@"failure upload");
+                    if(executedFlag){
+                        //executedFlag = true;
+                        return;
+                    }
+                    executedFlag = true;
                     weakSelf.progressView.hidden = YES;
                     //[[EZUIUtility sharedEZUIUtility] raiseInfoWindow:@"上传失败" info:@"羽毛正在重试"];
                     //[weakSelf changePhoto];
-                    UILabel* failureMsg = [[UILabel alloc] initWithFrame:CGRectMake(0, 100, CurrentScreenWidth, 44)];
-                    failureMsg.textAlignment = NSTextAlignmentCenter;
-                    failureMsg.textColor = [UIColor whiteColor];
-                    failureMsg.font = [UIFont boldSystemFontOfSize:17];
-                    failureMsg.text = macroControlInfo(@"Upload failure");
-                    [weakSelf.view addSubview:failureMsg];
+                    [weakSelf showErrorInfo:macroControlInfo(@"Network not available")];
                     [weakSelf addChatInfo:weakSelf.shotPhoto];
                     dispatch_later(1.0, ^(){
                         [weakSelf innerCancel:YES];
@@ -2487,6 +2522,10 @@ context:(void *)context
                 };
                 
                 _uploadSuccessBlock = ^(id obj){
+                    if(executedFlag){
+                        return;
+                    }
+                    executedFlag = true;
                     //EZDEBUG(@"photo conversation:%@", weakSelf.shotPhoto.conversations);
                     [weakSelf.progressView setProgress:1.0 animated:YES];
                     [weakSelf changePhoto];
@@ -2498,6 +2537,8 @@ context:(void *)context
                     [[EZDataUtil getInstance].pendingUploads addObject:weakSelf.shotPhoto];
                     [[EZDataUtil getInstance] uploadPendingPhoto];
                 };
+                _shotPhoto.uploadSuccess = _uploadSuccessBlock;
+                //_shotPhoto.
                 if(_uploadStatus == kUploading){
                     EZDEBUG(@"have nothing to do");
                 }else if(_uploadStatus == kUploadingFailure){

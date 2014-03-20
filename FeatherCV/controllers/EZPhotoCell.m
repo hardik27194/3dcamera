@@ -110,7 +110,21 @@
         [_ownTalk enableShadow:[UIColor blackColor]];
         [_ownTalk enableTextWrap];
         [self.container addSubview:_ownTalk];
-
+        
+        _likeButton = [[EZClickView alloc] initWithFrame:CGRectMake(255, CurrentScreenHeight - 105, 45,45)]; //[[EZCenterButton alloc] initWithFrame:CGRectMake(255, 23, 60,60) cycleRadius:21 lineWidth:2];
+        [_likeButton enableRoundImage];
+        
+        _otherLike = [[EZClickView alloc] initWithFrame:CGRectMake(255, CurrentScreenHeight - 105, 45, 45)];
+        _otherLike.layer.borderColor = [UIColor whiteColor].CGColor;
+        _otherLike.layer.borderWidth = 2;
+        [_otherLike enableRoundImage];
+        [self.container addSubview:_otherLike];
+        
+        _likeButton.layer.borderColor = [UIColor whiteColor].CGColor;
+        _likeButton.layer.borderWidth = 2;
+        _likeButton.backgroundColor = [UIColor clearColor];
+        _likeButton.enableTouchEffects = FALSE;
+        [self.container addSubview:_likeButton];
         
         _moreButton = [[EZShapeButton alloc] initWithFrame:CGRectMake(0, 0, 60, 44)];
         _moreButton.center = CGPointMake(CurrentScreenWidth - 30, CurrentScreenHeight - 27);

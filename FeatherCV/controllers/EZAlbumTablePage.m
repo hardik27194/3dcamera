@@ -33,6 +33,7 @@
 #import "EZShapeButton.h"
 #import "EZAnimationUtil.h"
 #import "EZBlurAnimator.h"
+#import "EZNote.h"
 
 
 #define  originalTitle  @"feather"
@@ -114,6 +115,39 @@ static int photoCount = 1;
         
     }
     
+    //EZDEBUG(@"likedUser:%@, otherID:%@", myPhoto.liked)
+    //cell.otherLike.backgroundColor = [UIColor clearColor];
+    cell.likeButton.backgroundColor = [UIColor clearColor];
+    if([switchPhoto.likedUsers containsObject:currentLoginID]){
+        cell.likeButton.backgroundColor = RGBA(255, 0, 0, 64);
+    }
+    //switchPhoto.likedUsers
+    cell.otherLike.backgroundColor = [UIColor clearColor];
+    if([myPhoto.likedUsers containsObject:switchPhoto.personID]){
+        cell.otherLike.backgroundColor = RGBA(0, 255, 0, 64);
+    }
+    
+    cell.likeButton.releasedBlock = ^(id obj){
+        EZDEBUG(@"Liked clicked");
+        if(switchPhoto){
+            BOOL liked = [switchPhoto.likedUsers containsObject:currentLoginID];
+            EZDEBUG(@"photoID:%@, liked:%i, personID:%@", switchPhoto.photoID, liked, switchPhoto.personID);
+            liked = !liked;
+            [[EZDataUtil getInstance] likedPhoto:switchPhoto.photoID like:liked success:^(id success){
+                EZDEBUG(@"Liked successfully");
+                if(liked){
+                    switchPhoto.likedUsers = @[currentLoginID];
+                    weakCell.likeButton.backgroundColor = RGBA(255, 0, 0, 64);
+                }else{
+                    switchPhoto.likedUsers = nil;
+                    weakCell.likeButton.backgroundColor = [UIColor clearColor];
+                        
+                }
+            } failure:^(id err){
+                EZDEBUG(@"Encounter like errors:%@", err);
+            }];
+        }
+    };
     [self displayChat:cell ownerPhoto:myPhoto otherPhoto:switchPhoto];
 
     //__block NSString* staticFile = nil;
@@ -131,6 +165,8 @@ static int photoCount = 1;
         //[[EZDataUtil getInstance] storeAllPhotos:@[myPhoto]];
         //if(switchPhoto){
         EZPhoto* swPhoto = [myPhoto.photoRelations objectAtIndex:0];
+        EZDEBUG(@"my photoID:%@, otherID:%@, otherPerson:%@", myPhoto.photoID, swPhoto.photoID, swPhoto.personID);
+
         if(swPhoto){
             [weakSelf switchImage:weakCell displayPhoto:cp front:myPhoto back:swPhoto animate:YES];
         }
@@ -742,6 +778,15 @@ static int photoCount = 1;
         //[weakSelf raiseCamera];
     }];
     
+    [[EZMessageCenter getInstance] registerEvent:EZRecievedNotes block:^(EZNote* note){
+        EZDEBUG(@"Recieved notes:%@, notes:%@, pointer:%i", note.type, note.noteID, (int)note);
+        if([@"match" isEqualToString:note.type]){
+            //EZPhoto* matchedPhoto = note.matchedPhoto;
+            [self insertMatch:note];
+        }else if([@"like" isEqualToString:note.type]){
+            [self addLike:note];
+        }
+    }];
     
     EZDEBUG(@"The login personID:%@, getID:%@", [EZDataUtil getInstance].currentPersonID, [[EZDataUtil getInstance] getCurrentPersonID]);
     
@@ -789,6 +834,78 @@ static int photoCount = 1;
     [EZDataUtil getInstance].timerBlock = ^(id obj){
         [self storeCurrent];
     };
+
+}
+
+- (void) insertMatch:(EZNote*)note
+{
+    NSArray* matchedArrs = [[NSArray alloc] initWithArray:_combinedPhotos];
+    //NSMutableArray* matchedPhotos = [[NSMutableArray alloc] init];
+    int pos = -1;
+    BOOL alreadyIn = false;
+    for (int i = 0; i < matchedArrs.count; i++) {
+        EZPhoto* ph = ((EZDisplayPhoto*)[matchedArrs objectAtIndex:i]).photo;
+        if([ph.photoID isEqualToString:note.srcID]){
+            //[matchedPhotos addObject:ph];
+            if(pos < 0){
+                pos = i;
+            }
+            if(ph.photoRelations.count){
+                EZPhoto* match = [ph.photoRelations objectAtIndex:i];
+                if([match.photoID isEqualToString:note.matchedID]){
+                    EZDEBUG(@"Already matched");
+                    alreadyIn = true;
+                    break;
+                }
+            }
+        }
+    }
+    if(alreadyIn){
+        return;
+    }
+    if(pos < 0){
+        return;
+    }
+    EZDEBUG(@"Will insert the newly matched at pos:%i", pos);
+    EZPhoto* orgin = ((EZDisplayPhoto*)[_combinedPhotos objectAtIndex:pos]).photo;
+    EZPhoto* cloned = orgin.copy;
+    cloned.photoRelations = @[note.matchedPhoto];
+    EZDisplayPhoto* disPhoto = [[EZDisplayPhoto alloc] init];
+    disPhoto.isFront = NO;
+    disPhoto.photo = cloned;
+    [_combinedPhotos insertObject:disPhoto atIndex:pos];
+     [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:pos inSection:0]] withRowAnimation:UITableViewRowAnimationTop];
+    
+}
+
+- (void) addLike:(EZNote*)note
+{
+    NSArray* matchedArrs = [[NSArray alloc] initWithArray:_combinedPhotos];
+    for (int i = 0; i < matchedArrs.count; i++) {
+        EZPhoto* ph = ((EZDisplayPhoto*)[matchedArrs objectAtIndex:i]).photo;
+        if([ph.photoID isEqualToString:note.photoID]){
+            //[matchedPhotos addObject:ph];
+            if(ph.photoRelations.count){
+                EZPhoto* match = [ph.photoRelations objectAtIndex:0];
+                if([match.personID isEqualToString:note.otherID]){
+                    //EZDEBUG(@"Already matched");
+                    //alreadyIn = true;
+                    //[self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:i inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
+                    if(note.like){
+                        if(![ph.likedUsers containsObject:note.otherID]){
+                            [ph.likedUsers addObject:note.otherID];
+                        }
+                    }else{
+                        //if([ph.likedUsers containsObject:note.otherID]){
+                        [ph.likedUsers removeObject:note.otherID];
+                        //}
+                    }
+                    [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:i inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
+                    break;
+                }
+            }
+        }
+    }
 
 }
 
@@ -964,6 +1081,8 @@ static int photoCount = 1;
             //EZDEBUG(@"The button clicked");
         }];
     };
+    
+    
     clickView.longPressBlock = ^(EZCenterButton* obj){
         EZDEBUG(@"Long press clicked");
         [[EZDataUtil getInstance] jumpCycleAnimation:^(id obj){

@@ -319,7 +319,7 @@
     if([EZDataUtil getInstance].timerBlock){
         [EZDataUtil getInstance].timerBlock(nil);
     }
-    
+    [[EZDataUtil getInstance] queryNotify];
     /**
     static int count = 1;
     ++count;

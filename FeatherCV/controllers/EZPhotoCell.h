@@ -95,13 +95,15 @@
 
 @property (nonatomic, strong) UITextView* photoWord;
 
-@property (nonatomic, strong) EZClickImage* likeButton;
+@property (nonatomic, strong) EZClickView* likeButton;
 //You can talk as you like.
 @property (nonatomic, strong) EZClickImage* talkButton;
 
 @property (nonatomic, strong) EZEventBlock clicked;
 
 @property (nonatomic, strong) EZClickImage* clickHeart;
+
+@property (nonatomic, strong) UIView* otherLike;
 //Name of the current image
 @property (nonatomic, strong) UILabel* name;
 

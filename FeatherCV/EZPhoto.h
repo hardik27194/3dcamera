@@ -28,8 +28,7 @@ typedef enum {
 @class ALAsset;
 @class EZPerson;
 @class LocalPhotos;
-@interface EZPhoto : NSObject
-
+@interface EZPhoto : NSObject<NSCopying>
 //@property (nonatomic, assign) int photoID;
 //For any stored object, we will have this id. 
 //@property (nonatomic, strong) NSManagedObjectID* objectID;
@@ -44,7 +43,7 @@ typedef enum {
 
 //Who has liked this photo.
 //Add the user id into this place
-@property (nonatomic, strong) NSMutableArray* liked;
+@property (nonatomic, strong) NSMutableArray* likedUsers;
 //@property (nonatomic, assign) int ownerID;
 
 //@property (nonatomic, assign) int otherID;

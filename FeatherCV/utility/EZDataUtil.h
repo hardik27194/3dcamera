@@ -101,7 +101,11 @@
 
 @property (nonatomic, strong) EZEventBlock timerBlock;
 
+@property (nonatomic, strong) NSMutableDictionary* recievedNotify;
+
 @property (nonatomic, assign) int uploadingTasks;
+
+@property (nonatomic, strong) NSMutableDictionary* cachedPointer;
 
 
 //Check the current status
@@ -110,6 +114,8 @@
 - (void) uploadPendingPhoto;
 
 - (void) queryPendingPerson;
+
+- (void) queryNotify;
 
 - (NSString*) getCurrentPersonID;
 
@@ -129,7 +135,7 @@
 - (void) cleanLogin;
 //Should I give the person id or what?
 //Let's give it. Expose the parameter make the function status free. More easier to debug
-- (void) likedPhoto:(NSString*)photoID success:(EZEventBlock)success failure:(EZEventBlock)failure;
+- (void) likedPhoto:(NSString*)photoID like:(BOOL)like success:(EZEventBlock)success failure:(EZEventBlock)failure;
 
 - (void) prefetchImage:(NSString*) url success:(EZEventBlock)success failure:(EZEventBlock)failure;
 

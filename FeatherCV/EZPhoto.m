@@ -17,6 +17,7 @@
 {
     self = [super init];
     _conversations = [[NSMutableArray alloc] init];
+    _likedUsers = [[NSMutableArray alloc] init];
     return self;
     
 }
@@ -95,7 +96,7 @@
              @"photoRelations":[self localRelationsToJson],
              @"relationUsers":[self relationsUserID],
              @"screenURL":null2Empty([self screenURL]),
-             @"liked":_liked.count?_liked:@[],
+             @"likedUsers":_likedUsers.count?_likedUsers:@[],
              //@"uploadInfoSuccess":@(_uploadInfoSuccess),
              @"uploadStatus":@(_uploadStatus),
              @"conversationUpdated":@(_conversationUploaded),
@@ -123,7 +124,7 @@
              @"photoRelations":[self relationsToJson],
              @"relationUsers":[self relationsUserID],
              //@"screenURL":[self screenURL],
-             @"liked":_liked.count?_liked:@[]
+             @"likedUsers":_likedUsers.count?_likedUsers:@[]
                  };
     }else{
         return @{
@@ -142,12 +143,21 @@
                  @"photoRelations":[self relationsToJson],
                  @"relationUsers":[self relationsUserID],
                  //@"screenURL":[self screenURL],
-                 @"liked":_liked.count?_liked:@[]
+                 @"liked":_likedUsers.count?_likedUsers:@[]
                  };
 
     }
 }
-
+/**
+-(id)copyWithZone:(NSZone *)zone
+{
+    // We'll ignore the zone for now
+    EZPhoto *another = [[EZPhoto alloc] init];
+    another.obj = [obj copyWithZone: zone];
+    
+    return another;
+}
+**/
 - (void) fromLocalJson:(NSDictionary*)dict
 {
     EZDEBUG(@"from local json raw string:%@", dict);
@@ -158,6 +168,29 @@
     [self fromJson:dict];
 }
 
+
+- (id)copyWithZone:(NSZone *)zone
+{
+    EZPhoto* pt = [[EZPhoto alloc] init];
+    pt.photoID = _photoID;
+    pt.personID = _personID;
+    pt.assetURL = _assetURL;
+    pt.longitude = _longitude;
+    pt.latitude = _latitude;
+    pt.altitude = _altitude;
+    pt.uploaded = _uploaded;
+    pt.shareStatus = _shareStatus;
+    pt.size = _size;
+    pt.createdTime = _createdTime;
+    pt.conversations = pt.conversations;
+    pt.photoRelations = pt.photoRelations;
+    pt.screenURL = _screenURL;
+    pt.likedUsers = _likedUsers;
+    pt.uploadStatus = _uploadStatus;
+    pt.conversationUploaded = _conversationUploaded;
+    pt.deleted = _deleted;
+    return pt;
+}
 
 
 - (void) fromJson:(NSDictionary*)dict
@@ -181,7 +214,7 @@
     _screenURL = [dict objectForKey:@"screenURL"];
     _thumbURL = url2thumb(_screenURL);
     _conversations = [self conversationFromJson:[dict objectForKey:@"conversations"]];
-    _liked =[NSMutableArray arrayWithArray:[dict objectForKey:@"liked"]];
+    [_likedUsers addObjectsFromArray:[dict objectForKey:@"likedUsers"]];
     CGFloat width = [[dict objectForKey:@"width"] floatValue];
     CGFloat height = [[dict objectForKey:@"height"] floatValue];
 

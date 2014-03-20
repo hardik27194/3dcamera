@@ -28,6 +28,7 @@
 		1823DA3918D5B2AF00E6E8B3 /* EZRegisterCtrl.m in Sources */ = {isa = PBXBuildFile; fileRef = 1823DA3818D5B2AF00E6E8B3 /* EZRegisterCtrl.m */; };
 		1823DA3B18D6ED4300E6E8B3 /* blur_back.png in Resources */ = {isa = PBXBuildFile; fileRef = 1823DA3A18D6ED4300E6E8B3 /* blur_back.png */; };
 		1823DA3D18D6F07500E6E8B3 /* background.png in Resources */ = {isa = PBXBuildFile; fileRef = 1823DA3C18D6F07500E6E8B3 /* background.png */; };
+		1823DA4018DA9ABA00E6E8B3 /* EZNote.m in Sources */ = {isa = PBXBuildFile; fileRef = 1823DA3F18DA9AB900E6E8B3 /* EZNote.m */; };
 		182A55091862C735003D4A01 /* libGPUImage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 182A55041862C71A003D4A01 /* libGPUImage.a */; };
 		182A550D18643141003D4A01 /* EZFaceBlurFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 182A550C18643140003D4A01 /* EZFaceBlurFilter.m */; };
 		182A551018645374003D4A01 /* EZFaceBlurFilter2.m in Sources */ = {isa = PBXBuildFile; fileRef = 182A550F18645374003D4A01 /* EZFaceBlurFilter2.m */; };
@@ -337,6 +338,8 @@
 		1823DA3818D5B2AF00E6E8B3 /* EZRegisterCtrl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZRegisterCtrl.m; sourceTree = "<group>"; };
 		1823DA3A18D6ED4300E6E8B3 /* blur_back.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blur_back.png; sourceTree = "<group>"; };
 		1823DA3C18D6F07500E6E8B3 /* background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = background.png; sourceTree = "<group>"; };
+		1823DA3E18DA9AB900E6E8B3 /* EZNote.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZNote.h; sourceTree = "<group>"; };
+		1823DA3F18DA9AB900E6E8B3 /* EZNote.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZNote.m; sourceTree = "<group>"; };
 		182A54FD1862C717003D4A01 /* GPUImage.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GPUImage.xcodeproj; path = ../../Documents/open_source/GPUImageCV/framework/GPUImage.xcodeproj; sourceTree = "<group>"; };
 		182A550B18643140003D4A01 /* EZFaceBlurFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZFaceBlurFilter.h; sourceTree = "<group>"; };
 		182A550C18643140003D4A01 /* EZFaceBlurFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZFaceBlurFilter.m; sourceTree = "<group>"; };
@@ -1258,6 +1261,8 @@
 				18E34746183DFA7300C9D89D /* EZDisplayPhoto.m */,
 				18A37042185BF97E0022F0A8 /* EZPhotoRelation.h */,
 				18A37043185BF97E0022F0A8 /* EZPhotoRelation.m */,
+				1823DA3E18DA9AB900E6E8B3 /* EZNote.h */,
+				1823DA3F18DA9AB900E6E8B3 /* EZNote.m */,
 			);
 			name = dataobjects;
 			sourceTree = "<group>";
@@ -1584,6 +1589,7 @@
 				184ADD7418C4B40D00367527 /* EZAvatarView.m in Sources */,
 				18FA529E188CD04D00C91D18 /* EZColorBrighter.m in Sources */,
 				18F58B52186EC0D1006CB966 /* ILTranslucentView.m in Sources */,
+				1823DA4018DA9ABA00E6E8B3 /* EZNote.m in Sources */,
 				1866ADB418979C7400DB46E2 /* EZModalRaiseAnimation.m in Sources */,
 				181903F7187FFC64001FC370 /* EZHomeGaussianFilter.m in Sources */,
 				18E34693183DF54400C9D89D /* FeatherCV.xcdatamodeld in Sources */,
@@ -1784,6 +1790,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = YES;
+				PROVISIONING_PROFILE = "C23253FF-EE45-46BA-A6F3-AA917395E474";
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
@@ -1818,6 +1825,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = YES;
+				PROVISIONING_PROFILE = "C23253FF-EE45-46BA-A6F3-AA917395E474";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -1829,7 +1837,7 @@
 				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Tian Xie (GC586ZT7D3)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Tian Xie (GC586ZT7D3)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1855,7 +1863,7 @@
 				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Tian Xie (GC586ZT7D3)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Tian Xie (GC586ZT7D3)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
