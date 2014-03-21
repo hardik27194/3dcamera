@@ -98,7 +98,10 @@
              @"screenURL":null2Empty([self screenURL]),
              @"likedUsers":_likedUsers.count?_likedUsers:@[],
              //@"uploadInfoSuccess":@(_uploadInfoSuccess),
-             @"uploadStatus":@(_uploadStatus),
+             @"contentStatus":@(_contentStatus),
+             @"infoStatus":@(_infoStatus),
+             @"updateStatus":@(_updateStatus),
+             @"exchangeStatus":@(_exchangeStatus),
              @"conversationUpdated":@(_conversationUploaded),
              @"deleted":@(_deleted)
              };
@@ -161,10 +164,14 @@
 - (void) fromLocalJson:(NSDictionary*)dict
 {
     EZDEBUG(@"from local json raw string:%@", dict);
-    _uploadStatus = [[dict objectForKey:@"uploadStatus"] integerValue];
+    _contentStatus = [[dict objectForKey:@"contentStatus"] integerValue];
+    _infoStatus = [[dict objectForKey:@"infoStatus"] integerValue];
+    _updateStatus = [[dict objectForKey:@"updateStatus"] integerValue];
+    _exchangeStatus = [[dict objectForKey:@"exchangeStatus"] integerValue];
     //_uploadPhotoSuccess = [[dict objectForKey:@"uploadPhotoSuccess"] integerValue];
     _deleted = [[dict objectForKey:@"deleted"] integerValue];
     _conversationUploaded = [[dict objectForKey:@"conversationUpdated"] integerValue];
+    _exchangeStatus = [[dict objectForKey:@"exchangeStatus"] integerValue];
     [self fromJson:dict];
 }
 
@@ -186,7 +193,10 @@
     pt.photoRelations = pt.photoRelations;
     pt.screenURL = _screenURL;
     pt.likedUsers = _likedUsers;
-    pt.uploadStatus = _uploadStatus;
+    pt.infoStatus = _infoStatus;
+    pt.contentStatus = _contentStatus;
+    pt.exchangeStatus = _exchangeStatus;
+    pt.updateStatus = _updateStatus;
     pt.conversationUploaded = _conversationUploaded;
     pt.deleted = _deleted;
     return pt;

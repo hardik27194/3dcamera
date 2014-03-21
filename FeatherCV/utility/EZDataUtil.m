@@ -1424,9 +1424,6 @@
         EZDEBUG(@"Quit for uploading, pending Task:%i", _uploadingTasks);
     }
     
-    if(!self.canUpload){
-        EZDEBUG(@"Quit for network not available, status:%i", _networkStatus);
-    }
     NSArray* uploads = [[NSArray alloc] initWithArray:_pendingUploads];
     for(int i = 0; i < uploads.count; i++){
         
@@ -1451,70 +1448,21 @@
             continue;
         }
         
-        if(photo.uploadStatus == kUploadDone){
+        if(photo.contentStatus == kUploadDone && (photo.updateStatus == kUpdateDone || photo.updateStatus == kUpdateNone) && photo.infoStatus == kUploadDone && (photo.exchangeStatus == kExchangeNone && photo.exchangeStatus == kExchangeDone)){
             [_pendingUploads removeObject:photo];
             continue;
         }
         
-        if(photo.uploadStatus == kUploadInit){
-            EZDEBUG(@"Will start upload info for:%@", photo.photoID);
+        EZEventBlock exchangeContent = ^(EZPhoto* photo){
+             EZDEBUG(@"Will invoke exchange photo, status:%i", photo.exchangeStatus);
+            if(photo.exchangeStatus == kExchangeStart || photo.exchangeStatus == kExchangeFailure){
             ++_uploadingTasks;
-            //bool haveConversation = photo.conversations.count;
-            [[EZDataUtil getInstance] uploadPhotoInfo:@[photo] success:^(id info){
-                EZDEBUG(@"Update photo info:%@", info);
-                NSString* photoID = [info objectAtIndex:0];
-                //photo.conversationUploaded = haveConversation;
-                EZDEBUG(@"Recieved photoID:%@, currnet photoID:%@", photoID, photo.photoID);
-                photo.uploadStatus = kUploadPhotoInfo;
-                photo.photoID = photoID;
-                --_uploadingTasks;
-                if(photo.uploadStatus == kUploadPhotoInfo){
-                    ++_uploadingTasks;
-                    EZDEBUG(@"Will start upload photo content for:%@", photo.photoID);
-                    [[EZDataUtil getInstance] uploadPhoto:photo success:^(id info){
-                        EZDEBUG(@"uploaded content success:%@, photoRelations:%i", info, photo.photoRelations.count);
-                        photo.uploadStatus = kExchangePhoto;
-                        photo.uploaded = TRUE;
-                        photo.progress = nil;
-                        --_uploadingTasks;
-                        if(photo.photoRelations.count){
-                            photo.uploadStatus = kUploadDone;
-                            
-                            //if(photo.conversations.count && !photo.conversationUploaded){
-                            //    photo.uploadStatus = kUpdateConversation;
-                            //}
-                            
-                            if(photo.uploadSuccess){
-                                photo.uploadSuccess(photo);
-                            }
-                            photo.uploadSuccess = nil;
-                        }else{
-                            [self uploadPendingPhoto];
-                        }
-                    } failure:^(id err){
-                        EZDEBUG(@"failed to upload content:%@", err);
-                        --_uploadingTasks;
-                        if(photo.progress){
-                            photo.progress(nil);
-                        }
-                    }];
-                }
-
-                
-            } failure:^(id err){
-                EZDEBUG(@"failed to upload info for photoID:%@, :%@",photo.photoID, err);
-                --_uploadingTasks;
-                if(photo.progress){
-                    photo.progress(nil);
-                }
-            }];
-        }else if(photo.uploadStatus == kExchangePhoto){
-            ++_uploadingTasks;
-            EZDEBUG(@"Will invoke exchange photo");
+                photo.exchangeStatus = kExchangeStart;
+           
             [self exchangeWithPerson:photo.exchangePersonID success:^(EZPhoto* ph){
                 EZDEBUG(@"exchange success with:%@", ph.photoID);
                 photo.photoRelations = @[ph];
-                photo.uploadStatus = kUploadDone;
+                photo.exchangeStatus = kExchangeDone;
                 
                 //if(photo.conversations.count && !photo.conversationUploaded){
                 //    photo.uploadStatus = kUpdateConversation;
@@ -1526,52 +1474,104 @@
                 --_uploadingTasks;
             } failure:^(id err){
                 EZDEBUG(@"Failed to find match photo:%@", err);
+                photo.exchangeStatus = kExchangeFailure;
                 --_uploadingTasks;
             }];
-        }else
-        if(photo.uploadStatus == kUploadPhotoInfo){
-            ++_uploadingTasks;
-            EZDEBUG(@"Will start upload photo content for:%@", photo.photoID);
-            [[EZDataUtil getInstance] uploadPhoto:photo success:^(id info){
-                EZDEBUG(@"uploaded success:%@", info);
-                photo.uploadStatus = kExchangePhoto;
-                photo.uploaded = TRUE;
-                photo.progress = nil;
-                --_uploadingTasks;
-                if(photo.photoRelations.count){
-                    photo.uploadStatus = kUploadDone;
-                    //if(photo.conversations.count && !photo.conversationUploaded){
-                    //    photo.uploadStatus = kUpdateConversation;
-                    //}
-                    if(photo.uploadSuccess){
-                        photo.uploadSuccess(photo);
+            }
+        };
+        
+        
+        
+        EZEventBlock uploadContent = ^(EZPhoto* photo){
+            if(photo.contentStatus == kUploadInit){
+                ++_uploadingTasks;
+                EZDEBUG(@"Will start upload photo content for:%@", photo.photoID);
+                [[EZDataUtil getInstance] uploadPhoto:photo success:^(id info){
+                    EZDEBUG(@"uploaded content success:%@, photoRelations:%i", info, photo.photoRelations.count);
+                    //photo.uploadStatus = kExchangePhoto;
+                    photo.contentStatus = kUploadDone;
+                    photo.uploaded = TRUE;
+                    photo.progress = nil;
+                    --_uploadingTasks;
+                    if(photo.photoRelations.count){
+                        //photo.uploadStatus = kUploadDone;
+                        if(photo.uploadSuccess){
+                            photo.uploadSuccess(photo);
+                        }
+                        photo.uploadSuccess = nil;
+                    }else{
+                        photo.exchangeStatus = kExchangeStart;
+                        exchangeContent(photo);
                     }
-                    photo.uploadSuccess = nil;
-                }else{
-                    [self uploadPendingPhoto];
-                }
-                
+                    
+                } failure:^(id err){
+                    EZDEBUG(@"failed to upload content:%@", err);
+                    --_uploadingTasks;
+                    if(photo.progress){
+                        photo.progress(nil);
+                    }
+                }];
+            }
+
+        
+        };
+        
+        EZEventBlock uploadInfo = ^(EZPhoto* photo){
+            EZDEBUG(@"Will start upload info for:%@", photo.photoID);
+            ++_uploadingTasks;
+            //bool haveConversation = photo.conversations.count;
+            [[EZDataUtil getInstance] uploadPhotoInfo:@[photo] success:^(id info){
+                EZDEBUG(@"Update photo info:%@", info);
+                NSString* photoID = [info objectAtIndex:0];
+                //photo.conversationUploaded = haveConversation;
+                EZDEBUG(@"Recieved photoID:%@, currnet photoID:%@", photoID, photo.photoID);
+                photo.infoStatus = kUploadDone;
+                photo.photoID = photoID;
+                --_uploadingTasks;
+                uploadContent(photo);
             } failure:^(id err){
-                EZDEBUG(@"failed to upload content:%@", err);
+                EZDEBUG(@"failed to upload info for photoID:%@, :%@",photo.photoID, err);
                 --_uploadingTasks;
                 if(photo.progress){
                     photo.progress(nil);
                 }
             }];
-        }else if(photo.uploadStatus == kUpdateConversation){
-            ++ _uploadingTasks;
-            [[EZDataUtil getInstance] uploadPhotoInfo:@[photo] success:^(id info){
-                EZDEBUG(@"Update photo conversation:%@", info);
-                photo.uploadStatus = kUploadDone;
-                -- _uploadingTasks;
+            
+        };
+        
+        EZEventBlock updateInfo = ^(EZPhoto* photo){
+            EZDEBUG(@"Will start update info for:%@", photo.photoID);
+            if([photo.photoID isEmpty]){
+                return;
             }
-            failure:^(id err){
-                EZDEBUG(@"failed to photo conversation:%@, :%@",photo.photoID, err);
+            ++_uploadingTasks;
+                        //bool haveConversation = photo.conversations.count;
+            [[EZDataUtil getInstance] uploadPhotoInfo:@[photo] success:^(id info){
+                EZDEBUG(@"Update photo info:%@", info);
+                NSString* photoID = [info objectAtIndex:0];
+                //photo.conversationUploaded = haveConversation;
+                EZDEBUG(@"Recieved photoID:%@, currnet photoID:%@", photoID, photo.photoID);
+                photo.updateStatus = kUpdateDone;
+                photo.photoID = photoID;
                 --_uploadingTasks;
-                //if(photo.progress){
-                //    photo.progress(nil);
-                //}
+                //uploadContent(photo);
+            } failure:^(id err){
+                EZDEBUG(@"failed to upload info for photoID:%@, :%@",photo.photoID, err);
+                --_uploadingTasks;
+                if(photo.progress){
+                    photo.progress(nil);
+                }
             }];
+            
+        };
+        if(photo.infoStatus == kUploadInit){
+            uploadInfo(photo);
+        }else if(photo.exchangeStatus == kExchangeFailure || photo.exchangeStatus == kExchangeStart){
+            exchangeContent(photo);
+        }else if(photo.contentStatus == kUploadInit){
+            uploadContent(photo);
+        }else if(photo.updateStatus == kUpdateStart){
+            updateInfo(photo);
         }
     }
 }
@@ -1645,6 +1645,13 @@
     [[EZCoreAccessor getClientAccessor] saveContext];
 }
 
+
+- (void) addPendingUpload:(EZPhoto*)photo
+{
+    if(![_pendingPhotos containsObject:photo]){
+        [_pendingPhotos addObject:photo];
+    }
+}
 
 - (void) storeAllPersons:(NSArray*)persons
 {

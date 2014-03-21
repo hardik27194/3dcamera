@@ -77,9 +77,9 @@ static int photoCount = 1;
             [cell.otherIcon setImageWithURL:str2url(person.avatar)];
         }
     };
-    EZDEBUG(@"upload status is:%i, photo relation count:%i, object Pointer:%i", myPhoto.uploadStatus, myPhoto.photoRelations.count, (int)myPhoto);
+    EZDEBUG(@"upload status is:%i, photo relation count:%i, object Pointer:%i", myPhoto.updateStatus, myPhoto.photoRelations.count, (int)myPhoto);
     _progressBar.hidden = YES;
-    if(myPhoto.uploadStatus != kUploadDone && !myPhoto.photoRelations.count){
+    if(myPhoto.contentStatus != kUploadDone && !myPhoto.photoRelations.count){
         EZDEBUG(@"Will register upload success");
         [_progressBar setProgress:0.2 animated:YES];
         _progressBar.hidden = NO;

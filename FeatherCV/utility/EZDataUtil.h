@@ -275,4 +275,6 @@
 
 - (void) loadAllPersons;
 
+- (void) addPendingUpload:(EZPhoto*)photo;
+
 @end

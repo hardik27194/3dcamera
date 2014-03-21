@@ -18,11 +18,26 @@ typedef enum {
 
 typedef enum {
     kUploadInit,
-    kUploadPhotoInfo,
-    kExchangePhoto,
-    kUpdateConversation,
+    kUploadStart,
+    kUploadFailure,
     kUploadDone
 } EZUploadStatus;
+
+typedef enum {
+    kUpdateNone,
+    kUpdateStart,
+    kUpdateFailure,
+    kUpdateDone
+} EZUpdateStatus;
+
+
+typedef enum{
+    kExchangeNone,
+    kExchangeStart,
+    kExchangeFailure,
+    kExchangeDone
+} EZExchangeStatus;
+
 
 
 @class ALAsset;
@@ -131,8 +146,15 @@ typedef enum {
 
 //Upload the photo file itself success
 //@property (nonatomic, assign) BOOL uploadPhotoSuccess;
-@property (nonatomic, assign) EZUploadStatus uploadStatus;
+//@property (nonatomic, assign) EZUploadStatus uploadStatus;
 
+@property (nonatomic, assign) EZUploadStatus contentStatus;
+
+@property (nonatomic, assign) EZUploadStatus infoStatus;
+
+@property (nonatomic, assign) EZUploadStatus exchangeStatus;
+
+@property (nonatomic, assign) EZUpdateStatus updateStatus;
 
 //Mean I will delte this photo from server.
 @property (nonatomic, assign) BOOL deleted;
@@ -141,6 +163,10 @@ typedef enum {
 @property (nonatomic, strong) EZEventBlock progress;
 
 @property (nonatomic, strong) EZEventBlock uploadSuccess;
+
+
+//Will get called before remove the task from the queue.
+//@property (nonatomic, strong) EZEventBlock uploadCompleted;
 
 @property (nonatomic, strong) NSString* exchangePersonID;
 

@@ -2480,6 +2480,15 @@ context:(void *)context
                 [_leftBarButton setTitle:macroControlInfo(@"Return")];
                 _isUploading = true;
                 _progressView.hidden = NO;
+                [self addChatInfo:weakSelf.shotPhoto];
+                if(self.shotPhoto.conversations.count){
+                    //weakSelf.shotPhoto.uploadStatus = kUpdateConversation;
+                    self.shotPhoto.updateStatus = kUpdateStart;
+                    [[EZDataUtil getInstance] addPendingUpload:weakSelf.shotPhoto];
+                    [[EZDataUtil getInstance] uploadPendingPhoto];
+                    EZDEBUG(@"directly call success");
+                }
+
                 
                 _disPhoto = [weakSelf createDisplayPhoto:weakSelf.shotPhoto];
                 [[EZMessageCenter getInstance]postEvent:EZTakePicture attached:_disPhoto];
@@ -2492,14 +2501,6 @@ context:(void *)context
                     }
                     executedFlag = true;
                     [_progressView setProgress:1.0 animated:TRUE];
-                    [weakSelf addChatInfo:weakSelf.shotPhoto];
-                   if(_uploadStatus == kUploadingSuccess){
-                        weakSelf.shotPhoto.uploadStatus = kUpdateConversation;
-                        [[EZDataUtil getInstance].pendingUploads addObject:weakSelf.shotPhoto];
-                        [[EZDataUtil getInstance] uploadPendingPhoto];
-                        EZDEBUG(@"directly call success");
-                        //_uploadSuccessBlock(nil);
-                    }
                     [weakSelf innerCancel:YES];
                     
                 });
@@ -2515,7 +2516,7 @@ context:(void *)context
                     //[[EZUIUtility sharedEZUIUtility] raiseInfoWindow:@"上传失败" info:@"羽毛正在重试"];
                     //[weakSelf changePhoto];
                     [weakSelf showErrorInfo:macroControlInfo(@"Network not available")];
-                    [weakSelf addChatInfo:weakSelf.shotPhoto];
+                    //[weakSelf addChatInfo:weakSelf.shotPhoto];
                     dispatch_later(1.0, ^(){
                         [weakSelf innerCancel:YES];
                     });
@@ -2532,10 +2533,6 @@ context:(void *)context
                     dispatch_later(0.2, ^(){
                         weakSelf.progressView.hidden = YES;
                     });
-                    [weakSelf addChatInfo:weakSelf.shotPhoto];
-                    weakSelf.shotPhoto.uploadStatus = kUpdateConversation;
-                    [[EZDataUtil getInstance].pendingUploads addObject:weakSelf.shotPhoto];
-                    [[EZDataUtil getInstance] uploadPendingPhoto];
                 };
                 _shotPhoto.uploadSuccess = _uploadSuccessBlock;
                 //_shotPhoto.
