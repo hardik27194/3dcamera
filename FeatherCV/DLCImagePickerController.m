@@ -489,11 +489,15 @@
     //__weak DLCImagePickerController* weakSelf = self;
     //Why do this?
     //Create a closure.
-    _shotPhoto = [[EZPhoto alloc] init];
-    EZPhoto* localPhoto = _shotPhoto;
-    _shotPhoto.personID = currentLoginID;
-    _shotPhoto.exchangePersonID = _personID;
-    [self startPreFetch:localPhoto imageSuccess:nil];
+    if(_isPhotoRequest){
+        EZDEBUG(@"To meet the photo request");
+    }else{
+        _shotPhoto = [[EZPhoto alloc] init];
+        EZPhoto* localPhoto = _shotPhoto;
+        _shotPhoto.personID = currentLoginID;
+        _shotPhoto.exchangePersonID = _personID;
+        [self startPreFetch:localPhoto imageSuccess:nil];
+    }
 }
 
 //This method is no more necessary.
@@ -502,12 +506,17 @@
     //EZDEBUG(@"Start cancel prev match call:%@", matchedPt.photoID);
     //if(_shotPhoto.photoRelations.count){
     //    EZPhoto* matched = [_shotPhoto.photoRelations objectAtIndex:0];
-    EZDEBUG(@"Cancle prefetch");
-    [[EZDataUtil getInstance] cancelPrematchPhoto:matchedPt success:^(id success){
-        EZDEBUG(@"cancel:%@ success", matchedPt.photoID);
-    } failure:^(id err){
-        EZDEBUG(@"Cancel Failure:%@", err);
-    }];
+    
+    EZDEBUG(@"Cancle prefetch:%i", _isPhotoRequest);
+    if(_isPhotoRequest){
+        
+    }else{
+        [[EZDataUtil getInstance] cancelPrematchPhoto:matchedPt success:^(id success){
+            EZDEBUG(@"cancel:%@ success", matchedPt.photoID);
+        } failure:^(id err){
+            EZDEBUG(@"Cancel Failure:%@", err);
+        }];
+    }
 }
 
 - (EZNightBlurFilter*) createNightFilter
@@ -2197,6 +2206,9 @@ context:(void *)context
             EZDEBUG(@"pending get called");
         } failure:^(id err){
             EZDEBUG(@"failure get called");
+            dispatch_later(1.0, ^(){
+                [self innerCancel:YES];
+            });
             //EZDisplayPhoto* dp = [self createDisplayPhoto:_shotPhoto];
             _disPhoto.isFront = true;
             //[[EZMessageCenter getInstance]postEvent:EZTakePicture attached:dp];
@@ -2488,10 +2500,15 @@ context:(void *)context
                     [[EZDataUtil getInstance] uploadPendingPhoto];
                     EZDEBUG(@"directly call success");
                 }
-
-                
-                _disPhoto = [weakSelf createDisplayPhoto:weakSelf.shotPhoto];
-                [[EZMessageCenter getInstance]postEvent:EZTakePicture attached:_disPhoto];
+                if(!_isPhotoRequest){
+                    _disPhoto = [weakSelf createDisplayPhoto:weakSelf.shotPhoto];
+                    [[EZMessageCenter getInstance]postEvent:EZTakePicture attached:_disPhoto];
+                }else{
+                    //weakSelf.shotPhoto.type = kNormalPhoto;
+                    if(_refreshTable){
+                        _refreshTable(nil);
+                    }
+                }
                 EZDEBUG(@"Current photo converstaion:%@", _shotPhoto.conversations);
                 __block BOOL executedFlag = false;
                 dispatch_later(1.5, ^(){
@@ -2595,8 +2612,10 @@ context:(void *)context
 
 - (void) cancelAll:(EZPhoto*)photo
 {
-    for(EZPhoto* ph in photo.photoRelations){
-        [self cancelPrematchPhoto:ph];
+    if(!_isPhotoRequest){
+        for(EZPhoto* ph in photo.photoRelations){
+            [self cancelPrematchPhoto:ph];
+        }
     }
     //for(EZPhoto* ph in matchedPhotos){
     //    [self cancelPrematchPhoto:ph];
@@ -2608,6 +2627,12 @@ context:(void *)context
     EZDEBUG(@"trigger pending upload");
     //No need to flip it any more
     //disPhoto.isFront = false;
+    if(_isPhotoRequest){
+        _shotPhoto.updateStatus = kUpdateDone;
+        _shotPhoto.contentStatus = kUploadInit;
+        _shotPhoto.infoStatus = kUploadInit;
+        _shotPhoto.exchangeStatus = kExchangeDone;
+    }
     [[EZDataUtil getInstance].pendingUploads addObject:_shotPhoto];
     [[EZDataUtil getInstance] uploadPendingPhoto];
 }

@@ -39,6 +39,10 @@ typedef enum{
 } EZExchangeStatus;
 
 
+typedef enum {
+    kNormalPhoto,
+    kPhotoRequest
+}EZPhotoType;
 
 @class ALAsset;
 @class EZPerson;
@@ -53,6 +57,8 @@ typedef enum{
 
 @property (nonatomic, strong) NSString* personID;
 
+
+@property (nonatomic, assign) EZPhotoType type;
 //Only start upload when this flag is true
 @property (nonatomic, assign) BOOL startUpload;
 

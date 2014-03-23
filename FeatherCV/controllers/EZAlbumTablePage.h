@@ -110,6 +110,6 @@
 - (void) storeCurrent;
 //Where do we begin
 //It used to save the memory consumption
-- (void) raiseCamera;
+- (void) raiseCamera:(EZPhoto*)photo indexPath:(NSIndexPath*)indexPath;
 
 @end

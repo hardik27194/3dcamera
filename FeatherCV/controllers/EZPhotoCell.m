@@ -130,6 +130,12 @@
         _moreButton.center = CGPointMake(CurrentScreenWidth - 30, CurrentScreenHeight - 27);
         [self.container addSubview:_moreButton];
         
+        _cameraView = [[EZClickView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
+        _cameraView.center = _container.center;
+        _cameraView.backgroundColor = RGBCOLOR(255, 128, 0);
+        _cameraView.hidden = YES;
+        [_container addSubview:_cameraView];
+        
         
         [self.contentView addSubview:_container];
         //[self.contentView addSubview:_toolRegion];

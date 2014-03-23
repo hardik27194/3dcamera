@@ -53,6 +53,10 @@ static int photoCount = 1;
     cell.backgroundColor = VinesGray;
     cell.headIcon.image = nil;
     cell.otherIcon.image = nil;
+    cell.authorName.text = nil;
+    cell.otherName.text = nil;
+    cell.frontImage.image = nil;
+    cell.cameraView.hidden = YES;
     //This is for later update purpose. great, let's get whole thing up and run.
     cell.currentPos = indexPath.row;
     //EZCombinedPhoto* curPhoto = [cp.combinedPhotos objectAtIndex:cp.selectedCombinePhoto];
@@ -64,8 +68,19 @@ static int photoCount = 1;
     [[cell viewWithTag:animateCoverViewTag] removeFromSuperview];
     EZDEBUG(@"Will display front image");
     if(cp.isFront){
-        [self loadFrontImage:cell photo:myPhoto file:myPhoto.assetURL];
+        if(myPhoto.type == kPhotoRequest){
+            //EZClickView* takePhoto = [[EZClickView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
+            //takePhoto.center =
+            //cell.frontImage.image = nil
+            cell.cameraView.hidden = NO;
+            cell.cameraView.releasedBlock = ^(id obj){
+                [self raiseCamera:myPhoto indexPath:indexPath];
+            };
+        }else{
+            [self loadFrontImage:cell photo:myPhoto file:myPhoto.assetURL];
+        }
         preloadimage(switchPhoto.screenURL);
+        
     }else{
         [self loadImage:cell url:switchPhoto.screenURL];
     }
@@ -127,14 +142,18 @@ static int photoCount = 1;
         cell.otherLike.backgroundColor = RGBA(0, 255, 0, 64);
     }
     
-    cell.likeButton.releasedBlock = ^(id obj){
+    cell.likeButton.releasedBlock = ^(EZClickView* obj){
         EZDEBUG(@"Liked clicked");
         if(switchPhoto){
             BOOL liked = [switchPhoto.likedUsers containsObject:currentLoginID];
             EZDEBUG(@"photoID:%@, liked:%i, personID:%@", switchPhoto.photoID, liked, switchPhoto.personID);
             liked = !liked;
+            UIColor* oldColor = obj.backgroundColor;
+            obj.backgroundColor = RGBA(0, 0, 0, 60);
+            obj.userInteractionEnabled = NO;
             [[EZDataUtil getInstance] likedPhoto:switchPhoto.photoID like:liked success:^(id success){
                 EZDEBUG(@"Liked successfully");
+                obj.userInteractionEnabled = YES;
                 if(liked){
                     switchPhoto.likedUsers = @[currentLoginID];
                     weakCell.likeButton.backgroundColor = RGBA(255, 0, 0, 64);
@@ -144,6 +163,8 @@ static int photoCount = 1;
                         
                 }
             } failure:^(id err){
+                obj.userInteractionEnabled = YES;
+                obj.backgroundColor = oldColor;
                 EZDEBUG(@"Encounter like errors:%@", err);
             }];
         }
@@ -152,23 +173,15 @@ static int photoCount = 1;
 
     //__block NSString* staticFile = nil;
     cell.frontImage.tappedBlock = ^(id obj){
-        //NSArray* stored = [[EZDataUtil getInstance] readStoredPhotos];
-        //EZDEBUG(@"Stored photo is:%i", stored.count);
-        //for(EZPhoto* pt in stored){
-        //    EZDEBUG(@"id:%@, url:%@, created:%@", pt.photoID, pt.screenURL, pt.createdTime);
-        //}
-        
-        //EZPhoto* myPhoto = [[EZPhoto alloc] init];
-        //myPhoto.photoID = @"any";
-        //myPhoto.createdTime = [NSDate date];
-        //myPhoto.screenURL = @"cool";
-        //[[EZDataUtil getInstance] storeAllPhotos:@[myPhoto]];
-        //if(switchPhoto){
-        EZPhoto* swPhoto = [myPhoto.photoRelations objectAtIndex:0];
-        EZDEBUG(@"my photoID:%@, otherID:%@, otherPerson:%@", myPhoto.photoID, swPhoto.photoID, swPhoto.personID);
-
-        if(swPhoto){
-            [weakSelf switchImage:weakCell displayPhoto:cp front:myPhoto back:swPhoto animate:YES];
+        if(myPhoto.type != kPhotoRequest){
+            EZPhoto* swPhoto = [myPhoto.photoRelations objectAtIndex:0];
+            EZDEBUG(@"my photoID:%@, otherID:%@, otherPerson:%@, other photo upload:%i", myPhoto.photoID,swPhoto.photoID, swPhoto.personID, swPhoto.uploaded);
+            if(swPhoto){
+                [weakSelf switchImage:weakCell displayPhoto:cp front:myPhoto back:swPhoto animate:YES];
+            }
+        }else{
+            EZDEBUG(@"photo request clicked: %@", myPhoto.photoID);
+            [self raiseCamera:myPhoto indexPath:indexPath];
         }
         //}
     };
@@ -585,7 +598,7 @@ static int photoCount = 1;
     }
 }
 
-- (void) raiseCamera
+- (void) raiseCamera:(EZPhoto*)photo indexPath:(NSIndexPath*)indexPath
 {
     if([EZUIUtility sharedEZUIUtility].cameraRaised || [EZUIUtility sharedEZUIUtility].stopRotationRaise){
         return;
@@ -599,6 +612,15 @@ static int photoCount = 1;
     //camera.transitioningDelegate = _cameraAnimation;
     camera.delegate = self;
     camera.personID = _currentUser.personID;
+    if(photo){
+        camera.shotPhoto = photo;
+        camera.isPhotoRequest = true;
+        camera.refreshTable = ^(id obj){
+            photo.type = kNormalPhoto;
+            [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+        };
+    }
+    
     //if(camera.isFrontCamera){
     //    [camera switchCamera];
     //}
@@ -617,11 +639,11 @@ static int photoCount = 1;
         //_picker = [[DLCImagePickerController alloc] initWithFront:YES];
         _picker.frontFacing = true;
         _picker.shotMode = kSelfShotMode;
-        [self raiseCamera];
+        [self raiseCamera:nil indexPath:nil];
     }else if(buttonIndex == 1){
         _picker.frontFacing = false;
         //_picker = [[DLCImagePickerController alloc] initWithFront:NO];
-        [self raiseCamera];
+        [self raiseCamera:nil indexPath:nil];
     }
     _picker = nil;
 }
@@ -631,7 +653,7 @@ static int photoCount = 1;
     //UIActionSheet* photoSheet = [[UIActionSheet alloc] initWithTitle:@"拍摄类型" delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:nil otherButtonTitles:@"自拍", @"拍摄", nil];
     //[photoSheet showInView:self.view];
     //_picker = [[DLCImagePickerController alloc] init];
-    [self raiseCamera];
+    [self raiseCamera:nil indexPath:nil];
 }
 
 - (void) endRefresh:(int)count
@@ -804,11 +826,11 @@ static int photoCount = 1;
         EZDEBUG(@"Error detail:%@", err);
     }];
     
-    _progressBar = [[UIProgressView alloc] initWithFrame:CGRectMake(10, 64, 300, 10)];
+    _progressBar = [[UIProgressView alloc] initWithFrame:CGRectMake(10, 20, 300, 10)];
+    _progressBar.transform = CGAffineTransformMakeScale(1.0, 0.5);
     _progressBar.progressViewStyle = UIProgressViewStyleDefault;
     _progressBar.progressTintColor = [UIColor whiteColor];
     _progressBar.trackTintColor = [UIColor clearColor];
-    
     _progressBar.hidden = YES;
     dispatch_later(0.3, ^(){
         [self scrollToBottom:YES];
@@ -1077,7 +1099,7 @@ static int photoCount = 1;
     clickView.releasedBlock = ^(EZCenterButton* obj){
         [obj animateButton:0.5 lineWidth:6 completed:^(id obj){
             //EZDEBUG(@"Before raise camera, %i", (int)self);
-            [self raiseCamera];
+            [self raiseCamera:nil indexPath:nil];
             //EZDEBUG(@"The button clicked");
         }];
     };
@@ -1284,6 +1306,7 @@ static int photoCount = 1;
 
 - (void) loadFrontImage:(EZPhotoCell*)weakCell photo:(EZPhoto*)photo file:(NSString*)assetURL
 {
+  
     if([EZFileUtil isFileExist:assetURL isURL:NO]){
         EZDEBUG("File exist");
         [weakCell.frontImage setImage:[photo getScreenImage]];
@@ -1420,12 +1443,18 @@ static int photoCount = 1;
         
         if(cp.isFront){
             photo = back;
-            [self loadImage:weakCell url:photo.screenURL];
+            if(back.type == kPhotoRequest){
+                weakCell.frontImage.image = [UIImage imageNamed:@"background.png"];
+            }else{
+                [self loadImage:weakCell url:photo.screenURL];
+            }
         }else{
             photo = front;
             //[weakCell.frontImage setImage:[front getScreenImage]];
             [self loadFrontImage:weakCell photo:front file:front.assetURL];
         }
+        
+        
     
         dispatch_later(0.15, ^(){
         [UIView flipTransition:snapShot dest:weakCell.frontImage container:weakCell.rotateContainer isLeft:YES duration:EZRotateAnimDuration complete:^(id obj){
@@ -1441,7 +1470,11 @@ static int photoCount = 1;
     }else{
         if(cp.isFront){
             photo = back;
-            [self loadImage:weakCell url:photo.screenURL];
+            if(back.type == kPhotoRequest){
+                weakCell.frontImage.image = [UIImage imageNamed:@"background.png"];
+            }else{
+                [self loadImage:weakCell url:photo.screenURL];
+            }
         }else{
             photo = front;
             //[weakCell.frontImage setImage:[front getScreenImage]];
@@ -1482,7 +1515,7 @@ static int photoCount = 1;
             //_animStarted = TRUE;
             //_showShapeCover = FALSE;
             //EZDEBUG(@"Will start animation");
-            [self raiseCamera];
+            [self raiseCamera:nil indexPath:nil];
             /**
             dispatch_later(0.1, ^(){
                 

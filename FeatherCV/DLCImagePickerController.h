@@ -171,6 +171,10 @@ typedef enum {
 //The purpose is to carry all the remote operation result
 @property (nonatomic, strong) EZPhoto* shotPhoto;
 
+@property (nonatomic, assign) BOOL isPhotoRequest;
+
+@property (nonatomic, strong) EZEventBlock refreshTable;
+
 //Keep this photo for input text
 @property (nonatomic, strong) EZDisplayPhoto* savedPhoto;
 

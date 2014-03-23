@@ -103,7 +103,8 @@
              @"updateStatus":@(_updateStatus),
              @"exchangeStatus":@(_exchangeStatus),
              @"conversationUpdated":@(_conversationUploaded),
-             @"deleted":@(_deleted)
+             @"deleted":@(_deleted),
+             @"type":@(_type)
              };
 }
 
@@ -126,6 +127,7 @@
              @"conversations":[self conversationToJson],
              @"photoRelations":[self relationsToJson],
              @"relationUsers":[self relationsUserID],
+             @"type":@(_type),
              //@"screenURL":[self screenURL],
              @"likedUsers":_likedUsers.count?_likedUsers:@[]
                  };
@@ -146,6 +148,7 @@
                  @"photoRelations":[self relationsToJson],
                  @"relationUsers":[self relationsUserID],
                  //@"screenURL":[self screenURL],
+                 @"type":@(_type),
                  @"liked":_likedUsers.count?_likedUsers:@[]
                  };
 
@@ -199,6 +202,7 @@
     pt.updateStatus = _updateStatus;
     pt.conversationUploaded = _conversationUploaded;
     pt.deleted = _deleted;
+    pt.type = _type;
     return pt;
 }
 
@@ -212,6 +216,7 @@
     //} failure:^(NSError* err){
     //    EZDEBUG(@"Error to find a person");
     //}];
+    _type = [[dict objectForKey:@"type"] integerValue];
     _photoID = [dict objectForKey:@"photoID"];
     _srcPhotoID = [dict objectForKey:@"srcPhotoID"];
     _assetURL = [dict objectForKey:@"assetURL"];

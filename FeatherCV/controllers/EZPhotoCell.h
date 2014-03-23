@@ -114,6 +114,9 @@
 //Decouple the logic. I love this game.
 @property (nonatomic, strong) EZEventBlock flippedCompleted;
 
+//will show this when encounter a photo request
+@property (nonatomic, strong) EZClickView* cameraView;
+
 //I will use small image initially, then switch to the large image.
 @property (nonatomic, assign) BOOL isLargeImage;
 
