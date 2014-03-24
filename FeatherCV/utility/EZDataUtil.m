@@ -1428,6 +1428,7 @@
 {
     if(_uploadingTasks > 0){
         EZDEBUG(@"Quit for uploading, pending Task:%i", _uploadingTasks);
+        return;
     }
     
     NSArray* uploads = [[NSArray alloc] initWithArray:_pendingUploads];

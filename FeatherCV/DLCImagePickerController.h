@@ -277,6 +277,8 @@ typedef enum {
 
 - (IBAction) configClicked:(id)sender;
 
+
+
 - (id) initWithFront:(BOOL)frontFacing;
 
 @end
