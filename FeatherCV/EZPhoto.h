@@ -176,7 +176,7 @@ typedef enum {
 
 @property (nonatomic, strong) NSString* exchangePersonID;
 
-@property (nonatomic, assign) BOOL conversationUploaded;
+//@property (nonatomic, assign) BOOL conversationUploaded;
 
 //@property (nonatomic, assign) BOOL pendingMatch;
 
@@ -202,6 +202,8 @@ typedef enum {
 - (NSDictionary*) toLocalJson;
 
 - (void) fromJson:(NSDictionary*)dict;
+
+- (BOOL) isUploadDone;
 
 
 @end

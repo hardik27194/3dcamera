@@ -107,6 +107,8 @@
 
 @property (nonatomic, strong) EZClickView* rightCycleButton;
 
+@property (nonatomic, strong) UILabel* networkStatus;
+
 - (void) storeCurrent;
 //Where do we begin
 //It used to save the memory consumption

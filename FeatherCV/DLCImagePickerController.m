@@ -458,21 +458,23 @@
         EZDEBUG("Find prematched photo:%@, srcID:%@, uploaded flag:%i", pt.screenURL, pt.srcPhotoID, pt.uploaded);
         //Mean this user get used once, will adjust it's sequence
         [[EZDataUtil getInstance] adjustActivity:pt.personID];
-        UIImageView* uw = [UIImageView new];
-        [uw preloadImageURL:str2url(pt.screenURL) success:^(UIImage* obj){
+        //UIImageView* uw = [UIImageView new];
+        [[EZDataUtil getInstance] serialLoad:pt.screenURL fullOk:^(UIImage* full){
             EZDEBUG(@"preload success:%@", pt.screenURL);
-                //UIImageView* immd = [UIImageView new];
-                //[weakRef setImageWithURL:str2url(pt.screenURL)];
-                //[immd setImageWithURL:str2url(pt.screenURL)];
+            //UIImageView* immd = [UIImageView new];
+            //[weakRef setImageWithURL:str2url(pt.screenURL)];
+            //[immd setImageWithURL:str2url(pt.screenURL)];
             localPhoto.prefetchDone = YES;
             EZDEBUG(@"test preload result");
             if(imageSuccess){
-                imageSuccess(obj);
+                imageSuccess(full);
             }
-        } failed:^(id err){
-                EZDEBUG(@"Prefetch failure:%@", err);
-                localPhoto.prefetchDone = YES;
+
+        } thumbOk:^(UIImage* thumb){} pending:nil failure:^(NSError* err){
+            EZDEBUG(@"Prefetch failure:%@", err);
+            localPhoto.prefetchDone = YES;
         }];
+        
         if(localPhoto.photoRelations.count > 0){
             [matchedPhotos addObjectsFromArray:localPhoto.photoRelations];
         }
@@ -2429,9 +2431,208 @@ context:(void *)context
     [self.view addSubview:failureMsg];
 }
 
+
+- (void) saveCapturedImage:(CGFloat)progressStart
+{
+    __weak DLCImagePickerController* weakSelf = self;
+    [self savePhoto:^(NSNumber* number){
+        EZDEBUG(@"the upload progress:%f, thread:%i", number.floatValue, [NSThread isMainThread]);
+        if(number){
+            //_progressView.progress = number.floatValue;
+            [weakSelf.progressView setProgress:progressStart + number.floatValue * 0.8 animated:YES];
+        }else{
+            EZDEBUG(@"failed to upload");
+            //weakSelf.progressView.hidden = YES;
+            weakSelf.uploadStatus = kUploadingFailure;
+            if(weakSelf.uploadFailureBlock){
+                EZDEBUG(@"I will call the failure");
+                weakSelf.uploadFailureBlock(nil);
+            }
+            //[[EZDataUtil getInstance].cachedPointer removeObjectForKey:@"Camera"];
+            
+        }
+    } uploadSuccess:^(id sender){
+        EZDEBUG(@"upload success");
+        //weakSelf.progressView.hidden = YES;
+        weakSelf.uploadStatus = kUploadingSuccess;
+        if(weakSelf.uploadSuccessBlock){
+            weakSelf.uploadSuccessBlock(nil);
+        }
+        //[[EZDataUtil getInstance].cachedPointer removeObjectForKey:@"Camera"];
+    }];
+
+}
+
+- (void) confirmUpload
+{
+    _progressView.hidden = NO;
+    __weak DLCImagePickerController* weakSelf = self;
+    [self addChatInfo:weakSelf.shotPhoto];
+    if(self.shotPhoto.conversations.count){
+        //weakSelf.shotPhoto.uploadStatus = kUpdateConversation;
+        self.shotPhoto.updateStatus = kUpdateStart;
+        weakSelf.shotPhoto.type = 0;
+        [[EZDataUtil getInstance] addPendingUpload:weakSelf.shotPhoto];
+        [[EZDataUtil getInstance] uploadPendingPhoto];
+        EZDEBUG(@"directly call success");
+    }
+    
+    _disPhoto = [weakSelf createDisplayPhoto:weakSelf.shotPhoto];
+    [[EZMessageCenter getInstance]postEvent:EZTakePicture attached:_disPhoto];
+    EZDEBUG(@"Current photo converstaion:%@", _shotPhoto.conversations);
+    __block BOOL executedFlag = false;
+    dispatch_later(2.5, ^(){
+        EZDEBUG(@"Timeout called");
+        if(executedFlag){
+            return;
+        }
+        executedFlag = true;
+        _progressView.hidden = YES;
+        [weakSelf showErrorInfo:macroControlInfo(@"Network not available")];
+        //[_progressView setProgress:1.0 animated:TRUE];
+        dispatch_later(0.8,
+                       ^(){
+                           [weakSelf innerCancel:YES];
+                       });
+        
+    });
+    
+    _uploadFailureBlock = ^(id obj){
+        EZDEBUG(@"failure upload");
+        if(executedFlag){
+            //executedFlag = true;
+            return;
+        }
+        executedFlag = true;
+        weakSelf.progressView.hidden = YES;
+        //[[EZUIUtility sharedEZUIUtility] raiseInfoWindow:@"上传失败" info:@"羽毛正在重试"];
+        //[weakSelf changePhoto];
+        [weakSelf showErrorInfo:macroControlInfo(@"Network not available")];
+        //[weakSelf addChatInfo:weakSelf.shotPhoto];
+        dispatch_later(1.0, ^(){
+            [weakSelf innerCancel:YES];
+        });
+    };
+    
+    _uploadSuccessBlock = ^(id obj){
+        if(executedFlag){
+            return;
+        }
+        executedFlag = true;
+        //EZDEBUG(@"photo conversation:%@", weakSelf.shotPhoto.conversations);
+        [weakSelf.progressView setProgress:1.0 animated:YES];
+        [weakSelf changePhoto];
+        dispatch_later(0.2, ^(){
+            weakSelf.progressView.hidden = YES;
+        });
+    };
+    _shotPhoto.uploadSuccess = _uploadSuccessBlock;
+    //_shotPhoto.
+    if(_uploadStatus == kUploading){
+        EZDEBUG(@"have nothing to do");
+    }else if(_uploadStatus == kUploadingFailure){
+        EZDEBUG(@"directly call failure");
+        _uploadFailureBlock(nil);
+    }else if(_uploadStatus == kUploadingSuccess){
+        EZDEBUG(@"directly call success");
+        _uploadSuccessBlock(nil);
+    }
+
+}
+
+
+- (void) confirmPhotoRequest:(CGFloat)progressStart
+{
+    _progressView.hidden = NO;
+    __weak DLCImagePickerController* weakSelf = self;
+    [self addChatInfo:weakSelf.shotPhoto];
+        //weakSelf.shotPhoto.type = kNormalPhoto;
+    
+    
+    EZDEBUG(@"Photo requst Current photo converstaion:%@", _shotPhoto.conversations);
+    if(_refreshTable){
+        _refreshTable(nil);
+    }
+    __block BOOL executedFlag = false;
+    dispatch_later(2.5, ^(){
+        EZDEBUG(@"Timeout called");
+        if(executedFlag){
+            return;
+        }
+        executedFlag = true;
+        _progressView.hidden = YES;
+        [weakSelf showErrorInfo:macroControlInfo(@"Network not available")];
+        //[_progressView setProgress:1.0 animated:TRUE];
+        dispatch_later(0.8,
+                       ^(){
+                           [weakSelf innerCancel:YES];
+                       });
+        
+    });
+    
+    _uploadFailureBlock = ^(id obj){
+        EZDEBUG(@"failure upload");
+        if(executedFlag){
+            //executedFlag = true;
+            return;
+        }
+        executedFlag = true;
+        weakSelf.progressView.hidden = YES;
+        //[[EZUIUtility sharedEZUIUtility] raiseInfoWindow:@"上传失败" info:@"羽毛正在重试"];
+        //[weakSelf changePhoto];
+        [weakSelf showErrorInfo:macroControlInfo(@"Network not available")];
+        //[weakSelf addChatInfo:weakSelf.shotPhoto];
+        dispatch_later(1.0, ^(){
+            [weakSelf innerCancel:YES];
+        });
+    };
+    
+    _uploadSuccessBlock = ^(id obj){
+        if(executedFlag){
+            return;
+        }
+        executedFlag = true;
+        //EZDEBUG(@"photo conversation:%@", weakSelf.shotPhoto.conversations);
+        [weakSelf.progressView setProgress:1.0 animated:YES];
+        [weakSelf changePhoto];
+        dispatch_later(0.2, ^(){
+            weakSelf.progressView.hidden = YES;
+        });
+    };
+    [self savePhoto:^(NSNumber* number){
+        EZDEBUG(@"the upload progress:%f, thread:%i", number.floatValue, [NSThread isMainThread]);
+        if(number){
+            //_progressView.progress = number.floatValue;
+            [weakSelf.progressView setProgress:progressStart + number.floatValue * 0.8 animated:YES];
+        }else{
+            //EZDEBUG(@"failed to upload");
+            //weakSelf.progressView.hidden = YES;
+            //weakSelf.uploadStatus = kUploadingFailure;
+            if(weakSelf.uploadFailureBlock){
+                EZDEBUG(@"I will call the failure");
+                weakSelf.uploadFailureBlock(nil);
+            }
+            //[[EZDataUtil getInstance].cachedPointer removeObjectForKey:@"Camera"];
+            
+        }
+    } uploadSuccess:^(id sender){
+        EZDEBUG(@"upload success");
+        //weakSelf.progressView.hidden = YES;
+        weakSelf.uploadStatus = kUploadingSuccess;
+        if(weakSelf.uploadSuccessBlock){
+            weakSelf.uploadSuccessBlock(nil);
+        }
+        //[[EZDataUtil getInstance].cachedPointer removeObjectForKey:@"Camera"];
+    }];
+
+}
+
+
+
 -(IBAction) takePhoto:(id)sender{
     smileDetected.alpha = 0;
     [_coverTapView removeFromSuperview];
+    CGFloat progressStart = 0.2;
     if(_cancelShot){
         _cancelShot = false;
         EZDEBUG(@"Cancel shotting");
@@ -2457,37 +2658,16 @@ context:(void *)context
         [self changeButtonStatus:YES];
         _toolBarRegion.alpha = 0.0;
         _isImageWithFlash = NO;
-        CGFloat progressStart = 0.2;
         [_progressView setProgress:progressStart animated:NO];
         //[[EZDataUtil getInstance].cachedPointer setObject:self forKey:@"Camera"];
         _captureComplete = ^(id obj){
             EZDEBUG(@"photo captured, we will upload");
             weakSelf.uploadStatus = kUploading;
-            [weakSelf savePhoto:^(NSNumber* number){
-                EZDEBUG(@"the upload progress:%f, thread:%i", number.floatValue, [NSThread isMainThread]);
-                if(number){
-                    //_progressView.progress = number.floatValue;
-                    [weakSelf.progressView setProgress:progressStart + number.floatValue * 0.8 animated:YES];
-                }else{
-                    EZDEBUG(@"failed to upload");
-                    //weakSelf.progressView.hidden = YES;
-                    weakSelf.uploadStatus = kUploadingFailure;
-                    if(weakSelf.uploadFailureBlock){
-                        EZDEBUG(@"I will call the failure");
-                        weakSelf.uploadFailureBlock(nil);
-                    }
-                    //[[EZDataUtil getInstance].cachedPointer removeObjectForKey:@"Camera"];
-                    
-                }
-            } uploadSuccess:^(id sender){
-                EZDEBUG(@"upload success");
-                //weakSelf.progressView.hidden = YES;
-                weakSelf.uploadStatus = kUploadingSuccess;
-                if(weakSelf.uploadSuccessBlock){
-                    weakSelf.uploadSuccessBlock(nil);
-                }
-                //[[EZDataUtil getInstance].cachedPointer removeObjectForKey:@"Camera"];
-            }];
+            if(!weakSelf.isPhotoRequest){
+                //if(weakSelf.shotPhoto.photoRelations.count){
+                [weakSelf saveCapturedImage:progressStart];
+                //}
+            }
         };
         [self prepareForCapture];
     }else{
@@ -2499,84 +2679,11 @@ context:(void *)context
             if(!_isUploading){
                 [_leftBarButton setTitle:macroControlInfo(@"Return")];
                 _isUploading = true;
-                _progressView.hidden = NO;
-                [self addChatInfo:weakSelf.shotPhoto];
-                if(self.shotPhoto.conversations.count || _isPhotoRequest){
-                    //weakSelf.shotPhoto.uploadStatus = kUpdateConversation;
-                    self.shotPhoto.updateStatus = kUpdateStart;
-                    weakSelf.shotPhoto.type = 0;
-                    [[EZDataUtil getInstance] addPendingUpload:weakSelf.shotPhoto];
-                    [[EZDataUtil getInstance] uploadPendingPhoto];
-                    EZDEBUG(@"directly call success");
-                }
                 if(!_isPhotoRequest){
-                    _disPhoto = [weakSelf createDisplayPhoto:weakSelf.shotPhoto];
-                    [[EZMessageCenter getInstance]postEvent:EZTakePicture attached:_disPhoto];
+                    [self confirmUpload];
                 }else{
-                    //weakSelf.shotPhoto.type = kNormalPhoto;
-                    if(_refreshTable){
-                        _refreshTable(nil);
-                    }
+                    [self confirmPhotoRequest:progressStart];
                 }
-                EZDEBUG(@"Current photo converstaion:%@", _shotPhoto.conversations);
-                __block BOOL executedFlag = false;
-                dispatch_later(2.5, ^(){
-                    EZDEBUG(@"Timeout called");
-                    if(executedFlag){
-                        return;
-                    }
-                    executedFlag = true;
-                    _progressView.hidden = YES;
-                    [weakSelf showErrorInfo:macroControlInfo(@"Network not available")];
-                    //[_progressView setProgress:1.0 animated:TRUE];
-                    dispatch_later(0.8,
-                                   ^(){
-                                       [weakSelf innerCancel:YES];
-                                   });
-                    
-                });
-                
-                _uploadFailureBlock = ^(id obj){
-                    EZDEBUG(@"failure upload");
-                    if(executedFlag){
-                        //executedFlag = true;
-                        return;
-                    }
-                    executedFlag = true;
-                    weakSelf.progressView.hidden = YES;
-                    //[[EZUIUtility sharedEZUIUtility] raiseInfoWindow:@"上传失败" info:@"羽毛正在重试"];
-                    //[weakSelf changePhoto];
-                    [weakSelf showErrorInfo:macroControlInfo(@"Network not available")];
-                    //[weakSelf addChatInfo:weakSelf.shotPhoto];
-                    dispatch_later(1.0, ^(){
-                        [weakSelf innerCancel:YES];
-                    });
-                };
-                
-                _uploadSuccessBlock = ^(id obj){
-                    if(executedFlag){
-                        return;
-                    }
-                    executedFlag = true;
-                    //EZDEBUG(@"photo conversation:%@", weakSelf.shotPhoto.conversations);
-                    [weakSelf.progressView setProgress:1.0 animated:YES];
-                    [weakSelf changePhoto];
-                    dispatch_later(0.2, ^(){
-                        weakSelf.progressView.hidden = YES;
-                    });
-                };
-                _shotPhoto.uploadSuccess = _uploadSuccessBlock;
-                //_shotPhoto.
-                if(_uploadStatus == kUploading){
-                    EZDEBUG(@"have nothing to do");
-                }else if(_uploadStatus == kUploadingFailure){
-                    EZDEBUG(@"directly call failure");
-                    _uploadFailureBlock(nil);
-                }else if(_uploadStatus == kUploadingSuccess){
-                    EZDEBUG(@"directly call success");
-                    _uploadSuccessBlock(nil);
-                }
-                
             }
             //[self fakeAnimation:nil];
             //cancelButton.hidden = YES;
@@ -2642,7 +2749,7 @@ context:(void *)context
     //No need to flip it any more
     //disPhoto.isFront = false;
     if(_isPhotoRequest){
-        _shotPhoto.updateStatus = kUpdateDone;
+        _shotPhoto.updateStatus = kUpdateStart;
         _shotPhoto.contentStatus = kUploadInit;
         _shotPhoto.infoStatus = kUploadDone;
         _shotPhoto.exchangeStatus = kExchangeDone;
@@ -2855,8 +2962,11 @@ context:(void *)context
             return;
         }
         //I will delete
-        currentPhoto.deleted = true;
-        [self cancelAll:currentPhoto];
+        
+        if(!_isPhotoRequest){
+            currentPhoto.deleted = true;
+            [self cancelAll:currentPhoto];
+        }
         [self showTextField:false];
         //self.hideTextInput
         //_shotPhoto = [[EZPhoto alloc] init];
@@ -2869,8 +2979,10 @@ context:(void *)context
         [self changeButtonStatus:NO];
     }else{
         [self innerCancel:YES];
-        currentPhoto.deleted = true;
-        [self cancelAll:currentPhoto];
+        if(!_isPhotoRequest){
+            currentPhoto.deleted = true;
+            [self cancelAll:currentPhoto];
+        }
     }
     //[self cancelPrematchPhoto:currentPhoto];
     

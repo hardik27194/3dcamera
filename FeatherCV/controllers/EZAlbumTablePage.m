@@ -34,6 +34,7 @@
 #import "EZAnimationUtil.h"
 #import "EZBlurAnimator.h"
 #import "EZNote.h"
+#import "EZCoreAccessor.h"
 
 
 #define  originalTitle  @"feather"
@@ -157,7 +158,7 @@ static int photoCount = 1;
             UIColor* oldColor = obj.backgroundColor;
             obj.backgroundColor = RGBA(0, 0, 0, 60);
             obj.userInteractionEnabled = NO;
-            [[EZDataUtil getInstance] likedPhoto:switchPhoto.photoID like:liked success:^(id success){
+            [[EZDataUtil getInstance] likedPhoto:switchPhoto.photoID ownPhotoID:myPhoto.photoID like:liked success:^(id success){
                 EZDEBUG(@"Liked successfully");
                 obj.userInteractionEnabled = YES;
                 if(liked){
@@ -821,19 +822,30 @@ static int photoCount = 1;
     
     EZDEBUG(@"The login personID:%@, getID:%@", [EZDataUtil getInstance].currentPersonID, [[EZDataUtil getInstance] getCurrentPersonID]);
     
-    [_combinedPhotos addObjectsFromArray:[self wrapPhotos:[[EZDataUtil getInstance] getStoredPhotos]]];
-    EZDEBUG(@"The stored photo is %i", _combinedPhotos.count);
-    [[EZDataUtil getInstance] queryPhotos:_combinedPhotos.count pageSize:photoPageSize otherID:_currentUser.personID success:^(NSArray* arr){
-        EZDEBUG(@"returned length:%i", arr.count);
-        //[_combinedPhotos addObjectsFromArray:arr];
-        [self reloadRows:arr reload:NO];
-        dispatch_later(0.1,
-         ^(){
-             [self scrollToBottom:YES];
-        });
-    } failure:^(NSError* err){
-        EZDEBUG(@"Error detail:%@", err);
-    }];
+    EZEventBlock queryPhotoBlock = ^(id user){
+        if(user){
+            //Mean new user are login.
+            [EZCoreAccessor cleanClientDB];
+        }
+        [_combinedPhotos addObjectsFromArray:[self wrapPhotos:[[EZDataUtil getInstance] getStoredPhotos]]];
+        EZDEBUG(@"The stored photo is %i", _combinedPhotos.count);
+        [[EZDataUtil getInstance] queryPhotos:_combinedPhotos.count pageSize:photoPageSize otherID:_currentUser.personID success:^(NSArray* arr){
+            EZDEBUG(@"returned length:%i", arr.count);
+            //[_combinedPhotos addObjectsFromArray:arr];
+            [self reloadRows:arr reload:NO];
+            dispatch_later(0.1,
+            ^(){
+                [self scrollToBottom:YES];
+            });
+        } failure:^(NSError* err){
+            EZDEBUG(@"Error detail:%@", err);
+        }];
+    };
+    if(currentLoginID){
+        queryPhotoBlock(nil);
+    }else{
+        [[EZMessageCenter getInstance] registerEvent:EZUserAuthenticated block:queryPhotoBlock];
+    }
     
     _progressBar = [[UIProgressView alloc] initWithFrame:CGRectMake(10, 20, 300, 10)];
     _progressBar.transform = CGAffineTransformMakeScale(1.0, 0.5);
@@ -841,14 +853,20 @@ static int photoCount = 1;
     _progressBar.progressTintColor = [UIColor whiteColor];
     _progressBar.trackTintColor = [UIColor clearColor];
     _progressBar.hidden = YES;
+    
+    
+    _networkStatus = [[UILabel alloc] initWithFrame:CGRectMake(0, 20, CurrentScreenWidth, 20)];
+    _networkStatus.textAlignment = NSTextAlignmentCenter;
+    _networkStatus.textColor = [UIColor whiteColor];
+    _networkStatus.font = [UIFont systemFontOfSize:12];
+    [_networkStatus enableShadow:[UIColor blackColor]];
+    
     dispatch_later(0.3, ^(){
         [self scrollToBottom:YES];
-        [TopView addSubview:_progressBar];
+        //[TopView addSubview:_progressBar];
+        [TopView addSubview:_networkStatus];
     });
     //self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"通讯录" style:UIBarButtonItemStylePlain target:self action:@selector(showMenu:)];
-    
-    //self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:<#(UIView *)#>]
-    //self.navigationItem.leftBarButtonItem = [[UI]]
     
     //UIBarButtonItem* barItem = [[UIBarButtonItem alloc] initWithTitle:@"通讯录" style:UIBarButtonItemStylePlain target:self action:@selector(showMenu:)];
     
@@ -1131,9 +1149,9 @@ static int photoCount = 1;
     EZDEBUG(@"View did show");
     [super viewDidAppear:animated];
     [EZDataUtil getInstance].centerButton.hidden = NO;
-    if(!_progressBar.superview){
-        [TopView addSubview:_progressBar];
-    }
+    //if(!_progressBar.superview){
+    //    [TopView addSubview:_progressBar];
+    //}
     if(_notFirstTime){
         return;
     }

@@ -102,7 +102,7 @@
              @"infoStatus":@(_infoStatus),
              @"updateStatus":@(_updateStatus),
              @"exchangeStatus":@(_exchangeStatus),
-             @"conversationUpdated":@(_conversationUploaded),
+             //@"conversationUpdated":@(_conversationUploaded),
              @"deleted":@(_deleted),
              @"type":@(_type)
              };
@@ -164,6 +164,11 @@
     return another;
 }
 **/
+- (BOOL) isUploadDone
+{
+    return (_contentStatus == kUploadDone && _updateStatus == kUpdateNone && _infoStatus == kUploadDone && (_exchangeStatus == kExchangeNone && _exchangeStatus == kExchangeDone));
+}
+
 - (void) fromLocalJson:(NSDictionary*)dict
 {
     EZDEBUG(@"from local json raw string:%@", dict);
@@ -173,7 +178,7 @@
     _exchangeStatus = [[dict objectForKey:@"exchangeStatus"] integerValue];
     //_uploadPhotoSuccess = [[dict objectForKey:@"uploadPhotoSuccess"] integerValue];
     _deleted = [[dict objectForKey:@"deleted"] integerValue];
-    _conversationUploaded = [[dict objectForKey:@"conversationUpdated"] integerValue];
+    //_conversationUploaded = [[dict objectForKey:@"conversationUpdated"] integerValue];
     _exchangeStatus = [[dict objectForKey:@"exchangeStatus"] integerValue];
     [self fromJson:dict];
 }
@@ -200,7 +205,7 @@
     pt.contentStatus = _contentStatus;
     pt.exchangeStatus = _exchangeStatus;
     pt.updateStatus = _updateStatus;
-    pt.conversationUploaded = _conversationUploaded;
+    //pt.conversationUploaded = _conversationUploaded;
     pt.deleted = _deleted;
     pt.type = _type;
     return pt;

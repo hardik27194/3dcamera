@@ -500,14 +500,20 @@
 {
     NSString* localFull = [self preloadImage:fullURL success:fullBlock failed:failure];
     if(localFull){
-        fullBlock(localFull);
+        if(localFull){
+            fullBlock(localFull);
+        }
     }else{
         NSString* thumbURL = url2thumb(fullURL);
         NSString* localThumb = [self preloadImage:thumbURL success:thumbOk failed:failure];
         if(localThumb){
-            thumbOk(localThumb);
+            if(thumbOk){
+                thumbOk(localThumb);
+            }
         }else{
-            pending(nil);
+            if(pending){
+                pending(nil);
+            }
         }
     }
 }
@@ -714,7 +720,6 @@
         EZDEBUG(@"dismiss login person:%@, avatar:%@", ps.name, ps.avatar);
         [registerCtl dismissViewControllerAnimated:NO completion:nil];
     }];
-    
 }
 
 
@@ -1027,29 +1032,29 @@
 
 //Should I give the person id or what?
 //Let's give it. Expose the parameter make the function status free. More easier to debug
-- (void) likedPhoto:(NSString*)combinePhotoID like:(BOOL)like success:(EZEventBlock)success failure:(EZEventBlock)failure
+- (void) likedPhoto:(NSString*)combinePhotoID ownPhotoID:(NSString*)ownPhotoID like:(BOOL)like success:(EZEventBlock)success failure:(EZEventBlock)failure
 {
     EZDEBUG(@"combinePhotoID:%@", combinePhotoID);
     if(!self.currentPersonID){
         //Not login user.
         //
         [self triggerLogin:^(EZPerson* ps){
-            [self rawLikePhoto:combinePhotoID like:(BOOL)like success:success failure:failure];
+            [self rawLikePhoto:combinePhotoID ownPhotoID:ownPhotoID like:(BOOL)like success:success failure:failure];
         } failure:^(id obj){
             //failure(macroControlInfo(@""));
             [[EZUIUtility sharedEZUIUtility] raiseInfoWindow:macroControlInfo(@"register-like-error") info:macroControlInfo(@"Please try it later")];
         } reason:macroControlInfo(@"register-like") isLogin:NO];
     }else{
         EZDEBUG(@"Will like directly");
-        [self rawLikePhoto:combinePhotoID like:like success:success failure:failure];
+        [self rawLikePhoto:combinePhotoID ownPhotoID:ownPhotoID like:like success:success failure:failure];
     }
 
 }
 
 //Will not trigger login.
-- (void) rawLikePhoto:(NSString*)photoID like:(BOOL)like success:(EZEventBlock)success failure:(EZEventBlock)failure
+- (void) rawLikePhoto:(NSString*)photoID ownPhotoID:(NSString*)ownPhotoID like:(BOOL)like success:(EZEventBlock)success failure:(EZEventBlock)failure
 {
-    [EZNetworkUtility postParameterAsJson:@"photo/info" parameters:@{@"cmd":@"like", @"photoID":photoID, @"like":@(like)} complete:^(id info){
+    [EZNetworkUtility postParameterAsJson:@"photo/info" parameters:@{@"cmd":@"like", @"photoID":photoID, @"like":@(like), @"ownPhotoID":ownPhotoID} complete:^(id info){
         EZDEBUG(@"Like photo result:%@", info);
         if(success){
             success(info);
@@ -1424,6 +1429,34 @@
     **/
 }
 
+
+//Will be called before quit the game,
+//So that next time I will continue what I am doing.
+//This is just great.
+- (void) storePendingPhoto
+{
+    for(int i = 0; i < _pendingPhotos.count; i++){
+        EZPhoto* photo = [_pendingPhotos objectAtIndex:i];
+        if(photo.isUploadDone){
+            //[_pendingUploads removeObject:photo];
+            continue;
+        }
+        
+        LocalPhotos* lp = photo.localPhoto;
+        if(lp){
+            EZDEBUG(@"storePendingPhoto old objects");
+        }else{
+            lp = [[EZCoreAccessor getClientAccessor] create:[LocalPhotos class]];
+            photo.localPhoto = lp;
+        }
+        EZDEBUG(@"storePendingPhoto is inserted:%i", lp.isInserted);
+        lp.payloads = [photo toLocalJson].mutableCopy;
+        lp.photoID = photo.photoID;
+        lp.createdTime = photo.createdTime;
+    }
+    [[EZCoreAccessor getClientAccessor] saveContext];
+}
+
 - (void) uploadPendingPhoto
 {
     if(_uploadingTasks > 0){
@@ -1455,7 +1488,7 @@
             continue;
         }
         
-        if(photo.contentStatus == kUploadDone && (photo.updateStatus == kUpdateDone || photo.updateStatus == kUpdateNone) && photo.infoStatus == kUploadDone && (photo.exchangeStatus == kExchangeNone && photo.exchangeStatus == kExchangeDone)){
+        if(photo.isUploadDone){
             [_pendingUploads removeObject:photo];
             continue;
         }
@@ -1618,12 +1651,10 @@
             [ph fromLocalJson:photo.payloads];
             ph.localPhoto = photo;
             [res addObject:ph];
-        if(ph.photoRelations.count == 0){
+        if(!ph.isUploadDone){
+            EZDEBUG(@"will add photo into pending upload:%@, relations:%i", ph.photoID, ph.photoRelations.count);
             [self.pendingUploads addObject:ph];
         }
-        //}else{
-        //    EZDEBUG(@"Some broken data:%@", photo.payloads);
-        //}
     }
     return res;
 }

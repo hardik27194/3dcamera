@@ -66,7 +66,6 @@
 //Shot photo waiting to get the matched photo.
 //A good change to use the KV listener.
 @property (nonatomic, strong) NSMutableArray* pendingPhotos;
-
 //Act as a hashed Link list
 @property (nonatomic, strong) NSMutableArray* sortedUsers;
 
@@ -135,7 +134,7 @@
 - (void) cleanLogin;
 //Should I give the person id or what?
 //Let's give it. Expose the parameter make the function status free. More easier to debug
-- (void) likedPhoto:(NSString*)photoID like:(BOOL)like success:(EZEventBlock)success failure:(EZEventBlock)failure;
+- (void) likedPhoto:(NSString*)photoID ownPhotoID:(NSString*)ownPhotoID like:(BOOL)like success:(EZEventBlock)success failure:(EZEventBlock)failure;
 
 - (void) prefetchImage:(NSString*) url success:(EZEventBlock)success failure:(EZEventBlock)failure;
 
@@ -276,5 +275,7 @@
 - (void) loadAllPersons;
 
 - (void) addPendingUpload:(EZPhoto*)photo;
+
+- (void) storePendingPhoto;
 
 @end
