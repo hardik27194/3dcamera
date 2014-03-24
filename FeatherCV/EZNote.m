@@ -18,7 +18,7 @@
     _noteID = [dict objectForKey:@"noteID"];
     _photoID = [dict objectForKey:@"photoID"];
     _otherID = [dict objectForKey:@"otherID"];
-    _like = [[dict objectForKey:@"like"] integerValue];
+    _like = [[dict objectForKey:@"like"] boolValue];
 
     //This is the source photoID
     _srcID = [dict objectForKey:@"srcID"];
@@ -27,6 +27,12 @@
     if(matchedDict){
         _matchedPhoto = [[EZPhoto alloc] init];
         [_matchedPhoto fromJson:matchedDict];
+    }
+    
+    NSDictionary* srcDict = [dict objectForKey:@"srcPhoto"];
+    if(srcDict){
+        _srcPhoto = [[EZPhoto alloc] init];
+        [_srcPhoto fromJson:srcDict];
     }
     _createdTime = isoStr2Date([dict objectForKey:@"createdTime"]);
 }

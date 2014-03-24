@@ -454,7 +454,7 @@
 //Will match the photo
 - (void) startPreFetch:(EZPhoto*)localPhoto imageSuccess:(EZEventBlock)imageSuccess
 {
-    [[EZDataUtil getInstance] exchangeWithPerson:_personID success:^(EZPhoto* pt){
+    [[EZDataUtil getInstance] exchangeWithPerson:_personID photoID:_shotPhoto.photoID success:^(EZPhoto* pt){
         EZDEBUG("Find prematched photo:%@, srcID:%@, uploaded flag:%i", pt.screenURL, pt.srcPhotoID, pt.uploaded);
         //Mean this user get used once, will adjust it's sequence
         [[EZDataUtil getInstance] adjustActivity:pt.personID];
@@ -1119,6 +1119,14 @@ context:(void *)context
     //    _turnedImage = TRUE;
         //[self rotateCurrentImage:[disPhoto.photo getScreenImage]];
     //}
+}
+
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
+{
+    if(textField.text.length < 80){
+        return true;
+    }
+    return false;
 }
 
 
@@ -2493,9 +2501,10 @@ context:(void *)context
                 _isUploading = true;
                 _progressView.hidden = NO;
                 [self addChatInfo:weakSelf.shotPhoto];
-                if(self.shotPhoto.conversations.count){
+                if(self.shotPhoto.conversations.count || _isPhotoRequest){
                     //weakSelf.shotPhoto.uploadStatus = kUpdateConversation;
                     self.shotPhoto.updateStatus = kUpdateStart;
+                    weakSelf.shotPhoto.type = 0;
                     [[EZDataUtil getInstance] addPendingUpload:weakSelf.shotPhoto];
                     [[EZDataUtil getInstance] uploadPendingPhoto];
                     EZDEBUG(@"directly call success");
@@ -2630,7 +2639,7 @@ context:(void *)context
     if(_isPhotoRequest){
         _shotPhoto.updateStatus = kUpdateDone;
         _shotPhoto.contentStatus = kUploadInit;
-        _shotPhoto.infoStatus = kUploadInit;
+        _shotPhoto.infoStatus = kUploadDone;
         _shotPhoto.exchangeStatus = kExchangeDone;
     }
     [[EZDataUtil getInstance].pendingUploads addObject:_shotPhoto];

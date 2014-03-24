@@ -69,19 +69,39 @@
 
 - (void) loadPersonInfos
 {
-    _contacts = (NSMutableArray*)[[EZDataUtil getInstance] getSortedPersons:^(NSArray* arr){
+    [[EZDataUtil getInstance] getSortedPersons:^(NSArray* arr){
         //if(currentLoginUser){
         //    [_contacts addObject:currentLoginUser];
         //}
         if(arr){
             [_contacts addObjectsFromArray:arr];
+            
+            /**
+            //Remvoe this code when we quit the debug mode
+            EZPerson* tiange = [[EZPerson alloc] init];
+            tiange.name = @"Tiange";
+            tiange.personID = @"532585b321ae7a2e53522fa0";
+            tiange.joined = TRUE;
+
+            EZPerson* p123 = [[EZPerson alloc] init];
+            p123.name = @"123";
+            p123.personID = @"5325944f21ae7a427d586ae7";
+            p123.joined = TRUE;
+
+            if([currentLoginID isEqualToString:tiange.personID]){
+                [_contacts insertObject:p123 atIndex:1];
+            }else{
+                [_contacts insertObject:tiange atIndex:1];
+            }
+            **/
             [self.tableView reloadData];
         }
     }];
     //[_contacts insertObject:currentLoginUser atIndex:0];
-    if(_contacts.count){
-        [self.tableView reloadData];
-    }
+    
+    //if(_contacts.count){
+    //    [self.tableView reloadData];
+    //}
 }
 
 

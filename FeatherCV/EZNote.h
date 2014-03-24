@@ -28,6 +28,8 @@
 //match flag
 //'notes', {'type':'match','personID':str(subPhoto['personID']), 'srcID':pid, 'matchedID':str(srcID),
 @property (nonatomic, strong) NSString* srcID;
+
+@property (nonatomic, strong) EZPhoto* srcPhoto;
 @property (nonatomic, strong) NSString* matchedID;
 
 @property (nonatomic, strong) NSDate* createdTime;

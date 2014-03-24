@@ -388,6 +388,8 @@
     NSString* type = [dict objectForKey:@"type"];
     EZNote* note = [[EZNote alloc] init];
     [note fromJson:dict];
+    
+    EZDEBUG(@"notes dict like:%i, liked:%i", [[dict objectForKey:@"like"]boolValue] , note.like);
     if([@"match" isEqualToString:type]){
         NSString* photoID = [dict objectForKey:@"srcID"];
         EZDEBUG(@"source id:%@", photoID);
@@ -426,15 +428,16 @@
     }];
 }
 
-- (void) exchangeWithPerson:(NSString*)matchPersonID success:(EZEventBlock)success failure:(EZEventBlock)failure
+- (void) exchangeWithPerson:(NSString*)matchPersonID photoID:(NSString *)photoID success:(EZEventBlock)success failure:(EZEventBlock)failure
 {
     EZDEBUG(@"Begin call exchange photo");
     //NSDictionary* dict = [photo toJson];
-    NSDictionary* dict = nil;
+    NSMutableDictionary* dict = [[NSMutableDictionary alloc] init];
     if(matchPersonID){
-        dict = @{@"personID":matchPersonID} ;
-    }else{
-        dict = @{};
+        [dict setValue:matchPersonID forKey:@"personID"];
+    }
+    if(photoID){
+        [dict setValue:photoID forKey:@"photoID"];
     }
     
     [EZNetworkUtility postJson:@"photo/exchange" parameters:dict complete:^(id ph){
@@ -803,10 +806,12 @@
                 [res addObject:ps];
             }
         }
+        successBlck(res);
     }else{
         [self getPhotoBooks:successBlck];
     }
-    return res;
+    //return res;
+    return nil;
 }
 
 
@@ -1091,6 +1096,7 @@
         //Trigger the person query call
         [self queryPendingPerson];
     }
+    [self adjustActivity:ps.personID];
     return ps;
 }
 
@@ -1454,12 +1460,12 @@
         }
         
         EZEventBlock exchangeContent = ^(EZPhoto* photo){
-             EZDEBUG(@"Will invoke exchange photo, status:%i", photo.exchangeStatus);
+             EZDEBUG(@"Will invoke exchange photo, status:%i, personID:%@", photo.exchangeStatus, photo.personID);
             if(photo.exchangeStatus == kExchangeStart || photo.exchangeStatus == kExchangeFailure){
             ++_uploadingTasks;
                 photo.exchangeStatus = kExchangeStart;
            
-            [self exchangeWithPerson:photo.exchangePersonID success:^(EZPhoto* ph){
+                [self exchangeWithPerson:photo.exchangePersonID photoID:photo.photoID success:^(EZPhoto* ph){
                 EZDEBUG(@"exchange success with:%@", ph.photoID);
                 photo.photoRelations = @[ph];
                 photo.exchangeStatus = kExchangeDone;

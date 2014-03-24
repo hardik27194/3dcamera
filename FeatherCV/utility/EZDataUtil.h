@@ -141,7 +141,7 @@
 
 //- (void) exchangePhoto:(EZPhoto*)photo success:(EZEventBlock)success failure:(EZEventBlock)failure;
 
-- (void) exchangeWithPerson:(NSString*)matchPersonID success:(EZEventBlock)success failure:(EZEventBlock)failure;
+- (void) exchangeWithPerson:(NSString*)matchPersonID photoID:(NSString*)photoID success:(EZEventBlock)success failure:(EZEventBlock)failure;
 //Why this method?
 //Normally, the person is already in the cache by check the photos.
 - (EZPerson*) getPerson:(NSString*)personID;
