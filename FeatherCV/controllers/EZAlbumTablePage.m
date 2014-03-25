@@ -67,14 +67,15 @@ static int photoCount = 1;
     // Configure the cell...
     //[cell displayImage:[myPhoto getLocalImage]];
     [[cell viewWithTag:animateCoverViewTag] removeFromSuperview];
-    EZDEBUG(@"Will display front image");
+    EZDEBUG(@"Will display front image type:%i", myPhoto.typeUI);
     if(cp.isFront){
-        if(myPhoto.type == kPhotoRequest){
+        if(myPhoto.typeUI == kPhotoRequest){
             //EZClickView* takePhoto = [[EZClickView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
             //takePhoto.center =
             //cell.frontImage.image = nil
             cell.cameraView.hidden = NO;
             cell.cameraView.releasedBlock = ^(id obj){
+                EZDEBUG(@"cameraView clicked");
                 [self raiseCamera:myPhoto indexPath:indexPath];
             };
         }else{
@@ -181,16 +182,16 @@ static int photoCount = 1;
 
     //__block NSString* staticFile = nil;
     cell.frontImage.tappedBlock = ^(id obj){
-        if(myPhoto.type != kPhotoRequest){
+        //if(myPhoto.typeUI != kPhotoRequest){
             EZPhoto* swPhoto = [myPhoto.photoRelations objectAtIndex:0];
             EZDEBUG(@"my photoID:%@, otherID:%@, otherPerson:%@, other photo upload:%i", myPhoto.photoID,swPhoto.photoID, swPhoto.personID, swPhoto.uploaded);
             if(swPhoto){
                 [weakSelf switchImage:weakCell displayPhoto:cp front:myPhoto back:swPhoto animate:YES];
             }
-        }else{
-            EZDEBUG(@"photo request clicked: %@", myPhoto.photoID);
-            [self raiseCamera:myPhoto indexPath:indexPath];
-        }
+        //}else{
+        //    EZDEBUG(@"photo request clicked: %@", myPhoto.photoID);
+        //    [self raiseCamera:myPhoto indexPath:indexPath];
+        //}
         //}
     };
     
@@ -624,7 +625,10 @@ static int photoCount = 1;
         camera.shotPhoto = photo;
         camera.isPhotoRequest = true;
         camera.refreshTable = ^(id obj){
-            photo.type = kNormalPhoto;
+            //EZDEBUG("Refresh type:%i", photo.typeUI);
+            photo.typeUI = kNormalPhoto;
+            EZDEBUG("after Refresh type:%i", photo.typeUI);
+
             [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
         };
     }
@@ -910,6 +914,7 @@ static int photoCount = 1;
     EZDisplayPhoto* disPhoto = [_combinedPhotos objectAtIndex:pos];
     disPhoto.isFront = NO;
     disPhoto.photo.photoRelations = @[note.matchedPhoto];
+    EZDEBUG(@"matchedPhoto converstion:%@", note.matchedPhoto.conversations);
     //disPhoto.photo = note.srcPhoto;
     //[_combinedPhotos addObject:disPhoto];
     [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:pos  inSection:0]] withRowAnimation:UITableViewRowAnimationBottom];
@@ -927,10 +932,7 @@ static int photoCount = 1;
         //matched = [note.srcPhoto.photoRelations objectAtIndex:0];
        
     //}
-    
-    
     EZDEBUG(@"srcPhotoID:%@,matchID:%@ uploaded:%i, matched:%@", note.srcPhoto.photoID,note.matchedID, note.srcPhoto.uploaded, matched.photoID);
-    
     
     if(note.srcPhoto && !note.srcPhoto.uploaded){
         EZDisplayPhoto* disPhoto = [[EZDisplayPhoto alloc] init];

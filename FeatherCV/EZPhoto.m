@@ -166,7 +166,7 @@
 **/
 - (BOOL) isUploadDone
 {
-    return (_contentStatus == kUploadDone && _updateStatus == kUpdateNone && _infoStatus == kUploadDone && (_exchangeStatus == kExchangeNone && _exchangeStatus == kExchangeDone));
+    return (_contentStatus == kUploadDone && _updateStatus == kUpdateNone && _infoStatus == kUploadDone && (_exchangeStatus == kExchangeNone || _exchangeStatus == kExchangeDone));
 }
 
 - (void) fromLocalJson:(NSDictionary*)dict
@@ -208,6 +208,7 @@
     //pt.conversationUploaded = _conversationUploaded;
     pt.deleted = _deleted;
     pt.type = _type;
+    pt.typeUI = _type;
     return pt;
 }
 
@@ -222,6 +223,7 @@
     //    EZDEBUG(@"Error to find a person");
     //}];
     _type = [[dict objectForKey:@"type"] integerValue];
+    _typeUI = _type;
     _photoID = [dict objectForKey:@"photoID"];
     _srcPhotoID = [dict objectForKey:@"srcPhotoID"];
     _assetURL = [dict objectForKey:@"assetURL"];

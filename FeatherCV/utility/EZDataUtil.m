@@ -1556,6 +1556,7 @@
         
         };
         
+        
         EZEventBlock uploadInfo = ^(EZPhoto* photo){
             EZDEBUG(@"Will start upload info for:%@", photo.photoID);
             ++_uploadingTasks;
@@ -1578,7 +1579,6 @@
             }];
             
         };
-        
         EZEventBlock updateInfo = ^(EZPhoto* photo){
             EZDEBUG(@"Will start update info for:%@", photo.photoID);
             if([photo.photoID isEmpty]){
@@ -1608,10 +1608,10 @@
             uploadInfo(photo);
         }else if(photo.exchangeStatus == kExchangeFailure || photo.exchangeStatus == kExchangeStart){
             exchangeContent(photo);
-        }else if(photo.contentStatus == kUploadInit){
-            uploadContent(photo);
         }else if(photo.updateStatus == kUpdateStart){
             updateInfo(photo);
+        }else if(photo.contentStatus == kUploadInit){
+            uploadContent(photo);
         }
     }
 }

@@ -59,6 +59,10 @@ typedef enum {
 
 
 @property (nonatomic, assign) EZPhotoType type;
+//It is the same.
+//But only change for the UI, to address the issue 2 purpose contradict with each other.
+@property (nonatomic, assign) EZPhotoType typeUI;
+
 //Only start upload when this flag is true
 @property (nonatomic, assign) BOOL startUpload;
 

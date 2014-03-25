@@ -492,7 +492,7 @@
     //Why do this?
     //Create a closure.
     if(_isPhotoRequest){
-        EZDEBUG(@"To meet the photo request");
+        EZDEBUG(@"To meet the photo request, type:%i", _shotPhoto.type);
     }else{
         _shotPhoto = [[EZPhoto alloc] init];
         EZPhoto* localPhoto = _shotPhoto;
@@ -2471,7 +2471,7 @@ context:(void *)context
     if(self.shotPhoto.conversations.count){
         //weakSelf.shotPhoto.uploadStatus = kUpdateConversation;
         self.shotPhoto.updateStatus = kUpdateStart;
-        weakSelf.shotPhoto.type = 0;
+        //weakSelf.shotPhoto.type = 0;
         [[EZDataUtil getInstance] addPendingUpload:weakSelf.shotPhoto];
         [[EZDataUtil getInstance] uploadPendingPhoto];
         EZDEBUG(@"directly call success");
@@ -2546,7 +2546,7 @@ context:(void *)context
     _progressView.hidden = NO;
     __weak DLCImagePickerController* weakSelf = self;
     [self addChatInfo:weakSelf.shotPhoto];
-        //weakSelf.shotPhoto.type = kNormalPhoto;
+    //weakSelf.shotPhoto.type = kNormalPhoto;
     
     
     EZDEBUG(@"Photo requst Current photo converstaion:%@", _shotPhoto.conversations);
@@ -2710,7 +2710,7 @@ context:(void *)context
                             @"date":[NSDate date]
         }];
     }
-    EZDEBUG(@"added input to photo:%@", photo.conversations);
+    EZDEBUG(@"added input to photo:%@, type:%i", photo.conversations, photo.type);
 }
 
 - (void) savePhoto:(EZEventBlock)progress uploadSuccess:(EZEventBlock)uploadSuccess
@@ -2753,6 +2753,8 @@ context:(void *)context
         _shotPhoto.contentStatus = kUploadInit;
         _shotPhoto.infoStatus = kUploadDone;
         _shotPhoto.exchangeStatus = kExchangeDone;
+    }else{
+        _shotPhoto.infoStatus = kUploadDone;
     }
     [[EZDataUtil getInstance].pendingUploads addObject:_shotPhoto];
     [[EZDataUtil getInstance] uploadPendingPhoto];
