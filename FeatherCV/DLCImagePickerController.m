@@ -1831,7 +1831,6 @@ context:(void *)context
     blurred.image = [orgImage createBlurImage:70];
     [stillCamera stopCameraCapture];
     [_cameraRotateContainer insertSubview:blurred belowSubview:imageView];
-    
     //UIImageView* curView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 100, 100, 100)];
     //curView.backgroundColor = [UIColor redColor];
     //curView.image = blurred.image;
