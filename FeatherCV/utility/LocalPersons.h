@@ -16,5 +16,6 @@
 @property (nonatomic, retain) NSString * mobile;
 @property (nonatomic, retain) NSDictionary * payloads;
 @property (nonatomic, retain) NSDate* lastActive;
+@property (nonatomic, retain) NSNumber* uploaded;
 
 @end

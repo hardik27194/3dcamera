@@ -184,7 +184,7 @@ static int photoCount = 1;
     cell.frontImage.tappedBlock = ^(id obj){
         //if(myPhoto.typeUI != kPhotoRequest){
             EZPhoto* swPhoto = [myPhoto.photoRelations objectAtIndex:0];
-            EZDEBUG(@"my photoID:%@, otherID:%@, otherPerson:%@, other photo upload:%i", myPhoto.photoID,swPhoto.photoID, swPhoto.personID, swPhoto.uploaded);
+            EZDEBUG(@"my photoID:%@, otherID:%@, otherPerson:%@, other photo upload:%i, other screenURL:%@", myPhoto.photoID,swPhoto.photoID, swPhoto.personID, swPhoto.uploaded, swPhoto.screenURL);
             if(swPhoto){
                 [weakSelf switchImage:weakCell displayPhoto:cp front:myPhoto back:swPhoto animate:YES];
             }
@@ -452,7 +452,7 @@ static int photoCount = 1;
 {
     [super viewWillAppear:animated];
     _rightCycleButton.hidden = NO;
-    _leftCyleButton.hidden = NO;
+    _leftContainer.hidden = NO;
     //[[UINavigationBar appearance] setBackgroundImage:ClearBarImage forBarMetrics:UIBarMetricsDefault];
     //[self.navigationController.view addSubview:[EZDataUtil getInstance].naviBarBlur];
     EZDEBUG(@"initial content inset:%@", NSStringFromUIEdgeInsets(self.tableView.contentInset));
@@ -463,7 +463,7 @@ static int photoCount = 1;
     [super viewWillDisappear:animated];
     //[TopView addSubview:_progressBar];
     _progressBar.hidden = YES;
-    _leftCyleButton.hidden = YES;
+    _leftContainer.hidden = YES;
     _rightCycleButton.hidden = YES;
     //[[UINavigationBar appearance] setBackgroundImage:nil forBarMetrics:UIBarMetricsDefault];
     //[_moreButton removeFromSuperview];
@@ -821,6 +821,16 @@ static int photoCount = 1;
             [self addLike:note];
         }else if([@"upload" isEqualToString:note.type]){
             [self insertUpload:note];
+        }else if([EZNoteJoined isEqualToString:note.type]){
+            EZPerson* ps = note.person;
+            //[EZDataUtil getInstance].currentQueryUsers
+            EZDEBUG(@"adjust the activity for person:%@", ps.personID);
+            //[[EZDataUtil getInstance] adjustActivity:ps.personID];
+            _leftMessageCount.hidden = NO;
+        }else if([EZNoteFriendAdd isEqualToString:note.type]){
+            
+        }else if([EZNoteFriendKick isEqualToString:note.type]){
+            
         }
     }];
     
@@ -934,6 +944,7 @@ static int photoCount = 1;
     //}
     EZDEBUG(@"srcPhotoID:%@,matchID:%@ uploaded:%i, matched:%@", note.srcPhoto.photoID,note.matchedID, note.srcPhoto.uploaded, matched.photoID);
     
+    /**
     if(note.srcPhoto && !note.srcPhoto.uploaded){
         EZDisplayPhoto* disPhoto = [[EZDisplayPhoto alloc] init];
         disPhoto.isFront = YES;
@@ -943,6 +954,7 @@ static int photoCount = 1;
         [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:_combinedPhotos.count - 1  inSection:0]] withRowAnimation:UITableViewRowAnimationBottom];
         return;
     }
+     **/
     NSArray* matchedArrs = [[NSArray alloc] initWithArray:_combinedPhotos];
     //NSMutableArray* matchedPhotos = [[NSMutableArray alloc] init];
     int pos = -1;
@@ -1219,12 +1231,26 @@ static int photoCount = 1;
     //[EZDataUtil getInstance].centerButton = clickView;
     _rightCycleButton = clickView;
     
-    _leftCyleButton = [[EZClickView alloc] initWithFrame:CGRectMake(12,30, 46, 46)];
+    _leftContainer = [[UIView alloc] initWithFrame:CGRectMake(12,30, 46, 46)];
+    _leftContainer.backgroundColor = [UIColor clearColor];
+    
+    _leftCyleButton = [[EZClickView alloc] initWithFrame:CGRectMake(0,0, 46, 46)];
     _leftCyleButton.layer.borderColor = [UIColor whiteColor].CGColor;
     _leftCyleButton.layer.borderWidth = 2;
     [_leftCyleButton enableRoundImage];
-    [TopView addSubview:_leftCyleButton];
+    
+    _leftMessageCount = [[UIView alloc] initWithFrame:CGRectMake(34, 0, 12, 12)];
+    _leftMessageCount.layer.borderColor = [UIColor whiteColor].CGColor;
+    _leftMessageCount.layer.borderWidth = 1;
+    _leftMessageCount.backgroundColor = RGBCOLOR(255, 30, 10);
+    [_leftMessageCount enableRoundImage];
+    _leftMessageCount.hidden = YES;
+    [_leftContainer addSubview:_leftCyleButton];
+    [_leftContainer addSubview:_leftMessageCount];
+    
+    [TopView addSubview:_leftContainer];
     _leftCyleButton.releasedBlock = ^(id obj){
+        weakSelf.leftMessageCount.hidden = YES;
         [weakSelf showMenu:nil];
     };
    

@@ -34,12 +34,18 @@
 //joined is false, mean this is a mock user. 
 @property (nonatomic, assign) BOOL joined;
 
+@property (nonatomic, assign) BOOL isFriend;
+
 //Mean this person are querying.
 //You can add key-value pair to listen to this value.
 @property (nonatomic, assign) BOOL isQuerying;
 
+@property (nonatomic, assign) BOOL uploaded;
+
 //Used to sort the user in the array.
 @property (nonatomic, strong) NSDate* lastActive;
+
+@property (nonatomic, assign) NSInteger activityCount;
 
 @property (nonatomic, strong) LocalPersons* localPerson;
 

@@ -40,6 +40,7 @@
     _mobile = [dict objectForKey:@"mobile"];
     _avatar = [dict objectForKey:@"avatar"];
     _email = [dict objectForKey:@"email"];
+    _isFriend = [[dict objectForKey:@"isFriend"] integerValue];
     if([dict objectForKey:@"joinedTime"]){
         _joinedTime = [[EZDataUtil getInstance].isoFormatter  dateFromString:[dict objectForKey:@"joinedTime"]];
     }

@@ -34,6 +34,13 @@
         _srcPhoto = [[EZPhoto alloc] init];
         [_srcPhoto fromJson:srcDict];
     }
+    
+    NSDictionary* personDict = [dict objectForKey:@"person"];
+    if(personDict){
+        _person = [[EZPerson alloc] init];
+        [_person fromJson:personDict];
+    }
+    
     _createdTime = isoStr2Date([dict objectForKey:@"createdTime"]);
 }
 

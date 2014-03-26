@@ -103,7 +103,11 @@
 
 @property (nonatomic, assign) BOOL alreadyExecuted;
 
+@property (nonatomic, strong) UIView* leftContainer;
+
 @property (nonatomic, strong) EZClickView* leftCyleButton;
+
+@property (nonatomic, strong) UIView* leftMessageCount;
 
 @property (nonatomic, strong) EZClickView* rightCycleButton;
 

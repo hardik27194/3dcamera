@@ -213,6 +213,7 @@
     for(int i = 0; i < json.count; i++){
         NSDictionary* dict = [json objectAtIndex:i];
         EZPerson* ps = [persons objectAtIndex:i];
+        ps.uploaded = true;
         NSString* localName = ps.name;
         [ps fromJson:dict];
         int joinFlag = [[dict objectForKey:@"joined"] intValue];
@@ -229,6 +230,8 @@
     }
 }
 
+
+
 //Upload Contacts.
 - (void) uploadContacts:(NSArray*)contacts success:(EZEventBlock)succss failure:(EZEventBlock)failure
 {
@@ -238,9 +241,9 @@
         [arr addObject:[ps toJson]];
     }
     [EZNetworkUtility postJson:@"person/info" parameters:@{@"cmd":@"upload",@"persons":arr} complete:^(NSArray* array){
-        EZDEBUG(@"All the returned info:%@", array);
+        //EZDEBUG(@"All the returned info:%@", array);
         [self populatePersons:array persons:contacts];
-        succss(array);
+        succss(contacts);
     } failblk:failure];
 }
 
@@ -389,19 +392,27 @@
     EZNote* note = [[EZNote alloc] init];
     [note fromJson:dict];
     
-    EZDEBUG(@"notes dict like:%i, liked:%i", [[dict objectForKey:@"like"]boolValue] , note.like);
+    EZDEBUG(@"notes dict like:%i, liked:%i, detail:%@", [[dict objectForKey:@"like"]boolValue] , note.like, dict);
     if([@"match" isEqualToString:type]){
         NSString* photoID = [dict objectForKey:@"srcID"];
         EZDEBUG(@"source id:%@", photoID);
         
     }else if([@"like" isEqualToString:type]){
         //MongoUtil.save('notes', {'type':'like','personID':str(photo['personID']),'photoID':photoID,"otherID":personID,"like":likeStr})
-        
         //pid2person(note.otherID);
         EZDEBUG(@"find like notes, source id:%@", note.otherID);
+    }else if([EZNoteJoined isEqualToString:note.type]){
+        EZPerson* currPerson = [_currentQueryUsers objectForKey:note.otherID];
+        if(currPerson){
+            [currPerson fromJson:[dict objectForKey:@"person"]];
+        }else{
+            currPerson = note.person;
+            [_currentQueryUsers setObject:currPerson forKey:note.person.personID];
+        }
+        currPerson.activityCount = 1;
+        [self adjustActivity:currPerson.personID];
     }
     [[EZMessageCenter getInstance] postEvent:EZRecievedNotes attached:note];
-
 }
 
 - (void) queryNotify
@@ -690,10 +701,10 @@
         }];
     }else{
         EZDEBUG(@"photo have no id, waiting for id");
-        failure(@"Need id to upload");
-        if(photo.progress){
-            photo.progress(nil);
-        }
+        //failure(@"Need id to upload");
+        //if(photo.progress){
+        //    photo.progress(nil);
+        //}
     }
 }
 
@@ -903,11 +914,14 @@
                                                  [_contacts addObjectsFromArray:res];
                                                  
                                                  EZEventBlock uploadBlock = ^(id obj){
+                                                     [self checkAndUpload:res];
+                                                     /**
                                                      [self uploadContacts:res success:^(NSArray* persons){
                                                          EZDEBUG(@"uploaded person successful");
                                                      } failure:^(id err){
                                                          EZDEBUG(@"error when upload contacts");
                                                      }];
+                                                      **/
                                                  };
                                                  if(_currentPersonID){
                                                      uploadBlock(nil);
@@ -1011,6 +1025,8 @@
         EZDEBUG(@"Get photoBook callback called:%i", persons.count);
     for(EZPerson* person in persons){
         //EZPerson* person = [[EZPerson alloc] init];
+       
+        /**
         person.personID =int2str(rand()%1000);
         //person.name = [NSString stringWithFormat:@"天哥:%i", i];
         person.avatar = [EZFileUtil fileToURL:@"img02.jpg"].absoluteString;
@@ -1023,6 +1039,7 @@
             person.avatar = [EZFileUtil fileToURL:@"img01.jpg"].absoluteString;
 
         }
+         **/
         //[res addObject:person];
     }
         blk(persons);
@@ -1231,184 +1248,6 @@
 }
 
 
-//Just a trigger.
-//We will return the album one at a time
-//This is reverse number?
-//Start mean how far away from the beginning
-- (void) readAlbumInBackground:(int)start limit:(int)limit;
-{
-    EZDEBUG(@"Start the background thread");
-    __block int count = 0;
-    
-    dispatch_async(_asyncQueue, ^(){
-        // setup our failure view controller in case enumerateGroupsWithTypes fails
-        ALAssetsLibraryAccessFailureBlock failureBlock = ^(NSError *error) {
-            
-            NSString *errorMessage = nil;
-            switch ([error code]) {
-                case ALAssetsLibraryAccessUserDeniedError:
-                case ALAssetsLibraryAccessGloballyDeniedError:
-                    errorMessage = @"The user has declined access to it.";
-                    break;
-                default:
-                    errorMessage = @"Reason unknown.";
-                    break;
-            }
-            EZDEBUG(@"Asset access error:%@", errorMessage);
-        };
-        
-        __block int groupCount = 1;
-        __block int groupPos = 0;
-        __block int photoCount = 0;
-        //__block NSMutableArray* loadedPhotos = [[NSMutableArray alloc] init];
-        // emumerate through our groups and only add groups that contain photos
-        ALAssetsLibraryGroupsEnumerationResultsBlock listGroupBlock = ^(ALAssetsGroup *group, BOOL *stop) {
-            
-            ALAssetsFilter *onlyPhotosFilter = [ALAssetsFilter allPhotos];
-            [group setAssetsFilter:onlyPhotosFilter];
-            //if ([group numberOfAssets] > 0)
-            //{
-            //[self.groups addObject:group];
-            //}
-            int assetCount = [group numberOfAssets];
-            int begin = assetCount - start;
-            EZDEBUG(@"assetCount:%i, stop:%i", assetCount, *stop);
-            if(assetCount > 0){
-                [group enumerateAssetsUsingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop) {
-                    EZDEBUG(@"stopped:%i, index:%i, assertCount:%i", *stop, index, assetCount);
-                    ++count;
-                    if(index != NSNotFound){
-                        if(count >= begin){
-                            
-                        EZDisplayPhoto* ed = [[EZDisplayPhoto alloc] init];
-                        ed.isFront = true;
-                        EZPhoto* ep = [[EZPhoto alloc] init];
-                        ed.pid = ++photoCount;
-                        //ep.asset = result;
-                        ep.assetURL = ((NSURL*)[result valueForProperty:ALAssetPropertyAssetURL]).absoluteString;
-                        CLLocation* location = [result valueForProperty:ALAssetPropertyLocation];
-                        if(location){
-                            ep.latitude = location.coordinate.latitude;
-                            ep.longitude = location.coordinate.longitude;
-                        }
-                        ep.createdTime = [result valueForProperty:ALAssetPropertyDate];
-                        ep.isLocal = true;
-                        ed.photo = ep;
-                        //ed.photo.owner = [[EZPerson alloc] init];
-                        ed.photo.personID = [EZDataUtil getInstance].currentPersonID;
-                        
-                        ep.size = [result defaultRepresentation].dimensions;
-                        [_localPhotos addObject:ep];
-                        EZDEBUG(@"after size:%f, %f", ep.size.width, ep.size.height);
-                        //[res insertObject:ed atIndex:0];
-                        [[EZMessageCenter getInstance] postEvent:EZAlbumImageReaded attached:ed];
-                        }
-                        
-                        //[NSThread sleepForTimeInterval:0.5];
-                        if((count - begin) > limit){
-                            *stop = true;
-                            EZDEBUG(@"manually quit for the album reading");
-                        }
-                    }else{
-                         //EZDEBUG(@"Will quit for the album reading");
-                        [self uploadPhotoInfo:_localPhotos success:^(NSArray* arr){
-                            EZDEBUG(@"Successfully uploaded photo to server");
-                        } failure:^(id err){
-                            EZDEBUG(@"Error to upload photo info:%@", err);
-                        }];
-                    }
-                    
-                }];
-            }else{
-                //++groupPos;
-                EZDEBUG(@"groupPos:%i, groupCount:%i", groupPos, groupCount);
-                //if(groupPos >= groupCount){
-                //success(res);
-                //}
-            }
-        };
-        
-        // enumerate only photos
-        //ALAssetsGroupAlbum | ALAssetsGroupEvent | ALAssetsGroupFaces |
-        NSUInteger groupTypes =  ALAssetsGroupSavedPhotos;
-        [_assetLibaray enumerateGroupsWithTypes:groupTypes usingBlock:listGroupBlock failureBlock:failureBlock];
-    });
-}
-//Now keep it simple and stupid, only change it at the second iteration
-/**
-- (void) loadAlbumPhoto:(int)start limit:(int)limit success:(EZEventBlock)success failure:(EZEventBlock)failure
-{
-    EZDEBUG(@"Try to fetch %i, %i", start, limit);
-    NSMutableArray* res = [[NSMutableArray alloc] init];
-    //NSMutableDictionary* used = [[NSMutableDictionary alloc] init];
-    
-    
-    // setup our failure view controller in case enumerateGroupsWithTypes fails
-    ALAssetsLibraryAccessFailureBlock failureBlock = ^(NSError *error) {
-        
-        NSString *errorMessage = nil;
-        switch ([error code]) {
-            case ALAssetsLibraryAccessUserDeniedError:
-            case ALAssetsLibraryAccessGloballyDeniedError:
-                errorMessage = @"The user has declined access to it.";
-                break;
-            default:
-                errorMessage = @"Reason unknown.";
-                break;
-        }
-        EZDEBUG(@"Asset access error:%@", errorMessage);
-    };
-    
-    __block int groupCount = 1;
-    __block int groupPos = 0;
-    __block int photoCount = 0;
-    // emumerate through our groups and only add groups that contain photos
-    ALAssetsLibraryGroupsEnumerationResultsBlock listGroupBlock = ^(ALAssetsGroup *group, BOOL *stop) {
-        
-        ALAssetsFilter *onlyPhotosFilter = [ALAssetsFilter allPhotos];
-        [group setAssetsFilter:onlyPhotosFilter];
-        //if ([group numberOfAssets] > 0)
-        //{
-            //[self.groups addObject:group];
-        //}
-        int assetCount = [group numberOfAssets];
-        EZDEBUG(@"assetCount:%i, stop:%i", assetCount, *stop);
-        if(assetCount > 0){
-        [group enumerateAssetsUsingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop) {
-            EZDEBUG(@"stopped:%i, index:%i, assertCount:%i", *stop, index, assetCount);
-            if(index != NSNotFound){
-                EZDisplayPhoto* ed = [[EZDisplayPhoto alloc] init];
-                ed.isFront = true;
-                EZPhoto* ep = [[EZPhoto alloc] init];
-                ed.pid = ++photoCount;
-                ep.asset = result;
-                ep.isLocal = true;
-                ed.photo = ep;
-                ed.photo.owner = [[EZPerson alloc] init];
-                ed.photo.owner.name = @"天哥";
-                ed.photo.owner.avatar = [EZFileUtil fileToURL:@"tian_2.jpeg"].absoluteString;
-                //EZDEBUG(@"Before size");
-                ep.size = [result defaultRepresentation].dimensions;
-                
-                EZDEBUG(@"after size:%f, %f", ep.size.width, ep.size.height);
-                [res insertObject:ed atIndex:0];
-            }
-            
-        }];
-        }else{
-            //++groupPos;
-            EZDEBUG(@"groupPos:%i, groupCount:%i", groupPos, groupCount);
-            //if(groupPos >= groupCount){
-            success(res);
-            //}
-        }
-    };
-    
-    // enumerate only photos
-    //ALAssetsGroupAlbum | ALAssetsGroupEvent | ALAssetsGroupFaces |
-    NSUInteger groupTypes =  ALAssetsGroupSavedPhotos;
-    [_assetLibaray enumerateGroupsWithTypes:groupTypes usingBlock:listGroupBlock failureBlock:failureBlock];}
-**/
 
 //Will upload each pending photo
 //Remove the photo from the array, once it is successfuls
@@ -1679,6 +1518,7 @@
         lp.photoID = ph.photoID;
         lp.createdTime = ph.createdTime;
         
+        
     }
     [[EZCoreAccessor getClientAccessor] saveContext];
 }
@@ -1697,6 +1537,7 @@
         LocalPersons* lp = ps.localPerson;
         if(lp){
             EZDEBUG(@"store old persons");
+            lp.payloads = [ps toJson];
         }else{
             lp = [[EZCoreAccessor getClientAccessor] create:[LocalPersons class]];
             ps.localPerson = lp;
@@ -1705,8 +1546,63 @@
             lp.mobile = ps.mobile;
             lp.payloads = [ps toJson];
         }
+        lp.uploaded = @(ps.uploaded);
     }
     [[EZCoreAccessor getClientAccessor] saveContext];
+}
+
+//Check if all the photo stored.
+- (void) checkAndUpload:(NSArray*)persons
+{
+    NSMutableDictionary* storedPerson = [self getStoredPersons];
+    //NSMutableDictionary* pendingUploadPerson = [[NSMutableDictionary alloc] initWithDictionary:storedPerson];
+    NSMutableArray* uploadPersons = [[NSMutableArray alloc] init];
+    for(EZPerson* ps in persons){
+        EZPerson* ep = [storedPerson objectForKey:ps.mobile];
+        
+        if(ep){
+            if(!ep.localPerson.uploaded.intValue){
+                [uploadPersons addObject:ep];
+                //[pendingUploadPerson setObject:ep forKey:ep.mobile];
+            }else{
+                [_currentQueryUsers setObject:ep forKey:ep.personID];
+            }
+        }else{
+            [uploadPersons addObject:ps];
+            //[pendingUploadPerson setObject:ps forKey:ps.mobile];
+        }
+        //if(ps.joined){
+        // [_sortedUsers addObject:ps];
+        //}
+    }
+    EZDEBUG(@"final upload:%i, total:%i, joined:%i", uploadPersons.count, persons.count, _sortedUsers.count);
+    [self uploadContacts:uploadPersons success:^(NSArray* arr){
+        [self storeAllPersons:arr];
+    } failure:^(id err){
+        EZDEBUG(@"Upload person failure:%@", err);
+    }];
+}
+
+
+//Read all the stored person out
+- (NSMutableDictionary*) getStoredPersons
+{
+    
+    NSMutableDictionary* res = [[NSMutableDictionary alloc] init];
+    NSArray* persons = [[EZCoreAccessor getClientAccessor] fetchAll:[LocalPersons class] sortField:@"lastActive" ascending:NO];
+    EZDEBUG(@"All stored persons:%i", persons.count);
+    for(LocalPersons* lp in persons){
+        EZPerson* ps = [[EZPerson alloc] init];
+        [ps fromJson:lp.payloads];
+        ps.localPerson = lp;
+        ps.uploaded = lp.uploaded.integerValue;
+        if(ps.joined){
+            [_sortedUsers addObject:lp.personID];
+        }
+        [res setObject:ps forKey:ps.mobile];
+        //[_currentQueryUsers setObject:ps forKey:ps.personID];
+    }
+    return res;
 }
 
 - (void) loadAllPersons

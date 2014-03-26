@@ -8,8 +8,16 @@
 
 #import <Foundation/Foundation.h>
 
+#define EZNoteMatch @"match"
+#define EZNoteLike @"like"
+#define EZNoteUpload @"upload"
+#define EZNoteJoined @"joined"
+#define EZNoteFriendAdd @"add"
+#define EZNoteFriendKick @"kick"
+
 
 @class  EZPhoto;
+@class EZPerson;
 @interface EZNote : NSObject
 
 @property (nonatomic, strong) NSString* noteID;
@@ -35,6 +43,8 @@
 @property (nonatomic, strong) NSDate* createdTime;
 
 @property (nonatomic, strong) EZPhoto* matchedPhoto;
+
+@property (nonatomic, strong) EZPerson* person;
 
 - (void) fromJson:(NSDictionary*)dict;
 

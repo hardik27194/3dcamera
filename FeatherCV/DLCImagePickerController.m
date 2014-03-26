@@ -2441,7 +2441,7 @@ context:(void *)context
             //_progressView.progress = number.floatValue;
             [weakSelf.progressView setProgress:progressStart + number.floatValue * 0.8 animated:YES];
         }else{
-            EZDEBUG(@"failed to upload");
+            EZDEBUG(@"image failed to upload");
             //weakSelf.progressView.hidden = YES;
             weakSelf.uploadStatus = kUploadingFailure;
             if(weakSelf.uploadFailureBlock){
@@ -2474,27 +2474,38 @@ context:(void *)context
         //weakSelf.shotPhoto.type = 0;
         [[EZDataUtil getInstance] addPendingUpload:weakSelf.shotPhoto];
         [[EZDataUtil getInstance] uploadPendingPhoto];
-        EZDEBUG(@"directly call success");
+        //EZDEBUG(@"directly call success");
     }
     
     _disPhoto = [weakSelf createDisplayPhoto:weakSelf.shotPhoto];
     [[EZMessageCenter getInstance]postEvent:EZTakePicture attached:_disPhoto];
     EZDEBUG(@"Current photo converstaion:%@", _shotPhoto.conversations);
     __block BOOL executedFlag = false;
-    dispatch_later(2.5, ^(){
-        EZDEBUG(@"Timeout called");
+    dispatch_later(3.0, ^(){
+        EZDEBUG(@"Timeout called,relations:%i", _shotPhoto.photoRelations.count);
         if(executedFlag){
             return;
         }
         executedFlag = true;
         _progressView.hidden = YES;
-        [weakSelf showErrorInfo:macroControlInfo(@"Network not available")];
+        if(_shotPhoto.photoRelations.count > 0){
+            EZPhoto* matched = [_shotPhoto.photoRelations objectAtIndex:0];
+            NSString* fullLocal = [[EZDataUtil getInstance] preloadImage:matched.screenURL success:nil failed:nil];
+            EZDEBUG(@"full url:%@", fullLocal);
+            if(fullLocal){
+                [self changePhoto];
+            }else{
+                [weakSelf showErrorInfo:macroControlInfo(@"Network not available")];
+            }
+        }else{
+            [weakSelf showErrorInfo:macroControlInfo(@"Network not available")];
         //[_progressView setProgress:1.0 animated:TRUE];
+        }
         dispatch_later(0.8,
-                       ^(){
-                           [weakSelf innerCancel:YES];
-                       });
-        
+        ^(){
+            [weakSelf innerCancel:YES];
+        });
+
     });
     
     _uploadFailureBlock = ^(id obj){
@@ -2515,6 +2526,7 @@ context:(void *)context
     };
     
     _uploadSuccessBlock = ^(id obj){
+        EZDEBUG(@"Success get called");
         if(executedFlag){
             return;
         }
@@ -2754,7 +2766,8 @@ context:(void *)context
         _shotPhoto.infoStatus = kUploadDone;
         _shotPhoto.exchangeStatus = kExchangeDone;
     }else{
-        _shotPhoto.infoStatus = kUploadDone;
+        //_shotPhoto.infoStatus = kUploadDone;
+        _shotPhoto.updateStatus = kUpdateStart;
     }
     [[EZDataUtil getInstance].pendingUploads addObject:_shotPhoto];
     [[EZDataUtil getInstance] uploadPendingPhoto];
