@@ -1599,7 +1599,9 @@
         if(ps.joined){
             [_sortedUsers addObject:lp.personID];
         }
-        [res setObject:ps forKey:ps.mobile];
+        if(ps.mobile){
+            [res setObject:ps forKey:ps.mobile];
+        }
         if([ps.personID isNotEmpty]){
             [_currentQueryUsers setObject:ps forKey:ps.personID];
         }

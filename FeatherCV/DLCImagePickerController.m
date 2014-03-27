@@ -1125,7 +1125,7 @@ context:(void *)context
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
 {
-    if(textField.text.length < 80){
+    if(textField.text.length < 20){
         return true;
     }
     return false;
@@ -2178,8 +2178,8 @@ context:(void *)context
                 [self rotateCurrentImage:fileurl2image(localURL) imageURL:nil blur:NO completed:^(id obj){
                     _textField.hidden = YES;
                     _textPlaceHolder.hidden = YES;
-                    [_authorIcon setImageWithURL:str2url(matchedPerson.avatar)];
-                    [self showTextField:YES];
+                    //[_authorIcon setImageWithURL:str2url(matchedPerson.avatar)];
+                    //[self showTextField:YES];
                     //disPhoto.isFront = false;
                     //EZDisplayPhoto* dp = [self createDisplayPhoto:_shotPhoto];
                     //dp.isFront = false;

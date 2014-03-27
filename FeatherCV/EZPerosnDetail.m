@@ -84,6 +84,8 @@
     //[self setupKeyboard];
     
     __weak EZPersonDetail* weakSelf = self;
+    
+    /**
     UIImageView* imageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
     imageView.image = [UIImage imageNamed:@"background.png"]; //createBlurImage:20];
     
@@ -92,6 +94,9 @@
     [self.view addSubview:imageView];
     [self.view addSubview:blackCover];
     
+     **/
+    //self.view.backgroundColor = [UIColor clearColor];
+    self.view.backgroundColor = VinesGray;
     CGFloat startGap = 0;
     if(!isRetina4){
         startGap = -20.0;
@@ -130,6 +135,7 @@
     [_quitButton enableRoundImage];
     
     _quitButton.releasedBlock = ^(id obj){
+        EZDEBUG(@"Released quite");
         [weakSelf dismissViewControllerAnimated:YES completion:nil];
     };
     

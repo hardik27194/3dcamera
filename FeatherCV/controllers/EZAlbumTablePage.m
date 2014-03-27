@@ -296,6 +296,8 @@ static int photoCount = 1;
     }
     cell.otherIcon.releasedBlock = ^(id obj){
         EZPersonDetail* pd = [[EZPersonDetail alloc] initWithPerson:backPerson];
+        //pd.modalPresentationStyle = UIModalPresentationPageSheet;
+        //pd.modalTransitionStyle
         [self presentViewController:pd animated:YES completion:nil];
     };
     
@@ -321,7 +323,7 @@ static int photoCount = 1;
 -(id)initWithQueryBlock:(EZQueryBlock)queryBlock
 {
     self = [super initWithStyle:UITableViewStylePlain];
-    self.title = originalTitle;
+    self.title = @"";//originalTitle;
     _queryBlock = queryBlock;
     //self.edgesForExtendedLayout=UIRectEdgeNone;
     [self createMoreButton];
@@ -694,7 +696,8 @@ static int photoCount = 1;
     //[self refresh];
     EZDEBUG(@"refresh content inset:%@", NSStringFromUIEdgeInsets(self.tableView.contentInset));
     [self loadMorePhoto:^(NSNumber* obj){
-        [self endRefresh:obj.intValue];
+        //[self endRefresh:obj.intValue];
+        [self.refreshControl endRefreshing];
     }reload:NO];
     //[self.refreshControl endRefreshing];
 
@@ -837,10 +840,13 @@ static int photoCount = 1;
     
     EZDEBUG(@"The login personID:%@, getID:%@", [EZDataUtil getInstance].currentPersonID, [[EZDataUtil getInstance] getCurrentPersonID]);
     
-    EZEventBlock queryPhotoBlock = ^(id user){
+    EZEventBlock queryPhotoBlock = ^(EZPerson* user){
+        EZDEBUG(@"newly login user:%@, id:%@", user.name, user.personID);
         if(user){
             //Mean new user are login.
             [EZCoreAccessor cleanClientDB];
+            [_combinedPhotos removeAllObjects];
+            [weakSelf.tableView reloadData];
         }
         [_combinedPhotos addObjectsFromArray:[self wrapPhotos:[[EZDataUtil getInstance] getStoredPhotos]]];
         EZDEBUG(@"The stored photo is %i", _combinedPhotos.count);
@@ -858,9 +864,9 @@ static int photoCount = 1;
     };
     if(currentLoginID){
         queryPhotoBlock(nil);
-    }else{
-        [[EZMessageCenter getInstance] registerEvent:EZUserAuthenticated block:queryPhotoBlock];
     }
+    [[EZMessageCenter getInstance] registerEvent:EZUserAuthenticated block:queryPhotoBlock];
+    
     
     _progressBar = [[UIProgressView alloc] initWithFrame:CGRectMake(10, 20, 300, 10)];
     _progressBar.transform = CGAffineTransformMakeScale(1.0, 0.5);
@@ -939,6 +945,9 @@ static int photoCount = 1;
     //This is a photo request
     //Let's simply insert the photo to the beginning and see what's going on.
     EZPhoto* matched = note.matchedPhoto;
+    if(!note.matchedPhoto){
+        return;
+    }
     //if(note.srcPhoto.photoRelations.count > 0){
         //matched = [note.srcPhoto.photoRelations objectAtIndex:0];
        
@@ -1100,11 +1109,11 @@ static int photoCount = 1;
         
     }
     [[EZDataUtil getInstance] storeAllPhotos:stored];
+    EZDEBUG(@"newly loaded count:%i", count);
     if(count && !reload){
         NSMutableArray* updatePaths = [[NSMutableArray alloc] init];
         for(int i = 0; i < count; i++){
             [updatePaths addObject:[NSIndexPath indexPathForRow:i inSection:0]];
-           
         }
         [self.tableView insertRowsAtIndexPaths:updatePaths withRowAnimation:UITableViewRowAnimationTop];
         //if(updatePaths.count){
@@ -1201,6 +1210,19 @@ static int photoCount = 1;
     EZCenterButton* clickView = [[EZCenterButton alloc] initWithFrame:CGRectMake(255, 23, 60,60) cycleRadius:21 lineWidth:2];
     
     clickView.enableTouchEffects = false;
+    
+    UIView* horizon = [[UIView alloc] initWithFrame:CGRectMake(30, 30, 35, 2)];
+    horizon.backgroundColor = [UIColor whiteColor];
+    
+    UIView* vertical = [[UIView alloc] initWithFrame:CGRectMake(30, 30, 2, 35)];
+    vertical.backgroundColor = [UIColor whiteColor];
+    
+    
+    horizon.center = CGPointMake(30, 30);
+    vertical.center = CGPointMake(30, 30);
+    [clickView addSubview:horizon];
+    [clickView addSubview:vertical];
+    
     clickView.releasedBlock = ^(EZCenterButton* obj){
         [obj animateButton:0.5 lineWidth:6 completed:^(id obj){
             //EZDEBUG(@"Before raise camera, %i", (int)self);
