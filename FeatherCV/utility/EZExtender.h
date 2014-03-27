@@ -65,6 +65,8 @@ typedef void  (^ IterateOperation)(id obj);
 
 + (UIImage*) getCachedImage:(NSURL*)url;
 
+- (void) loadImageURL:(NSString*)url haveThumb:(BOOL)thumb loading:(BOOL)loading;
+
 @end
 
 @interface UILabel(EZPrivate)

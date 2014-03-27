@@ -142,7 +142,7 @@
         //[self.contentView addSubview:_feedbackRegion];
         [_rotateContainer addSubview:_frontImage];
         
-        [self createTimeLabel];
+        //[self createTimeLabel];
         //[_frontImage addSubview:_toolRegion];
         //[_rotateContainer addSubview:_toolRegion];
         //_container.enableTouchEffects = NO;
@@ -156,15 +156,17 @@
 
 - (void) createTimeLabel
 {
-    _photoDate = [[UILabel alloc] initWithFrame:CGRectMake(0, 125, 160, 21)];
+
+    _photoDate = [[UILabel alloc] initWithFrame:CGRectMake(150, CurrentScreenHeight - 80, 160, 21)];
     _photoDate.font = [UIFont systemFontOfSize:13];
-    _photoDate.textAlignment = NSTextAlignmentCenter;
+    _photoDate.textAlignment = NSTextAlignmentRight;
     _photoDate.textColor = [UIColor whiteColor];
     _photoDate.backgroundColor = [UIColor clearColor];
     //[self addSubview:_textDate];
     [_photoDate enableShadow:[UIColor blackColor]];
     _photoDate.layer.cornerRadius = 3.0;
     [_container addSubview:_photoDate];
+
 }
 
 - (UIView*) createRotateContainer:(CGRect)rect

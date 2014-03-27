@@ -210,7 +210,8 @@
     }
     
     if(person.avatar){
-        [cell.headIcon setImageWithURL:str2url(person.avatar)];
+        //[cell.headIcon setImageWithURL:str2url(person.avatar)];
+        [cell.headIcon loadImageURL:person.avatar haveThumb:NO loading:NO];
     }else{
         cell.headIcon.image = nil;
     }

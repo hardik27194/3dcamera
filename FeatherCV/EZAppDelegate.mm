@@ -363,9 +363,11 @@
         dispatch_later(0.1, ^(){
         [[EZDataUtil getInstance] triggerLogin:^(EZPerson* ps){} failure:^(id err){} reason:@"请注册" isLogin:NO];
         });
+    }else{
+        [[EZDataUtil getInstance] loadAllPersons];
     }
     //[[EZAnimationUtil sharedEZAnimationUtil] addAnimation:self];
-    [[EZDataUtil getInstance] loadAllPersons];
+    
     [self setupAppearance];
     [self setupNetwork];
     //[self enableProximate:YES];

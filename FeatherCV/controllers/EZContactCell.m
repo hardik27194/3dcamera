@@ -16,7 +16,7 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        _name = [[UILabel alloc] initWithFrame:CGRectMake(18, (frame.size.height - 17)/2, 150, 17)];
+        _name = [[UILabel alloc] initWithFrame:CGRectMake(18, (frame.size.height - 21)/2, 150, 21)];
         _name.textColor = [UIColor blackColor];
         _name.font = [UIFont systemFontOfSize:17];
         [self.contentView addSubview:_name];

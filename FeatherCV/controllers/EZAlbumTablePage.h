@@ -118,4 +118,6 @@
 //It used to save the memory consumption
 - (void) raiseCamera:(EZPhoto*)photo indexPath:(NSIndexPath*)indexPath;
 
+- (void) refreshVisibleCell;
+
 @end

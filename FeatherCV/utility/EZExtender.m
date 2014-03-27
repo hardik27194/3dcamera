@@ -12,6 +12,8 @@
 #import <QuartzCore/QuartzCore.h>
 #import "EZAppConstants.h"
 #import "EZAnimationUtil.h"
+#import "EZDataUtil.h"
+#import "EZFileUtil.h"
 
 static NSArray* starList;
 
@@ -110,6 +112,31 @@ NSString* doubleString(NSString* str)
     //return [[UIImageView af_sharedImageCache] cachedImageForURL:url];
     return nil;
 }
+
+- (void) loadImageURL:(NSString*)url haveThumb:(BOOL)thumb loading:(BOOL)loading
+{
+    //if(thumb){
+    //NSString* thumbURL = url2thumb(url);
+    UIActivityIndicatorView* activity = nil;
+    NSString* localURL = [[EZDataUtil getInstance] preloadImage:url success:^(NSString* fileURL){
+        [activity stopAnimating];
+        [activity removeFromSuperview];
+        self.image = [UIImage imageWithContentsOfFile:url2fullpath(fileURL)];
+        } failed:^(id obj){
+            [activity stopAnimating];
+            [activity removeFromSuperview];
+        }];
+    if(localURL){
+        EZDEBUG(@"Do nothing");
+    }else if(loading){
+        activity = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+        activity.center = CGPointMake(self.bounds.size.width/2.0, self.bounds.size.height/2.0);
+        [self addSubview:activity];
+        [activity startAnimating];
+    }
+    //}
+}
+
 
 @end
 

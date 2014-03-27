@@ -18,8 +18,8 @@
     CGFloat cellHeight = 60;
     if (self) {
         // Initialization code
-        _name = [[UILabel alloc] initWithFrame:CGRectMake(20, (cellHeight - 20)/2, 220, 17)];
-        _name.font = [UIFont systemFontOfSize:15];
+        _name = [[UILabel alloc] initWithFrame:CGRectMake(20, (cellHeight - 22)/2, 220, 22)];
+        _name.font = [UIFont systemFontOfSize:16];
         _name.textColor = [UIColor whiteColor];//RGBCOLOR(128, 128, 128);//RGBCOLOR(128, 128, 128);
         [self.contentView addSubview:_name];
         

@@ -35,6 +35,7 @@
 #import "EZBlurAnimator.h"
 #import "EZNote.h"
 #import "EZCoreAccessor.h"
+#import "EZPersonDetail.h"
 
 
 #define  originalTitle  @"feather"
@@ -63,12 +64,14 @@ static int photoCount = 1;
     //EZCombinedPhoto* curPhoto = [cp.combinedPhotos objectAtIndex:cp.selectedCombinePhoto];
     EZPhoto* myPhoto = cp.photo;
     EZPhoto* switchPhoto = [cp.photo.photoRelations objectAtIndex:0];
-    
+    cell.photoDate.text = formatRelativeTime(myPhoto.createdTime);
     // Configure the cell...
     //[cell displayImage:[myPhoto getLocalImage]];
     [[cell viewWithTag:animateCoverViewTag] removeFromSuperview];
     EZDEBUG(@"Will display front image type:%i", myPhoto.typeUI);
     if(cp.isFront){
+        cell.authorName.textColor = [UIColor whiteColor];
+        cell.otherName.textColor = RGBCOLOR(240, 240, 240);
         if(myPhoto.typeUI == kPhotoRequest){
             //EZClickView* takePhoto = [[EZClickView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
             //takePhoto.center =
@@ -84,6 +87,8 @@ static int photoCount = 1;
         preloadimage(switchPhoto.screenURL);
         
     }else{
+        cell.authorName.textColor = RGBCOLOR(240, 240, 240);
+        cell.otherName.textColor = [UIColor whiteColor];
         if(switchPhoto.type == 1){
             //if(back.type == kPhotoRequest){
             cell.frontImage.image = [UIImage imageNamed:@"background.png"];
@@ -149,6 +154,7 @@ static int photoCount = 1;
     if([myPhoto.likedUsers containsObject:switchPhoto.personID]){
         cell.otherLike.backgroundColor = RGBA(0, 255, 0, 64);
     }
+    
     
     cell.likeButton.releasedBlock = ^(EZClickView* obj){
         EZDEBUG(@"Liked clicked");
@@ -288,9 +294,28 @@ static int photoCount = 1;
     if(frontPerson){
         curBlock(frontPerson);
     }
+    cell.otherIcon.releasedBlock = ^(id obj){
+        EZPersonDetail* pd = [[EZPersonDetail alloc] initWithPerson:backPerson];
+        [self presentViewController:pd animated:YES completion:nil];
+    };
+    
+    
+    cell.headIcon.releasedBlock = ^(id obj){
+        EZPersonDetail* pd = [[EZPersonDetail alloc] initWithPerson:frontPerson];
+        [self presentViewController:pd animated:YES completion:nil];
+    };
     return cell;
 }
 
+
+- (void) refreshVisibleCell
+{
+    //self.tableView.visibleCells
+    NSArray* visibleRows = self.tableView.indexPathsForVisibleRows;
+    if(visibleRows.count){
+        [self.tableView reloadRowsAtIndexPaths:visibleRows withRowAnimation:UITableViewRowAnimationNone];
+    }
+}
 
 
 -(id)initWithQueryBlock:(EZQueryBlock)queryBlock
@@ -354,35 +379,6 @@ static int photoCount = 1;
         }
     } reload:YES];
 
-}
-
-
-- (void) downloadCache
-{
-    NSString* imageURL = @"http://www.enjoyxue.com:8080/static/531c871521ae7a4796b65b39/bf354b7d788345b2794985b576fcea5b.jpg";
-    NSString* url = [[EZDataUtil getInstance] preloadImage:imageURL success:^(id success){
-        EZDEBUG(@"successfully downloaded:%@", success);
-        NSString* secURL = [[EZDataUtil getInstance] preloadImage:imageURL success:nil failed:nil];
-        EZDEBUG(@"Should return immediately:%@", secURL);
-        
-        dispatch_later(0.5, ^(){
-            UIImageView* imageShow = [[UIImageView alloc] initWithFrame:CGRectMake(0, 100, 100, 100)];
-            imageShow.backgroundColor = [UIColor redColor];
-            //[imageShow setImageURL:str2url(secURL)];
-            [imageShow setImageWithURL:str2url(secURL)];
-            [TopView addSubview:imageShow];
-        });
-    } failed:^(NSError* err){
-        EZDEBUG(@"failed to download:%@", err);
-    }];
-    
-    url = [[EZDataUtil getInstance] preloadImage:imageURL success:^(id success){
-        EZDEBUG(@"second successfully downloaded:%@", success);
-    } failed:^(NSError* err){
-        EZDEBUG(@"second failed to download:%@", err);
-    }];
-    
-    EZDEBUG(@"Immdiatedly returned image:%@", url);
 }
 
 - (void) storeCurrent
@@ -806,6 +802,11 @@ static int photoCount = 1;
     
     [[EZMessageCenter getInstance] registerEvent:EZSetAlbumUser block:^(EZPerson* person){
         [self setCurrentUser:person];
+    }];
+    
+    [[EZMessageCenter getInstance] registerEvent:EZUserEditted block:^(EZPerson* person){
+        [self refreshVisibleCell];
+        [[EZDataUtil getInstance] storeAllPersons:@[person]];
     }];
     
     [[EZMessageCenter getInstance] registerEvent:EZTriggerCamera block:^(id obj){

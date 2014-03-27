@@ -173,6 +173,11 @@
     
     [self queryPersonIDs:dupIDs success:^(NSArray* arr){
         EZDEBUG(@"successfully query:%i users back", dupIDs.count);
+        if(!arr.count){
+            return;
+        }
+        NSMutableArray* persons = [[NSMutableArray alloc] init];
+            
         for(NSDictionary* pdict in arr){
             EZPerson* ps = [self addPersonToStore:pdict isQuerying:NO];
             //[_currentQueryUsers setValue:ps forKey:ps.personID];
@@ -183,10 +188,12 @@
             }else{
                 [_notJoinedUsers addObject:ps.personID];
             }
+            [persons addObject:ps];
         }
+        [self storeAllPersons:persons];
         _queryingCount = false;
     } failure:^(id obj){
-        EZDEBUG(@"failed to do the jobs");
+        EZDEBUG(@"upload persons:%@", obj);
         _queryingCount = false;
     }];
     
@@ -510,23 +517,14 @@
 - (void) serialLoad:(NSString*)fullURL fullOk:(EZEventBlock)fullBlock thumbOk:(EZEventBlock)thumbOk pending:(EZEventBlock)pending failure:(EZEventBlock)failure
 {
     NSString* localFull = [self preloadImage:fullURL success:fullBlock failed:failure];
-    if(localFull){
-        if(localFull){
-            fullBlock(localFull);
-        }
-    }else{
+    if(!localFull){
         NSString* thumbURL = url2thumb(fullURL);
         NSString* localThumb = [self preloadImage:thumbURL success:thumbOk failed:failure];
-        if(localThumb){
-            if(thumbOk){
-                thumbOk(localThumb);
-            }
-        }else{
-            if(pending){
+        if(!localThumb && pending){
                 pending(nil);
-            }
         }
     }
+    
 }
 
 
@@ -641,6 +639,9 @@
         }
         return nil;
     }else{
+        if(success){
+            success(holder.downloaded);
+        }
         return holder.downloaded;
     }
 }
@@ -1534,6 +1535,7 @@
 - (void) storeAllPersons:(NSArray*)persons
 {
     for(EZPerson* ps in persons){
+        ps.uploaded = true;
         LocalPersons* lp = ps.localPerson;
         if(lp){
             EZDEBUG(@"store old persons");
@@ -1564,8 +1566,6 @@
             if(!ep.localPerson.uploaded.intValue){
                 [uploadPersons addObject:ep];
                 //[pendingUploadPerson setObject:ep forKey:ep.mobile];
-            }else{
-                [_currentQueryUsers setObject:ep forKey:ep.personID];
             }
         }else{
             [uploadPersons addObject:ps];
@@ -1600,7 +1600,9 @@
             [_sortedUsers addObject:lp.personID];
         }
         [res setObject:ps forKey:ps.mobile];
-        //[_currentQueryUsers setObject:ps forKey:ps.personID];
+        if([ps.personID isNotEmpty]){
+            [_currentQueryUsers setObject:ps forKey:ps.personID];
+        }
     }
     return res;
 }
