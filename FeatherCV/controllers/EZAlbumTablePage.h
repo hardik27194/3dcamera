@@ -19,7 +19,7 @@
 @class EZDisplayPhoto;
 @class EZShapeCover;
 @class EZPerson;
-@interface EZAlbumTablePage : UIViewController<DLCImagePickerDelegate, UINavigationControllerDelegate, UIViewControllerTransitioningDelegate, UIActionSheetDelegate, UIAlertViewDelegate>
+@interface EZAlbumTablePage : UIViewController<DLCImagePickerDelegate, UINavigationControllerDelegate, UIViewControllerTransitioningDelegate, UIActionSheetDelegate, UIAlertViewDelegate, UITableViewDelegate, UITableViewDataSource>
 
 @property (nonatomic, strong) NSMutableArray* combinedPhotos;
 
@@ -34,6 +34,10 @@
 
 //Whether to show the hidden button or not.
 @property (nonatomic, assign) BOOL showHiddenButton;
+
+@property (nonatomic, strong) UITableView* tableView;
+
+@property (nonatomic, strong) UIRefreshControl* refreshControl;
 
 @property (nonatomic, strong) EZPerson* currentUser;
 @property (nonatomic, strong) UILabel* totalEntries;

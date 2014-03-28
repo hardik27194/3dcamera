@@ -228,7 +228,7 @@ static int photoCount = 1;
         //};
         fullView.alpha = 0;
         macroHideStatusBar(YES);
-        [TopView addSubview:fullView];
+        [self.view addSubview:fullView];
         [UIView animateWithDuration:0.3 animations:^(){
             fullView.alpha = 1.0;
         }];
@@ -308,8 +308,8 @@ static int photoCount = 1;
         _isPushCamera = false;
         //pd.modalTransitionStyle
         //self.transitioningDelegate
-        _leftContainer.hidden = YES;
-        _rightCycleButton.hidden = YES;
+        //_leftContainer.hidden = YES;
+        //_rightCycleButton.hidden = YES;
         [self presentViewController:pd animated:YES completion:^(){
         }];
     };
@@ -319,8 +319,8 @@ static int photoCount = 1;
         EZPersonDetail* pd = [[EZPersonDetail alloc] initWithPerson:frontPerson];
         pd.transitioningDelegate = weakSelf;
         pd.modalPresentationStyle = UIModalPresentationCustom;
-        _leftContainer.hidden = YES;
-        _rightCycleButton.hidden = YES;
+        //_leftContainer.hidden = YES;
+        //_rightCycleButton.hidden = YES;
 
         [self presentViewController:pd animated:YES completion:^(){
         }];
@@ -341,12 +341,11 @@ static int photoCount = 1;
 
 -(id)initWithQueryBlock:(EZQueryBlock)queryBlock
 {
-    self = [super initWithStyle:UITableViewStylePlain];
+    self = [super init]; //[super initWithStyle:UITableViewStylePlain];
     self.title = @"";//originalTitle;
     _queryBlock = queryBlock;
     //self.edgesForExtendedLayout=UIRectEdgeNone;
     [self createMoreButton];
-    [self.tableView registerClass:[EZPhotoCell class] forCellReuseIdentifier:@"PhotoCell"];
     return self;
 }
 
@@ -365,7 +364,7 @@ static int photoCount = 1;
 }
 - (id)initWithStyle:(UITableViewStyle)style
 {
-    self = [super initWithStyle:style];
+    self = [super init];
     if (self) {
         // Custom initialization
         
@@ -478,8 +477,8 @@ static int photoCount = 1;
 - (void) viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    _rightCycleButton.hidden = NO;
-    _leftContainer.hidden = NO;
+    //_rightCycleButton.hidden = NO;
+    //.hidden = NO;
     //[[UINavigationBar appearance] setBackgroundImage:ClearBarImage forBarMetrics:UIBarMetricsDefault];
     //[self.navigationController.view addSubview:[EZDataUtil getInstance].naviBarBlur];
     EZDEBUG(@"initial content inset:%@", NSStringFromUIEdgeInsets(self.tableView.contentInset));
@@ -490,8 +489,8 @@ static int photoCount = 1;
     [super viewWillDisappear:animated];
     //[TopView addSubview:_progressBar];
     _progressBar.hidden = YES;
-    _leftContainer.hidden = YES;
-    _rightCycleButton.hidden = YES;
+    //_leftContainer.hidden = YES;
+    //_rightCycleButton.hidden = YES;
     //[[UINavigationBar appearance] setBackgroundImage:nil forBarMetrics:UIBarMetricsDefault];
     //[_moreButton removeFromSuperview];
     //[[EZDataUtil getInstance].barBackground removeFromSuperview];
@@ -718,7 +717,7 @@ static int photoCount = 1;
     
 }
 
--(void) refreshInvoked:(id)sender forState:(UIControlState)state {
+-(void) refreshInvoked:(id)sender{
     // Refresh table here...
     //[_allEntries removeAllObjects];
     //[self.tableView reloadData];
@@ -788,6 +787,22 @@ static int photoCount = 1;
     return res;
 }
 
+/**
+-(void) refreshView:(UIRefreshControl *)refresh
+{
+    //refresh.attributedTitle = [[NSAttributedString alloc] initWithString:@"更新数据中..."];
+    
+    //NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    //[formatter setDateFormat:@"MMM d, h:mm a"];
+    //NSString *lastUpdated = [NSString stringWithFormat:@"上次更新日期 %@",
+                             [formatter stringFromDate:[NSDate date]]];
+    refresh.attributedTitle = [[NSAttributedString alloc] initWithString:lastUpdated];
+    [self initData];
+    [_dataTableView reloadData];
+    [refresh endRefreshing];
+}
+ **/
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -795,10 +810,24 @@ static int photoCount = 1;
     _combinedPhotos = [[NSMutableArray alloc] init];
     
     
-    self.refreshControl = [[UIRefreshControl alloc] init];
-    [self.refreshControl addTarget:self action:@selector(refreshInvoked:forState:)forControlEvents:UIControlEventValueChanged];
+    //self.refreshControl = [[UIRefreshControl alloc] init];
+    //[self.refreshControl addTarget:self action:@selector(refreshInvoked:forState:)forControlEvents:UIControlEventValueChanged];
     //self.tableView.indicatorStyle = UIScrollViewIndicatorStyleWhite;
     //self.tableView.y = - 20;
+    self.view.backgroundColor = VinesGray;
+    self.tableView = [[UITableView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    self.tableView.delegate = self;
+    self.tableView.dataSource = self;
+
+    [self.tableView registerClass:[EZPhotoCell class] forCellReuseIdentifier:@"PhotoCell"];
+    [self.view addSubview:self.tableView];
+    
+    _refreshControl = [[UIRefreshControl alloc] init];
+    [_refreshControl addTarget:self
+                        action:@selector(refreshInvoked:)
+              forControlEvents:UIControlEventValueChanged];
+    //[_refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"松手更新数据"]];
+    [self.tableView addSubview:_refreshControl];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.pagingEnabled = YES;
     //self.edgesForExtendedLayout = UIRectEdgeNone;
@@ -906,11 +935,13 @@ static int photoCount = 1;
     _progressBar.hidden = YES;
     
     
-    _networkStatus = [[UILabel alloc] initWithFrame:CGRectMake(0, 20, CurrentScreenWidth, 20)];
+    _networkStatus = [[UILabel alloc] initWithFrame:CGRectMake(0, 25, CurrentScreenWidth, 20)];
     _networkStatus.textAlignment = NSTextAlignmentCenter;
     _networkStatus.textColor = [UIColor whiteColor];
     _networkStatus.font = [UIFont systemFontOfSize:12];
     [_networkStatus enableShadow:[UIColor blackColor]];
+    [self.view addSubview:_networkStatus];
+    _networkStatus.hidden = YES;
     
     dispatch_later(0.3, ^(){
         [self scrollToBottom:NO];
@@ -1202,7 +1233,8 @@ static int photoCount = 1;
 {
     EZDEBUG(@"View did show");
     [super viewDidAppear:animated];
-    [EZDataUtil getInstance].centerButton.hidden = NO;
+    [[self navigationController] setNavigationBarHidden:YES animated:YES];
+    //[EZDataUtil getInstance].centerButton.hidden = NO;
     //if(!_progressBar.superview){
     //    [TopView addSubview:_progressBar];
     //}
@@ -1281,7 +1313,7 @@ static int photoCount = 1;
     };
      **/
     //clickView.center = CGPointMake(160, bounds.size.height - (30 + 5));
-    [TopView addSubview:clickView];
+    [self.view addSubview:clickView];
     //EZDEBUG(@"View will Appear:%@", NSStringFromCGRect(TopView.frame));
     UIView* statusBarBackground = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 20)];
     statusBarBackground.backgroundColor = EZStatusBarBackgroundColor;
@@ -1315,7 +1347,7 @@ static int photoCount = 1;
     [_leftContainer addSubview:_leftCyleButton];
     [_leftContainer addSubview:_leftMessageCount];
     
-    [TopView addSubview:_leftContainer];
+    [self.view addSubview:_leftContainer];
     _leftCyleButton.releasedBlock = ^(id obj){
         weakSelf.leftMessageCount.hidden = YES;
         [weakSelf showMenu:nil];
@@ -1783,10 +1815,10 @@ static int photoCount = 1;
 -(id<UIViewControllerAnimatedTransitioning>)animationControllerForDismissedController:(UIViewController *)dismissed {
     EZDEBUG(@"_dismissAnimation");
     _raiseAnimation.type = AnimationTypeDismiss;
-    dispatch_later(0.3, ^(){
-        _leftContainer.hidden = NO;
-        _rightCycleButton.hidden = NO;
-    });
+    //dispatch_later(0.3, ^(){
+        //_leftContainer.hidden = NO;
+        //_rightCycleButton.hidden = NO;
+    //});
     return _raiseAnimation;
 }
 

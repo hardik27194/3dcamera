@@ -58,6 +58,7 @@
     //Pervent the camera from raising again
     [EZUIUtility sharedEZUIUtility].stopRotationRaise = true;
     [EZDataUtil getInstance].centerButton.hidden = YES;
+    [[self navigationController] setNavigationBarHidden:NO animated:YES];
 }
 
 - (void) viewWillDisappear:(BOOL)animated
@@ -124,6 +125,8 @@
         [self.tableView reloadData];
     }];
     **/
+    
+    //self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWith:<#(UIBarButtonSystemItem)#> target:<#(id)#> action:<#(SEL)#>
     dispatch_later(0.3, ^(){
         [self loadPersonInfos];
     });
