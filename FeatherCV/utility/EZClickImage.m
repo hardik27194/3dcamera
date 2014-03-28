@@ -46,23 +46,37 @@
 {
     EZDEBUG(@"Pressed clicked");
     if(_enableTouchEffects){
-        if(self.highlightedImage){
-            _backupImage = self.image;
-            self.image = self.highlightedImage;
-        }else if(!_pressedView){
-            _pressedView = [[UIView alloc] initWithFrame:self.bounds];
-            [self addSubview:_pressedView];
-        }else{
-            [_pressedView setFrame:self.bounds];
+        if(_touchStyle == kEZRandomColor){
+            if(self.highlightedImage){
+                _backupImage = self.image;
+                self.image = self.highlightedImage;
+            }else{
+                if(!_pressedView){
+                    _pressedView = [[UIView alloc] initWithFrame:self.bounds];
+                    [self addSubview:_pressedView];
+                }else{
+                    [_pressedView setFrame:self.bounds];
+                }
+                [self bringSubviewToFront:_pressedView];
+                _pressedView.backgroundColor = randBack(_pressedColor);
+                _pressedView.hidden = false;
+            
+            }
+        }else if(_touchStyle == kEZWhiteBlur){
+            UIView* point = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 4, 4)];
+            point.backgroundColor = RGBA(255, 255, 255, 128);
+            [point enableRoundImage];
+            point.center = CGPointMake(self.bounds.size.width/2.0, self.bounds.size.height/2.0);
+            [self addSubview:point];
+            [UIView animateWithDuration:0.3 animations:^(){
+                point.transform = CGAffineTransformMakeScale(20, 20);
+                point.alpha = 0;
+            } completion:^(BOOL completed){
+                [point removeFromSuperview];
+            }];
         }
     }
-    //Then my code will be very strong.
-    if(_enableTouchEffects){
-        [self bringSubviewToFront:_pressedView];
-        _pressedView.backgroundColor = randBack(_pressedColor);
-        _pressedView.hidden = false;
-    }
-    
+        
 }
 
 //Mean the touch ended, doesn't mean a effective click
@@ -70,6 +84,7 @@
 {
     //_pressedView.hidden = true;
     if(_enableTouchEffects){
+        if(_touchStyle == kEZRandomColor){
         if(self.highlightedImage){
             self.image = _backupImage;
         }else{
@@ -79,6 +94,7 @@
                 _pressedView.hidden = true;
                 _pressedView.alpha = 1.0;
             }];
+        }
         }
     }
 

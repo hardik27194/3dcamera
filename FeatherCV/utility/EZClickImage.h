@@ -8,6 +8,12 @@
 
 #import <UIKit/UIKit.h>
 #import "EZConstants.h"
+
+typedef enum {
+    kEZRandomColor,
+    kEZWhiteBlur
+} EZTouchStyle;
+
 @interface EZClickImage : UIImageView
 
 @property (nonatomic, strong) EZEventBlock pressedBlock;
@@ -32,5 +38,7 @@
 @property (nonatomic, strong) UIView* pressedView;
 
 @property (nonatomic, strong) UITouch* touch;
+
+@property (nonatomic, assign) EZTouchStyle touchStyle;
 
 @end

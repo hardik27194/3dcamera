@@ -38,7 +38,13 @@
 #import "EZPersonDetail.h"
 
 
+#define  largeFont [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:40]
+#define  smallFont [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:20]
+#define  titleFontCN [UIFont fontWithName:@"STHeitiSC-Light" size:20]
+
 #define  originalTitle  @"feather"
+
+
 static int photoCount = 1;
 @interface EZAlbumTablePage ()
 
@@ -297,13 +303,23 @@ static int photoCount = 1;
     cell.otherIcon.releasedBlock = ^(id obj){
         EZPersonDetail* pd = [[EZPersonDetail alloc] initWithPerson:backPerson];
         //pd.modalPresentationStyle = UIModalPresentationPageSheet;
+        pd.transitioningDelegate = weakSelf;
+        pd.modalPresentationStyle = UIModalPresentationCustom;
+        _isPushCamera = false;
         //pd.modalTransitionStyle
+        //self.transitioningDelegate
+        _leftContainer.hidden = YES;
+        _rightCycleButton.hidden = YES;
         [self presentViewController:pd animated:YES completion:nil];
     };
     
     
     cell.headIcon.releasedBlock = ^(id obj){
         EZPersonDetail* pd = [[EZPersonDetail alloc] initWithPerson:frontPerson];
+        pd.transitioningDelegate = weakSelf;
+        pd.modalPresentationStyle = UIModalPresentationCustom;
+        _leftContainer.hidden = YES;
+        _rightCycleButton.hidden = YES;
         [self presentViewController:pd animated:YES completion:nil];
     };
     return cell;
@@ -361,15 +377,21 @@ static int photoCount = 1;
     if([currentUser.personID isEqualToString:currentLoginID]){
         if(_currentUser){
             _currentUser = nil;
-            self.title = originalTitle;
+            //self.title = originalTitle;
+            _leftText.text = originalTitle;
+            //_leftText.font = largeFont;//[UIFont fontWithName:@"HelveticaNeue-UltraLight" size:30];
+            _leftText.font = largeFont;
             [_combinedPhotos removeAllObjects];
             [self.tableView reloadData];
         }else{
             return;
         }
     }else if(![currentUser.personID isEqualToString:_currentUser.personID]){
-        self.title = currentUser.name;
+        //self.title = currentUser.name;
         _currentUser = currentUser;
+        _leftText.text = currentUser.name;
+        //_leftText.font = smallFont;//[UIFont systemFontOfSize:20];
+        _leftText.font = titleFontCN;
         [_combinedPhotos removeAllObjects];
         [self.tableView reloadData];
     }else{
@@ -1207,31 +1229,39 @@ static int photoCount = 1;
     self.refreshControl.y = 64;
     CGRect bounds = [UIScreen mainScreen].bounds;
     self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 0, 0);
-    EZCenterButton* clickView = [[EZCenterButton alloc] initWithFrame:CGRectMake(255, 23, 60,60) cycleRadius:21 lineWidth:2];
+    EZCenterButton* clickView =  [[EZClickView alloc] initWithFrame:CGRectMake(CurrentScreenWidth - 46 - 10, 30, 46, 46)];  //[[EZCenterButton alloc] initWithFrame:CGRectMake(255, 23, 60,60) cycleRadius:21 lineWidth:2];
+    //clickView.backgroundColor = RGBA(255, 255, 255, 120);
+    //clickView.layer.borderColor = [UIColor whiteColor].CGColor;
+    //clickView.layer.borderWidth = 2.0;
+    [clickView enableRoundImage];
+    //UIView* background = [[UIView alloc] initWithFrame:CGRectMake(CGFloat x, <#CGFloat y#>, <#CGFloat width#>, <#CGFloat height#>)];
+    //background.backgroundColor = RGBA(255, 255, 255, 120);
     
-    clickView.enableTouchEffects = false;
+    //[clickView addSubview:background];
+    clickView.enableTouchEffects = YES;
     
-    UIView* horizon = [[UIView alloc] initWithFrame:CGRectMake(30, 30, 35, 2)];
+    UIView* horizon = [[UIView alloc] initWithFrame:CGRectMake(30, 30, 31, 1)];
     horizon.backgroundColor = [UIColor whiteColor];
     
-    UIView* vertical = [[UIView alloc] initWithFrame:CGRectMake(30, 30, 2, 35)];
+    UIView* vertical = [[UIView alloc] initWithFrame:CGRectMake(30, 30, 1, 31)];
     vertical.backgroundColor = [UIColor whiteColor];
     
     
-    horizon.center = CGPointMake(30, 30);
-    vertical.center = CGPointMake(30, 30);
+    horizon.center = CGPointMake(23, 23);
+    vertical.center = CGPointMake(23, 23);
     [clickView addSubview:horizon];
     [clickView addSubview:vertical];
     
     clickView.releasedBlock = ^(EZCenterButton* obj){
-        [obj animateButton:0.5 lineWidth:6 completed:^(id obj){
+        //[obj animateButton:0.5 lineWidth:6 completed:^(id obj){
             //EZDEBUG(@"Before raise camera, %i", (int)self);
             [self raiseCamera:nil indexPath:nil];
             //EZDEBUG(@"The button clicked");
-        }];
+        //}];
     };
+    clickView.backgroundColor = RGBA(255, 255, 255, 180);
     
-    
+    /**
     clickView.longPressBlock = ^(EZCenterButton* obj){
         EZDEBUG(@"Long press clicked");
         [[EZDataUtil getInstance] jumpCycleAnimation:^(id obj){
@@ -1244,6 +1274,7 @@ static int photoCount = 1;
             };
         }];
     };
+     **/
     //clickView.center = CGPointMake(160, bounds.size.height - (30 + 5));
     [TopView addSubview:clickView];
     //EZDEBUG(@"View will Appear:%@", NSStringFromCGRect(TopView.frame));
@@ -1254,15 +1285,23 @@ static int photoCount = 1;
     //[EZDataUtil getInstance].centerButton = clickView;
     _rightCycleButton = clickView;
     
-    _leftContainer = [[UIView alloc] initWithFrame:CGRectMake(12,30, 46, 46)];
+    _leftContainer = [[UIView alloc] initWithFrame:CGRectMake(12,30, 120, 46)];
     _leftContainer.backgroundColor = [UIColor clearColor];
     
-    _leftCyleButton = [[EZClickView alloc] initWithFrame:CGRectMake(0,0, 46, 46)];
-    _leftCyleButton.layer.borderColor = [UIColor whiteColor].CGColor;
-    _leftCyleButton.layer.borderWidth = 2;
-    [_leftCyleButton enableRoundImage];
+    _leftCyleButton = [[EZClickView alloc] initWithFrame:CGRectMake(0,0, 120, 46)];
+    //_leftCyleButton.layer.borderColor = [UIColor whiteColor].CGColor;
+    //_leftCyleButton.layer.borderWidth = 2;
+    _leftText = [[UILabel alloc] initWithFrame:CGRectMake(0, -5, 120, 46)];
+    _leftText.font = largeFont;
+    _leftText.textAlignment = NSTextAlignmentLeft;
+    _leftText.text = @"feather";
+    _leftText.textColor = [UIColor whiteColor];
+    [_leftCyleButton addSubview:_leftText];
+    _leftCyleButton.enableTouchEffects = YES;
     
-    _leftMessageCount = [[UIView alloc] initWithFrame:CGRectMake(34, 0, 12, 12)];
+    //[_leftCyleButton enableRoundImage];
+    
+    _leftMessageCount = [[UIView alloc] initWithFrame:CGRectMake(4, 0, 12, 12)];
     _leftMessageCount.layer.borderColor = [UIColor whiteColor].CGColor;
     _leftMessageCount.layer.borderWidth = 1;
     _leftMessageCount.backgroundColor = RGBCOLOR(255, 30, 10);
@@ -1731,11 +1770,13 @@ static int photoCount = 1;
 #pragma mark - Transitioning Delegate (Modal)
 -(id<UIViewControllerAnimatedTransitioning>)animationControllerForPresentedController:(UIViewController *)presented presentingController:(UIViewController *)presenting sourceController:(UIViewController *)source {
     //_modalAnimationController.type = AnimationTypePresent;
+    EZDEBUG(@"_raiseAnimated");
     _raiseAnimation.type = AnimationTypePresent;
     return _raiseAnimation;
 }
 
 -(id<UIViewControllerAnimatedTransitioning>)animationControllerForDismissedController:(UIViewController *)dismissed {
+    EZDEBUG(@"_dismissAnimation");
     _raiseAnimation.type = AnimationTypeDismiss;
     return _raiseAnimation;
 }

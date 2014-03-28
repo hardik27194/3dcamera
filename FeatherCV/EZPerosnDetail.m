@@ -95,8 +95,8 @@
     [self.view addSubview:blackCover];
     
      **/
-    //self.view.backgroundColor = [UIColor clearColor];
-    self.view.backgroundColor = VinesGray;
+    self.view.backgroundColor = [UIColor grayColor];
+    //self.view.backgroundColor = VinesGray;
     CGFloat startGap = 0;
     if(!isRetina4){
         startGap = -20.0;
@@ -113,6 +113,8 @@
             [action showInView:weakSelf.view];
         }
     };
+    _uploadAvatar.touchStyle = kEZRandomColor;
+    _uploadAvatar.enableTouchEffects = TRUE;
 
     
     _titleInfo = [[UILabel alloc] initWithFrame:CGRectMake(0, 169 + startGap, CurrentScreenWidth, 30)];
@@ -127,12 +129,14 @@
     _mobile.textColor = [UIColor whiteColor];
     _mobile.font = [UIFont systemFontOfSize:25];
     _mobile.text = @"手机";
-    [self.view addSubview:_mobile];
+    //[self.view addSubview:_mobile];
 
     _quitButton = [[EZClickImage alloc] initWithFrame:CGRectMake(CurrentScreenWidth - 60, 30, 44, 44)];
     _quitButton.layer.borderWidth = 1.0;
     _quitButton.layer.borderColor = [UIColor whiteColor].CGColor;
     [_quitButton enableRoundImage];
+    //_quitButton.touchStyle = kEZWhiteBlur;
+    _quitButton.enableTouchEffects = TRUE;
     
     _quitButton.releasedBlock = ^(id obj){
         EZDEBUG(@"Released quite");

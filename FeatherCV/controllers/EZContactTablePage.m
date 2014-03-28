@@ -42,7 +42,7 @@
     if (self) {
         // Custom initialization
         self.view.backgroundColor = [UIColor clearColor];
-        self.title = @"朋友";
+        //self.title = @"朋友";
         [self.tableView registerClass:[EZContactTableCell class] forCellReuseIdentifier:@"Cell"];
         _contacts = [[NSMutableArray alloc] init];
         //_contacts = [[NSMutableArray alloc] init];

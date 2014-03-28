@@ -21,7 +21,6 @@
 @class EZPerson;
 @interface EZAlbumTablePage : UITableViewController<DLCImagePickerDelegate, UINavigationControllerDelegate, UIViewControllerTransitioningDelegate, UIActionSheetDelegate, UIAlertViewDelegate>
 
-
 @property (nonatomic, strong) NSMutableArray* combinedPhotos;
 
 //@property (nonatomic, strong) UISwipeGestureRecognize
@@ -106,6 +105,8 @@
 @property (nonatomic, strong) UIView* leftContainer;
 
 @property (nonatomic, strong) EZClickView* leftCyleButton;
+
+@property (nonatomic, strong) UILabel* leftText;
 
 @property (nonatomic, strong) UIView* leftMessageCount;
 
