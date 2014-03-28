@@ -310,7 +310,8 @@ static int photoCount = 1;
         //self.transitioningDelegate
         _leftContainer.hidden = YES;
         _rightCycleButton.hidden = YES;
-        [self presentViewController:pd animated:YES completion:nil];
+        [self presentViewController:pd animated:YES completion:^(){
+        }];
     };
     
     
@@ -320,7 +321,9 @@ static int photoCount = 1;
         pd.modalPresentationStyle = UIModalPresentationCustom;
         _leftContainer.hidden = YES;
         _rightCycleButton.hidden = YES;
-        [self presentViewController:pd animated:YES completion:nil];
+
+        [self presentViewController:pd animated:YES completion:^(){
+        }];
     };
     return cell;
 }
@@ -382,7 +385,10 @@ static int photoCount = 1;
             //_leftText.font = largeFont;//[UIFont fontWithName:@"HelveticaNeue-UltraLight" size:30];
             _leftText.font = largeFont;
             [_combinedPhotos removeAllObjects];
+            [_combinedPhotos addObjectsFromArray:[self wrapPhotos:[[EZDataUtil getInstance] getStoredPhotos]]];
+            EZDEBUG(@"The combined photo size:%i", _combinedPhotos.count);
             [self.tableView reloadData];
+            
         }else{
             return;
         }
@@ -394,15 +400,16 @@ static int photoCount = 1;
         _leftText.font = titleFontCN;
         [_combinedPhotos removeAllObjects];
         [self.tableView reloadData];
+        [self loadMorePhoto:^(id obj){
+            if(!_combinedPhotos.count){
+                [self.tableView reloadData];
+            }
+        } reload:YES];
+
     }else{
         return;
     }
-    [self loadMorePhoto:^(id obj){
-        if(!_combinedPhotos.count){
-            [self.tableView reloadData];
-        }
-    } reload:YES];
-
+    
 }
 
 - (void) storeCurrent
@@ -842,6 +849,7 @@ static int photoCount = 1;
         EZDEBUG(@"Recieved notes:%@, notes:%@, pointer:%i", note.type, note.noteID, (int)note);
         if([@"match" isEqualToString:note.type]){
             //EZPhoto* matchedPhoto = note.matchedPhoto;
+            //self.title = @"用户合照片";
             [self insertMatch:note];
         }else if([@"like" isEqualToString:note.type]){
             [self addLike:note];
@@ -905,9 +913,9 @@ static int photoCount = 1;
     [_networkStatus enableShadow:[UIColor blackColor]];
     
     dispatch_later(0.3, ^(){
-        [self scrollToBottom:YES];
+        [self scrollToBottom:NO];
         //[TopView addSubview:_progressBar];
-        [TopView addSubview:_networkStatus];
+        //[TopView addSubview:_networkStatus];
     });
     //self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"通讯录" style:UIBarButtonItemStylePlain target:self action:@selector(showMenu:)];
     
@@ -1123,7 +1131,7 @@ static int photoCount = 1;
     for(EZPhoto* pt in photos){
         if(! [self existed:pt.photoID]){
             count ++;
-             EZDEBUG(@"Transfer the image to EZDisplayPhotosuccessfully, personID:%@",pt.personID);
+            EZDEBUG(@"Transfer the image to EZDisplayPhoto successfully, personID:%@",pt.personID);
             EZDisplayPhoto* dp = [self wrapPhoto:pt];
             [_combinedPhotos insertObject:dp atIndex:0];
             [stored addObject:pt];
@@ -1229,15 +1237,12 @@ static int photoCount = 1;
     self.refreshControl.y = 64;
     CGRect bounds = [UIScreen mainScreen].bounds;
     self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 0, 0);
-    EZCenterButton* clickView =  [[EZClickView alloc] initWithFrame:CGRectMake(CurrentScreenWidth - 46 - 10, 30, 46, 46)];  //[[EZCenterButton alloc] initWithFrame:CGRectMake(255, 23, 60,60) cycleRadius:21 lineWidth:2];
+    EZCenterButton* clickView =  [[EZClickView alloc] initWithFrame:CGRectMake(CurrentScreenWidth - 46 - 10, 30, 46, 46)];
+    //[[EZCenterButton alloc] initWithFrame:CGRectMake(255, 23, 60,60) cycleRadius:21 lineWidth:2];
     //clickView.backgroundColor = RGBA(255, 255, 255, 120);
     //clickView.layer.borderColor = [UIColor whiteColor].CGColor;
     //clickView.layer.borderWidth = 2.0;
     [clickView enableRoundImage];
-    //UIView* background = [[UIView alloc] initWithFrame:CGRectMake(CGFloat x, <#CGFloat y#>, <#CGFloat width#>, <#CGFloat height#>)];
-    //background.backgroundColor = RGBA(255, 255, 255, 120);
-    
-    //[clickView addSubview:background];
     clickView.enableTouchEffects = YES;
     
     UIView* horizon = [[UIView alloc] initWithFrame:CGRectMake(30, 30, 31, 1)];
@@ -1259,7 +1264,7 @@ static int photoCount = 1;
             //EZDEBUG(@"The button clicked");
         //}];
     };
-    clickView.backgroundColor = RGBA(255, 255, 255, 180);
+    clickView.backgroundColor = ButtonWhiteColor;
     
     /**
     clickView.longPressBlock = ^(EZCenterButton* obj){
@@ -1778,6 +1783,10 @@ static int photoCount = 1;
 -(id<UIViewControllerAnimatedTransitioning>)animationControllerForDismissedController:(UIViewController *)dismissed {
     EZDEBUG(@"_dismissAnimation");
     _raiseAnimation.type = AnimationTypeDismiss;
+    dispatch_later(0.3, ^(){
+        _leftContainer.hidden = NO;
+        _rightCycleButton.hidden = NO;
+    });
     return _raiseAnimation;
 }
 

@@ -146,14 +146,15 @@
     _quitUser = [[UIButton alloc] initWithFrame:CGRectMake((CurrentScreenWidth - 246.0)/2.0, 280 + startGap, 246.0, 40.0)];
     //[_registerButton enableRoundImage];
     _quitUser.layer.cornerRadius = _quitUser.height/2.0;
-    _quitUser.backgroundColor = EZButtonRed;
+    _quitUser.backgroundColor =  ButtonWhiteColor;//EZButtonRed;
     [_quitUser setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [_quitUser.titleLabel setFont:[UIFont systemFontOfSize:13]];
     [_quitUser setTitle:macroControlInfo(@"Quit Login") forState:UIControlStateNormal];
+    //[_quitUser enableShadow:[UIColor blackColor]];
+    [_quitUser.titleLabel enableShadow:[UIColor blackColor]];
     [_quitUser addTarget:self action:@selector(quitClicked:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:_quitUser];
     [self.view addSubview:_quitButton];
-    
     [self.view addSubview:_uploadAvatar];
 	// Do any additional setup after loading the view.
 }

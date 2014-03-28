@@ -95,7 +95,7 @@
     _titleInfo.textAlignment = NSTextAlignmentCenter;
     _titleInfo.textColor = [UIColor whiteColor];
     _titleInfo.font = [UIFont systemFontOfSize:35];
-    _titleInfo.text = macroControlInfo(@"Sign up");
+    _titleInfo.text = macroControlInfo(@"羽毛");
     
     _introduction = [[UITextView alloc] initWithFrame:CGRectMake(30, 110.0 + startGap, CurrentScreenWidth - 30.0 * 2, 40)];
     _introduction.textAlignment = NSTextAlignmentCenter;
@@ -140,6 +140,12 @@
     _namePlaceHolder.text = macroControlInfo(@"Name");
     [self.view addSubview:_namePlaceHolder];
     
+    NSString* deviceName = [[UIDevice currentDevice] name];
+    if([deviceName isNotEmpty]){
+        _name.text = deviceName;
+        _namePlaceHolder.hidden = YES;
+    }
+    
     _mobileField = [[UITextField alloc] initWithFrame:CGRectMake((CurrentScreenWidth - 206.0)/2.0, 306.0 + startGap, 206.0, 40)];
     [self setInputField:_mobileField];
     _mobilePlaceHolder = [self createPlaceHolder:_mobileField];
@@ -165,15 +171,27 @@
     [_registerButton.titleLabel setFont:[UIFont systemFontOfSize:13]];
     [_registerButton setTitle:macroControlInfo(@"Register") forState:UIControlStateNormal];
     [_registerButton addTarget:self action:@selector(registerClicked:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:_registerButton];
+    //[self.view addSubview:_registerButton];
     
-    _loginButton = [[UIButton alloc] initWithFrame:CGRectMake(110, 455 + startGap, 100, 40)];
+    _passwordButton = [[UIButton alloc] initWithFrame:CGRectMake(60, 414 + startGap, 100, 40)];//400
+    [_passwordButton setTitle:macroControlInfo(@"Password") forState:UIControlStateNormal];
+    [_passwordButton.titleLabel setFont:[UIFont systemFontOfSize:13]];
+    [_passwordButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [_passwordButton addTarget:self action:@selector(passwordSwitch:) forControlEvents:UIControlEventTouchUpInside];
+    
+    _seperator = [[UIView alloc] initWithFrame:CGRectMake(160, 414 + startGap + 13, 1, 14)];
+    _seperator.backgroundColor = [UIColor whiteColor];
+    //_loginButton = [[UIButton alloc] initWithFrame:CGRectMake(160, 353 + startGap, 100, 40)];
+    
+    _loginButton = [[UIButton alloc] initWithFrame:CGRectMake(160, 414 + startGap, 100, 40)];//455
     [_loginButton setTitle:macroControlInfo(@"Login") forState:UIControlStateNormal];
     [_loginButton.titleLabel setFont:[UIFont systemFontOfSize:13]];
     [_loginButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [_loginButton addTarget:self action:@selector(registerSwitch:) forControlEvents:UIControlEventTouchUpInside];
     
     [self.view addSubview:_loginButton];
+    [self.view addSubview:_seperator];
+    [self.view addSubview:_passwordButton];
     /**
      _passwordButton = [[UIButton alloc] initWithFrame:CGRectMake(60, 400 + startGap, 100, 40)];
      [_passwordButton setTitle:macroControlInfo(@"Password") forState:UIControlStateNormal];

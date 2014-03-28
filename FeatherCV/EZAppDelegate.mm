@@ -362,14 +362,6 @@
     //[EZDataUtil getInstance].currentPersonID = @"531e7cd5e7b5b9f911342692";
     //EZDEBUG("Fonts %@", [UIFont familyNames]);
     
-    NSArray *fontFamilies = [UIFont familyNames];
-    
-    for (int i = 0; i < [fontFamilies count]; i++)
-    {
-        NSString *fontFamily = [fontFamilies objectAtIndex:i];
-        NSArray *fontNames = [UIFont fontNamesForFamilyName:[fontFamilies objectAtIndex:i]];
-        NSLog (@"%@: %@", fontFamily, fontNames);
-    }
     //[EZCoreAccessor cleanClientDB];
     if(![[EZDataUtil getInstance] getCurrentPersonID]){
         dispatch_later(0.1, ^(){
@@ -395,7 +387,7 @@
     EZDEBUG(@"before get scrollView");
     EZUIUtility.sharedEZUIUtility.mainWindow = self.window;
     self.window.rootViewController = [self createScrollView];
-    EZDEBUG(@"After get scrollView");
+    //EZDEBUG(@"After get scrollView");
    
     EZDEBUG(@"Register orientation change");
     //[self.window addSubview:barView];
@@ -436,6 +428,7 @@
     // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later. 
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
     [[EZDataUtil getInstance] storePendingPhoto];
+    [[EZCoreAccessor getClientAccessor] saveContext];
     EZDEBUG(@"Will enter background");
 }
 

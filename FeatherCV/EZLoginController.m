@@ -41,7 +41,7 @@
     _titleInfo.textAlignment = NSTextAlignmentCenter;
     _titleInfo.textColor = [UIColor whiteColor];
     _titleInfo.font = [UIFont systemFontOfSize:35];
-    _titleInfo.text = macroControlInfo(@"Welcome");
+    _titleInfo.text = macroControlInfo(@"羽毛");
     
     _introduction = [[UITextView alloc] initWithFrame:CGRectMake(37, 190.0 + startGap, CurrentScreenWidth - 37.0 * 2, 40)];
     _introduction.textAlignment = NSTextAlignmentCenter;
@@ -107,20 +107,20 @@
     [_registerButton setTitle:macroControlInfo(@"Login") forState:UIControlStateNormal];
     [_registerButton addTarget:self action:@selector(registerClicked:) forControlEvents:UIControlEventTouchUpInside];
     
-    _passwordButton = [[UIButton alloc] initWithFrame:CGRectMake(60, 400 + startGap, 100, 40)];
+    _passwordButton = [[UIButton alloc] initWithFrame:CGRectMake(60, 353 + startGap, 100, 40)];//400
     [_passwordButton setTitle:macroControlInfo(@"Password") forState:UIControlStateNormal];
     [_passwordButton.titleLabel setFont:[UIFont systemFontOfSize:13]];
     [_passwordButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [_passwordButton addTarget:self action:@selector(passwordSwitch:) forControlEvents:UIControlEventTouchUpInside];
     
-    _seperator = [[UIView alloc] initWithFrame:CGRectMake(160, 400 + startGap + 13, 1, 14)];
+    _seperator = [[UIView alloc] initWithFrame:CGRectMake(160, 353 + startGap + 13, 1, 14)];
     _seperator.backgroundColor = [UIColor whiteColor];
-    _loginButton = [[UIButton alloc] initWithFrame:CGRectMake(160, 400 + startGap, 100, 40)];
+    _loginButton = [[UIButton alloc] initWithFrame:CGRectMake(160, 353 + startGap, 100, 40)];
     [_loginButton setTitle:macroControlInfo(@"Register") forState:UIControlStateNormal];
     [_loginButton.titleLabel setFont:[UIFont systemFontOfSize:13]];
     [_loginButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [_loginButton addTarget:self action:@selector(registerSwitch:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:_registerButton];
+    //[self.view addSubview:_registerButton];
     [self.view addSubview:_passwordButton];
     [self.view addSubview:_loginButton];
     [self.view addSubview:_seperator];
@@ -206,6 +206,9 @@
             [_passwordField becomeFirstResponder];
             self.currentFocused = _passwordField;
             [self liftWithBottom:self.prevKeyboard isSmall:NO time:0.3 complete:nil];
+            //CGFloat heightGap = _passwordField.frame.origin.y - _mobileField.frame.origin.y;
+            
+            
         }else if(textField == _passwordField){
             //[_password becomeFirstResponder];
             [self startLogin:_mobileField.text password:_passwordField.text];

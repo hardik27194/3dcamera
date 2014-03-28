@@ -18,6 +18,10 @@
 @property (nonatomic, strong) UITextField* currentFocused;
 
 @property (nonatomic, assign) CGFloat prevKeyboard;
+
+@property (nonatomic, assign) BOOL haveDelta;
+
+@property (nonatomic, assign) CGFloat smallGap;
 //@property (nonatomic, strong) EZEventBlock key
 
 - (void) liftWithBottom:(CGFloat)deltaGap isSmall:(BOOL)small time:(CGFloat)timeval complete:(EZEventBlock)complete;

@@ -49,6 +49,8 @@
 
 #define BlurBackground RGBA(240, 240, 240, 128)
 
+#define ButtonWhiteColor RGBA(230, 230, 230, 180)
+
 #define lightGrayBackground RGBCOLOR(217, 217, 217)
 //Interesting.
 #define turningMockPageTag 20070424

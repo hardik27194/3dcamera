@@ -173,7 +173,7 @@
     
     EZPerson* person = [_contacts objectAtIndex:indexPath.row];
     if(indexPath.row == 0){
-        cell.name.text = @"全部照片";
+        cell.name.text = @"所有照片";
     }else{
         cell.name.text = person.name;
     }

@@ -19,7 +19,7 @@
 @class EZDisplayPhoto;
 @class EZShapeCover;
 @class EZPerson;
-@interface EZAlbumTablePage : UITableViewController<DLCImagePickerDelegate, UINavigationControllerDelegate, UIViewControllerTransitioningDelegate, UIActionSheetDelegate, UIAlertViewDelegate>
+@interface EZAlbumTablePage : UIViewController<DLCImagePickerDelegate, UINavigationControllerDelegate, UIViewControllerTransitioningDelegate, UIActionSheetDelegate, UIAlertViewDelegate>
 
 @property (nonatomic, strong) NSMutableArray* combinedPhotos;
 

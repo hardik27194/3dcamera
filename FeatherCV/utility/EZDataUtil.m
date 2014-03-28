@@ -687,7 +687,7 @@
 {
     //NSDictionary* jsonInfo = [photo toJson];
     NSString* storedFile =  photo.assetURL;//[EZFileUtil saveImageToCache:[photo getScreenImage]];
-    if(photo.photoID){
+    if(photo.photoID && [photo.assetURL isNotEmpty]){
         [EZNetworkUtility upload:baseUploadURL parameters:@{@"photoID":photo.photoID} file:storedFile complete:^(id obj){
             NSString* screenURL = [obj objectForKey:@"screenURL"];
             photo.screenURL = screenURL;
@@ -701,11 +701,7 @@
             }
         }];
     }else{
-        EZDEBUG(@"photo have no id, waiting for id");
-        //failure(@"Need id to upload");
-        //if(photo.progress){
-        //    photo.progress(nil);
-        //}
+        EZDEBUG(@"photo have no id, waiting for id or not URL");
     }
 }
 
@@ -1273,6 +1269,8 @@
 //Will be called before quit the game,
 //So that next time I will continue what I am doing.
 //This is just great.
+
+
 - (void) storePendingPhoto
 {
     for(int i = 0; i < _pendingPhotos.count; i++){
@@ -1294,7 +1292,7 @@
         lp.photoID = photo.photoID;
         lp.createdTime = photo.createdTime;
     }
-    [[EZCoreAccessor getClientAccessor] saveContext];
+    //[[EZCoreAccessor getClientAccessor] saveContext];
 }
 
 - (void) uploadPendingPhoto
@@ -1511,7 +1509,14 @@
         if(lp){
             EZDEBUG(@"store old objects");
         }else{
-            lp = [[EZCoreAccessor getClientAccessor] create:[LocalPhotos class]];
+            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"photoID = %@", ph.photoID];
+            NSArray* existPhoto = [[EZCoreAccessor getClientAccessor] fetchObject:[LocalPhotos class] byPredicate:predicate withSortField:Nil ascending:NO];
+            EZDEBUG(@"Query ID in db:%@,query count:%i", ph.photoID, existPhoto.count);
+            if(existPhoto.count){
+                lp = [existPhoto objectAtIndex:0];
+            }else{
+                lp = [[EZCoreAccessor getClientAccessor] create:[LocalPhotos class]];
+            }
             ph.localPhoto = lp;
         }
         EZDEBUG(@"is inserted:%i", lp.isInserted);

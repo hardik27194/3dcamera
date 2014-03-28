@@ -89,6 +89,7 @@
 
 
 - (void) textFieldDidBeginEditing:(UITextField *)textField{
+    EZDEBUG(@"Current focused changed");
     _currentFocused = textField;
 }
 //--- Screen raise logic
@@ -116,6 +117,13 @@
         if(abs(smallGap) > 0){
             //[weakSelf lift:smallGap time:0.3 complete:nil];
             //[weakSelf ]
+            if(smallGap < 0){
+                weakSelf.haveDelta = true;
+                weakSelf.smallGap = abs(smallGap);
+            }else{
+                weakSelf.haveDelta = false;
+                //weakSelf.smallGap = sm;
+            }
             [weakSelf liftWithBottom:smallGap isSmall:YES time:0.3 complete:nil];
         }else{
             //weakSelf.toolBarRegion.hidden = TRUE;
@@ -153,6 +161,7 @@
 
 - (void) liftWithBottom:(CGFloat)deltaGap isSmall:(BOOL)small time:(CGFloat)timeval complete:(EZEventBlock)complete
 {
+    CGFloat shiftY =  0;
     if(small){
         CGFloat viewY = self.view.frame.origin.y;
         CGFloat relativeDelta = deltaGap + viewY;
@@ -162,7 +171,7 @@
         }
         if(viewY < 0.0){
             [UIView animateWithDuration:0.3 animations:^(){
-                [self.view setY:relativeDelta];
+                [self.view setY:relativeDelta - shiftY];
             } completion:^(BOOL completed){
                 if(complete){
                     complete(nil);
@@ -175,7 +184,7 @@
             EZDEBUG(@"Will raise keyboard to:%f, prevKeyboard:%f", delta, _prevKeyboard);
             if(delta < 0){
                 [UIView animateWithDuration:timeval delay:0.0 options:UIViewAnimationOptionCurveLinear  animations:^(){
-                    [self.view setY:delta];
+                    [self.view setY:delta - shiftY];
                 } completion:^(BOOL completed){
                     if(complete){
                         complete(nil);
@@ -188,9 +197,13 @@
     }else{
         CGRect focusFrame = _currentFocused.frame;
         CGFloat leftGap = self.view.height - focusFrame.origin.y - focusFrame.size.height;
-        EZDEBUG(@"The focused frame is:%@, leftGap:%f", NSStringFromCGRect(focusFrame), leftGap);
+        
         CGFloat delta = leftGap - deltaGap;
         _prevKeyboard = deltaGap;
+        if(_haveDelta){
+            delta = leftGap - deltaGap - _smallGap;
+        }
+        EZDEBUG(@"The focused frame is:%@, leftGap:%f,deltaGap:%f,delta:%f  smallGap:%f, haveDelta:%i", NSStringFromCGRect(focusFrame), leftGap,deltaGap,delta,_smallGap, _haveDelta);
         if(delta < 0){
             //textFieldShouldReturn
             [UIView animateWithDuration:timeval delay:0.0 options:UIViewAnimationOptionCurveLinear  animations:^(){
