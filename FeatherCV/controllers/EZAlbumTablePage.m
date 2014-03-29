@@ -36,9 +36,10 @@
 #import "EZNote.h"
 #import "EZCoreAccessor.h"
 #import "EZPersonDetail.h"
+#import "EZTrianglerView.h"
 
 
-#define  largeFont [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:40]
+#define  largeFont [UIFont fontWithName:@"HelveticaNeue-Light" size:30]
 #define  smallFont [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:20]
 #define  titleFontCN [UIFont fontWithName:@"STHeitiSC-Light" size:20]
 
@@ -308,8 +309,8 @@ static int photoCount = 1;
         _isPushCamera = false;
         //pd.modalTransitionStyle
         //self.transitioningDelegate
-        //_leftContainer.hidden = YES;
-        //_rightCycleButton.hidden = YES;
+        _leftContainer.hidden = YES;
+        _rightCycleButton.hidden = YES;
         [self presentViewController:pd animated:YES completion:^(){
         }];
     };
@@ -319,8 +320,8 @@ static int photoCount = 1;
         EZPersonDetail* pd = [[EZPersonDetail alloc] initWithPerson:frontPerson];
         pd.transitioningDelegate = weakSelf;
         pd.modalPresentationStyle = UIModalPresentationCustom;
-        //_leftContainer.hidden = YES;
-        //_rightCycleButton.hidden = YES;
+        _leftContainer.hidden = YES;
+        _rightCycleButton.hidden = YES;
 
         [self presentViewController:pd animated:YES completion:^(){
         }];
@@ -383,6 +384,9 @@ static int photoCount = 1;
             _leftText.text = originalTitle;
             //_leftText.font = largeFont;//[UIFont fontWithName:@"HelveticaNeue-UltraLight" size:30];
             _leftText.font = largeFont;
+            CGSize fitSize = [_leftText sizeThatFits:CGSizeMake(999, 40)];
+            [_leftText setWidth:fitSize.width];
+            [_triangler setX:fitSize.width + 2];
             [_combinedPhotos removeAllObjects];
             [_combinedPhotos addObjectsFromArray:[self wrapPhotos:[[EZDataUtil getInstance] getStoredPhotos]]];
             EZDEBUG(@"The combined photo size:%i", _combinedPhotos.count);
@@ -396,7 +400,10 @@ static int photoCount = 1;
         _currentUser = currentUser;
         _leftText.text = currentUser.name;
         //_leftText.font = smallFont;//[UIFont systemFontOfSize:20];
-        _leftText.font = titleFontCN;
+        _leftText.font = largeFont;//titleFontCN;
+        CGSize fitSize = [_leftText sizeThatFits:CGSizeMake(999, 40)];
+        [_leftText setWidth:fitSize.width];
+        [_triangler setX:fitSize.width + 2];
         [_combinedPhotos removeAllObjects];
         [self.tableView reloadData];
         [self loadMorePhoto:^(id obj){
@@ -477,7 +484,8 @@ static int photoCount = 1;
 - (void) viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    //_rightCycleButton.hidden = NO;
+    _rightCycleButton.hidden = NO;
+    _leftContainer.hidden = NO;
     //.hidden = NO;
     //[[UINavigationBar appearance] setBackgroundImage:ClearBarImage forBarMetrics:UIBarMetricsDefault];
     //[self.navigationController.view addSubview:[EZDataUtil getInstance].naviBarBlur];
@@ -489,8 +497,8 @@ static int photoCount = 1;
     [super viewWillDisappear:animated];
     //[TopView addSubview:_progressBar];
     _progressBar.hidden = YES;
-    //_leftContainer.hidden = YES;
-    //_rightCycleButton.hidden = YES;
+    _leftContainer.hidden = YES;
+    _rightCycleButton.hidden = YES;
     //[[UINavigationBar appearance] setBackgroundImage:nil forBarMetrics:UIBarMetricsDefault];
     //[_moreButton removeFromSuperview];
     //[[EZDataUtil getInstance].barBackground removeFromSuperview];
@@ -1233,8 +1241,7 @@ static int photoCount = 1;
 {
     EZDEBUG(@"View did show");
     [super viewDidAppear:animated];
-    [[self navigationController] setNavigationBarHidden:YES animated:YES];
-    //[EZDataUtil getInstance].centerButton.hidden = NO;
+    [EZDataUtil getInstance].centerButton.hidden = NO;
     //if(!_progressBar.superview){
     //    [TopView addSubview:_progressBar];
     //}
@@ -1278,10 +1285,10 @@ static int photoCount = 1;
     clickView.enableTouchEffects = YES;
     
     UIView* horizon = [[UIView alloc] initWithFrame:CGRectMake(30, 30, 31, 1)];
-    horizon.backgroundColor = [UIColor whiteColor];
+    horizon.backgroundColor = ClickedColor;// [UIColor whiteColor];
     
     UIView* vertical = [[UIView alloc] initWithFrame:CGRectMake(30, 30, 1, 31)];
-    vertical.backgroundColor = [UIColor whiteColor];
+    vertical.backgroundColor = ClickedColor; //[UIColor whiteColor];
     
     
     horizon.center = CGPointMake(23, 23);
@@ -1313,7 +1320,7 @@ static int photoCount = 1;
     };
      **/
     //clickView.center = CGPointMake(160, bounds.size.height - (30 + 5));
-    [self.view addSubview:clickView];
+    [TopView addSubview:clickView];
     //EZDEBUG(@"View will Appear:%@", NSStringFromCGRect(TopView.frame));
     UIView* statusBarBackground = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 20)];
     statusBarBackground.backgroundColor = EZStatusBarBackgroundColor;
@@ -1334,7 +1341,13 @@ static int photoCount = 1;
     _leftText.text = @"feather";
     _leftText.textColor = [UIColor whiteColor];
     [_leftCyleButton addSubview:_leftText];
-    _leftCyleButton.enableTouchEffects = YES;
+    
+    CGSize reginSize = [_leftText sizeThatFits:CGSizeMake(999, 40)];
+    
+    _triangler = [[EZTrianglerView alloc] initWithFrame:CGRectMake(reginSize.width + 2,  21, 7, 4)];
+    [_leftCyleButton addSubview:_triangler];
+    _leftCyleButton.enableTouchEffects = FALSE;
+    //[_triangler enableShadow:[UIColor whiteColor]];
     
     //[_leftCyleButton enableRoundImage];
     
@@ -1347,10 +1360,18 @@ static int photoCount = 1;
     [_leftContainer addSubview:_leftCyleButton];
     [_leftContainer addSubview:_leftMessageCount];
     
-    [self.view addSubview:_leftContainer];
+    [TopView addSubview:_leftContainer];
+    _leftCyleButton.pressedBlock = ^(id obj){
+        [weakSelf.leftText setTextColor:ClickedColor];
+    };
     _leftCyleButton.releasedBlock = ^(id obj){
         weakSelf.leftMessageCount.hidden = YES;
+        
+        //dispatch_later(0.3, ^(){
+        [weakSelf.leftText setTextColor:[UIColor whiteColor]];
+        //});
         [weakSelf showMenu:nil];
+        
     };
    
 }
@@ -1807,6 +1828,7 @@ static int photoCount = 1;
 #pragma mark - Transitioning Delegate (Modal)
 -(id<UIViewControllerAnimatedTransitioning>)animationControllerForPresentedController:(UIViewController *)presented presentingController:(UIViewController *)presenting sourceController:(UIViewController *)source {
     //_modalAnimationController.type = AnimationTypePresent;
+    
     EZDEBUG(@"_raiseAnimated");
     _raiseAnimation.type = AnimationTypePresent;
     return _raiseAnimation;
@@ -1815,10 +1837,10 @@ static int photoCount = 1;
 -(id<UIViewControllerAnimatedTransitioning>)animationControllerForDismissedController:(UIViewController *)dismissed {
     EZDEBUG(@"_dismissAnimation");
     _raiseAnimation.type = AnimationTypeDismiss;
-    //dispatch_later(0.3, ^(){
-        //_leftContainer.hidden = NO;
-        //_rightCycleButton.hidden = NO;
-    //});
+    dispatch_later(0.3, ^(){
+        _leftContainer.hidden = NO;
+        _rightCycleButton.hidden = NO;
+    });
     return _raiseAnimation;
 }
 

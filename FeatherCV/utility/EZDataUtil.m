@@ -172,7 +172,8 @@
     [_pendingUserQuery removeAllObjects];
     
     [self queryPersonIDs:dupIDs success:^(NSArray* arr){
-        EZDEBUG(@"successfully query:%i users back", dupIDs.count);
+        _queryingCount = false;
+        EZDEBUG(@"successfully query:%i users back:%@", dupIDs.count, arr);
         if(!arr.count){
             return;
         }
@@ -183,6 +184,7 @@
             //[_currentQueryUsers setValue:ps forKey:ps.personID];
             [_pendingUserQuery removeObject:ps.personID];
             [self callPendingQuery:ps];
+            ps.joined = YES;
             if(ps.joined){
                 [_joinedUsers addObject:ps.personID];
             }else{
@@ -191,7 +193,6 @@
             [persons addObject:ps];
         }
         [self storeAllPersons:persons];
-        _queryingCount = false;
     } failure:^(id obj){
         EZDEBUG(@"upload persons:%@", obj);
         _queryingCount = false;
@@ -262,6 +263,7 @@
         self.currentLoginPerson = person;
         EZDEBUG(@"Returned person id:%@", person.personID);
         success(person);
+        [self storeAllPersons:@[person]];
         [[EZMessageCenter getInstance] postEvent:EZUserAuthenticated attached:nil];
     } failblk:error];
 }
@@ -724,6 +726,8 @@
     [presenter presentViewController:registerCtl animated:YES completion:nil];
     //}
     
+    //[TopView addSubview:registerCtl.view];
+    
     [[EZMessageCenter getInstance] registerEvent:EZUserAuthenticated block:^(EZPerson* ps){
         EZDEBUG(@"dismiss login person:%@, avatar:%@", ps.name, ps.avatar);
         [registerCtl dismissViewControllerAnimated:NO completion:nil];
@@ -738,6 +742,7 @@
         //[person fromJson:dict];
         self.currentPersonID = person.personID;
         self.currentLoginPerson = person;
+        [self storeAllPersons:@[person]];
         success(person);
     } failblk:error];
 }
@@ -1328,8 +1333,11 @@
         
         if(photo.isUploadDone){
             [_pendingUploads removeObject:photo];
+            [self storeAllPhotos:@[photo]];
             continue;
         }
+        
+        EZDEBUG(@"upload status:%i, updateStatus:%i, infoStatus:%i, exchangeStatus:%i", photo.contentStatus, photo.updateStatus, photo.infoStatus, photo.exchangeStatus);
         
         EZEventBlock exchangeContent = ^(EZPhoto* photo){
              EZDEBUG(@"Will invoke exchange photo, status:%i, personID:%@", photo.exchangeStatus, photo.personID);

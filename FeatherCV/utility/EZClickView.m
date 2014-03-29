@@ -51,7 +51,7 @@
     //Then my code will be very strong.
     //if(_enableTouchEffects){
     [self bringSubviewToFront:_pressedView];
-    _pressedView.backgroundColor = randBack(_pressedColor);
+    _pressedView.backgroundColor = ClickedColor;//randBack(_pressedColor);
     _pressedView.hidden = false;
     //}
 

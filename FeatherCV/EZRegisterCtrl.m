@@ -122,6 +122,14 @@
     _introduction.editable = FALSE;
     
     _uploadAvatar = [[EZClickImage alloc] initWithFrame:CGRectMake((CurrentScreenWidth - 64.0)/2.0, 175.0 + startGap, 64.0, 64.0)];
+    UILabel* addTitle = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 64, 20)];
+    addTitle.center = CGPointMake(32, 32);
+    addTitle.textAlignment = NSTextAlignmentCenter;
+    addTitle.textColor = [UIColor whiteColor];
+    addTitle.font = [UIFont systemFontOfSize:14];
+    addTitle.text = @"添加头像";
+    addTitle.center = _uploadAvatar.center;
+    [self.view addSubview:addTitle];
     _uploadAvatar.layer.borderColor = [UIColor whiteColor].CGColor;
     _uploadAvatar.layer.borderWidth = 1.0;
     [_uploadAvatar enableRoundImage];
@@ -166,24 +174,24 @@
     _registerButton = [[UIButton alloc] initWithFrame:CGRectMake((CurrentScreenWidth - 246.0)/2.0, 414 + startGap, 246.0, 40.0)];
     //[_registerButton enableRoundImage];
     _registerButton.layer.cornerRadius = _registerButton.height/2.0;
-    _registerButton.backgroundColor = EZButtonGreen;
+    _registerButton.backgroundColor = ButtonWhiteColor;//EZButtonGreen;
     [_registerButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [_registerButton.titleLabel setFont:[UIFont systemFontOfSize:13]];
     [_registerButton setTitle:macroControlInfo(@"Register") forState:UIControlStateNormal];
     [_registerButton addTarget:self action:@selector(registerClicked:) forControlEvents:UIControlEventTouchUpInside];
-    //[self.view addSubview:_registerButton];
+    [self.view addSubview:_registerButton];
     
-    _passwordButton = [[UIButton alloc] initWithFrame:CGRectMake(60, 414 + startGap, 100, 40)];//400
+    _passwordButton = [[UIButton alloc] initWithFrame:CGRectMake(60, 468 + startGap, 100, 40)];//400
     [_passwordButton setTitle:macroControlInfo(@"Password") forState:UIControlStateNormal];
     [_passwordButton.titleLabel setFont:[UIFont systemFontOfSize:13]];
     [_passwordButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [_passwordButton addTarget:self action:@selector(passwordSwitch:) forControlEvents:UIControlEventTouchUpInside];
     
-    _seperator = [[UIView alloc] initWithFrame:CGRectMake(160, 414 + startGap + 13, 1, 14)];
+    _seperator = [[UIView alloc] initWithFrame:CGRectMake(160, 468 + startGap + 13, 1, 14)];
     _seperator.backgroundColor = [UIColor whiteColor];
     //_loginButton = [[UIButton alloc] initWithFrame:CGRectMake(160, 353 + startGap, 100, 40)];
     
-    _loginButton = [[UIButton alloc] initWithFrame:CGRectMake(160, 414 + startGap, 100, 40)];//455
+    _loginButton = [[UIButton alloc] initWithFrame:CGRectMake(160, 468 + startGap, 100, 40)];//455
     [_loginButton setTitle:macroControlInfo(@"Login") forState:UIControlStateNormal];
     [_loginButton.titleLabel setFont:[UIFont systemFontOfSize:13]];
     [_loginButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
@@ -339,6 +347,10 @@
         [_passwordField becomeFirstResponder];
         return;
     }
+    if(_avatarURL == nil){
+        [[EZUIUtility sharedEZUIUtility] raiseInfoWindow:@"请上传头像" info:nil];
+        return;
+    }
     
     NSString* currentID = [EZDataUtil getInstance].currentPersonID;
     NSDictionary* registerInfo = @{
@@ -350,7 +362,7 @@
                                    };
     
     
-    UIActivityIndicatorView* activity = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    UIActivityIndicatorView* activity = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
     
     activity.center = self.view.center;
     [self.view addSubview:activity];
@@ -368,6 +380,8 @@
         //[[EZUIUtility sharedEZUIUtility] raiseInfoWindow:macroControlInfo(@"Register success") info: macroControlInfo(@"Congradulation")];
         
         //[weakSelf dismissViewControllerAnimated:YES completion:nil];
+        //[[EZDataUtil getInstance] setCurrentLoginPerson:person];
+        //[[EZDataUtil]]
         [[EZMessageCenter getInstance] postEvent:EZUserAuthenticated attached:person];
     } error:^(id err){
         EZDEBUG(@"Register error:%@", err);

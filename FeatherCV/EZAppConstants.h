@@ -106,18 +106,20 @@
 #define inviteMessageURL @"http://www.enjoyxue.com:8080/"
 
 //#define baseUploadURL @"http://172.13.0.85:8080/upload"
-#define baseUploadURL @"http://10.0.1.6:8080/upload"
-//#define baseUploadURL @"http://www.enjoyxue.com:8080/upload"
-//#define baseUploadURL @"http://172.13.0.49:8080/upload"
+//#define baseUploadURL @"http://10.0.1.6:8080/upload"
+#define baseUploadURL @"http://www.enjoyxue.com:8080/upload"
+//#define baseUploadURL @"http://192.168.1.102:8080/upload"
 
 //#define baseServiceURL @"http://172.13.0.85:8080/"
-#define baseServiceURL @"http://10.0.1.6:8080/"
-//#define baseServiceURL @"http://www.enjoyxue.com:8080/"
-//#define baseServiceURL @"http://172.13.0.49:8080/"
+//#define baseServiceURL @"http://10.0.1.6:8080/"
+#define baseServiceURL @"http://www.enjoyxue.com:8080/"
+//#define baseServiceURL @"http://192.168.1.102:8080/"
 
 #define EZButtonGreen RGBCOLOR(56, 216, 116)
 
 #define EZButtonRed RGBCOLOR(216, 116, 56)
+
+#define ClickedColor RGBCOLOR(61, 191, 216)
 
 #define reachableDomain @"www.enjoyzhi.com"
 

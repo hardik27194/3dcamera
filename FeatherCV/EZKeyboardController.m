@@ -36,8 +36,9 @@
     imageView.image = [UIImage imageNamed:@"background.png"]; //createBlurImage:20];
     
     UIView* blackCover = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-    blackCover.backgroundColor = RGBA(0, 0, 0, 50);
-    [self.view addSubview:imageView];
+    blackCover.backgroundColor = ClickedColor;//RGBA(0, 0, 0, 50);
+    //[self.view addSubview:imageView];
+    self.view.backgroundColor = ClickedColor;
     [self.view addSubview:blackCover];
 	// Do any additional setup after loading the view.
 }

@@ -95,6 +95,8 @@ typedef void  (^ IterateOperation)(id obj);
 //Finally get a more general method to handle this
 - (CGSize) calcDelta:(NSString*)string region:(CGSize)region originSize:(CGSize)originSize;
 
+- (CGFloat) calcWidth;
+
 - (void) enableTextWrap;
 
 //- (void) enableShadow:(UIColor*)color;

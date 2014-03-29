@@ -27,7 +27,7 @@
     //Set anchor points for the views
     UIImageView* blurredView = nil;
     if (self.type == AnimationTypePresent) {
-        blurredView =[[UIImageView alloc]initWithImage:[fromViewController.view createBlurImage:70.0]];
+        blurredView =[[UIImageView alloc]initWithImage:[fromViewController.view createBlurImage:30.0]];
         
         //[self setAnchorPoint:CGPointMake(1.0, 0.5) forView:toViewController.view];
         //[self setAnchorPoint:CGPointMake(0.0, 0.5) forView:fromViewController.view];

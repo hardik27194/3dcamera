@@ -108,6 +108,7 @@
     [_uploadAvatar enableRoundImage];
     _uploadAvatar.pressedBlock = ^(id obj){
         //[weakSelf uploadAvatar];
+        EZDEBUG(@"currentLoginID:%@, personID:%@", currentLoginID, weakSelf.person.personID);
         if([currentLoginID isEqualToString:weakSelf.person.personID]){
             UIActionSheet* action = [[UIActionSheet alloc] initWithTitle:macroControlInfo(@"Choose Avatar") delegate:weakSelf cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Camera",@"Album", nil];
             [action showInView:weakSelf.view];
@@ -164,6 +165,7 @@
 {
     [EZDataUtil getInstance].currentPersonID = nil;
     [EZDataUtil getInstance].currentLoginPerson = nil;
+    [[EZDataUtil getInstance].pendingUploads removeAllObjects];
     [EZCoreAccessor cleanClientDB];
     [self dismissViewControllerAnimated:YES completion:^(){
         [[EZDataUtil getInstance] triggerLogin:^(EZPerson* ps){} failure:^(id err){} reason:@"请重新登录" isLogin:NO];

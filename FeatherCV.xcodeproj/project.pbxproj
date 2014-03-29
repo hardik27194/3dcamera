@@ -112,6 +112,7 @@
 		18A3703E1859AE850022F0A8 /* EZContactTablePage.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A3703D1859AE850022F0A8 /* EZContactTablePage.m */; };
 		18A370411859B7C20022F0A8 /* EZContactTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A370401859B7C20022F0A8 /* EZContactTableCell.m */; };
 		18A37044185BF97E0022F0A8 /* EZPhotoRelation.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A37043185BF97E0022F0A8 /* EZPhotoRelation.m */; };
+		18BF598A18E67DD900995BEE /* EZTrianglerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 18BF598918E67DD900995BEE /* EZTrianglerView.m */; };
 		18C0E76B1861A08700D694CE /* page_turn.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 18C0E76A1861A08700D694CE /* page_turn.aiff */; };
 		18C0E76E1861A0FF00D694CE /* EZSoundEffect.m in Sources */ = {isa = PBXBuildFile; fileRef = 18C0E76D1861A0FF00D694CE /* EZSoundEffect.m */; };
 		18E3467E183DF54400C9D89D /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18E3467D183DF54400C9D89D /* Foundation.framework */; };
@@ -464,6 +465,8 @@
 		18A370401859B7C20022F0A8 /* EZContactTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZContactTableCell.m; sourceTree = "<group>"; };
 		18A37042185BF97E0022F0A8 /* EZPhotoRelation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZPhotoRelation.h; sourceTree = "<group>"; };
 		18A37043185BF97E0022F0A8 /* EZPhotoRelation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZPhotoRelation.m; sourceTree = "<group>"; };
+		18BF598818E67DD900995BEE /* EZTrianglerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZTrianglerView.h; sourceTree = "<group>"; };
+		18BF598918E67DD900995BEE /* EZTrianglerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZTrianglerView.m; sourceTree = "<group>"; };
 		18C0E76A1861A08700D694CE /* page_turn.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = page_turn.aiff; sourceTree = "<group>"; };
 		18C0E76C1861A0FF00D694CE /* EZSoundEffect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZSoundEffect.h; sourceTree = "<group>"; };
 		18C0E76D1861A0FF00D694CE /* EZSoundEffect.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZSoundEffect.m; sourceTree = "<group>"; };
@@ -1061,6 +1064,8 @@
 				180ADA5918C1CA2500AB490C /* EZChatUnit.m */,
 				180ADA5B18C4247F00AB490C /* EZCenterButton.h */,
 				180ADA5C18C4247F00AB490C /* EZCenterButton.m */,
+				18BF598818E67DD900995BEE /* EZTrianglerView.h */,
+				18BF598918E67DD900995BEE /* EZTrianglerView.m */,
 			);
 			path = controllers;
 			sourceTree = "<group>";
@@ -1606,6 +1611,7 @@
 				18E746F418A4A26A0023967B /* UIActivityIndicatorView+AFNetworking.m in Sources */,
 				1823DA4318E3CCFE00E6E8B3 /* EZPerosnDetail.m in Sources */,
 				184ADD8618CB490E00367527 /* EZBlurAnimator.m in Sources */,
+				18BF598A18E67DD900995BEE /* EZTrianglerView.m in Sources */,
 				18E746F318A4A26A0023967B /* AFNetworkActivityIndicatorManager.m in Sources */,
 				18A36FF31855C1F50022F0A8 /* DLCGrayscaleContrastFilter.m in Sources */,
 				18F58B7C187AF205006CB966 /* EZFaceResultObj.m in Sources */,

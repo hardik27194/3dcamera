@@ -19,6 +19,7 @@
 @class EZDisplayPhoto;
 @class EZShapeCover;
 @class EZPerson;
+@class EZTrianglerView;
 @interface EZAlbumTablePage : UIViewController<DLCImagePickerDelegate, UINavigationControllerDelegate, UIViewControllerTransitioningDelegate, UIActionSheetDelegate, UIAlertViewDelegate, UITableViewDelegate, UITableViewDataSource>
 
 @property (nonatomic, strong) NSMutableArray* combinedPhotos;
@@ -46,6 +47,8 @@
 @property (nonatomic, strong) UILabel* dailyCount;
 @property (nonatomic, strong) UIView* container;
 @property (nonatomic, strong) UIProgressView* progressBar;
+
+@property (nonatomic, strong) EZTrianglerView* triangler;
 
 @property (nonatomic, assign) BOOL notFirstTime;
 

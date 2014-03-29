@@ -166,7 +166,7 @@
 **/
 - (BOOL) isUploadDone
 {
-    return (_contentStatus == kUploadDone && _updateStatus == kUpdateNone && _infoStatus == kUploadDone && (_exchangeStatus == kExchangeNone || _exchangeStatus == kExchangeDone));
+    return (_contentStatus == kUploadDone && (_updateStatus == kUpdateDone || _updateStatus == kUpdateNone) && _infoStatus == kUploadDone && (_exchangeStatus == kExchangeNone || _exchangeStatus == kExchangeDone));
 }
 
 - (void) fromLocalJson:(NSDictionary*)dict

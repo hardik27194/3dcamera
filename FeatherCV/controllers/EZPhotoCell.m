@@ -68,9 +68,9 @@
         _otherIcon = [[EZClickImage alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 300 - startPos, smallIconRadius, smallIconRadius)];
         _otherIcon.backgroundColor = randBack(nil);
         [_otherIcon enableRoundImage];
-        //[_otherIcon enableTouchEffects];
+        [_otherIcon enableTouchEffects];
         [self.container addSubview:_otherIcon];
-        _otherIcon.enableTouchEffects = YES;
+        
         _otherName = [[UILabel alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 265 - startPos, 300, 30)];
         [_otherName setTextColor:[UIColor whiteColor]];
         _otherName.font = [UIFont boldSystemFontOfSize:13];
@@ -83,7 +83,6 @@
         [_otherTalk enableShadow:[UIColor blackColor]];
         [_otherTalk enableTextWrap];
         [self.container addSubview:_otherTalk];
-        
 
         UILabel* andSymbol = [[UILabel alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 225 - startPos, 20, 20)];
         [andSymbol setTextColor:[UIColor whiteColor]];
@@ -95,7 +94,7 @@
         _headIcon = [[EZClickImage alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 198 - startPos, smallIconRadius, smallIconRadius)];
         _headIcon.backgroundColor = randBack(nil);
         [_headIcon enableRoundImage];
-        _headIcon.enableTouchEffects = TRUE;
+        [_headIcon enableTouchEffects];
         [self.container addSubview:_headIcon];
         
         _authorName = [[UILabel alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 163 - startPos, 300, 30)];
@@ -119,13 +118,13 @@
         _otherLike.layer.borderColor = [UIColor whiteColor].CGColor;
         _otherLike.layer.borderWidth = 2;
         [_otherLike enableRoundImage];
-        [self.container addSubview:_otherLike];
+        //[self.container addSubview:_otherLike];
         
         _likeButton.layer.borderColor = [UIColor whiteColor].CGColor;
         _likeButton.layer.borderWidth = 2;
         _likeButton.backgroundColor = [UIColor clearColor];
         _likeButton.enableTouchEffects = FALSE;
-        [self.container addSubview:_likeButton];
+        //[self.container addSubview:_likeButton];
         
         _moreButton = [[EZShapeButton alloc] initWithFrame:CGRectMake(0, 0, 60, 44)];
         _moreButton.center = CGPointMake(CurrentScreenWidth - 30, CurrentScreenHeight - 27);

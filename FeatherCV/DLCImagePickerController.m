@@ -1071,6 +1071,8 @@ context:(void *)context
 
 - (void) createTextField
 {
+    
+    __weak DLCImagePickerController* weakSelf = self;
     CGRect bounds = [UIScreen mainScreen].applicationFrame;
     textInputRegion = [[UIView alloc] initWithFrame:CGRectMake(0, CurrentScreenHeight, 320, 44)];
     //textInputRegion.backgroundColor = [UIColor whiteColor];
@@ -1081,8 +1083,24 @@ context:(void *)context
     _authorIcon.enableTouchEffects = false;
     _authorIcon.image = PlaceHolderSmall;
     [_authorIcon setImageWithURL:str2url(currentLoginUser.avatar)];
-    [textInputRegion addSubview:_authorIcon];
-    _textField = [[UITextField alloc] initWithFrame:CGRectMake(50, 0, 310, 44)];
+    //[textInputRegion addSubview:_authorIcon];
+    
+    UILabel* signText = [[UILabel alloc] initWithFrame:CGRectMake(16, -3, 10, 44)];
+    signText.font = [UIFont systemFontOfSize:30];
+    signText.text = @":";
+    signText.textColor = ClickedColor;
+    
+    EZClickView* signClicked = [[EZClickView alloc] initWithFrame:CGRectMake(0, 4, 40, 40)];
+    signClicked.backgroundColor = ButtonWhiteColor;
+    [signClicked addSubview:signText];
+    [signClicked enableRoundImage];
+    signClicked.enableTouchEffects = YES;
+    signClicked.releasedBlock = ^(id obj){
+        [weakSelf.textField  becomeFirstResponder];
+    };
+    //[signText enableShadow:[UIColor blackColor]];
+    _textField = [[UITextField alloc] initWithFrame:CGRectMake(50, 5, 310, 44)];
+    _textField.font = [UIFont systemFontOfSize:17];
     //_textField.placeholder = macroControlInfo(@"Say something");
     
     _textField.delegate = self;
@@ -1101,8 +1119,9 @@ context:(void *)context
     //[cancelText setTitleColor:RGBCOLOR(128, 128, 128) forState:UIControlStateNormal];
     //[cancelText addTarget:self action:@selector(cancelText:) forControlEvents:UIControlEventTouchUpInside];
     //[textInputRegion addSubview:cancelText];
-    [textInputRegion addSubview:_textPlaceHolder];
+    //[textInputRegion addSubview:_textPlaceHolder];
     [textInputRegion addSubview:_textField];
+    [textInputRegion addSubview:signClicked];
     [self.view addSubview:textInputRegion];
 }
 
@@ -1410,6 +1429,7 @@ context:(void *)context
     [stillCamera stopCameraCapture];
     [self removeAllTargets];
     [[EZMotionUtility getInstance] unregisterHandler:@"CameraMotion"];
+    [[EZUIUtility sharedEZUIUtility] enableProximate:NO];
     _isVisible = false;
     [[EZMessageCenter getInstance] unregisterEvent:EZFaceCovered forObject:faceCovered];
     [[EZMessageCenter getInstance] unregisterEvent:EventKeyboardWillRaise forObject:keyboardRaiseHandler];
@@ -2422,10 +2442,10 @@ context:(void *)context
 
 - (void) showErrorInfo:(NSString*)info
 {
-    UILabel* failureMsg = [[UILabel alloc] initWithFrame:CGRectMake(0, 64, CurrentScreenWidth, 44)];
+    UILabel* failureMsg = [[UILabel alloc] initWithFrame:CGRectMake(0, 20, CurrentScreenWidth, 44)];
     failureMsg.textAlignment = NSTextAlignmentCenter;
     failureMsg.textColor = [UIColor whiteColor];
-    failureMsg.font = [UIFont boldSystemFontOfSize:17];
+    failureMsg.font = [UIFont boldSystemFontOfSize:16];
     failureMsg.text = info;
     [self.view addSubview:failureMsg];
 }
@@ -2480,7 +2500,7 @@ context:(void *)context
     [[EZMessageCenter getInstance]postEvent:EZTakePicture attached:_disPhoto];
     EZDEBUG(@"Current photo converstaion:%@", _shotPhoto.conversations);
     __block BOOL executedFlag = false;
-    dispatch_later(3.0, ^(){
+    dispatch_later(4.0, ^(){
         EZDEBUG(@"Timeout called,relations:%i", _shotPhoto.photoRelations.count);
         if(executedFlag){
             return;
@@ -2766,7 +2786,7 @@ context:(void *)context
         _shotPhoto.exchangeStatus = kExchangeDone;
     }else{
         //_shotPhoto.infoStatus = kUploadDone;
-        _shotPhoto.updateStatus = kUpdateStart;
+        //_shotPhoto.updateStatus = kUpdateStart;
     }
     [[EZDataUtil getInstance].pendingUploads addObject:_shotPhoto];
     [[EZDataUtil getInstance] uploadPendingPhoto];

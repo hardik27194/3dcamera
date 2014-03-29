@@ -167,7 +167,7 @@
                                    };
     
     EZDEBUG(@"Login info:%@", loginInfo);
-    UIActivityIndicatorView* activity = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    UIActivityIndicatorView* activity = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
     
     activity.center = self.view.center;
     [self.view addSubview:activity];
