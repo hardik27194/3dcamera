@@ -672,6 +672,10 @@
     //NSArray* splitStrs = [normalURL componentsSeparatedByString:@"."];
     
     //NSString* changedFileName = [NSString stringWithFormat:@"%@tb", [splitStrs objectAtIndex:splitStrs.count - 2]];
+    NSRange redirectRange = [normalURL rangeOfString:@"photourl"];
+    if(redirectRange.location != NSNotFound){
+        return normalURL;
+    }
     NSRange range = [normalURL rangeOfString:@"." options:NSBackwardsSearch];
     if(range.location != NSNotFound){
         //NSRange fetchHead;
@@ -688,6 +692,7 @@
 - (void) uploadPhoto:(EZPhoto*)photo success:(EZEventBlock)success failure:(EZEventBlock)failure
 {
     //NSDictionary* jsonInfo = [photo toJson];
+    EZDEBUG(@"upload id:%@, storedFile:%@",photo.photoID, photo.assetURL);
     NSString* storedFile =  photo.assetURL;//[EZFileUtil saveImageToCache:[photo getScreenImage]];
     if(photo.photoID && [photo.assetURL isNotEmpty]){
         [EZNetworkUtility upload:baseUploadURL parameters:@{@"photoID":photo.photoID} file:storedFile complete:^(id obj){
@@ -704,6 +709,9 @@
         }];
     }else{
         EZDEBUG(@"photo have no id, waiting for id or not URL");
+        if(failure){
+            failure(@"photo have no id, waiting for id or not URL");
+        }
     }
 }
 
@@ -1306,7 +1314,7 @@
         EZDEBUG(@"Quit for uploading, pending Task:%i", _uploadingTasks);
         return;
     }
-    
+    EZDEBUG(@"The uploadTasks is:%i", _pendingUploads.count);
     NSArray* uploads = [[NSArray alloc] initWithArray:_pendingUploads];
     for(int i = 0; i < uploads.count; i++){
         
@@ -1332,6 +1340,8 @@
         }
         
         if(photo.isUploadDone){
+            EZDEBUG(@"Remove photo when upload is done:%i, screenURL:%@", photo.updateStatus, photo.screenURL);
+            photo.type = 0;
             [_pendingUploads removeObject:photo];
             [self storeAllPhotos:@[photo]];
             continue;
@@ -1342,7 +1352,7 @@
         EZEventBlock exchangeContent = ^(EZPhoto* photo){
              EZDEBUG(@"Will invoke exchange photo, status:%i, personID:%@", photo.exchangeStatus, photo.personID);
             if(photo.exchangeStatus == kExchangeStart || photo.exchangeStatus == kExchangeFailure){
-            ++_uploadingTasks;
+                ++_uploadingTasks;
                 photo.exchangeStatus = kExchangeStart;
            
                 [self exchangeWithPerson:photo.exchangePersonID photoID:photo.photoID success:^(EZPhoto* ph){
@@ -1427,7 +1437,8 @@
         };
         EZEventBlock updateInfo = ^(EZPhoto* photo){
             EZDEBUG(@"Will start update info for:%@", photo.photoID);
-            if([photo.photoID isEmpty]){
+            if(!photo.photoID || [photo.photoID isEmpty]){
+                EZDEBUG(@"Quit for not have photoID, to avoid have multiple photo ID");
                 return;
             }
             ++_uploadingTasks;

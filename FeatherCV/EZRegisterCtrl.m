@@ -88,7 +88,7 @@
     self.view.backgroundColor = VinesGray;
     CGFloat startGap = 0;
     if(!isRetina4){
-        startGap = -20.0;
+        startGap = -40.0;
     }
     __weak EZRegisterCtrl* weakSelf = self;
     _titleInfo = [[UILabel alloc] initWithFrame:CGRectMake(0, 65.0 + startGap, CurrentScreenWidth, 40)];

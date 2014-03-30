@@ -65,7 +65,9 @@ static int photoCount = 1;
     cell.authorName.text = nil;
     cell.otherName.text = nil;
     cell.frontImage.image = nil;
+    cell.frontImage.backgroundColor = VinesGray;
     cell.cameraView.hidden = YES;
+    cell.waitingInfo.hidden = YES;
     //This is for later update purpose. great, let's get whole thing up and run.
     cell.currentPos = indexPath.row;
     //EZCombinedPhoto* curPhoto = [cp.combinedPhotos objectAtIndex:cp.selectedCombinePhoto];
@@ -75,6 +77,9 @@ static int photoCount = 1;
     // Configure the cell...
     //[cell displayImage:[myPhoto getLocalImage]];
     [[cell viewWithTag:animateCoverViewTag] removeFromSuperview];
+    
+    __weak EZAlbumTablePage* weakSelf = self;
+    __weak EZPhotoCell* weakCell = cell;
     EZDEBUG(@"Will display front image type:%i", myPhoto.typeUI);
     if(cp.isFront){
         cell.authorName.textColor = [UIColor whiteColor];
@@ -83,7 +88,9 @@ static int photoCount = 1;
             //EZClickView* takePhoto = [[EZClickView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
             //takePhoto.center =
             //cell.frontImage.image = nil
+            cell.frontImage.backgroundColor = ClickedColor;
             cell.cameraView.hidden = NO;
+            weakCell.requestInfo.text = @"有朋友要和你交换照片，请点击右上角的+号拍摄";
             cell.cameraView.releasedBlock = ^(id obj){
                 EZDEBUG(@"cameraView clicked");
                 [self raiseCamera:myPhoto indexPath:indexPath];
@@ -96,15 +103,15 @@ static int photoCount = 1;
     }else{
         cell.authorName.textColor = RGBCOLOR(240, 240, 240);
         cell.otherName.textColor = [UIColor whiteColor];
+        [self setWaitingInfo:cell displayPhoto:cp back:switchPhoto];
         if(switchPhoto.type == 1){
-            //if(back.type == kPhotoRequest){
-            cell.frontImage.image = [UIImage imageNamed:@"background.png"];
+            
         }else{
+            //cell.waitingInfo.hidden = YES;
             [self loadImage:cell url:switchPhoto.screenURL];
         }
     }
-    __weak EZAlbumTablePage* weakSelf = self;
-    __weak EZPhotoCell* weakCell = cell;
+
     EZEventBlock otherBlock = ^(EZPerson*  person){
         if(cell.currentPos == indexPath.row){
             cell.otherName.text = person.name;
@@ -195,16 +202,16 @@ static int photoCount = 1;
 
     //__block NSString* staticFile = nil;
     cell.frontImage.tappedBlock = ^(id obj){
-        //if(myPhoto.typeUI != kPhotoRequest){
+        if(myPhoto.typeUI != kPhotoRequest){
             EZPhoto* swPhoto = [myPhoto.photoRelations objectAtIndex:0];
             EZDEBUG(@"my photoID:%@, otherID:%@, otherPerson:%@, other photo upload:%i, other screenURL:%@", myPhoto.photoID,swPhoto.photoID, swPhoto.personID, swPhoto.uploaded, swPhoto.screenURL);
             if(swPhoto){
                 [weakSelf switchImage:weakCell displayPhoto:cp front:myPhoto back:swPhoto animate:YES];
             }
-        //}else{
-        //    EZDEBUG(@"photo request clicked: %@", myPhoto.photoID);
-        //    [self raiseCamera:myPhoto indexPath:indexPath];
-        //}
+        }else{
+            EZDEBUG(@"photo request clicked: %@", myPhoto.photoID);
+            [self raiseCamera:myPhoto indexPath:indexPath];
+        }
         //}
     };
     
@@ -405,6 +412,20 @@ static int photoCount = 1;
         [_leftText setWidth:fitSize.width];
         [_triangler setX:fitSize.width + 2];
         [_combinedPhotos removeAllObjects];
+        
+        
+        NSArray*  storedPhoto = [self wrapPhotos:[[EZDataUtil getInstance] getStoredPhotos]];
+        EZDEBUG(@"All stored photos:%i", storedPhoto.count);
+        for(EZDisplayPhoto* dp in storedPhoto){
+            EZPhoto* ph = nil;
+            if(dp.photo.photoRelations.count){
+                ph = [dp.photo.photoRelations objectAtIndex:0];
+                if([ph.personID isEqualToString:currentUser.personID]){
+                    [_combinedPhotos addObject:dp];
+                }
+            }
+        }
+        EZDEBUG(@"After search out:%i", _combinedPhotos.count);
         [self.tableView reloadData];
         [self loadMorePhoto:^(id obj){
             if(!_combinedPhotos.count){
@@ -1021,7 +1042,7 @@ static int photoCount = 1;
         //matched = [note.srcPhoto.photoRelations objectAtIndex:0];
        
     //}
-    EZDEBUG(@"srcPhotoID:%@,matchID:%@ uploaded:%i, matched:%@", note.srcPhoto.photoID,note.matchedID, note.srcPhoto.uploaded, matched.photoID);
+    EZDEBUG(@"srcPhotoID:%@,matchID:%@ uploaded:%i, matched:%@, type:%i", note.srcPhoto.photoID,note.matchedID, note.srcPhoto.uploaded, matched.photoID, note.srcPhoto.type);
     
     /**
     if(note.srcPhoto && !note.srcPhoto.uploaded){
@@ -1034,6 +1055,20 @@ static int photoCount = 1;
         return;
     }
      **/
+    
+    if(note.srcPhoto.type){
+        EZDEBUG(@"This is a photoRequest srcID:%@, UI type:%i, matchID:%@,relations:%i", note.srcPhoto.photoID,note.srcPhoto.typeUI, note.matchedPhoto.photoID, note.srcPhoto.photoRelations.count);
+        EZDisplayPhoto* disPhoto = [[EZDisplayPhoto alloc] init];
+        disPhoto.isFront = YES;
+        disPhoto.photo = note.srcPhoto;
+        note.srcPhoto.photoRelations = @[note.matchedPhoto];
+        [[EZDataUtil getInstance] storeAllPhotos:@[note.srcPhoto]];
+        [_combinedPhotos insertObject:disPhoto atIndex:_combinedPhotos.count];
+        [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:_combinedPhotos.count - 1 inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
+        return;
+        
+    }
+    
     NSArray* matchedArrs = [[NSArray alloc] initWithArray:_combinedPhotos];
     //NSMutableArray* matchedPhotos = [[NSMutableArray alloc] init];
     int pos = -1;
@@ -1184,7 +1219,7 @@ static int photoCount = 1;
         for(int i = 0; i < count; i++){
             [updatePaths addObject:[NSIndexPath indexPathForRow:i inSection:0]];
         }
-        [self.tableView insertRowsAtIndexPaths:updatePaths withRowAnimation:UITableViewRowAnimationTop];
+        [self.tableView insertRowsAtIndexPaths:updatePaths withRowAnimation:UITableViewRowAnimationFade];
         //if(updatePaths.count){
         //    [self.tableView insertRowsAtIndexPaths:updatePaths withRowAnimation:UITableViewRowAnimationTop];
         //}
@@ -1669,6 +1704,22 @@ static int photoCount = 1;
     };
 
 }
+
+
+- (void) setWaitingInfo:(EZPhotoCell*)cell displayPhoto:(EZDisplayPhoto*)cp back:(EZPhoto*)back
+{
+    EZDEBUG(@"setWaitingInfo get called:%i, %i", back.typeUI, back
+            .type);
+    if(back.type == kPhotoRequest){
+        cell.frontImage.image = nil;
+        cell.frontImage.backgroundColor = ClickedColor;
+        cell.waitingInfo.text = @"等待对方拍摄";
+        cell.waitingInfo.hidden = NO;
+    }else{
+        cell.waitingInfo.hidden = YES;
+    }
+}
+
 - (void) switchImage:(EZPhotoCell*)weakCell displayPhoto:(EZDisplayPhoto*)cp front:(EZPhoto*)front back:(EZPhoto*)back animate:(BOOL)animate
 {
     
@@ -1681,13 +1732,16 @@ static int photoCount = 1;
         
         if(cp.isFront){
             photo = back;
+            [self setWaitingInfo:weakCell displayPhoto:cp back:back];
             if(back.type == kPhotoRequest){
-                weakCell.frontImage.image = [UIImage imageNamed:@"background.png"];
+                //weakCell.frontImage.image = [UIImage imageNamed:@"background.png"];
+                
             }else{
                 [self loadImage:weakCell url:photo.screenURL];
             }
         }else{
             photo = front;
+            weakCell.waitingInfo.hidden = YES;
             //[weakCell.frontImage setImage:[front getScreenImage]];
             [self loadFrontImage:weakCell photo:front file:front.assetURL];
         }
@@ -1708,9 +1762,12 @@ static int photoCount = 1;
     }else{
         if(cp.isFront){
             photo = back;
+            [self setWaitingInfo:weakCell displayPhoto:cp back:back];
             if(back.type == kPhotoRequest){
-                weakCell.frontImage.image = [UIImage imageNamed:@"background.png"];
+                //weakCell.frontImage.image = [UIImage imageNamed:@"background.png"];
+                
             }else{
+                weakCell.waitingInfo.hidden = YES;
                 [self loadImage:weakCell url:photo.screenURL];
             }
         }else{

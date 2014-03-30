@@ -2496,6 +2496,7 @@ context:(void *)context
         //EZDEBUG(@"directly call success");
     }
     
+    [[EZDataUtil getInstance] storeAllPhotos:@[self.shotPhoto]];
     _disPhoto = [weakSelf createDisplayPhoto:weakSelf.shotPhoto];
     [[EZMessageCenter getInstance]postEvent:EZTakePicture attached:_disPhoto];
     EZDEBUG(@"Current photo converstaion:%@", _shotPhoto.conversations);
@@ -2513,9 +2514,10 @@ context:(void *)context
             EZDEBUG(@"full url:%@", fullLocal);
             if(fullLocal){
                 [self changePhoto];
-            }else{
-                [weakSelf showErrorInfo:macroControlInfo(@"Network not available")];
             }
+            //else{
+            //[weakSelf showErrorInfo:macroControlInfo(@"Network not available")];
+            //}
         }else{
             [weakSelf showErrorInfo:macroControlInfo(@"Network not available")];
         //[_progressView setProgress:1.0 animated:TRUE];
@@ -2552,6 +2554,9 @@ context:(void *)context
         executedFlag = true;
         //EZDEBUG(@"photo conversation:%@", weakSelf.shotPhoto.conversations);
         [weakSelf.progressView setProgress:1.0 animated:YES];
+        
+        
+        
         [weakSelf changePhoto];
         dispatch_later(0.2, ^(){
             weakSelf.progressView.hidden = YES;
@@ -2630,6 +2635,8 @@ context:(void *)context
             weakSelf.progressView.hidden = YES;
         });
     };
+    
+    [[EZDataUtil getInstance] storeAllPhotos:@[_shotPhoto]];
     [self savePhoto:^(NSNumber* number){
         EZDEBUG(@"the upload progress:%f, thread:%i", number.floatValue, [NSThread isMainThread]);
         if(number){
@@ -2692,7 +2699,7 @@ context:(void *)context
         [_progressView setProgress:progressStart animated:NO];
         //[[EZDataUtil getInstance].cachedPointer setObject:self forKey:@"Camera"];
         _captureComplete = ^(id obj){
-            EZDEBUG(@"photo captured, we will upload");
+            EZDEBUG(@"photo captured, we will upload, specified person:%@, isPhotoRequest:%i", weakSelf.personID, weakSelf.isPhotoRequest);
             weakSelf.uploadStatus = kUploading;
             if(!weakSelf.isPhotoRequest){
                 //if(weakSelf.shotPhoto.photoRelations.count){
@@ -2788,6 +2795,7 @@ context:(void *)context
         //_shotPhoto.infoStatus = kUploadDone;
         //_shotPhoto.updateStatus = kUpdateStart;
     }
+    //[[EZDataUtil getInstance].pendingUploads addObject:_shotPhoto];
     [[EZDataUtil getInstance].pendingUploads addObject:_shotPhoto];
     [[EZDataUtil getInstance] uploadPendingPhoto];
 }

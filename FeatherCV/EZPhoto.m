@@ -166,6 +166,9 @@
 **/
 - (BOOL) isUploadDone
 {
+    if([_screenURL isNotEmpty]){
+        _contentStatus = kUploadDone;
+    }
     return (_contentStatus == kUploadDone && (_updateStatus == kUpdateDone || _updateStatus == kUpdateNone) && _infoStatus == kUploadDone && (_exchangeStatus == kExchangeNone || _exchangeStatus == kExchangeDone));
 }
 

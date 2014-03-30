@@ -130,12 +130,29 @@
         _moreButton.center = CGPointMake(CurrentScreenWidth - 30, CurrentScreenHeight - 27);
         [self.container addSubview:_moreButton];
         
-        _cameraView = [[EZClickView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
+        _cameraView = [[EZClickView alloc] initWithFrame:CGRectMake(0, 0, 320, 100)];
         _cameraView.center = _container.center;
-        _cameraView.backgroundColor = RGBCOLOR(255, 128, 0);
+        _cameraView.backgroundColor = [UIColor clearColor]; //RGBCOLOR(, 128, 0);
         _cameraView.hidden = YES;
-        [_container addSubview:_cameraView];
+        //[_container addSubview:_cameraView];
         
+        _requestInfo = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 260, 50)];
+        _requestInfo.font = [UIFont systemFontOfSize:17];
+        [_requestInfo setTextAlignment:NSTextAlignmentCenter];
+        _requestInfo.textColor = [UIColor whiteColor];
+        _requestInfo.center = CGPointMake(_cameraView.bounds.size.width/2.0, _cameraView.bounds.size.height/2.0);
+        [_cameraView addSubview:_requestInfo];
+        [_requestInfo enableTextWrap];
+        
+        _waitingInfo = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 320, 44)];
+        _waitingInfo.font = [UIFont systemFontOfSize:17];
+        [_waitingInfo setTextAlignment:NSTextAlignmentCenter];
+        _waitingInfo.textColor = [UIColor whiteColor];
+        _waitingInfo.center = CGPointMake(160, CurrentScreenHeight * 0.33);
+        _waitingInfo.text = @"等待朋友拍照";
+        _waitingInfo.hidden = TRUE;
+        [_frontImage addSubview:_waitingInfo];
+        [_frontImage addSubview:_cameraView];
         
         [self.contentView addSubview:_container];
         //[self.contentView addSubview:_toolRegion];

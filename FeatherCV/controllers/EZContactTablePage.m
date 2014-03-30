@@ -58,7 +58,7 @@
     //Pervent the camera from raising again
     [EZUIUtility sharedEZUIUtility].stopRotationRaise = true;
     [EZDataUtil getInstance].centerButton.hidden = YES;
-    [[self navigationController] setNavigationBarHidden:NO animated:YES];
+    //[[self navigationController] setNavigationBarHidden:NO animated:YES];
 }
 
 - (void) viewWillDisappear:(BOOL)animated

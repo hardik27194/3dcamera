@@ -356,7 +356,7 @@
                                           } error:^(NSError* err){
                                           }];
     **/
-    [EZDataUtil getInstance].currentPersonID = nil;
+    //[EZDataUtil getInstance].currentPersonID = nil;
     //[EZDataUtil getInstance].currentPersonID = @"5325944f21ae7a427d586ae7";
     //[EZDataUtil getInstance].currentPersonID = @"532585b321ae7a2e53522fa0";
     //[EZDataUtil getInstance].currentPersonID = @"531e7cd5e7b5b9f911342692";

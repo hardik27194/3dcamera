@@ -117,6 +117,10 @@
 //will show this when encounter a photo request
 @property (nonatomic, strong) EZClickView* cameraView;
 
+@property (nonatomic, strong) UILabel* requestInfo;
+
+@property (nonatomic, strong) UILabel* waitingInfo;
+
 //I will use small image initially, then switch to the large image.
 @property (nonatomic, assign) BOOL isLargeImage;
 
