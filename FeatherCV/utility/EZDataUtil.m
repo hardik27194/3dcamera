@@ -615,7 +615,11 @@
     EZDownloadHolder* holder =  [_downloadedImages objectForKey:fullURL];
     if(fullURL == nil){
         //failed(@"Null URL");
+        if(failed){
+            failed(@"failure for nil");
+        }
         return nil;
+       
     }
     if(holder == nil){
         NSString* fileName = [self fileNameFromURL:fullURL];
@@ -699,7 +703,7 @@
             NSString* screenURL = [obj objectForKey:@"screenURL"];
             photo.screenURL = screenURL;
             photo.uploaded = TRUE;
-            EZDEBUG(@"uploaded screenURL:%@", screenURL);
+            EZDEBUG(@"uploaded id:%@ screenURL:%@", screenURL, photo.photoID);
             success(photo);
         } error:failure progress:^(CGFloat percent){
             EZDEBUG(@"The uploaded percent:%f", percent);
@@ -729,17 +733,24 @@
     //    [presenter presentViewController:loginCtl animated:YES completion:nil];
         
     //}else{
-    EZRegisterCtrl* registerCtl = [[EZRegisterCtrl alloc] init];
-    UIViewController* presenter = [EZUIUtility topMostController];
-    [presenter presentViewController:registerCtl animated:YES completion:nil];
-    //}
     
-    //[TopView addSubview:registerCtl.view];
-    
-    [[EZMessageCenter getInstance] registerEvent:EZUserAuthenticated block:^(EZPerson* ps){
-        EZDEBUG(@"dismiss login person:%@, avatar:%@", ps.name, ps.avatar);
-        [registerCtl dismissViewControllerAnimated:NO completion:nil];
-    }];
+    if(isLogin){
+        EZLoginController* login = [[EZLoginController alloc] init];
+        UIViewController* presenter = [EZUIUtility topMostController];
+        [presenter presentViewController:login animated:YES completion:nil];
+        [[EZMessageCenter getInstance] registerEvent:EZUserAuthenticated block:^(EZPerson* ps){
+            EZDEBUG(@"dismiss login person:%@, avatar:%@", ps.name, ps.avatar);
+            //[login dismissViewControllerAnimated:NO completion:nil];
+        }];
+    }else{
+        EZRegisterCtrl* registerCtl = [[EZRegisterCtrl alloc] init];
+        UIViewController* presenter = [EZUIUtility topMostController];
+        [presenter presentViewController:registerCtl animated:YES completion:nil];
+        [[EZMessageCenter getInstance] registerEvent:EZUserAuthenticated block:^(EZPerson* ps){
+            EZDEBUG(@"dismiss login person:%@, avatar:%@", ps.name, ps.avatar);
+            //[registerCtl dismissViewControllerAnimated:NO completion:nil];
+        }];
+    }
 }
 
 
@@ -1127,6 +1138,10 @@
         }
         //Trigger the person query call
         [self queryPendingPerson];
+    }else{
+        if(success){
+            success(ps);
+        }
     }
     [self adjustActivity:ps.personID];
     return ps;
@@ -1350,7 +1365,7 @@
         EZDEBUG(@"upload status:%i, updateStatus:%i, infoStatus:%i, exchangeStatus:%i", photo.contentStatus, photo.updateStatus, photo.infoStatus, photo.exchangeStatus);
         
         EZEventBlock exchangeContent = ^(EZPhoto* photo){
-             EZDEBUG(@"Will invoke exchange photo, status:%i, personID:%@", photo.exchangeStatus, photo.personID);
+             EZDEBUG(@"Will invoke exchange photo, status:%i, personID:%@, exchangeID:%@", photo.exchangeStatus, photo.personID, photo.exchangePersonID);
             if(photo.exchangeStatus == kExchangeStart || photo.exchangeStatus == kExchangeFailure){
                 ++_uploadingTasks;
                 photo.exchangeStatus = kExchangeStart;
@@ -1562,7 +1577,7 @@
         ps.uploaded = true;
         LocalPersons* lp = ps.localPerson;
         if(lp){
-            EZDEBUG(@"store old persons");
+            EZDEBUG(@"store old persons %@, json:%@", ps.localPerson, [ps toJson]);
             lp.payloads = [ps toJson];
         }else{
             lp = [[EZCoreAccessor getClientAccessor] create:[LocalPersons class]];
@@ -1599,7 +1614,7 @@
         // [_sortedUsers addObject:ps];
         //}
     }
-    EZDEBUG(@"final upload:%i, total:%i, joined:%i", uploadPersons.count, persons.count, _sortedUsers.count);
+    EZDEBUG(@"final upload:%i, total:%i, joined:%i, storedPerson:%i", uploadPersons.count, persons.count, _sortedUsers.count, storedPerson.count);
     [self uploadContacts:uploadPersons success:^(NSArray* arr){
         [self storeAllPersons:arr];
     } failure:^(id err){

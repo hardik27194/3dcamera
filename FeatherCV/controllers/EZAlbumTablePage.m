@@ -65,7 +65,7 @@ static int photoCount = 1;
     cell.authorName.text = nil;
     cell.otherName.text = nil;
     cell.frontImage.image = nil;
-    cell.frontImage.backgroundColor = VinesGray;
+    //cell.frontImage.backgroundColor = VinesGray;
     cell.cameraView.hidden = YES;
     cell.waitingInfo.hidden = YES;
     //This is for later update purpose. great, let's get whole thing up and run.
@@ -88,9 +88,9 @@ static int photoCount = 1;
             //EZClickView* takePhoto = [[EZClickView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
             //takePhoto.center =
             //cell.frontImage.image = nil
-            cell.frontImage.backgroundColor = ClickedColor;
+            //cell.frontImage.backgroundColor = ClickedColor;
             cell.cameraView.hidden = NO;
-            weakCell.requestInfo.text = @"有朋友要和你交换照片，请点击右上角的+号拍摄";
+            weakCell.requestInfo.text = @"朋友要和你交换照片，请点击此处拍摄";
             cell.cameraView.releasedBlock = ^(id obj){
                 EZDEBUG(@"cameraView clicked");
                 [self raiseCamera:myPhoto indexPath:indexPath];
@@ -115,15 +115,20 @@ static int photoCount = 1;
     EZEventBlock otherBlock = ^(EZPerson*  person){
         if(cell.currentPos == indexPath.row){
             cell.otherName.text = person.name;
-            [cell.otherIcon setImageWithURL:str2url(person.avatar)];
+            //[cell.otherIcon setImageWithURL:str2url(person.avatar)];
+            [cell.otherIcon loadImageURL:person.avatar haveThumb:NO loading:NO];
         }
     };
     EZDEBUG(@"upload status is:%i, photo relation count:%i, object Pointer:%i", myPhoto.updateStatus, myPhoto.photoRelations.count, (int)myPhoto);
     _progressBar.hidden = YES;
-    if(myPhoto.contentStatus != kUploadDone && !myPhoto.photoRelations.count && !(myPhoto.type == 1)){
+    
+    //Simplfy the condition
+    //As long as I have no matched photo
+    //I will monitoring the event.
+    if(!myPhoto.photoRelations.count && !(myPhoto.type == 1)){
         EZDEBUG(@"Will register upload success");
-        [_progressBar setProgress:0.2 animated:YES];
-        _progressBar.hidden = NO;
+        //[_progressBar setProgress:0.2 animated:YES];
+        //_progressBar.hidden = NO;
         
         myPhoto.progress = ^(NSNumber* number){
             if(cell.currentPos == indexPath.row){
@@ -139,14 +144,11 @@ static int photoCount = 1;
             EZDEBUG(@"upload success, photoRelation:%i", returned.photoRelations.count);
             
             if(cell.currentPos == indexPath.row){
-                [_progressBar setProgress:1.0 animated:YES];
+                //[_progressBar setProgress:1.0 animated:YES];
                 EZDEBUG(@"Will rotate the photo");
-                _progressBar.hidden = YES;
+                //_progressBar.hidden = YES;
                 EZPhoto* swPhoto = [returned.photoRelations objectAtIndex:0];
-                EZPerson* otherPs = pid2personCall(swPhoto.personID, otherBlock);
-                if(otherPs){
-                    otherBlock(otherPs);
-                }
+                pid2personCall(swPhoto.personID, otherBlock);
                 if(swPhoto){
                     [weakSelf switchImage:weakCell displayPhoto:cp front:returned back:swPhoto animate:YES];
                 }
@@ -205,9 +207,10 @@ static int photoCount = 1;
         if(myPhoto.typeUI != kPhotoRequest){
             EZPhoto* swPhoto = [myPhoto.photoRelations objectAtIndex:0];
             EZDEBUG(@"my photoID:%@, otherID:%@, otherPerson:%@, other photo upload:%i, other screenURL:%@", myPhoto.photoID,swPhoto.photoID, swPhoto.personID, swPhoto.uploaded, swPhoto.screenURL);
-            if(swPhoto){
-                [weakSelf switchImage:weakCell displayPhoto:cp front:myPhoto back:swPhoto animate:YES];
-            }
+            //NSString* localURL = [[EZDataUtil getInstance] lo]
+            //if(swPhoto){
+            [weakSelf switchImage:weakCell displayPhoto:cp front:myPhoto back:swPhoto animate:YES];
+            //}
         }else{
             EZDEBUG(@"photo request clicked: %@", myPhoto.photoID);
             [self raiseCamera:myPhoto indexPath:indexPath];
@@ -236,7 +239,7 @@ static int photoCount = 1;
         //};
         fullView.alpha = 0;
         macroHideStatusBar(YES);
-        [self.view addSubview:fullView];
+        [TopView addSubview:fullView];
         [UIView animateWithDuration:0.3 animations:^(){
             fullView.alpha = 1.0;
         }];
@@ -272,7 +275,7 @@ static int photoCount = 1;
         if(cp.photo.photoRelations.count){
             otherSide = [cp.photo.photoRelations objectAtIndex:0];
         }
-        person = [[EZDataUtil getInstance] getPersonByID:otherSide.personID success:nil];
+        person = pid2person(otherSide.personID);
         //[self setChatInfo:cell displayPhoto:otherSide person:person];
     }
     
@@ -283,10 +286,13 @@ static int photoCount = 1;
         //NSArray* dataToShare = @[@"我爱老哈哈"];  // ...or whatever pieces of data you want to share.
         //NSString *textToShare = self.navigationItem.title;
         //NSArray *itemsToShare = @[@"", [imagesArray objectAtIndex:afImgViewer.currentImage]];
+        /**
         UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:@[weakCell.frontImage.image] applicationActivities:nil];
         //activityVC.excludedActivityTypes = @[UIActivityTypePrint, UIActivityTypeCopyToPasteboard, UIActivityTypeSaveToCameraRoll   UIActivityTypeAssignToContact]; //or whichever you don't need
         [self presentViewController:activityVC animated:YES completion:nil];
-        //UIActivityViewController* activityViewController =
+        **/
+        
+         //UIActivityViewController* activityViewController =
         //[[UIActivityViewController alloc] initWithActivityItems:dataToShare applicationActivities:nil];
         //[self presentViewController:activityViewController animated:YES completion:^{
         //    EZDEBUG(@"Completed sharing");
@@ -296,18 +302,18 @@ static int photoCount = 1;
     EZEventBlock curBlock = ^(EZPerson*  person){
         if(cell.currentPos == indexPath.row){
             cell.authorName.text = person.name;
-            [cell.headIcon setImageWithURL:str2url(person.avatar)];
+            [cell.headIcon loadImageURL:person.avatar haveThumb:NO loading:NO];
         }
     };
     
     EZPerson* backPerson = pid2personCall(switchPhoto.personID, otherBlock);
-    if(backPerson){
-        otherBlock(backPerson);
-    }
+    //if(backPerson){
+    //    otherBlock(backPerson);
+    //}
     EZPerson* frontPerson = pid2personCall(myPhoto.personID, curBlock);
-    if(frontPerson){
-        curBlock(frontPerson);
-    }
+    //if(frontPerson){
+    //    curBlock(frontPerson);
+    //}
     cell.otherIcon.releasedBlock = ^(id obj){
         EZPersonDetail* pd = [[EZPersonDetail alloc] initWithPerson:backPerson];
         //pd.modalPresentationStyle = UIModalPresentationPageSheet;
@@ -329,7 +335,6 @@ static int photoCount = 1;
         pd.modalPresentationStyle = UIModalPresentationCustom;
         _leftContainer.hidden = YES;
         _rightCycleButton.hidden = YES;
-
         [self presentViewController:pd animated:YES completion:^(){
         }];
     };
@@ -421,16 +426,27 @@ static int photoCount = 1;
             if(dp.photo.photoRelations.count){
                 ph = [dp.photo.photoRelations objectAtIndex:0];
                 if([ph.personID isEqualToString:currentUser.personID]){
+                    if(dp.photo.photoRelations.count > 0){
+                        EZPhoto* matchPhoto = [dp.photo.photoRelations objectAtIndex:0];
+                        NSString* fullURL = checkimageload(matchPhoto.screenURL);
+                        if(fullURL){
+                            dp.isFront = NO;
+                        }
+                    }
                     [_combinedPhotos addObject:dp];
                 }
             }
         }
         EZDEBUG(@"After search out:%i", _combinedPhotos.count);
         [self.tableView reloadData];
+        
+        dispatch_later(0.2, ^(){
+            self.tableView.contentOffset = CGPointMake(0, 0);
+        });
         [self loadMorePhoto:^(id obj){
-            if(!_combinedPhotos.count){
-                [self.tableView reloadData];
-            }
+            //if(!_combinedPhotos.count){
+            //    [self.tableView reloadData];
+            //}
         } reload:YES];
 
     }else{
@@ -675,8 +691,10 @@ static int photoCount = 1;
     //controller.prefersStatusBarHidden = TRUE;
     //camera.transitioningDelegate = _cameraAnimation;
     camera.delegate = self;
+    //if(photo)
     camera.personID = _currentUser.personID;
     if(photo){
+        camera.personID = nil;
         camera.shotPhoto = photo;
         camera.isPhotoRequest = true;
         camera.refreshTable = ^(id obj){
@@ -997,12 +1015,15 @@ static int photoCount = 1;
 
 }
 
-- (int) findPhoto:(NSString*)photoID
+- (int) findPhoto:(NSString*)photoID matchID:(NSString*)matchID
 {
     for(int i = 0; i < _combinedPhotos.count; i ++){
         EZDisplayPhoto* dp = [_combinedPhotos objectAtIndex:i];
-        if([photoID isEqualToString:dp.photo.photoID]){
-            return i;
+        if(dp.photo.photoRelations.count){
+            EZPhoto* matchPhoto = [dp.photo.photoRelations objectAtIndex:0];
+            if([photoID isEqualToString:dp.photo.photoID] && [matchPhoto.photoID isEqualToString:matchID]){
+                return i;
+            }
         }
     }
     return -1;
@@ -1011,7 +1032,7 @@ static int photoCount = 1;
 - (void) insertUpload:(EZNote*)note
 {
     
-    int pos = [self findPhoto:note.srcID];
+    int pos = [self findPhoto:note.srcID matchID:note.matchedID];
     EZDEBUG(@"upload srcPhotoID:%@, uploaded:%i, matchedID:%@, uploaded:%i, position:%i", note.srcPhoto.photoID, note.srcPhoto.uploaded, note.matchedID, note.matchedPhoto.uploaded, pos);
     if(pos <  0){
         EZDEBUG(@"Quit for not find the id:%@", note.srcID);
@@ -1021,10 +1042,15 @@ static int photoCount = 1;
     EZDisplayPhoto* disPhoto = [_combinedPhotos objectAtIndex:pos];
     disPhoto.isFront = NO;
     disPhoto.photo.photoRelations = @[note.matchedPhoto];
-    EZDEBUG(@"matchedPhoto converstion:%@", note.matchedPhoto.conversations);
+    //disPhoto.photo.type = 0;
+    [[EZDataUtil getInstance] storeAllPhotos:@[disPhoto.photo]];
+    EZDEBUG(@"matchedPhoto converstion:%@, url:%@", note.matchedPhoto.conversations, note.matchedPhoto.screenURL);
     //disPhoto.photo = note.srcPhoto;
     //[_combinedPhotos addObject:disPhoto];
-    [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:pos  inSection:0]] withRowAnimation:UITableViewRowAnimationBottom];
+    //preloadimage(note.matchedPhoto.screenURL);
+    [[EZDataUtil getInstance] preloadImage:note.matchedPhoto.screenURL success:^(id sender) {
+        [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:pos  inSection:0]] withRowAnimation:UITableViewRowAnimationBottom];
+    } failed:^(id obj){}];
     return;
     //}
 }
@@ -1595,6 +1621,8 @@ static int photoCount = 1;
     UIActivityIndicatorView* ai = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
     ai.center = weakCell.frontImage.center;
     __block BOOL loaded = false;
+    //weakCell.frontImage.image = nil;
+    //weakCell.frontImage.backgroundColor = ClickedColor;
     
     [[EZDataUtil getInstance] serialLoad:secondURL fullOk:^(NSString* localURL){
         EZDEBUG(@"image loaded full:%i, url:%@", loaded, localURL);
@@ -1619,8 +1647,8 @@ static int photoCount = 1;
         EZDEBUG(@"image loaded blur:%i, url:%@", loaded, localURL);
         if(!loaded){
             loaded = true;
-            [ai stopAnimating];
-            [ai removeFromSuperview];
+            //[ai stopAnimating];
+            //[ai removeFromSuperview];
             UIImage* blurred = [fileurl2image(localURL) createBlurImage:15.0];
             weakCell.frontImage.image = blurred;
         }
@@ -1629,7 +1657,8 @@ static int photoCount = 1;
         [ai startAnimating];
     } failure:^(id err){
         EZDEBUG(@"failure get called");
-        EZDEBUG(@"err:%@", err);
+        //EZDEBUG(@"err:%@", err);
+        [[EZUIUtility sharedEZUIUtility] showErrorInfo:macroControlInfo(@"Network not available") delay:1.0 view:self.view];
         [ai stopAnimating];
         [ai removeFromSuperview];
     }];
@@ -1724,19 +1753,29 @@ static int photoCount = 1;
 {
     
     EZPhoto* photo = nil;
-
+    NSString* localFull = checkimageload(back.screenURL);
+    EZDEBUG(@"try to local url:%@, local:%@", back.screenURL, localFull);
+    //if(!localFull && !back.type){
+    //    return;
+    //}
     if(animate){
         UIView* snapShot = [weakCell.frontImage snapshotViewAfterScreenUpdates:YES];
         snapShot.frame = weakCell.frontImage.frame;
         [weakCell.rotateContainer addSubview:snapShot];
         
+        weakCell.frontImage.image = nil;
         if(cp.isFront){
             photo = back;
             [self setWaitingInfo:weakCell displayPhoto:cp back:back];
             if(back.type == kPhotoRequest){
                 //weakCell.frontImage.image = [UIImage imageNamed:@"background.png"];
                 
-            }else{
+            }else if(photo == nil){
+                //weakCell.frontImage.image = nil;
+                [[EZUIUtility sharedEZUIUtility] showErrorInfo:macroControlInfo(@"Network not available") delay:1.0 view:self.view];
+            }
+            else
+            {
                 [self loadImage:weakCell url:photo.screenURL];
             }
         }else{
@@ -1760,13 +1799,19 @@ static int photoCount = 1;
         }];}
        );
     }else{
+        weakCell.frontImage.image = nil;
         if(cp.isFront){
             photo = back;
             [self setWaitingInfo:weakCell displayPhoto:cp back:back];
             if(back.type == kPhotoRequest){
                 //weakCell.frontImage.image = [UIImage imageNamed:@"background.png"];
                 
-            }else{
+            }
+            else if(photo == nil){
+                [[EZUIUtility sharedEZUIUtility] showErrorInfo:macroControlInfo(@"Network not available") delay:1.0 view:self.view];
+            }
+
+            else{
                 weakCell.waitingInfo.hidden = YES;
                 [self loadImage:weakCell url:photo.screenURL];
             }

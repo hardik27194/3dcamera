@@ -17,6 +17,7 @@
     self.userInteractionEnabled = true;
     _enableTouchEffects = false;
     _longPressTime = 0.5;
+    self.backgroundColor = ButtonWhiteColor;
 }
 
 - (id)initWithFrame:(CGRect)frame

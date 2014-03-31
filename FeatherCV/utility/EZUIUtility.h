@@ -47,6 +47,8 @@
 //This window will be disappear after some time
 - (void) raiseInfoWindow:(NSString*)title info:(NSString*)info;
 
+- (void) showErrorInfo:(NSString*)errorInfo delay:(CGFloat)delay view:(UIView*)view;
+
 - (UIImagePickerController*) getCamera:(BOOL)isAlbum slide:(BOOL)slide completed:(EZEventBlock)block;
 
 - (void) raiseCamera:(BOOL)isAlbum controller:(UIViewController *)controller completed:(EZEventBlock)block allowEditing:(BOOL)allowEditing;

@@ -66,7 +66,7 @@
         
         
         _otherIcon = [[EZClickImage alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 300 - startPos, smallIconRadius, smallIconRadius)];
-        _otherIcon.backgroundColor = randBack(nil);
+        //_otherIcon.backgroundColor = randBack(nil);
         [_otherIcon enableRoundImage];
         [_otherIcon enableTouchEffects];
         [self.container addSubview:_otherIcon];
@@ -92,7 +92,7 @@
         [self.container addSubview:andSymbol];
         
         _headIcon = [[EZClickImage alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 198 - startPos, smallIconRadius, smallIconRadius)];
-        _headIcon.backgroundColor = randBack(nil);
+        //_headIcon.backgroundColor = randBack(nil);
         [_headIcon enableRoundImage];
         [_headIcon enableTouchEffects];
         [self.container addSubview:_headIcon];
@@ -200,7 +200,7 @@
     EZSimpleClick* frontImage = [[EZSimpleClick alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, CurrentScreenHeight)];
     frontImage.contentMode = UIViewContentModeScaleAspectFill;
     frontImage.clipsToBounds = true;
-    frontImage.backgroundColor = VinesGray;
+    frontImage.backgroundColor = ClickedColor;
     //[frontImage enableRoundImage];
     return frontImage;
 }

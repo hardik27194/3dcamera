@@ -54,7 +54,7 @@
     paragraphStyle.maximumLineHeight = 15.0f;
     paragraphStyle.minimumLineHeight = 15.0f;
     paragraphStyle.alignment = NSTextAlignmentCenter;
-    NSString *content = macroControlInfo(@"Feather is a flying organ. Imagination can free you from the physical limitation");
+    NSString *content = @"羽毛 帮你快速收集好友照片。灵感源自中国儿童游戏丢手绢。你拍照的瞬间，一起拍摄的照片会立即出现在背后。";
     NSDictionary *attribute = @{
                                 NSParagraphStyleAttributeName : paragraphStyle,
                                 NSForegroundColorAttributeName: [UIColor whiteColor],
@@ -139,10 +139,23 @@
     EZDEBUG(@"password switch get called");
 }
 
+
+
 - (void) registerSwitch:(id)obj
 {
-    EZDEBUG(@"register called");
-    [self dismissViewControllerAnimated:YES completion:nil];
+    EZDEBUG(@"switch to register called %@", self.presentingViewController);
+    //[self dismissViewControllerAnimated:YES completion:nil];
+    if([self.presentingViewController isKindOfClass:[EZRegisterCtrl class]]){
+        [self dismissViewControllerAnimated:YES completion:^(){
+        }];
+        EZDEBUG(@"Already presented in register");
+    }else{
+        //[self dismissViewControllerAnimated:NO completion:^(){
+        EZRegisterCtrl* registerCtrl = [[EZRegisterCtrl alloc] init];
+        registerCtrl.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+        [self presentViewController:registerCtrl animated:YES completion:nil];
+        //}];
+    }
 }
 
 - (void) startLogin:(NSString*)mobile password:(NSString*)password
@@ -181,11 +194,14 @@
         [coverView removeFromSuperview];
         EZDEBUG(@"Login success, name:%@", person);
         //[[EZUIUtility sharedEZUIUtility] raiseInfoWindow:macroControlInfo(@"Login success") info: macroControlInfo(@"Congradulation")];
+        UIViewController* presenting = self.presentingViewController;
         [weakSelf dismissViewControllerAnimated:YES completion:^(){
-            [[EZMessageCenter getInstance] postEvent:EZUserAuthenticated attached:person];
+            EZDEBUG(@"presenting class:%@", presenting);
+            if([presenting isKindOfClass:[EZRegisterCtrl class]]){
+                [presenting dismissViewControllerAnimated:NO completion:nil];
+            }
         }];
-        
-        
+        [[EZMessageCenter getInstance] postEvent:EZUserAuthenticated attached:person];
     } error:^(id err){
         EZDEBUG(@"Register error:%@", err);
         [activity stopAnimating];

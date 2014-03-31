@@ -166,9 +166,10 @@
     [EZDataUtil getInstance].currentPersonID = nil;
     [EZDataUtil getInstance].currentLoginPerson = nil;
     [[EZDataUtil getInstance].pendingUploads removeAllObjects];
+    [[EZDataUtil getInstance].currentQueryUsers removeAllObjects];
     [EZCoreAccessor cleanClientDB];
     [self dismissViewControllerAnimated:YES completion:^(){
-        [[EZDataUtil getInstance] triggerLogin:^(EZPerson* ps){} failure:^(id err){} reason:@"请重新登录" isLogin:NO];
+        [[EZDataUtil getInstance] triggerLogin:^(EZPerson* ps){} failure:^(id err){} reason:@"请重新登录" isLogin:YES];
     }];
 }
 

@@ -492,7 +492,7 @@
     //Why do this?
     //Create a closure.
     if(_isPhotoRequest){
-        EZDEBUG(@"To meet the photo request, type:%i", _shotPhoto.type);
+        EZDEBUG(@"To meet the photo request, type:%i, sourceID:%@", _shotPhoto.type, _shotPhoto.photoID);
     }else{
         _shotPhoto = [[EZPhoto alloc] init];
         EZPhoto* localPhoto = _shotPhoto;
@@ -686,8 +686,8 @@
     //_recordedMotions = [[NSMutableArray alloc] init];
     _flashView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
     _flashView.backgroundColor = [UIColor whiteColor];
-    _flashMode = 2;
-    
+    _flashMode = 0;
+    _disableFaceBeautify = TRUE;
     [self setupFlashFilter];
     [self setupDarkFilter];
     [self setupButton];
@@ -2174,8 +2174,44 @@ context:(void *)context
     
 }
 
+//First of all, this method carry 2 responsibility.
+//Rotate and quite. I don't like this design, which will make the caller very hard to make decision
+- (void) changePhoto:(EZEventBlock)completed
+{
+    EZPhoto* matched = [_shotPhoto.photoRelations objectAtIndex:0];
+    EZPerson* matchedPerson = pid2person(matched.personID);
+    //NSString* thumbURL = url2thumb(matched.screenURL);
+    
+    NSString* localFull = [[EZDataUtil getInstance] preloadImage:matched.screenURL success:Nil failed:nil];
+    NSString* thumbURL = url2thumb(matched.screenURL);
+    NSString* thumbLocal = nil;
+    if(!localFull){
+        thumbLocal = [[EZDataUtil getInstance] preloadImage:thumbURL success:nil failed:nil];
+    }
+    NSString* imageURL = localFull?localFull:thumbLocal;
+    
+    if(imageURL){
+        [self rotateCurrentImage:fileurl2image(imageURL) imageURL:nil blur:!localFull completed:^(id obj){
+            _textField.hidden = YES;
+            _textPlaceHolder.hidden = YES;
+            _disPhoto.isFront = false;
+            //dispatch_later(1.0, ^(){
+            //    [self innerCancel:YES];
+            //});
+            if(completed){
+                dispatch_later(1.0, ^(){
+                    completed(nil);
+                });
+            }
+        }];
+    }else{
+        if(completed){
+            completed(nil);
+        }
+    }
+}
 
-- (void) changePhoto
+- (void) changePhotoOld
 {
     if(_flipStatus != kTakedPhoto){
         EZDEBUG(@"Quit for not take photo");
@@ -2509,23 +2545,18 @@ context:(void *)context
         executedFlag = true;
         _progressView.hidden = YES;
         if(_shotPhoto.photoRelations.count > 0){
-            EZPhoto* matched = [_shotPhoto.photoRelations objectAtIndex:0];
-            NSString* fullLocal = [[EZDataUtil getInstance] preloadImage:matched.screenURL success:nil failed:nil];
-            EZDEBUG(@"full url:%@", fullLocal);
-            if(fullLocal){
-                [self changePhoto];
-            }
-            //else{
-            //[weakSelf showErrorInfo:macroControlInfo(@"Network not available")];
-            //}
+            //EZPhoto* matched = [_shotPhoto.photoRelations objectAtIndex:0];
+            [self changePhoto:^(id obj){
+                [weakSelf innerCancel:YES];
+            }];
         }else{
             [weakSelf showErrorInfo:macroControlInfo(@"Network not available")];
-        //[_progressView setProgress:1.0 animated:TRUE];
+            dispatch_later(0.8,
+                           ^(){
+                               [weakSelf innerCancel:YES];
+                           });
         }
-        dispatch_later(0.8,
-        ^(){
-            [weakSelf innerCancel:YES];
-        });
+       
 
     });
     
@@ -2554,13 +2585,16 @@ context:(void *)context
         executedFlag = true;
         //EZDEBUG(@"photo conversation:%@", weakSelf.shotPhoto.conversations);
         [weakSelf.progressView setProgress:1.0 animated:YES];
-        
-        
-        
-        [weakSelf changePhoto];
         dispatch_later(0.2, ^(){
             weakSelf.progressView.hidden = YES;
         });
+
+        
+        
+        [weakSelf changePhoto:^(id obj){
+            //weakSelf.progressView.hidden = YES;
+            [weakSelf innerCancel:YES];
+        }];
     };
     _shotPhoto.uploadSuccess = _uploadSuccessBlock;
     //_shotPhoto.
@@ -2590,22 +2624,28 @@ context:(void *)context
         _refreshTable(nil);
     }
     __block BOOL executedFlag = false;
-    dispatch_later(2.5, ^(){
+    dispatch_later(4.0, ^(){
         EZDEBUG(@"Timeout called");
         if(executedFlag){
             return;
         }
         executedFlag = true;
         _progressView.hidden = YES;
-        [weakSelf showErrorInfo:macroControlInfo(@"Network not available")];
-        //[_progressView setProgress:1.0 animated:TRUE];
-        dispatch_later(0.8,
-                       ^(){
-                           [weakSelf innerCancel:YES];
-                       });
+        if(_shotPhoto.photoRelations.count > 0){
+            //EZPhoto* matched = [_shotPhoto.photoRelations objectAtIndex:0];
+            [self changePhoto:^(id obj){
+                [weakSelf innerCancel:YES];
+            }];
+        }else{
+            [weakSelf showErrorInfo:macroControlInfo(@"Network not available")];
+            dispatch_later(0.8,
+            ^(){
+                [weakSelf innerCancel:YES];
+            });
+        }
+
         
     });
-    
     _uploadFailureBlock = ^(id obj){
         EZDEBUG(@"failure upload");
         if(executedFlag){
@@ -2630,10 +2670,13 @@ context:(void *)context
         executedFlag = true;
         //EZDEBUG(@"photo conversation:%@", weakSelf.shotPhoto.conversations);
         [weakSelf.progressView setProgress:1.0 animated:YES];
-        [weakSelf changePhoto];
+        
         dispatch_later(0.2, ^(){
             weakSelf.progressView.hidden = YES;
         });
+        [weakSelf changePhoto:^(id obj){
+            [weakSelf innerCancel:YES];
+        }];
     };
     
     [[EZDataUtil getInstance] storeAllPhotos:@[_shotPhoto]];

@@ -263,6 +263,24 @@ SINGLETON_FOR_CLASS(EZUIUtility)
      **/
 }
 
+- (void) showErrorInfo:(NSString*)errorInfo delay:(CGFloat)delay view:(UIView*)view
+{
+    UILabel* failureMsg = [[UILabel alloc] initWithFrame:CGRectMake(0, 20, CurrentScreenWidth, 44)];
+    failureMsg.textAlignment = NSTextAlignmentCenter;
+    failureMsg.textColor = [UIColor whiteColor];
+    failureMsg.font = [UIFont boldSystemFontOfSize:16];
+    failureMsg.text = errorInfo;
+    if(view){
+        [view addSubview:failureMsg];
+    }else{
+        [TopView addSubview:failureMsg];
+    }
+    dispatch_later(delay, ^(){
+        [failureMsg removeFromSuperview];
+    });
+}
+
+
 - (void) raiseInfoWindow:(NSString*)title info:(NSString *)info
 {
     UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:title message:info delegate:self cancelButtonTitle:nil otherButtonTitles:nil];
