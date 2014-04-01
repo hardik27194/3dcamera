@@ -90,7 +90,8 @@ static int photoCount = 1;
             //cell.frontImage.image = nil
             //cell.frontImage.backgroundColor = ClickedColor;
             cell.cameraView.hidden = NO;
-            weakCell.requestInfo.text = @"朋友要和你交换照片，请点击此处拍摄";
+            EZPerson* otherPerson = pid2person(switchPhoto.personID);
+            weakCell.requestInfo.text =[NSString stringWithFormat:@"点击拍摄，即可翻看%@发来的照片", otherPerson.name];
             cell.cameraView.releasedBlock = ^(id obj){
                 EZDEBUG(@"cameraView clicked");
                 [self raiseCamera:myPhoto indexPath:indexPath];
@@ -112,6 +113,13 @@ static int photoCount = 1;
         }
     }
 
+   
+    EZDEBUG(@"upload status is:%i, photo relation count:%i, object Pointer:%i", myPhoto.updateStatus, myPhoto.photoRelations.count, (int)myPhoto);
+    _progressBar.hidden = YES;
+    
+    //Simplfy the condition
+    //As long as I have no matched photo
+    //I will monitoring the event.
     EZEventBlock otherBlock = ^(EZPerson*  person){
         if(cell.currentPos == indexPath.row){
             cell.otherName.text = person.name;
@@ -119,12 +127,6 @@ static int photoCount = 1;
             [cell.otherIcon loadImageURL:person.avatar haveThumb:NO loading:NO];
         }
     };
-    EZDEBUG(@"upload status is:%i, photo relation count:%i, object Pointer:%i", myPhoto.updateStatus, myPhoto.photoRelations.count, (int)myPhoto);
-    _progressBar.hidden = YES;
-    
-    //Simplfy the condition
-    //As long as I have no matched photo
-    //I will monitoring the event.
     if(!myPhoto.photoRelations.count && !(myPhoto.type == 1)){
         EZDEBUG(@"Will register upload success");
         //[_progressBar setProgress:0.2 animated:YES];
@@ -148,6 +150,7 @@ static int photoCount = 1;
                 EZDEBUG(@"Will rotate the photo");
                 //_progressBar.hidden = YES;
                 EZPhoto* swPhoto = [returned.photoRelations objectAtIndex:0];
+                
                 pid2personCall(swPhoto.personID, otherBlock);
                 if(swPhoto){
                     [weakSelf switchImage:weakCell displayPhoto:cp front:returned back:swPhoto animate:YES];
@@ -1082,6 +1085,10 @@ static int photoCount = 1;
     }
      **/
     
+    //if(note.senderPerson){
+    //    EZDEBUG(@"match Sender person is:%@", note.senderPerson);
+    //}
+    
     if(note.srcPhoto.type){
         EZDEBUG(@"This is a photoRequest srcID:%@, UI type:%i, matchID:%@,relations:%i", note.srcPhoto.photoID,note.srcPhoto.typeUI, note.matchedPhoto.photoID, note.srcPhoto.photoRelations.count);
         EZDisplayPhoto* disPhoto = [[EZDisplayPhoto alloc] init];
@@ -1626,10 +1633,10 @@ static int photoCount = 1;
     
     [[EZDataUtil getInstance] serialLoad:secondURL fullOk:^(NSString* localURL){
         EZDEBUG(@"image loaded full:%i, url:%@", loaded, localURL);
+        [ai stopAnimating];
+        [ai removeFromSuperview];
         if(!loaded){
             loaded = true;
-            [ai stopAnimating];
-            [ai removeFromSuperview];
             //[weakCell.frontImage setImageWithURL:str2url(fullURL)];
             weakCell.frontImage.image = fileurl2image(localURL);
         }else{
@@ -1647,8 +1654,6 @@ static int photoCount = 1;
         EZDEBUG(@"image loaded blur:%i, url:%@", loaded, localURL);
         if(!loaded){
             loaded = true;
-            //[ai stopAnimating];
-            //[ai removeFromSuperview];
             UIImage* blurred = [fileurl2image(localURL) createBlurImage:15.0];
             weakCell.frontImage.image = blurred;
         }
@@ -1739,10 +1744,11 @@ static int photoCount = 1;
 {
     EZDEBUG(@"setWaitingInfo get called:%i, %i", back.typeUI, back
             .type);
+    EZPerson* otherPerson = pid2person(back.personID);
     if(back.type == kPhotoRequest){
         cell.frontImage.image = nil;
         cell.frontImage.backgroundColor = ClickedColor;
-        cell.waitingInfo.text = @"等待对方拍摄";
+        cell.waitingInfo.text =[NSString stringWithFormat:@"等待%@拍摄", otherPerson.name?otherPerson.name:@"对方"];
         cell.waitingInfo.hidden = NO;
     }else{
         cell.waitingInfo.hidden = YES;

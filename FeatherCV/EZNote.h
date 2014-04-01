@@ -46,6 +46,8 @@
 
 @property (nonatomic, strong) EZPerson* person;
 
+@property (nonatomic, strong) EZPerson* senderPerson;
+
 - (void) fromJson:(NSDictionary*)dict;
 
 @end

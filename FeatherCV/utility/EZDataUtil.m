@@ -401,6 +401,19 @@
     EZNote* note = [[EZNote alloc] init];
     [note fromJson:dict];
     
+    if(note.senderPerson){
+        EZDEBUG(@"Sender Perosn is:%@, %@", note.senderPerson.personID, note.senderPerson.name);
+        EZPerson* currPerson = [_currentQueryUsers objectForKey:note.senderPerson.personID];
+        //if(currPerson){
+        //    [currPerson fromJson:[dict objectForKey:@"person"]];
+        if(!currPerson){
+            //currPerson = note.person;
+            [_currentQueryUsers setObject:note.senderPerson  forKey:note.senderPerson.personID];
+            [self storeAllPersons:@[note.senderPerson]];
+        }
+
+    }
+    
     EZDEBUG(@"notes dict like:%i, liked:%i, detail:%@", [[dict objectForKey:@"like"]boolValue] , note.like, dict);
     if([@"match" isEqualToString:type]){
         NSString* photoID = [dict objectForKey:@"srcID"];
@@ -1361,6 +1374,12 @@
             [self storeAllPhotos:@[photo]];
             continue;
         }
+        
+        //if(photo.assetURL == nil || [photo.assetURL isEmpty] || [EZFileUtil isFileExist:photo.assetURL isURL:YES]){
+        //    EZDEBUG(@"Remove assetURL is nil");
+        //    [_pendingUploads removeObject:photo];
+        //}
+        
         
         EZDEBUG(@"upload status:%i, updateStatus:%i, infoStatus:%i, exchangeStatus:%i", photo.contentStatus, photo.updateStatus, photo.infoStatus, photo.exchangeStatus);
         

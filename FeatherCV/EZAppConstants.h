@@ -123,7 +123,7 @@
 
 #define ClickedColor RGBCOLOR(61, 191, 216)
 
-#define reachableDomain @"www.enjoyzhi.com"
+#define reachableDomain @"www.enjoyxue.com"
 
 #define placeholdImage [UIImage imageNamed:@"head_icon"] 
 //This is from show hair.

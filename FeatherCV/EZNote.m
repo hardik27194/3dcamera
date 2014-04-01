@@ -41,6 +41,12 @@
         [_person fromJson:personDict];
     }
     
+    NSDictionary* senderDict = [dict objectForKey:@"senderPerson"];
+    if(senderDict){
+        _senderPerson = [[EZPerson alloc] init];
+        [_senderPerson fromJson:senderDict];
+    }
+    
     _createdTime = isoStr2Date([dict objectForKey:@"createdTime"]);
 }
 

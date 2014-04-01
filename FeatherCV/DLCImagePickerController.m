@@ -2618,7 +2618,6 @@ context:(void *)context
     [self addChatInfo:weakSelf.shotPhoto];
     //weakSelf.shotPhoto.type = kNormalPhoto;
     
-    
     EZDEBUG(@"Photo requst Current photo converstaion:%@", _shotPhoto.conversations);
     if(_refreshTable){
         _refreshTable(nil);
