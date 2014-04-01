@@ -678,7 +678,8 @@
 {
     [EZUIUtility sharedEZUIUtility].cameraRaised = true;
     [super viewDidLoad];
-    
+    //Stop all the upload
+    [EZDataUtil getInstance].pauseUpload = TRUE;
     self.view.backgroundColor = VinesGray;
     self.cameraRotateContainer.backgroundColor = VinesGray;
     //
@@ -761,11 +762,11 @@
     _progressView.hidden = YES;
     [self.view addSubview:_progressView];
     
-    _leftBarButton = [[UIBarButtonItem alloc] initWithTitle:@"退出" style:UIBarButtonItemStylePlain target:self action:@selector(cancelClicked:)];
+    //_leftBarButton = [[UIBarButtonItem alloc] initWithTitle:@"退出" style:UIBarButtonItemStylePlain target:self action:@selector(cancelClicked:)];
     //_upperCancel = [[UIButton alloc] initWithFrame:CGRectMake(-10, 0, 60, 44)];
     //[_upperCancel setTitle:@"退出" forState:UIControlStateNormal];
     //[_upperCancel setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    self.navigationItem.leftBarButtonItem = _leftBarButton;
+    //self.navigationItem.leftBarButtonItem = _leftBarButton;
     
     //[_toolBarRegion addObserver:self forKeyPath:@"alpha" options:0 context:nil];
     //[_toolBarRegion addObserver:self forKeyPath:@"hidden" options:0 context:nil];
@@ -2181,7 +2182,10 @@ context:(void *)context
     EZPhoto* matched = [_shotPhoto.photoRelations objectAtIndex:0];
     EZPerson* matchedPerson = pid2person(matched.personID);
     //NSString* thumbURL = url2thumb(matched.screenURL);
-    
+    _disPhoto.isFront = false;
+    if(_refreshTable){
+        _refreshTable(nil);
+    }
     NSString* localFull = [[EZDataUtil getInstance] preloadImage:matched.screenURL success:Nil failed:nil];
     NSString* thumbURL = url2thumb(matched.screenURL);
     NSString* thumbLocal = nil;
@@ -2194,7 +2198,6 @@ context:(void *)context
         [self rotateCurrentImage:fileurl2image(imageURL) imageURL:nil blur:!localFull completed:^(id obj){
             _textField.hidden = YES;
             _textPlaceHolder.hidden = YES;
-            _disPhoto.isFront = false;
             //dispatch_later(1.0, ^(){
             //    [self innerCancel:YES];
             //});
@@ -2534,7 +2537,7 @@ context:(void *)context
     
     [[EZDataUtil getInstance] storeAllPhotos:@[self.shotPhoto]];
     _disPhoto = [weakSelf createDisplayPhoto:weakSelf.shotPhoto];
-    [[EZMessageCenter getInstance]postEvent:EZTakePicture attached:_disPhoto];
+    //[[EZMessageCenter getInstance]postEvent:EZTakePicture attached:_disPhoto];
     EZDEBUG(@"Current photo converstaion:%@", _shotPhoto.conversations);
     __block BOOL executedFlag = false;
     dispatch_later(4.0, ^(){
@@ -2548,9 +2551,11 @@ context:(void *)context
             //EZPhoto* matched = [_shotPhoto.photoRelations objectAtIndex:0];
             [self changePhoto:^(id obj){
                 [weakSelf innerCancel:YES];
+                [[EZMessageCenter getInstance]postEvent:EZTakePicture attached:_disPhoto];
             }];
         }else{
             [weakSelf showErrorInfo:macroControlInfo(@"Network not available")];
+            [[EZMessageCenter getInstance]postEvent:EZTakePicture attached:weakSelf.disPhoto];
             dispatch_later(0.8,
                            ^(){
                                [weakSelf innerCancel:YES];
@@ -2574,6 +2579,7 @@ context:(void *)context
         //[weakSelf addChatInfo:weakSelf.shotPhoto];
         dispatch_later(1.0, ^(){
             [weakSelf innerCancel:YES];
+            [[EZMessageCenter getInstance]postEvent:EZTakePicture attached:weakSelf.disPhoto];
         });
     };
     
@@ -2594,6 +2600,7 @@ context:(void *)context
         [weakSelf changePhoto:^(id obj){
             //weakSelf.progressView.hidden = YES;
             [weakSelf innerCancel:YES];
+            [[EZMessageCenter getInstance]postEvent:EZTakePicture attached:weakSelf.disPhoto];
         }];
     };
     _shotPhoto.uploadSuccess = _uploadSuccessBlock;
@@ -2619,9 +2626,8 @@ context:(void *)context
     //weakSelf.shotPhoto.type = kNormalPhoto;
     
     EZDEBUG(@"Photo requst Current photo converstaion:%@", _shotPhoto.conversations);
-    if(_refreshTable){
-        _refreshTable(nil);
-    }
+    
+  
     __block BOOL executedFlag = false;
     dispatch_later(4.0, ^(){
         EZDEBUG(@"Timeout called");
@@ -2655,10 +2661,12 @@ context:(void *)context
         weakSelf.progressView.hidden = YES;
         //[[EZUIUtility sharedEZUIUtility] raiseInfoWindow:@"上传失败" info:@"羽毛正在重试"];
         //[weakSelf changePhoto];
-        [weakSelf showErrorInfo:macroControlInfo(@"Network not available")];
+        //[weakSelf showErrorInfo:macroControlInfo(@"Network not available")];
         //[weakSelf addChatInfo:weakSelf.shotPhoto];
         dispatch_later(1.0, ^(){
-            [weakSelf innerCancel:YES];
+            [weakSelf changePhoto:^(id obj){
+                [weakSelf innerCancel:YES];
+            }];
         });
     };
     
@@ -3019,15 +3027,25 @@ context:(void *)context
     
 }
 
+
+//Now the real cancel should not call this method.
+//Because it is no more a cancel method.
+//It is a method to 
 - (void) innerCancel:(BOOL)animated
 {
     EZUIUtility.sharedEZUIUtility.cameraClickButton.releasedBlock = nil;
     //[self dismissViewControllerAnimated:YES completion:^(){
     //    EZDEBUG(@"DLCCamera Will get dismissed");
     //}];
+    [EZDataUtil getInstance].pauseUpload = false;
     [self.navigationController popViewControllerAnimated:animated];
     //[self cancelPrematchPhoto];
-    [self.delegate imagePickerControllerDidCancel:self imageCount:_imageCount];
+    if(_personID){
+        _disPhoto.isFront = NO;
+    }
+    if(!_isPhotoRequest){
+        [self.delegate imagePickerControllerDidCancel:self imageCount:_imageCount];
+    }
 }
 
 -(IBAction) cancelClicked:(id)sender {

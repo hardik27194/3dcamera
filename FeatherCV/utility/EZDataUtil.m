@@ -442,6 +442,10 @@
     EZDEBUG(@"Begin query notify");
     //NSDictionary* dict = [photo toJson];
 
+    if(_pauseUpload){
+        EZDEBUG(@"pause notification for shot");
+        return;
+    }
     [EZNetworkUtility postJson:@"notify" parameters:nil complete:^(NSArray* notes){
         EZDEBUG("notes count:%i", notes.count);
         int count = 0;
@@ -457,7 +461,7 @@
         }
         EZDEBUG(@"no notification count %i", count);
     } failblk:^(id err){
-        EZDEBUG(@"Failed to query notification");
+        EZDEBUG(@"Failed to query notification:%@", err);
     }];
 }
 
@@ -1338,10 +1342,16 @@
 
 - (void) uploadPendingPhoto
 {
+    if(_pauseUpload){
+        EZDEBUG(@"Quit for uploading pause");
+        return;
+    }
     if(_uploadingTasks > 0){
         EZDEBUG(@"Quit for uploading, pending Task:%i", _uploadingTasks);
         return;
     }
+    
+    
     EZDEBUG(@"The uploadTasks is:%i", _pendingUploads.count);
     NSArray* uploads = [[NSArray alloc] initWithArray:_pendingUploads];
     for(int i = 0; i < uploads.count; i++){

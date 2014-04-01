@@ -193,7 +193,10 @@
     
     
     //[[EZDataUtil getInstance] readAlbumInBackground:5 limit:5];
-    [[EZDataUtil getInstance] loadPhotoBooks];
+    
+    dispatch_later(10.0, ^(){
+        [[EZDataUtil getInstance] loadPhotoBooks];
+    });
     return mainNav;
     //return homeNavigationBar;
     

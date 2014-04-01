@@ -121,6 +121,8 @@
 
 @property (nonatomic, strong) UILabel* waitingInfo;
 
+@property (nonatomic, strong) UIActivityIndicatorView* activityView;
+
 //I will use small image initially, then switch to the large image.
 @property (nonatomic, assign) BOOL isLargeImage;
 

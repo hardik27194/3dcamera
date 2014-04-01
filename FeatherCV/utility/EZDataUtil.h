@@ -106,6 +106,8 @@
 
 @property (nonatomic, strong) NSMutableDictionary* cachedPointer;
 
+@property (nonatomic, assign) BOOL pauseUpload;
+
 
 //Check the current status
 - (BOOL) canUpload;

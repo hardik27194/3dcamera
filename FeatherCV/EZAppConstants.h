@@ -153,6 +153,10 @@
 
 #define EZTakePicture @"EZTakePicture"
 
+#define EZShowShotButton @"EZShowShotButton"
+
+#define EZRecoverShotButton @"EZRecoverShotButton"
+
 #define EZStatusBarChange @"EZStatusBarChange"
 
 //Just put it on the end of the Array.

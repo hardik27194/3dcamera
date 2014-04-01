@@ -124,7 +124,9 @@
 - (void) storeCurrent;
 //Where do we begin
 //It used to save the memory consumption
-- (void) raiseCamera:(EZPhoto*)photo indexPath:(NSIndexPath*)indexPath;
+- (void) raiseCamera:(EZDisplayPhoto*)photo indexPath:(NSIndexPath*)indexPath;
+
+- (void) raiseCamera:(EZDisplayPhoto*)disPhoto indexPath:(NSIndexPath*)indexPath personID:(NSString*)personID;
 
 - (void) refreshVisibleCell;
 

@@ -17,7 +17,8 @@
     self.userInteractionEnabled = true;
     _enableTouchEffects = false;
     _longPressTime = 0.5;
-    self.backgroundColor = ButtonWhiteColor;
+    //self.backgroundColor = ButtonWhiteColor;
+    self.backgroundColor = [UIColor clearColor];
 }
 
 - (id)initWithFrame:(CGRect)frame

@@ -102,6 +102,7 @@
              @"infoStatus":@(_infoStatus),
              @"updateStatus":@(_updateStatus),
              @"exchangeStatus":@(_exchangeStatus),
+             @"exchangePersonID":(_exchangePersonID ? _exchangePersonID : @""),
              //@"conversationUpdated":@(_conversationUploaded),
              @"deleted":@(_deleted),
              @"type":@(_type)
@@ -183,6 +184,7 @@
     _deleted = [[dict objectForKey:@"deleted"] integerValue];
     //_conversationUploaded = [[dict objectForKey:@"conversationUpdated"] integerValue];
     _exchangeStatus = [[dict objectForKey:@"exchangeStatus"] integerValue];
+    _exchangePersonID = [dict objectForKey:@"exchangePersonID"];
     [self fromJson:dict];
 }
 

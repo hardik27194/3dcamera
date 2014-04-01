@@ -60,7 +60,15 @@
 {
     self = [super initWithNibName:nil bundle:nil];
     _person  = person;
+    self.title = person.name;
     return self;
+}
+
+- (void) viewWillDisappear:(BOOL)animated
+{
+    if(![_person.personID isEqualToString:currentLoginID]){
+        [[EZMessageCenter getInstance] postEvent:EZRecoverShotButton attached:nil];
+    }
 }
 
 - (void) viewWillAppear:(BOOL)animated
@@ -68,12 +76,19 @@
     [super viewWillAppear:animated];
     _mobile.text = _person.mobile;
     _titleInfo.text = _person.name;
+    if(![_person.personID isEqualToString:currentLoginID]){
+        [[EZMessageCenter getInstance] postEvent:EZShowShotButton attached:^(id obj){
+            [[EZMessageCenter getInstance] postEvent:EZTriggerCamera attached:_person.personID];
+        }];
+    }
     //[[EZDataUtil getInstance] preloadImage:_person.avatar ]
     [_uploadAvatar loadImageURL:_person.avatar haveThumb:NO loading:NO];
     if([currentLoginID isEqualToString:_person.personID]){
         _quitUser.hidden = NO;
+        _quitButton.hidden = YES;
     }else{
         _quitUser.hidden = YES;
+        _quitButton.hidden = NO;
     }
 }
 
@@ -101,6 +116,7 @@
     if(!isRetina4){
         startGap = -20.0;
     }
+    self.navigationItem.titleView = [[UIView alloc] init];
     
     _uploadAvatar = [[EZClickImage alloc] initWithFrame:CGRectMake((CurrentScreenWidth - 64.0)/2.0, 80.0 + startGap, 64.0, 64.0)];
     _uploadAvatar.layer.borderColor = [UIColor whiteColor].CGColor;
@@ -132,17 +148,16 @@
     _mobile.text = @"手机";
     //[self.view addSubview:_mobile];
 
-    _quitButton = [[EZClickImage alloc] initWithFrame:CGRectMake(CurrentScreenWidth - 60, 30, 44, 44)];
-    _quitButton.layer.borderWidth = 1.0;
-    _quitButton.layer.borderColor = [UIColor whiteColor].CGColor;
-    [_quitButton enableRoundImage];
-    //_quitButton.touchStyle = kEZWhiteBlur;
-    _quitButton.enableTouchEffects = TRUE;
+    /**
+    _quitButton = [[EZUIUtility sharedEZUIUtility] createShotButton];
     
     _quitButton.releasedBlock = ^(id obj){
-        EZDEBUG(@"Released quite");
-        [weakSelf dismissViewControllerAnimated:YES completion:nil];
+        EZDEBUG(@"Trigger camera");
+        //[weakSelf dismissViewControllerAnimated:YES completion:nil];
+        [[EZMessageCenter getInstance] postEvent:EZTriggerCamera attached:weakSelf.person.personID];
     };
+    **/
+    
     
     _quitUser = [[UIButton alloc] initWithFrame:CGRectMake((CurrentScreenWidth - 246.0)/2.0, 280 + startGap, 246.0, 40.0)];
     //[_registerButton enableRoundImage];
@@ -155,7 +170,7 @@
     [_quitUser.titleLabel enableShadow:[UIColor blackColor]];
     [_quitUser addTarget:self action:@selector(quitClicked:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:_quitUser];
-    [self.view addSubview:_quitButton];
+    //[self.view addSubview:_quitButton];
     [self.view addSubview:_uploadAvatar];
 	// Do any additional setup after loading the view.
 }
@@ -168,9 +183,10 @@
     [[EZDataUtil getInstance].pendingUploads removeAllObjects];
     [[EZDataUtil getInstance].currentQueryUsers removeAllObjects];
     [EZCoreAccessor cleanClientDB];
-    [self dismissViewControllerAnimated:YES completion:^(){
-        [[EZDataUtil getInstance] triggerLogin:^(EZPerson* ps){} failure:^(id err){} reason:@"请重新登录" isLogin:YES];
-    }];
+    //[self dismissViewControllerAnimated:YES completion:^(){
+    [self.navigationController popViewControllerAnimated:NO];
+    [[EZDataUtil getInstance] triggerLogin:^(EZPerson* ps){} failure:^(id err){} reason:@"请重新登录" isLogin:YES];
+    //}];
 }
 
 @end

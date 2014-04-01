@@ -13,6 +13,7 @@
 #import <MessageUI/MessageUI.h>
 
 @class EZShapeCover;
+@class EZClickImage;
 //Put UI related functionality here
 //@class EZClickView;
 @interface EZUIUtility : NSObject<UIImagePickerControllerDelegate, UINavigationControllerDelegate, MFMessageComposeViewControllerDelegate>
@@ -56,6 +57,8 @@
 - (void) sendMessge:(NSString*)phone content:(NSString*)content presenter:(UIViewController*)presenter completed:(EZEventBlock)completed;
 
 - (void) enableProximate:(BOOL)enable;
+
+- (EZClickImage*) createShotButton;
 
 - (UIView*) createGradientView;
 //Why do I use this?

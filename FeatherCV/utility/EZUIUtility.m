@@ -11,6 +11,7 @@
 #import "EZMessageCenter.h"
 #import "EZShapeCover.h"
 #import <MessageUI/MessageUI.h>
+#import "EZClickImage.h"
 
 #define ColorTransparent 80
 @implementation EZUIUtility
@@ -203,6 +204,31 @@ SINGLETON_FOR_CLASS(EZUIUtility)
     [controller presentViewController:cameraUI animated:YES completion:nil];
     
 }
+
+- (EZClickImage*) createShotButton
+{
+    EZClickImage* clickView =  [[EZClickImage alloc] initWithFrame:CGRectMake(CurrentScreenWidth - 46 - 10, 30, 46, 46)];
+    //[[EZCenterButton alloc] initWithFrame:CGRectMake(255, 23, 60,60) cycleRadius:21 lineWidth:2];
+    //clickView.backgroundColor = RGBA(255, 255, 255, 120);
+    //clickView.layer.borderColor = [UIColor whiteColor].CGColor;
+    //clickView.layer.borderWidth = 2.0;
+    [clickView enableRoundImage];
+    clickView.enableTouchEffects = YES;
+    
+    UIView* horizon = [[UIView alloc] initWithFrame:CGRectMake(30, 30, 31, 1)];
+    horizon.backgroundColor = ClickedColor;// [UIColor whiteColor];
+    
+    UIView* vertical = [[UIView alloc] initWithFrame:CGRectMake(30, 30, 1, 31)];
+    vertical.backgroundColor = ClickedColor; //[UIColor whiteColor];
+    
+    horizon.center = CGPointMake(23, 23);
+    vertical.center = CGPointMake(23, 23);
+    [clickView addSubview:horizon];
+    [clickView addSubview:vertical];
+    clickView.backgroundColor = ButtonWhiteColor;
+    return clickView;
+}
+
 
 - (void)proximityStateChanged:(NSNotification *)note
 {
