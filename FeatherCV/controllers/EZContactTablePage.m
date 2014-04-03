@@ -44,7 +44,6 @@
         self.view.backgroundColor = [UIColor clearColor];
         //self.title = @"朋友";
         [self.tableView registerClass:[EZContactTableCell class] forCellReuseIdentifier:@"Cell"];
-        _contacts = [[NSMutableArray alloc] init];
         //_contacts = [[NSMutableArray alloc] init];
         //_contacts = [EZDataUtil getInstance].contacts;
     }
@@ -70,12 +69,13 @@
 
 - (void) loadPersonInfos
 {
+    //Make sure this photo all appear the first
     [[EZDataUtil getInstance] getSortedPersons:^(NSArray* arr){
         //if(currentLoginUser){
         //    [_contacts addObject:currentLoginUser];
         //}
         if(arr){
-            [_contacts addObjectsFromArray:arr];
+            [_contacts insertObjects:arr];
             
             /**
             //Remvoe this code when we quit the debug mode
@@ -125,11 +125,33 @@
         [self.tableView reloadData];
     }];
     **/
-    
-    //self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWith:<#(UIBarButtonSystemItem)#> target:<#(id)#> action:<#(SEL)#>
-    dispatch_later(0.3, ^(){
-        [self loadPersonInfos];
-    });
+   
+        //[[EZMessageCenter getInstance] registerEvent:EZContactsReaded block:^(NSArray* contacts) {
+        //
+        //    [[EZDataUtil getInstance] checkAndUpload:contacts];
+        //    [self.tableView reloadData];
+        //}];
+    //}
+    //dispatch_later(0.3, ^(){
+        //[self loadPersonInfos];
+    _contacts = [[NSMutableArray alloc] init];
+    NSArray* arrs = [[EZDataUtil getInstance] getStoredPersonLists];
+    [_contacts addObjectsFromArray:arrs];
+    EZDEBUG(@"Stored person count:%i, arrs:%i", _contacts.count, arrs.count);
+    if(![EZDataUtil getInstance].contacts.count){
+        [[EZDataUtil getInstance] loadPhotoBooks];
+    }else{
+        [_contacts addObjectsFromArray:[EZDataUtil getInstance].contacts];
+    }
+    [self.tableView reloadData];
+    [[EZMessageCenter getInstance] registerEvent:EZContactsReaded block:^(NSArray* contacts) {
+        EZDEBUG(@"loaded persons:%i", contacts.count);
+            //[[EZDataUtil getInstance] checkAndUpload:contacts];
+        [_contacts addObjectsFromArray:contacts];
+        [self.tableView reloadData];
+    }];
+
+    //});
     
 }
 

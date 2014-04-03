@@ -840,6 +840,7 @@
     NSMutableArray* res = [[NSMutableArray alloc] init];
     NSMutableArray* pids = [[NSMutableArray alloc] init];
     [pids addObject:currentLoginID];
+    
     [pids addObjectsFromArray:_sortedUsers];
     [pids addObjectsFromArray:_currentQueryUsers.allKeys];
     //[pids addObjectsFromArray:[_joinedUsers allObjects]];
@@ -852,6 +853,8 @@
             [sortedPids addObject:pid];
         }
     }
+    
+    EZDEBUG(@"Current QueryUser:%i, sortedPids:%i", _currentQueryUsers.count, _sortedUserSets.count);
     
     if(sortedPids.count){
         for(NSString* pid in sortedPids){
@@ -947,25 +950,21 @@
                                                      [res addObject:person];
                                                  }
                                                  
-                                                 EZDEBUG(@"Completed photobook reading, will call back now");
+                                                 EZDEBUG(@"Completed photobook reading:%i", res.count);
                                                  //[[EZMessageCenter getInstance] postEvent:EZGetContacts attached:res];
                                                  [_contacts addObjectsFromArray:res];
                                                  
+                                                 /**
                                                  EZEventBlock uploadBlock = ^(id obj){
-                                                     [self checkAndUpload:res];
-                                                     /**
-                                                     [self uploadContacts:res success:^(NSArray* persons){
-                                                         EZDEBUG(@"uploaded person successful");
-                                                     } failure:^(id err){
-                                                         EZDEBUG(@"error when upload contacts");
-                                                     }];
-                                                      **/
-                                                 };
+                                                                                                     };
                                                  if(_currentPersonID){
                                                      uploadBlock(nil);
                                                  }else{
                                                      [[EZMessageCenter getInstance] registerEvent:EZUserAuthenticated block:uploadBlock];
                                                  }
+                                                 **/
+
+                                                 [[EZMessageCenter getInstance] postEvent:EZContactsReaded attached:res];
                                                 });
     });
     //return res;
@@ -1651,7 +1650,77 @@
     }];
 }
 
+- (NSArray*) getStoredPersonLists
+{
+   
+    NSMutableArray* res = [[NSMutableArray alloc] init];
+    //NSMutableArray* addedUser = [[NSMutableArray alloc] init];
+    NSMutableSet* stored = [[NSMutableSet alloc] init];
+    //EZPerson* currentUser = nil;
+    for(NSString* pid in _sortedUsers){
+        EZPerson* ps = [_currentQueryUsers objectForKey:pid];
+        if(![stored containsObject:pid]){
+            if(![pid isEqualToString:currentLoginID]){
+                [res addObject:ps];
+            }
+        }
+    }
+    //[addedUser addObjectsFromArray:res];
+    [res insertObject:currentLoginUser atIndex:0];
+    return res;
+}
 
+
+
+- (NSArray*) getStoredPersonListsOld
+{
+    NSArray* persons = [[EZCoreAccessor getClientAccessor] fetchAll:[LocalPersons class] sortField:@"lastActive" ascending:NO];
+    NSMutableArray* res = [[NSMutableArray alloc] init];
+    NSMutableArray* addedUser = [[NSMutableArray alloc] init];
+    EZPerson* currentUser = nil;
+    for(LocalPersons* lp in persons){
+        EZPerson* ps = [[EZPerson alloc] init];
+        [ps fromJson:lp.payloads];
+        ps.localPerson = lp;
+        ps.uploaded = lp.uploaded.integerValue;
+        if(ps.joined){
+            //[_sortedUsers addObject:lp.personID];
+            if(![currentUser.personID isEqualToString:currentLoginID]){
+                [addedUser addObject:ps];
+            }
+        }else{
+            [res addObject:ps];
+        }
+        //[res addObject:ps];
+    }
+    [addedUser addObjectsFromArray:res];
+    [addedUser insertObject:currentLoginUser atIndex:0];
+    return addedUser;
+}
+
+
+
+- (void) reloadAllStoredPersons
+{
+    NSArray* persons = [[EZCoreAccessor getClientAccessor] fetchAll:[LocalPersons class] sortField:@"lastActive" ascending:NO];
+    EZDEBUG(@"All stored persons:%i", persons.count);
+    for(LocalPersons* lp in persons){
+        EZPerson* ps = [[EZPerson alloc] init];
+        [ps fromJson:lp.payloads];
+        ps.localPerson = lp;
+        ps.uploaded = lp.uploaded.integerValue;
+        if(ps.joined){
+            [_sortedUsers addObject:lp.personID];
+        }
+        if(ps.mobile){
+            //[res setObject:ps forKey:ps.mobile];
+        }
+        if([ps.personID isNotEmpty]){
+            [_currentQueryUsers setObject:ps forKey:ps.personID];
+        }
+    }
+    //return res;
+}
 //Read all the stored person out
 - (NSMutableDictionary*) getStoredPersons
 {

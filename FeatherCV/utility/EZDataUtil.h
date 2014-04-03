@@ -262,6 +262,7 @@
 //Will upload each pending photo
 //Remove the photo from the array, once it is successfuls
 
+- (void) checkAndUpload:(NSArray*)persons;
 
 //Read all the photos stored in the local database
 - (NSArray*) getStoredPhotos;
@@ -273,6 +274,10 @@
 - (void) addDeleteTask:(EZPhoto*)photo;
 
 - (void) storeAllPersons:(NSArray*)persons;
+
+- (NSArray*) getStoredPersonLists;
+
+- (NSMutableDictionary*) getStoredPersons;
 
 - (void) loadAllPersons;
 

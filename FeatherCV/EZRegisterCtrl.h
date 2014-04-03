@@ -10,7 +10,7 @@
 
 @class EZClickImage;
 
-@interface EZRegisterCtrl : EZKeyboardController
+@interface EZRegisterCtrl : EZKeyboardController<UIActionSheetDelegate>
 
 @property (nonatomic, strong) UILabel* titleInfo;
 //@property (nonatomic, strong) UILabel* introduction;
@@ -40,5 +40,10 @@
 
 @property (nonatomic, strong) NSString* avatarURL;
 
+@property (nonatomic, assign) BOOL uploadingAvatar;
+
+@property (nonatomic, strong) EZEventBlock registerBlock;
+
+//@property (nonatomic, strong) UIImage* avatarImage;
 
 @end

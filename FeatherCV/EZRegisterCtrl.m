@@ -39,12 +39,18 @@
 - (void) updateImage:(UIImage*)image
 {
     [_uploadAvatar setImage:image];
+    _uploadingAvatar = TRUE;
     [[EZDataUtil getInstance] uploadAvatar:image success:^(NSString* url){
         EZDEBUG(@"avatar url:%@", url);
         currentLoginUser.avatar = url;
         _avatarURL = url;
+        _uploadingAvatar = false;
+        if(_registerBlock){
+            _registerBlock(nil);
+        }
     } failure:^(id err){
         [[EZUIUtility sharedEZUIUtility] raiseInfoWindow:macroControlInfo(@"Upload avatar failed") info:@"Please try avatar upload later"];
+        _uploadingAvatar = false;
     }];
 }
 
@@ -135,7 +141,7 @@
     [_uploadAvatar enableRoundImage];
     _uploadAvatar.pressedBlock = ^(id obj){
         //[weakSelf uploadAvatar];
-        UIActionSheet* action = [[UIActionSheet alloc] initWithTitle:macroControlInfo(@"Choose Avatar") delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Camera",@"Album", nil];
+        UIActionSheet* action = [[UIActionSheet alloc] initWithTitle:macroControlInfo(@"Choose Avatar") delegate:weakSelf cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Camera",@"Album", nil];
         [action showInView:weakSelf.view];
     };
     
@@ -356,58 +362,75 @@
         [_passwordField becomeFirstResponder];
         return;
     }
-    if(_avatarURL == nil){
+    
+    if(_uploadAvatar.image == nil){
         [[EZUIUtility sharedEZUIUtility] raiseInfoWindow:@"请上传头像" info:nil];
         return;
+
     }
     
-    NSString* currentID = [EZDataUtil getInstance].currentPersonID;
-    NSDictionary* registerInfo = @{
-                                   @"name":name,
-                                   @"mobile":mobile,
-                                   @"password":password,
-                                   @"personID":currentID?currentID:@"",
-                                   @"avatar":_avatarURL?_avatarURL:@""
-                                   };
-    
-    
-    UIActivityIndicatorView* activity = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
-    
-    activity.center = self.view.center;
-    [self.view addSubview:activity];
-    [activity startAnimating];
-    
-    UIView* coverView = [[UIView alloc] initWithFrame:self.view.bounds];
-    coverView.backgroundColor = [UIColor clearColor];
-    [self.view addSubview:coverView];
-    [[EZDataUtil getInstance] registerUser:registerInfo success:^(EZPerson* person){
-        [activity stopAnimating];
-        [activity removeFromSuperview];
-        [coverView removeFromSuperview];
-        //[self dismissViewControllerAnimated:YES completion:nil];
-        //_registerTitle.text = macroControlInfo(@"Register success");
-        //[[EZUIUtility sharedEZUIUtility] raiseInfoWindow:macroControlInfo(@"Register success") info: macroControlInfo(@"Congradulation")];
+    _registerBlock = ^(id obj){
         
-        //[weakSelf dismissViewControllerAnimated:YES completion:nil];
-        //[[EZDataUtil getInstance] setCurrentLoginPerson:person];
-        //[[EZDataUtil]]
-        [[EZMessageCenter getInstance] postEvent:EZUserAuthenticated attached:person];
+        NSString* currentID = [EZDataUtil getInstance].currentPersonID;
+        NSDictionary* registerInfo = @{
+                                       @"name":name,
+                                       @"mobile":mobile,
+                                       @"password":password,
+                                       @"personID":currentID?currentID:@"",
+                                       @"avatar":weakSelf.avatarURL?weakSelf.avatarURL:@""
+                                       };
         
-        UIViewController* presenting = self.presentingViewController;
         
-        [self dismissViewControllerAnimated:YES completion:^(){
-            EZDEBUG(@"presenting class:%@", self.presentingViewController);
-            if([presenting isKindOfClass:[EZLoginController class]]){
-                [presenting dismissViewControllerAnimated:NO completion:nil];
-            }
+        UIActivityIndicatorView* activity = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+        
+        activity.center = weakSelf.view.center;
+        [weakSelf.view addSubview:activity];
+        [activity startAnimating];
+        
+        UIView* coverView = [[UIView alloc] initWithFrame:weakSelf.view.bounds];
+        coverView.backgroundColor = [UIColor clearColor];
+        [weakSelf.view addSubview:coverView];
+        [[EZDataUtil getInstance] registerUser:registerInfo success:^(EZPerson* person){
+            [activity stopAnimating];
+            [activity removeFromSuperview];
+            [coverView removeFromSuperview];
+            //[self dismissViewControllerAnimated:YES completion:nil];
+            //_registerTitle.text = macroControlInfo(@"Register success");
+            //[[EZUIUtility sharedEZUIUtility] raiseInfoWindow:macroControlInfo(@"Register success") info: macroControlInfo(@"Congradulation")];
+            
+            //[weakSelf dismissViewControllerAnimated:YES completion:nil];
+            //[[EZDataUtil getInstance] setCurrentLoginPerson:person];
+            //[[EZDataUtil]]
+            [[EZMessageCenter getInstance] postEvent:EZUserAuthenticated attached:person];
+            
+            UIViewController* presenting = weakSelf.presentingViewController;
+            
+            [weakSelf dismissViewControllerAnimated:YES completion:^(){
+                EZDEBUG(@"presenting class:%@", weakSelf.presentingViewController);
+                if([presenting isKindOfClass:[EZLoginController class]]){
+                    [presenting dismissViewControllerAnimated:NO completion:nil];
+                }
+            }];
+        } error:^(id err){
+            EZDEBUG(@"Register error:%@", err);
+            [activity stopAnimating];
+            [activity removeFromSuperview];
+            [coverView removeFromSuperview];
+            [[EZUIUtility sharedEZUIUtility] raiseInfoWindow:@"注册失败" info:@"请检查后重试"];
         }];
-    } error:^(id err){
-        EZDEBUG(@"Register error:%@", err);
-        [activity stopAnimating];
-        [activity removeFromSuperview];
-        [coverView removeFromSuperview];
-        [[EZUIUtility sharedEZUIUtility] raiseInfoWindow:@"注册失败" info:@"请检查后重试"];
-    }];
+    };
+
+    
+    if(_avatarURL == nil){
+        //[[EZUIUtility sharedEZUIUtility] raiseInfoWindow:@"请上传头像" info:nil];
+        if(_uploadingAvatar){
+            EZDEBUG(@"Are uploading the url");
+        }else{
+            _registerBlock(nil);
+        }
+        return;
+    }
+    _registerBlock(nil);
     
     
 }

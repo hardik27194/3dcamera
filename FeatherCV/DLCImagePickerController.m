@@ -1842,7 +1842,49 @@ context:(void *)context
     [self switchCameraOnly];
 }
 
-- (void) switchCameraOnly {
+- (void) switchCameraOnly{
+    //[self.cameraToggleButton setEnabled:NO];
+    EZDEBUG(@"Will use animation blur to turn");
+    UIImage* orgImage = orgFiler.imageFromCurrentlyProcessedOutput;
+    orgImage = [orgImage resizedImageWithMaximumSize:CGSizeMake(orgImage.size.width/6.0, orgImage.size.height/6.0)];
+    UIImageView* blurred =[[UIImageView alloc] initWithFrame:imageView.frame];
+    blurred.contentMode = UIViewContentModeScaleAspectFill;
+    blurred.image = [orgImage createBlurImage:70];
+    [stillCamera stopCameraCapture];
+    //[_cameraRotateContainer insertSubview:blurred belowSubview:imageView];
+    [_cameraRotateContainer addSubview:blurred];
+    //UIImageView* curView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 100, 100, 100)];
+    //curView.backgroundColor = [UIColor redColor];
+    //curView.image = blurred.image;
+    EZDEBUG(@"Blurred image size:%@", NSStringFromCGSize(blurred.image.size));
+    //[TopView addSubview:curView];
+   
+        
+    [[EZMessageCenter getInstance] registerEvent:EZCameraIsReady block:^(id obj){
+            EZDEBUG(@"Camera is ready get called is main:%i", [NSThread isMainThread]);
+            [UIView animateWithDuration:0.5 animations:^(){
+                blurred.alpha = 0;
+            } completion:^(BOOL completed){
+                [blurred removeFromSuperview];
+            }];
+        } once:YES];
+        [stillCamera rotateCamera];
+        //[_cameraRotateContainer insertSubview:imageView belowSubview:blurred];
+        [stillCamera startCameraCapture];
+    if ([UIImagePickerController isSourceTypeAvailable: UIImagePickerControllerSourceTypeCamera] && stillCamera) {
+            if ([stillCamera.inputCamera hasFlash] && [stillCamera.inputCamera hasTorch]) {
+                [self.flashToggleButton setEnabled:YES];
+            } else {
+                [self.flashToggleButton setEnabled:NO];
+            }
+    }
+    
+    //[self.cameraToggleButton setEnabled:YES];
+    
+    
+}
+
+- (void) switchCameraOnlyOld {
     //[self.cameraToggleButton setEnabled:NO];
     EZDEBUG(@"Will use animation blur to turn");
     UIImage* orgImage = orgFiler.imageFromCurrentlyProcessedOutput;
@@ -2116,7 +2158,7 @@ context:(void *)context
             //[weakSelf handleFullImage:fullImg];
             UIImageOrientation prevOrient = fullImg.imageOrientation;
             //BOOL antialias = [weakSelf haveDetectedFace];
-            fullImg = [fullImg resizedImageWithMinimumSize:CGSizeMake(fullImg.size.width/2.0, fullImg.size.height/2.0) antialias:NO];
+            fullImg = [fullImg resizedImageWithMinimumSize:CGSizeMake(CurrentScreenWidth*2.0, CurrentScreenHeight*2.0) antialias:NO];
             EZDEBUG(@"tailored full size length:%@, prevOrient:%i, current orientation:%i", NSStringFromCGSize(fullImg.size), prevOrient, fullImg.imageOrientation);
             completion(fullImg, nil);
         };

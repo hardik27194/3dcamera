@@ -131,6 +131,8 @@
 //From Mobile's perspective, I should handle the session.
 #define EZCurrentSessionID @"EZCurrentSessionID"
 
+#define EZContactsReaded @"EZContactsReaded"
+
 #define EZPhotoUploadSuccess @"EZPhotoUploadSuccess"
 
 #define EZUserEditted @"EZUserEditted"
