@@ -272,8 +272,9 @@
         //finalBlendFilter.smallBlurFilter.blurSize = blurAspectRatio * blurCycle;
         EZDEBUG(@"Will adjusted Face");
     }else{
-        [tongFilter addTarget:_sharpenGaussian];
-        [_sharpenGaussian addTarget:filter];
+        //[tongFilter addTarget:_sharpenGaussian];
+        //[_sharpenGaussian addTarget:filter];
+        [tongFilter addTarget:filter];
         //[tongFilter addTarget:filter];
         //[hueFilter addTarget:filter];
         EZDEBUG(@"No face find out");
@@ -679,7 +680,7 @@
     [EZUIUtility sharedEZUIUtility].cameraRaised = true;
     [super viewDidLoad];
     //Stop all the upload
-    [EZDataUtil getInstance].pauseUpload = TRUE;
+    //[EZDataUtil getInstance].pauseUpload = TRUE;
     self.view.backgroundColor = VinesGray;
     self.cameraRotateContainer.backgroundColor = VinesGray;
     //
@@ -1714,7 +1715,9 @@ context:(void *)context
     [hueFilter addTarget:tongFilter];
     [tongFilter addTarget:filter];
     [filter addTarget:self.imageView];
+    EZDEBUG(@"complete prepare live");
     [filter prepareForImageCapture];
+    EZDEBUG(@"final complete prepare");
 }
 
 - (EZClickView*) createSmileButton
@@ -1930,6 +1933,7 @@ context:(void *)context
     __weak DLCImagePickerController* weakSelf = self;
     if(!stillCamera.isFrontFacing && _flashMode > 0 &&
        [stillCamera.inputCamera hasTorch]){
+        //[_shotVoice play];
         EZDEBUG(@"Flash mode is :%i", _flashMode);
         _isImageWithFlash = true;
         if(_flashMode == 1){
@@ -1938,15 +1942,20 @@ context:(void *)context
                 [stillCamera.inputCamera setTorchMode:AVCaptureTorchModeOn];
                 [stillCamera.inputCamera unlockForConfiguration];
             }
-            [self performSelector:@selector(captureImage)
-                   withObject:nil
-                   afterDelay:0.8];
+            //[self performSelector:@selector(captureImage)
+            //       withObject:nil
+            //       afterDelay:0.8];
+            dispatch_later(0.8 , ^(){
+                [_shotVoice play];
+                [self captureImage];
+            });
         }else{
             EZDEBUG(@"Flash auto mode");
             if ([stillCamera.inputCamera lockForConfiguration:nil]){
                 [stillCamera.inputCamera setTorchMode:AVCaptureTorchModeAuto];
                 [stillCamera.inputCamera unlockForConfiguration];
             }
+            [_shotVoice play];
             [self captureImage];
         }
         
@@ -1971,6 +1980,7 @@ context:(void *)context
         };
         
     }else{
+        [_shotVoice play];
         [self captureImage];
     }
 }
@@ -2009,7 +2019,7 @@ context:(void *)context
         //img = [img resizedImageWithMaximumSize:CGSizeMake(img.size.width/2.0, img.size.height/2.0)];
         EZDEBUG(@"After shrink:%@", NSStringFromCGSize(img.size));
     }else{
-        EZDEBUG(@"Rotate before static:%i, static orientation:%i", img.imageOrientation, staticPictureOriginalOrientation);
+        EZDEBUG(@"Rotate before static:%i, static orientation:%i", (int)img.imageOrientation, (int)staticPictureOriginalOrientation);
         //img = [img rotate:staticPictureOriginalOrientation];
         if(_frontCameraCompleted){
             _frontCameraCompleted(nil);
@@ -2025,7 +2035,7 @@ context:(void *)context
         //if(!stillCamera.isFrontFacing){
             //detectImage = [img changeOriention:UIImageOrientationUp];
         //}
-        EZDEBUG(@"Capture the flip is:%i, flipped orientation:%i, orginal:%i, staticOrientation:%i", flip, detectImage.imageOrientation, img.imageOrientation, staticPictureOriginalOrientation);
+        EZDEBUG(@"Capture the flip is:%i, flipped orientation:%i, orginal:%i, staticOrientation:%i", flip, (int)detectImage.imageOrientation, (int)img.imageOrientation, (int)staticPictureOriginalOrientation);
 
         NSArray* faces = [EZFaceUtilWrapper detectFace:detectImage ratio:0.01];
         EZFaceResultObj* firstObj = nil;
@@ -2149,6 +2159,7 @@ context:(void *)context
         //EZDEBUG(@"Prepare for the capture");
         //UIImage *img = [orgFiler imageFromCurrentlyProcessedOutput];
         EZDEBUG(@"Get current image");
+        /**
         [self removeAllTargets];
         [stillCamera addTarget:simpleFilter];
         GPUImageFilter *finalFilter = simpleFilter;
@@ -2158,12 +2169,17 @@ context:(void *)context
             //[weakSelf handleFullImage:fullImg];
             UIImageOrientation prevOrient = fullImg.imageOrientation;
             //BOOL antialias = [weakSelf haveDetectedFace];
-            fullImg = [fullImg resizedImageWithMinimumSize:CGSizeMake(CurrentScreenWidth*2.0, CurrentScreenHeight*2.0) antialias:NO];
-            EZDEBUG(@"tailored full size length:%@, prevOrient:%i, current orientation:%i", NSStringFromCGSize(fullImg.size), prevOrient, fullImg.imageOrientation);
+            //fullImg = [fullImg resizedImageWithMinimumSize:CGSizeMake(CurrentScreenWidth*2.0, CurrentScreenHeight*2.0) antialias:NO];
+            EZDEBUG(@"tailored full size length:%@, prevOrient:%i, current orientation:%i", NSStringFromCGSize(fullImg.size), (int)prevOrient, (int)fullImg.imageOrientation);
             completion(fullImg, nil);
         };
         [stillCamera capturePhotoAsImageProcessedUpToFilter:finalFilter withCompletionHandler:fullImageProcess];
-        EZDEBUG(@"Capture without crop");
+         **/
+        
+        EZDEBUG(@"Will try to capture from the stream");
+        UIImage* img = [orgFiler imageFromCurrentlyProcessedOutput];
+        completion(img, nil);
+        EZDEBUG(@"Capture without stream:%@", NSStringFromCGSize(img.size));
     } else {
         // A workaround inside capturePhotoProcessedUpToFilter:withImageOnGPUHandler: would cause the above method to fail,
         // so we just grap the current crop filter output as an aproximation (the size won't match trough)  
@@ -3079,7 +3095,7 @@ context:(void *)context
     //[self dismissViewControllerAnimated:YES completion:^(){
     //    EZDEBUG(@"DLCCamera Will get dismissed");
     //}];
-    [EZDataUtil getInstance].pauseUpload = false;
+    //[EZDataUtil getInstance].pauseUpload = false;
     [self.navigationController popViewControllerAnimated:animated];
     //[self cancelPrematchPhoto];
     if(_personID){

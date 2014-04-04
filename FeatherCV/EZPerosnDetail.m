@@ -76,19 +76,23 @@
     [super viewWillAppear:animated];
     _mobile.text = _person.mobile;
     _titleInfo.text = _person.name;
+    /**
     if(![_person.personID isEqualToString:currentLoginID]){
         [[EZMessageCenter getInstance] postEvent:EZShowShotButton attached:^(id obj){
             [[EZMessageCenter getInstance] postEvent:EZTriggerCamera attached:_person.personID];
         }];
     }
+     **/
     //[[EZDataUtil getInstance] preloadImage:_person.avatar ]
     [_uploadAvatar loadImageURL:_person.avatar haveThumb:NO loading:NO];
     if([currentLoginID isEqualToString:_person.personID]){
-        _quitUser.hidden = NO;
-        _quitButton.hidden = YES;
+        //_quitUser.hidden = NO;
+        //_quitButton.hidden = YES;
+        [_quitUser setTitle:@"退出登录" forState:UIControlStateNormal];
     }else{
-        _quitUser.hidden = YES;
-        _quitButton.hidden = NO;
+        //_quitUser.hidden = YES;
+        //_quitButton.hidden = NO;
+        [_quitUser setTitle:@"查看合照" forState:UIControlStateNormal];
     }
 }
 
@@ -178,6 +182,8 @@
 
 - (void) quitClicked:(id)obj
 {
+    if([_person.personID isEqualToString:currentLoginID]){
+    
     [EZDataUtil getInstance].currentPersonID = nil;
     [EZDataUtil getInstance].currentLoginPerson = nil;
     [[EZDataUtil getInstance].pendingUploads removeAllObjects];
@@ -186,6 +192,10 @@
     //[self dismissViewControllerAnimated:YES completion:^(){
     [self.navigationController popViewControllerAnimated:NO];
     [[EZDataUtil getInstance] triggerLogin:^(EZPerson* ps){} failure:^(id err){} reason:@"请重新登录" isLogin:YES];
+    }else{
+        [[EZMessageCenter getInstance] postEvent:EZSetAlbumUser attached:_person];
+        [self.navigationController popViewControllerAnimated:YES];
+    }
     //}];
 }
 

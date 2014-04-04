@@ -270,12 +270,17 @@ NSString* doubleString(NSString* str)
     self.lineBreakMode = NSLineBreakByWordWrapping;
 }
 
+- (void) disableShadow
+{
+    self.layer.shadowOpacity = 0.0;
+}
+
 - (void) enableShadow:(UIColor *)color
 {
-    self.layer.shadowColor = color.CGColor;
-    self.layer.shadowRadius = 1.0;
-    self.layer.shadowOpacity = 0.7;
-    self.layer.shadowOffset = CGSizeMake(1.0, 1.0);
+    //self.layer.shadowColor = color.CGColor;
+    //self.layer.shadowRadius = 1.0;
+    //self.layer.shadowOpacity = 0.7;
+    //self.layer.shadowOffset = CGSizeMake(1.0, 1.0);
 }
 
 @end
@@ -825,6 +830,10 @@ NSString* doubleString(NSString* str)
     self.center = CGPointMake(centerX, self.center.y);
 }
 
+- (void) disableShadow
+{
+    self.layer.shadowOpacity = 0.0;
+}
 
 - (void) enableShadow:(UIColor *)color
 {
@@ -1196,7 +1205,7 @@ NSString* doubleString(NSString* str)
 
 - (NSData*) toJpegData
 {
-    return UIImageJPEGRepresentation(self, 0.5);
+    return UIImageJPEGRepresentation(self, 0.7);
 }
 
 -(UIImage *) cutout: (CGRect) coords {

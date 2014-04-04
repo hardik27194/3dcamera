@@ -107,6 +107,10 @@
 //Name of the current image
 @property (nonatomic, strong) UILabel* name;
 
+@property (nonatomic, strong) UIView* homeSliverLine;
+
+@property (nonatomic, strong) UIView* otherSliverLine;
+
 //Used to record the status of the photo cell, so when I turn I knew which one is on the front.
 @property (nonatomic, assign) BOOL isFrontImage;
 
@@ -119,6 +123,8 @@
 
 @property (nonatomic, strong) UILabel* requestInfo;
 
+@property (nonatomic, strong) UILabel* requestFixInfo;
+
 @property (nonatomic, strong) UILabel* waitingInfo;
 
 @property (nonatomic, strong) UIActivityIndicatorView* activityView;
@@ -128,6 +134,8 @@
 
 //Don't use the cell which is turning.
 @property (nonatomic, assign) BOOL isTurning;
+
+@property (nonatomic, strong) EZClickImage* shotPhoto;
 
 
 //@property (nonatomic, strong) EZChatUnit* chatUnit;
@@ -158,6 +166,8 @@
 - (UIView*) createDupContainer:(UIImage*)img;
 
 - (void) setTimeStr:(NSString*)timeStr;
+
+- (void) setFrontFormat:(BOOL)front;
 
 - (id) init;
 

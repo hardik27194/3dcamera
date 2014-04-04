@@ -39,8 +39,10 @@
 #import "EZTrianglerView.h"
 
 
-#define  largeFont [UIFont fontWithName:@"HelveticaNeue-Light" size:30]
-#define  smallFont [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:20]
+#define  largeFont [UIFont fontWithName:@"HelveticaNeue-Light" size:25]
+#define  smallFont [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:30]
+
+#define  titleSlimFont [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:40]
 #define  titleFontCN [UIFont fontWithName:@"STHeitiSC-Light" size:20]
 
 #define  originalTitle  @"feather"
@@ -69,6 +71,8 @@ static int photoCount = 1;
     //cell.frontImage.backgroundColor = VinesGray;
     cell.cameraView.hidden = YES;
     cell.waitingInfo.hidden = YES;
+    cell.shotPhoto.hidden = YES;
+    _rightCycleButton.hidden = NO;
     //This is for later update purpose. great, let's get whole thing up and run.
     cell.currentPos = indexPath.row;
     //EZCombinedPhoto* curPhoto = [cp.combinedPhotos objectAtIndex:cp.selectedCombinePhoto];
@@ -83,8 +87,9 @@ static int photoCount = 1;
     __weak EZPhotoCell* weakCell = cell;
     EZDEBUG(@"Will display front image type:%i", myPhoto.typeUI);
     if(cp.isFront){
-        cell.authorName.textColor = [UIColor whiteColor];
-        cell.otherName.textColor = RGBCOLOR(240, 240, 240);
+        [cell setFrontFormat:true];
+        //cell.authorName.textColor = [UIColor whiteColor];
+        //cell.otherName.textColor = RGBCOLOR(240, 240, 240);
         if(myPhoto.typeUI == kPhotoRequest){
             //EZClickView* takePhoto = [[EZClickView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
             //takePhoto.center =
@@ -92,8 +97,11 @@ static int photoCount = 1;
             //cell.frontImage.backgroundColor = ClickedColor;
             cell.cameraView.hidden = NO;
             EZPerson* otherPerson = pid2person(switchPhoto.personID);
-            weakCell.requestInfo.text =[NSString stringWithFormat:@"点击拍摄，即可翻看%@发来的照片", otherPerson.name];
-            cell.cameraView.releasedBlock = ^(id obj){
+            weakCell.requestFixInfo.text = @"拍摄后翻看";
+            weakCell.requestInfo.text =[NSString stringWithFormat:@"\"%@\"发来的照片", otherPerson.name?otherPerson.name:@"朋友"];
+            weakSelf.rightCycleButton.hidden = YES;
+            cell.shotPhoto.hidden = NO;
+            cell.shotPhoto.releasedBlock = ^(id obj){
                 EZDEBUG(@"cameraView clicked");
                 [self raiseCamera:cp indexPath:indexPath];
             };
@@ -103,8 +111,9 @@ static int photoCount = 1;
         preloadimage(switchPhoto.screenURL);
         
     }else{
-        cell.authorName.textColor = RGBCOLOR(240, 240, 240);
-        cell.otherName.textColor = [UIColor whiteColor];
+        //cell.authorName.textColor = RGBCOLOR(240, 240, 240);
+        //cell.otherName.textColor = [UIColor whiteColor];
+        [cell setFrontFormat:false];
         [self setWaitingInfo:cell displayPhoto:cp back:switchPhoto];
         if(switchPhoto.type == kPhotoRequest || [cp.photo.exchangePersonID isNotEmpty]){
             
@@ -221,7 +230,7 @@ static int photoCount = 1;
             //}
         }else{
             EZDEBUG(@"photo request clicked: %@", myPhoto.photoID);
-            [self raiseCamera:cp indexPath:indexPath];
+            //[self raiseCamera:cp indexPath:indexPath];
         }
         //}
     };
@@ -305,6 +314,8 @@ static int photoCount = 1;
         //[self presentViewController:activityViewController animated:YES completion:^{
         //    EZDEBUG(@"Completed sharing");
         //}];
+        
+        
     };
 
     EZEventBlock curBlock = ^(EZPerson*  person){
@@ -404,9 +415,10 @@ static int photoCount = 1;
         if(_currentUser){
             _currentUser = nil;
             self.title = @"";
+            [_rightCycleButton setButtonStyle:NO];
             _leftText.text = originalTitle;
             //_leftText.font = largeFont;//[UIFont fontWithName:@"HelveticaNeue-UltraLight" size:30];
-            _leftText.font = largeFont;
+            _leftText.font = titleSlimFont;
             CGSize fitSize = [_leftText sizeThatFits:CGSizeMake(999, 40)];
             [_leftText setWidth:fitSize.width];
             [_triangler setX:fitSize.width + 2];
@@ -414,11 +426,13 @@ static int photoCount = 1;
             [_combinedPhotos addObjectsFromArray:[self wrapPhotos:[[EZDataUtil getInstance] getStoredPhotos]]];
             EZDEBUG(@"The combined photo size:%i", _combinedPhotos.count);
             [self.tableView reloadData];
+            [self scrollToBottom:NO];
             
         }else{
             return;
         }
     }else if(![currentUser.personID isEqualToString:_currentUser.personID]){
+        [_rightCycleButton setButtonStyle:YES];
         self.title = currentUser.name;
         _currentUser = currentUser;
         _leftText.text = currentUser.name;
@@ -434,15 +448,14 @@ static int photoCount = 1;
         EZDEBUG(@"All stored photos:%i", storedPhoto.count);
         for(EZDisplayPhoto* dp in storedPhoto){
             EZPhoto* ph = nil;
-            if(dp.photo.photoRelations.count){
-                ph = [dp.photo.photoRelations objectAtIndex:0];
+            for(int i = 0; i < dp.photo.photoRelations.count; i++){
+                ph = [dp.photo.photoRelations objectAtIndex:i];
                 if([ph.personID isEqualToString:currentUser.personID]){
                     if(dp.photo.photoRelations.count > 0){
-                        EZPhoto* matchPhoto = [dp.photo.photoRelations objectAtIndex:0];
-                        NSString* fullURL = checkimageload(matchPhoto.screenURL);
-                        if(fullURL){
+                        if(dp.photo.type != kPhotoRequest){
                             dp.isFront = NO;
                         }
+                        //}
                     }
                     [_combinedPhotos addObject:dp];
                 }
@@ -450,7 +463,7 @@ static int photoCount = 1;
         }
         EZDEBUG(@"After search out:%i", _combinedPhotos.count);
         [self.tableView reloadData];
-        
+        [self scrollToBottom:NO];
         dispatch_later(0.2, ^(){
             self.tableView.contentOffset = CGPointMake(0, 0);
         });
@@ -458,6 +471,7 @@ static int photoCount = 1;
             //if(!_combinedPhotos.count){
             //    [self.tableView reloadData];
             //}
+            [self scrollToBottom:NO];
         } reload:YES];
 
     }else{
@@ -672,7 +686,9 @@ static int photoCount = 1;
     if(!_combinedPhotos.count){
         return;
     }
-    [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:_combinedPhotos.count - 1 inSection:0] atScrollPosition:UITableViewScrollPositionBottom animated:animated];
+    //[self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:_combinedPhotos.count - 1 inSection:0] atScrollPosition:UITableViewScrollPositionBottom animated:animated];
+    
+    self.tableView.contentOffset = CGPointMake(0, (_combinedPhotos.count - 1) * CurrentScreenHeight);
 }
 
 - (void)imagePickerControllerDidCancel:(DLCImagePickerController *)picker imageCount:(int)imageCount
@@ -1034,7 +1050,16 @@ static int photoCount = 1;
     //[EZDataUtil getInstance].timerBlock = ^(id obj){
     //    [self storeCurrent];
     //};
-
+    
+    EZClickImage* bigClickButton = [[EZUIUtility sharedEZUIUtility] createBackShotButton];
+    bigClickButton.center = CGPointMake(CurrentScreenWidth/2.0, CurrentScreenHeight - bigClickButton.frame.size.height/2.0 - 20);
+    
+    [self.view insertSubview:bigClickButton belowSubview:self.tableView];
+    bigClickButton.releasedBlock = ^(id obj){
+        [weakSelf raiseCamera:nil indexPath:nil];
+    };
+    
+    
 }
 
 - (int) findPhoto:(NSString*)photoID matchID:(NSString*)matchID
@@ -1075,6 +1100,11 @@ static int photoCount = 1;
     } failed:^(id obj){}];
     return;
     //}
+}
+
+- (void) changeButtonColor:(BOOL)normal
+{
+    
 }
 
 - (void) insertMatch:(EZNote*)note
@@ -1243,7 +1273,11 @@ static int photoCount = 1;
 - (EZDisplayPhoto*) wrapPhoto:(EZPhoto*)photo
 {
     EZDisplayPhoto* ed = [[EZDisplayPhoto alloc] init];
-    ed.isFront = true;
+    if(photo.type)
+        ed.isFront = TRUE;
+    else
+        ed.isFront = false;
+
     ed.photo = photo;
     photo.isLocal = true;
     return ed;
@@ -1271,7 +1305,7 @@ static int photoCount = 1;
         for(int i = 0; i < count; i++){
             [updatePaths addObject:[NSIndexPath indexPathForRow:i inSection:0]];
         }
-        [self.tableView insertRowsAtIndexPaths:updatePaths withRowAnimation:UITableViewRowAnimationFade];
+        [self.tableView insertRowsAtIndexPaths:updatePaths withRowAnimation:UITableViewRowAnimationNone];
         //if(updatePaths.count){
         //    [self.tableView insertRowsAtIndexPaths:updatePaths withRowAnimation:UITableViewRowAnimationTop];
         //}
@@ -1380,7 +1414,7 @@ static int photoCount = 1;
         }];
     };
      **/
-    EZClickImage* clickView = [[EZUIUtility sharedEZUIUtility] createShotButton];
+    EZHairButton* clickView = [[EZUIUtility sharedEZUIUtility] createShotButton];
     clickView.releasedBlock = ^(id obj){
         [weakSelf raiseCamera:nil indexPath:nil];
     };
@@ -1413,7 +1447,7 @@ static int photoCount = 1;
     //_leftCyleButton.layer.borderColor = [UIColor whiteColor].CGColor;
     //_leftCyleButton.layer.borderWidth = 2;
     _leftText = [[UILabel alloc] initWithFrame:CGRectMake(0, -5, 120, 46)];
-    _leftText.font = largeFont;
+    _leftText.font = titleSlimFont;
     _leftText.textAlignment = NSTextAlignmentLeft;
     _leftText.text = @"feather";
     _leftText.textColor = [UIColor whiteColor];
@@ -1643,7 +1677,7 @@ static int photoCount = 1;
         weakCell.activityView = ai;
         
     }
-    ai.hidden = NO;
+    ai.hidden = YES;
     __block BOOL loaded = false;
     __weak EZAlbumTablePage* weakSelf = self;
     //weakCell.frontImage.image = nil;
@@ -1774,7 +1808,7 @@ static int photoCount = 1;
     if(back.type == kPhotoRequest || [cp.photo.exchangePersonID isNotEmpty]){
         cell.frontImage.image = nil;
         cell.frontImage.backgroundColor = ClickedColor;
-        cell.waitingInfo.text =[NSString stringWithFormat:@"等待%@拍摄", otherPerson.name?otherPerson.name:@"对方"];
+        cell.waitingInfo.text =[NSString stringWithFormat:@"等待\"%@\"的照片", otherPerson.name?otherPerson.name:@"朋友"];
         cell.waitingInfo.hidden = NO;
     }else{
         cell.waitingInfo.hidden = YES;
@@ -1798,6 +1832,7 @@ static int photoCount = 1;
         weakCell.frontImage.image = nil;
         if(cp.isFront){
             photo = back;
+            [weakCell setFrontFormat:false];
             [self setWaitingInfo:weakCell displayPhoto:cp back:back];
             if(back.type == kPhotoRequest || [cp.photo.exchangePersonID isNotEmpty]){
                 //weakCell.frontImage.image = [UIImage imageNamed:@"background.png"];
@@ -1812,6 +1847,7 @@ static int photoCount = 1;
             }
         }else{
             photo = front;
+            [weakCell setFrontFormat:true];
             weakCell.waitingInfo.hidden = YES;
             //[weakCell.frontImage setImage:[front getScreenImage]];
             [self loadFrontImage:weakCell photo:front file:front.assetURL];

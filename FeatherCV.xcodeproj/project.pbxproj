@@ -232,6 +232,7 @@
 		18E34837183F064200C9D89D /* EZFaceUtil.mm in Sources */ = {isa = PBXBuildFile; fileRef = 18E34835183F064200C9D89D /* EZFaceUtil.mm */; };
 		18E3483A1843086200C9D89D /* EZFaceResult.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 18E348381843086100C9D89D /* EZFaceResult.cpp */; };
 		18E3483D18433FC000C9D89D /* UIImage+ResizeMagick.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E3483C18433FBF00C9D89D /* UIImage+ResizeMagick.m */; };
+		18E4FBB018EEAEAD00FA6C21 /* EZHairButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E4FBAF18EEAEAD00FA6C21 /* EZHairButton.m */; };
 		18E746EA18A4A26A0023967B /* AFHTTPRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E746C818A4A26A0023967B /* AFHTTPRequestOperation.m */; };
 		18E746EB18A4A26A0023967B /* AFHTTPRequestOperationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E746CA18A4A26A0023967B /* AFHTTPRequestOperationManager.m */; };
 		18E746EC18A4A26A0023967B /* AFHTTPSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E746CC18A4A26A0023967B /* AFHTTPSessionManager.m */; };
@@ -640,6 +641,8 @@
 		18E348391843086200C9D89D /* EZFaceResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZFaceResult.h; sourceTree = "<group>"; };
 		18E3483B18433FBF00C9D89D /* UIImage+ResizeMagick.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+ResizeMagick.h"; sourceTree = "<group>"; };
 		18E3483C18433FBF00C9D89D /* UIImage+ResizeMagick.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+ResizeMagick.m"; sourceTree = "<group>"; };
+		18E4FBAE18EEAEAD00FA6C21 /* EZHairButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZHairButton.h; sourceTree = "<group>"; };
+		18E4FBAF18EEAEAD00FA6C21 /* EZHairButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZHairButton.m; sourceTree = "<group>"; };
 		18E746C718A4A26A0023967B /* AFHTTPRequestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFHTTPRequestOperation.h; sourceTree = "<group>"; };
 		18E746C818A4A26A0023967B /* AFHTTPRequestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFHTTPRequestOperation.m; sourceTree = "<group>"; };
 		18E746C918A4A26A0023967B /* AFHTTPRequestOperationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFHTTPRequestOperationManager.h; sourceTree = "<group>"; };
@@ -1030,6 +1033,8 @@
 			children = (
 				18E3470C183DFA3300C9D89D /* EZAlbumTablePage.h */,
 				18E3470D183DFA3300C9D89D /* EZAlbumTablePage.m */,
+				18E4FBAE18EEAEAD00FA6C21 /* EZHairButton.h */,
+				18E4FBAF18EEAEAD00FA6C21 /* EZHairButton.m */,
 				18E3470E183DFA3300C9D89D /* EZPhotoCell.h */,
 				18E3470F183DFA3300C9D89D /* EZPhotoCell.m */,
 				18E34710183DFA3300C9D89D /* EZScrollContainer.h */,
@@ -1583,6 +1588,7 @@
 				1866ADAE18966E7000DB46E2 /* ScaleAnimation.m in Sources */,
 				1866ADCD189FA21400DB46E2 /* EZFiveInputFilter.m in Sources */,
 				18F58B5A18716C19006CB966 /* EZGradientLayerView.m in Sources */,
+				18E4FBB018EEAEAD00FA6C21 /* EZHairButton.m in Sources */,
 				1866ADAB18966E7000DB46E2 /* ModalAnimation.m in Sources */,
 				18E34780183DFAA400C9D89D /* EZUploadHandler.m in Sources */,
 				1866ADB11897698900DB46E2 /* EZRaiseAnimation.m in Sources */,
@@ -1770,7 +1776,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -1811,7 +1817,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;

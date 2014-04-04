@@ -14,6 +14,7 @@
 
 @class EZShapeCover;
 @class EZClickImage;
+@class EZHairButton;
 //Put UI related functionality here
 //@class EZClickView;
 @interface EZUIUtility : NSObject<UIImagePickerControllerDelegate, UINavigationControllerDelegate, MFMessageComposeViewControllerDelegate>
@@ -58,7 +59,11 @@
 
 - (void) enableProximate:(BOOL)enable;
 
-- (EZClickImage*) createShotButton;
+- (EZHairButton*) createShotButton;
+
+- (EZClickImage*) createLargeShotButton;
+
+- (EZClickImage*) createBackShotButton;
 
 - (UIView*) createGradientView;
 //Why do I use this?

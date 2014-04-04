@@ -9,8 +9,8 @@
 #import <Foundation/Foundation.h>
 #import "EZConstants.h"
 
+@class EZDownloadHolder;
 @interface EZNetworkUtility : NSObject
-
 
 //This Method used to download large files from the network.
 //The parameter for the EZOperationBlock is the temporary file name
@@ -84,6 +84,8 @@
 
 - (void) upload:(NSString*)uploadURL file:(NSString*)videoFile uploadField:(NSString*)fieldName headers:(NSDictionary*)headers parameters:(NSDictionary*)parameters  complete:(EZEventBlock)completed error:(EZEventBlock)errorBlk method:(NSString*)method;
 
++ (void) downloadImage:(NSString*)fullURL downloader:(EZDownloadHolder*)holder;
+
 + (id) str2json:(NSString*)str;
 
 
@@ -97,5 +99,7 @@
 + (void) setSessionCookie:(NSString*)sessionid;
 
 @property (nonatomic, strong) NSMutableArray* pendingRequest;
+
+@property (nonatomic, assign) BOOL isPauseRequest;
 
 @end

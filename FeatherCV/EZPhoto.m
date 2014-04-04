@@ -220,7 +220,7 @@
 
 - (void) fromJson:(NSDictionary*)dict
 {
-    EZDEBUG(@"json raw string:%@", dict);
+    //EZDEBUG(@"json raw string:%@", dict);
     _personID = [dict objectForKey:@"personID"];
     //[[EZDataUtil getInstance] getPersonID:personID success:^(NSArray* ps){
     //    _owner = [ps objectAtIndex:0];
@@ -246,9 +246,9 @@
     CGFloat height = [[dict objectForKey:@"height"] floatValue];
 
     _size = CGSizeMake(width, height);
-    EZDEBUG(@"The serialized size:%@, screenURL:%@", NSStringFromCGSize(_size), _screenURL);
+    //EZDEBUG(@"The serialized size:%@, screenURL:%@", NSStringFromCGSize(_size), _screenURL);
     NSArray* photoRelation = [dict objectForKey:@"photoRelations"];
-    EZDEBUG(@"Photo count:%i", photoRelation.count);
+    //EZDEBUG(@"Photo count:%i", photoRelation.count);
     if(photoRelation.count > 0){
         _photoRelations = [[NSMutableArray alloc] initWithCapacity:photoRelation.count];
         for(int i = 0; i < photoRelation.count; i ++){
@@ -258,7 +258,7 @@
             [_photoRelations addObject:photo];
         }
     }
-    EZDEBUG(@"The created date is:%@", _createdTime);
+    //EZDEBUG(@"The created date is:%@", _createdTime);
 }
 
 

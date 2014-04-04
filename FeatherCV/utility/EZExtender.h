@@ -211,6 +211,8 @@ typedef void  (^ IterateOperation)(id obj);
 
 - (void) setCenterX:(CGFloat)x;
 
+- (void) disableShadow;
+
 - (void) enableShadow:(UIColor*)color;
 
 - (void) setCenterY:(CGFloat)y;

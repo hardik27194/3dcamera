@@ -12,6 +12,7 @@
 #import "EZShapeCover.h"
 #import <MessageUI/MessageUI.h>
 #import "EZClickImage.h"
+#import "EZHairButton.h"
 
 #define ColorTransparent 80
 @implementation EZUIUtility
@@ -205,7 +206,13 @@ SINGLETON_FOR_CLASS(EZUIUtility)
     
 }
 
-- (EZClickImage*) createShotButton
+- (EZHairButton*) createShotButton
+{
+    EZHairButton* clickView =  [[EZHairButton alloc] initWithFrame:CGRectMake(CurrentScreenWidth - 46 - 10, 30, 46, 46)];
+    return clickView;
+}
+
+- (EZClickImage*) createShotButtonOld
 {
     EZClickImage* clickView =  [[EZClickImage alloc] initWithFrame:CGRectMake(CurrentScreenWidth - 46 - 10, 30, 46, 46)];
     //[[EZCenterButton alloc] initWithFrame:CGRectMake(255, 23, 60,60) cycleRadius:21 lineWidth:2];
@@ -229,6 +236,59 @@ SINGLETON_FOR_CLASS(EZUIUtility)
     return clickView;
 }
 
+
+- (EZClickImage*) createLargeShotButton
+{
+    
+    CGFloat radius = 120;
+    EZClickImage* clickView =  [[EZClickImage alloc] initWithFrame:CGRectMake(0, 0, radius, radius)];
+    //[[EZCenterButton alloc] initWithFrame:CGRectMake(255, 23, 60,60) cycleRadius:21 lineWidth:2];
+    //clickView.backgroundColor = RGBA(255, 255, 255, 120);
+    //clickView.layer.borderColor = [UIColor whiteColor].CGColor;
+    //clickView.layer.borderWidth = 2.0;
+    //[clickView enableRoundImage];
+    clickView.enableTouchEffects = NO;
+    
+    UIView* horizon = [[UIView alloc] initWithFrame:CGRectMake(0, 0, radius, 2)];
+    horizon.backgroundColor = [UIColor whiteColor];//ClickedColor;//
+    UIView* vertical = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 2, radius)];
+    vertical.backgroundColor = [UIColor whiteColor];//ClickedColor; //[UIColor whiteColor];
+    
+    horizon.center = CGPointMake(radius/2.0, radius/2.0);
+    vertical.center = CGPointMake(radius/2.0, radius/2.0);
+    [clickView addSubview:horizon];
+    [clickView addSubview:vertical];
+    clickView.backgroundColor = [UIColor clearColor];//ButtonWhiteColor;
+    return clickView;
+}
+
+
+- (EZClickImage*) createBackShotButton
+{
+    
+    CGFloat radius = 120;
+    CGFloat outerRadius = radius+10;
+    EZClickImage* clickView =  [[EZClickImage alloc] initWithFrame:CGRectMake(0, 0, outerRadius, outerRadius)];
+    //[[EZCenterButton alloc] initWithFrame:CGRectMake(255, 23, 60,60) cycleRadius:21 lineWidth:2];
+    //clickView.backgroundColor = RGBA(255, 255, 255, 120);
+    //clickView.layer.borderColor = [UIColor whiteColor].CGColor;
+    //clickView.layer.borderWidth = 2.0;
+    //[clickView enableRoundImage];
+    clickView.enableTouchEffects = NO;
+    
+    UIView* horizon = [[UIView alloc] initWithFrame:CGRectMake(0, 0, radius, 2)];
+    horizon.backgroundColor = ClickedColor;//
+    UIView* vertical = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 2, radius)];
+    vertical.backgroundColor = ClickedColor; //[UIColor whiteColor];
+    
+    horizon.center = CGPointMake(outerRadius/2.0, outerRadius/2.0);
+    vertical.center = CGPointMake(outerRadius/2.0, outerRadius/2.0);
+    [clickView addSubview:horizon];
+    [clickView addSubview:vertical];
+    clickView.backgroundColor = ButtonWhiteColor;
+    [clickView enableRoundImage];
+    return clickView;
+}
 
 - (void)proximityStateChanged:(NSNotification *)note
 {

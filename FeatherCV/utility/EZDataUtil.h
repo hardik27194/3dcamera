@@ -275,6 +275,8 @@
 
 - (void) storeAllPersons:(NSArray*)persons;
 
+- (EZPhoto*) getStoredPhotoByID:(NSString*)photoID;
+
 - (NSArray*) getStoredPersonLists;
 
 - (NSMutableDictionary*) getStoredPersons;

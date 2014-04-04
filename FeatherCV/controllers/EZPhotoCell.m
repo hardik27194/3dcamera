@@ -64,38 +64,55 @@
         _gradientView = [[EZUIUtility sharedEZUIUtility] createGradientView];
         [self.container addSubview:_gradientView];
         
+        _otherSliverLine = [[UIView alloc] initWithFrame:CGRectMake(10-1, CurrentScreenHeight - 300 - startPos-1, smallIconRadius+2, smallIconRadius+2)];
+        _otherSliverLine.layer.borderColor = [UIColor whiteColor].CGColor;
+        _otherSliverLine.layer.borderWidth = 1;
+        [_otherSliverLine enableRoundImage];
+        //[self.container addSubview:_otherSliverLine];
         
         _otherIcon = [[EZClickImage alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 300 - startPos, smallIconRadius, smallIconRadius)];
         //_otherIcon.backgroundColor = randBack(nil);
         [_otherIcon enableRoundImage];
         [_otherIcon enableTouchEffects];
+        [_otherIcon enableShadow:[UIColor blackColor]];
+        
         [self.container addSubview:_otherIcon];
+        //_otherIcon.layer.borderColor = [UIColor whiteColor].CGColor;
+        //_otherIcon.layer.borderWidth = 1.0;
+        
         
         _otherName = [[UILabel alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 265 - startPos, 300, 30)];
         [_otherName setTextColor:[UIColor whiteColor]];
         _otherName.font = [UIFont boldSystemFontOfSize:13];
-        [_otherName enableShadow:[UIColor blackColor]];
+        //[_otherName enableShadow:[UIColor blackColor]];
         [self.container addSubview:_otherName];
         
         _otherTalk = [[UILabel alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 250 - startPos, 300, 30)];
         [_otherTalk setTextColor:[UIColor whiteColor]];
         _otherTalk.font = [UIFont systemFontOfSize:13];
-        [_otherTalk enableShadow:[UIColor blackColor]];
+        //[_otherTalk enableShadow:[UIColor blackColor]];
         [_otherTalk enableTextWrap];
         [self.container addSubview:_otherTalk];
 
         UILabel* andSymbol = [[UILabel alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 225 - startPos, 20, 20)];
         [andSymbol setTextColor:[UIColor whiteColor]];
         andSymbol.font = [UIFont systemFontOfSize:13];
-        [andSymbol enableShadow:[UIColor blackColor]];
+        //[andSymbol enableShadow:[UIColor blackColor]];
         andSymbol.text = @"&";
         [self.container addSubview:andSymbol];
         
         _headIcon = [[EZClickImage alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 198 - startPos, smallIconRadius, smallIconRadius)];
+        _homeSliverLine = [[UIView alloc] initWithFrame:CGRectMake(10-1, CurrentScreenHeight - 198 - startPos-1, smallIconRadius+2, smallIconRadius+2)];
+        _homeSliverLine.layer.borderColor = [UIColor whiteColor].CGColor;
+        _homeSliverLine.layer.borderWidth = 1;
+        [_homeSliverLine enableRoundImage];
+
         //_headIcon.backgroundColor = randBack(nil);
         [_headIcon enableRoundImage];
         [_headIcon enableTouchEffects];
+        //[self.container addSubview:_homeSliverLine];
         [self.container addSubview:_headIcon];
+        [_headIcon enableShadow:[UIColor blackColor]];
         
         _authorName = [[UILabel alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 163 - startPos, 300, 30)];
         [_authorName setTextColor:[UIColor whiteColor]];
@@ -131,25 +148,32 @@
         [self.container addSubview:_moreButton];
         
         _cameraView = [[EZClickView alloc] initWithFrame:CGRectMake(0, 0, 320, 100)];
-        _cameraView.center = _container.center;
+        _cameraView.center = CGPointMake(CurrentScreenWidth/2.0, CurrentScreenHeight/2.0 + 20);
         _cameraView.backgroundColor = [UIColor clearColor]; //RGBCOLOR(, 128, 0);
         _cameraView.hidden = YES;
         //[_container addSubview:_cameraView];
         
+        _requestFixInfo = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 260, 50)];
+        _requestFixInfo.font = [UIFont systemFontOfSize:15];
+        [_requestFixInfo setTextAlignment:NSTextAlignmentCenter];
+        _requestFixInfo.textColor = [UIColor whiteColor];
+        _requestFixInfo.center = CGPointMake(_cameraView.bounds.size.width/2.0, _cameraView.bounds.size.height/2.0 + 40);
+        [_cameraView addSubview:_requestFixInfo];
+        
         _requestInfo = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 260, 50)];
-        _requestInfo.font = [UIFont systemFontOfSize:17];
+        _requestInfo.font = [UIFont systemFontOfSize:15];
         [_requestInfo setTextAlignment:NSTextAlignmentCenter];
         _requestInfo.textColor = [UIColor whiteColor];
-        _requestInfo.center = CGPointMake(_cameraView.bounds.size.width/2.0, _cameraView.bounds.size.height/2.0);
+        _requestInfo.center = CGPointMake(_cameraView.bounds.size.width/2.0, _cameraView.bounds.size.height/2.0 + 60);
         [_cameraView addSubview:_requestInfo];
         [_requestInfo enableTextWrap];
         
         _waitingInfo = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 320, 44)];
-        _waitingInfo.font = [UIFont systemFontOfSize:17];
+        _waitingInfo.font = [UIFont systemFontOfSize:15];
         [_waitingInfo setTextAlignment:NSTextAlignmentCenter];
         _waitingInfo.textColor = [UIColor whiteColor];
-        _waitingInfo.center = CGPointMake(160, CurrentScreenHeight * 0.33);
-        _waitingInfo.text = @"等待朋友拍照";
+        _waitingInfo.center = CGPointMake(CurrentScreenWidth/2.0, CurrentScreenHeight/2.0);
+        _waitingInfo.text = @"等待朋友的照片";
         _waitingInfo.hidden = TRUE;
         [_frontImage addSubview:_waitingInfo];
         [_frontImage addSubview:_cameraView];
@@ -159,6 +183,13 @@
         //[self.contentView addSubview:_feedbackRegion];
         [_rotateContainer addSubview:_frontImage];
         
+        
+        _shotPhoto = [[EZUIUtility sharedEZUIUtility] createLargeShotButton];
+        
+        _shotPhoto.center = CGPointMake(CurrentScreenWidth/2.0, CurrentScreenHeight/2.0 - 20);
+        [_container addSubview:_shotPhoto];
+        _shotPhoto.enableTouchEffects = true;
+        _shotPhoto.hidden = YES;
         //[self createTimeLabel];
         //[_frontImage addSubview:_toolRegion];
         //[_rotateContainer addSubview:_toolRegion];
@@ -168,6 +199,38 @@
         
     }
     return self;
+}
+
+- (void) setFrontFormat:(BOOL)front
+{
+    CGFloat otherAlpha = 0.6;
+    CGFloat ownAlpha = 1.0;
+    if(!front){
+        otherAlpha = 1.0;
+        ownAlpha = 0.6;
+        [_ownTalk disableShadow];
+        [_authorName disableShadow];
+        [_headIcon disableShadow];
+        [_otherIcon enableShadow:[UIColor blackColor]];
+        [_otherTalk enableShadow:[UIColor blackColor]];
+        [_otherName enableShadow:[UIColor blackColor]];
+    }else{
+        [_otherName disableShadow];
+        [_otherTalk disableShadow];
+        [_otherIcon disableShadow];
+        [_headIcon enableShadow:[UIColor blackColor]];
+        [_ownTalk enableShadow:[UIColor blackColor]];
+        [_authorName enableShadow:[UIColor blackColor]];
+        
+    }
+    
+    //_otherIcon.alpha = otherAlpha;
+    _otherName.alpha = otherAlpha;
+    _otherTalk.alpha = otherAlpha;
+    
+    _ownTalk.alpha = ownAlpha;
+    _authorName.alpha = ownAlpha;
+    //_headIcon.alpha = ownAlpha;
 }
 
 

@@ -51,7 +51,7 @@
 
 #define BlurBackground RGBA(240, 240, 240, 128)
 
-#define ButtonWhiteColor RGBA(230, 230, 230, 180)
+#define ButtonWhiteColor RGBA(230, 230, 230, 200)
 
 #define lightGrayBackground RGBCOLOR(217, 217, 217)
 //Interesting.
@@ -152,6 +152,8 @@
 #define EZCameraCompleted @"EZCameraCompleted"
 
 #define EZCameraIsReady @"EZCameraIsReady"
+
+#define EZResumeNetwork @"EZResumeNetwork"
 
 #define EZTakePicture @"EZTakePicture"
 

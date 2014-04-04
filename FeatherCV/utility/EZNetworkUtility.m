@@ -20,6 +20,9 @@
 #import "EZFeatherAPIClient.h"
 #import "EZDataUtil.h"
 #import <objc/runtime.h>
+#import "EZMessageCenter.h"
+#import "EZDownloadHolder.h"
+#import "EZFileUtil.h"
 
 
 static EZNetworkUtility* instance;
@@ -169,6 +172,7 @@ static EZNetworkUtility* instance;
     // 1. Create `AFHTTPRequestSerializer` which will create your request.
     AFHTTPRequestSerializer *serializer = [AFHTTPRequestSerializer serializer];
     
+    
     NSArray* fileNames = [fullPath componentsSeparatedByString:@"/"];
     
     NSString* fileName = fileNames.count > 0?[fileNames objectAtIndex:fileNames.count - 1]:fullPath;
@@ -196,6 +200,7 @@ static EZNetworkUtility* instance;
                                          }
                                      }];
     
+    __weak AFHTTPRequestOperation* weakOps = operation;
     // 4. Set the progress block of the operation.
     if(progress){
         [operation setUploadProgressBlock:^(NSUInteger __unused bytesWritten,
@@ -203,6 +208,13 @@ static EZNetworkUtility* instance;
                                         long long totalBytesExpectedToWrite) {
         //NSLog(@"Wrote %lld/%lld", totalBytesWritten, totalBytesExpectedToWrite);
             progress((CGFloat)totalBytesWritten/(CGFloat)totalBytesExpectedToWrite);
+            //[manager ]
+            if([EZNetworkUtility getInstance].isPauseRequest){
+                [weakOps pause];
+                [[EZMessageCenter getInstance] registerEvent:EZResumeNetwork block:^(id obj){
+                    [weakOps resume];
+                } once:YES];
+            }
         }];
     }
     // 5. Begin!
@@ -253,6 +265,41 @@ static EZNetworkUtility* instance;
         }
     }];
     [uploadTask resume];
+}
+
++ (void) downloadImage:(NSString*)fullURL downloader:(EZDownloadHolder*)holder
+{
+    
+    NSString* localFull = fullURL;
+    EZDownloadHolder* localHolder = holder;
+    if([EZNetworkUtility getInstance].isPauseRequest){
+        [[EZMessageCenter getInstance] registerEvent:EZResumeNetwork block:^(id obj){
+            [EZNetworkUtility downloadImage:localFull downloader:localHolder];
+        } once:YES];
+        return;
+    }
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:str2url(fullURL)];
+    //AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    NSString* filePath = [EZFileUtil getCacheFileName:holder.filename];
+    AFHTTPRequestOperation *operation = [manager HTTPRequestOperationWithRequest:request success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        EZDEBUG(@"successfully downloaded");
+        NSString* fileURL = [NSString stringWithFormat:@"file://%@", filePath];
+        holder.downloaded = fileURL;
+        [holder callSuccess];
+        holder.isDownloading = false;
+        //NSLog(@"SUCCCESSFULL IMG RETRIEVE to %@!",path);
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        EZDEBUG(@"fail to download:%@, error:%@", fullURL, error);
+        [holder callFailure:error];
+        holder.isDownloading = false;
+        // Deal with failure
+    }];//[[AFHTTPRequestOperation alloc] initWithRequest:request];
+    
+    // NSString* path=[@"/PATH/TO/APP" stringByAppendingPathComponent: imageNameToDisk];
+    operation.outputStream = [NSOutputStream outputStreamToFileAtPath:filePath append:NO];
+    [operation start];
+    EZDEBUG(@"Should started the downloading.");
 }
 
 //Once completed, I will start to play the video immediately.

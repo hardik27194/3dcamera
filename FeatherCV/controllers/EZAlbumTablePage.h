@@ -14,6 +14,7 @@
 #import "EZModalRaiseAnimation.h"
 #import "EZModalDissolveAnimation.h"
 #import "EZCameraNaviAnimation.h"
+#import "EZHairButton.h"
 
 
 @class EZDisplayPhoto;
@@ -117,7 +118,7 @@
 
 @property (nonatomic, strong) UIView* leftMessageCount;
 
-@property (nonatomic, strong) EZClickView* rightCycleButton;
+@property (nonatomic, strong) EZHairButton* rightCycleButton;
 
 @property (nonatomic, strong) UILabel* networkStatus;
 

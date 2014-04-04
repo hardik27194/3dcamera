@@ -134,27 +134,32 @@
     //}
     //dispatch_later(0.3, ^(){
         //[self loadPersonInfos];
+    //EZDEBUG(@"Person started");
     _contacts = [[NSMutableArray alloc] init];
     NSArray* arrs = [[EZDataUtil getInstance] getStoredPersonLists];
+    EZDEBUG(@"after person");
     [_contacts addObjectsFromArray:arrs];
     EZDEBUG(@"Stored person count:%i, arrs:%i", _contacts.count, arrs.count);
     if(![EZDataUtil getInstance].contacts.count){
         [[EZDataUtil getInstance] loadPhotoBooks];
+        [[EZMessageCenter getInstance] registerEvent:EZContactsReaded block:^(NSArray* contacts) {
+            EZDEBUG(@"loaded persons:%i", contacts.count);
+            //[[EZDataUtil getInstance] checkAndUpload:contacts];
+            [_contacts addObjectsFromArray:contacts];
+            [self.tableView reloadData];
+        } once:YES];
     }else{
         [_contacts addObjectsFromArray:[EZDataUtil getInstance].contacts];
     }
     [self.tableView reloadData];
-    [[EZMessageCenter getInstance] registerEvent:EZContactsReaded block:^(NSArray* contacts) {
-        EZDEBUG(@"loaded persons:%i", contacts.count);
-            //[[EZDataUtil getInstance] checkAndUpload:contacts];
-        [_contacts addObjectsFromArray:contacts];
-        [self.tableView reloadData];
-    }];
-
     //});
     
 }
 
+- (void)dealloc
+{
+    EZDEBUG(@"Contacts Dealloced");
+}
 
 
 - (void) reloadPersons

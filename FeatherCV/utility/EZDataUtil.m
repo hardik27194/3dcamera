@@ -326,7 +326,17 @@
                          for(NSDictionary* dict in photos){
                              EZPhoto* photo = [[EZPhoto alloc] init];
                              [photo fromJson:dict];
-                             EZDEBUG(@"Photo relationship:%i", photo.photoRelations.count);
+                             EZDEBUG(@"Photo relationship:%i, otherID:%@", photo.photoRelations.count,otherID);
+                             
+                             if(otherID){
+                                 for(int i = 1; i < photo.photoRelations.count; i++){
+                                     EZPhoto* ph = [photo.photoRelations objectAtIndex:i];
+                                     if([ph.personID isEqualToString:otherID]){
+                                         photo.photoRelations = @[ph];
+                                         [res addObject:photo];
+                                     }
+                                 }
+                             }else{
                              if(!photo.photoRelations.count){
                                  [res addObject:photo];
                              }else{
@@ -337,6 +347,7 @@
                                      ph.photoRelations = @[[photo.photoRelations objectAtIndex:i]];
                                      [res addObject:ph];
                                  }
+                             }
                              }
                          }
                          if(success){
@@ -547,31 +558,7 @@
 }
 
 
-- (void) downloadImage:(NSString*)fullURL downloader:(EZDownloadHolder*)holder
-{
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:str2url(fullURL)];
-    //AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-    NSString* filePath = [EZFileUtil getCacheFileName:holder.filename];
-    AFHTTPRequestOperation *operation = [manager HTTPRequestOperationWithRequest:request success:^(AFHTTPRequestOperation *operation, id responseObject) {
-        EZDEBUG(@"successfully downloaded");
-        NSString* fileURL = [NSString stringWithFormat:@"file://%@", filePath];
-        holder.downloaded = fileURL;
-        [holder callSuccess];
-        holder.isDownloading = false;
-        //NSLog(@"SUCCCESSFULL IMG RETRIEVE to %@!",path);
-    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-        EZDEBUG(@"fail to download:%@, error:%@", fullURL, error);
-        [holder callFailure:error];
-        holder.isDownloading = false;
-        // Deal with failure
-    }];//[[AFHTTPRequestOperation alloc] initWithRequest:request];
-                                         
-   // NSString* path=[@"/PATH/TO/APP" stringByAppendingPathComponent: imageNameToDisk];
-    operation.outputStream = [NSOutputStream outputStreamToFileAtPath:filePath append:NO];
-    [operation start];
-    EZDEBUG(@"Should started the downloading.");
-}
+
 
 
 - (void) downloadImageOld:(NSString*)fullURL downloader:(EZDownloadHolder*)holder
@@ -658,7 +645,7 @@
         //}];
         if(!holder.isDownloading){
             holder.isDownloading = true;
-            [self downloadImage:fullURL downloader:holder];
+            [EZNetworkUtility downloadImage:fullURL downloader:holder];
         }
         return nil;
     }else{
@@ -1380,7 +1367,7 @@
             EZDEBUG(@"Remove photo when upload is done:%i, screenURL:%@", photo.updateStatus, photo.screenURL);
             photo.type = 0;
             [_pendingUploads removeObject:photo];
-            [self storeAllPhotos:@[photo]];
+            //[self storeAllPhotos:@[photo]];
             continue;
         }
         
@@ -1410,6 +1397,7 @@
                     photo.uploadSuccess(photo);
                 }
                 photo.uploadSuccess = nil;
+                [[EZDataUtil getInstance]storeAllPhotos:@[photo]];
                 --_uploadingTasks;
             } failure:^(id err){
                 EZDEBUG(@"Failed to find match photo:%@", err);
@@ -1431,6 +1419,8 @@
                     photo.contentStatus = kUploadDone;
                     photo.uploaded = TRUE;
                     photo.progress = nil;
+                    photo.type = kNormalPhoto;
+                    [[EZDataUtil getInstance]storeAllPhotos:@[photo]];
                     --_uploadingTasks;
                     if(photo.photoRelations.count){
                         //photo.uploadStatus = kUploadDone;
@@ -1467,6 +1457,7 @@
                 EZDEBUG(@"Recieved photoID:%@, currnet photoID:%@", photoID, photo.photoID);
                 photo.infoStatus = kUploadDone;
                 photo.photoID = photoID;
+                [[EZDataUtil getInstance]storeAllPhotos:@[photo]];
                 --_uploadingTasks;
                 uploadContent(photo);
             } failure:^(id err){
@@ -1485,7 +1476,7 @@
                 return;
             }
             ++_uploadingTasks;
-                        //bool haveConversation = photo.conversations.count;
+            //bool haveConversation = photo.conversations.count;
             [[EZDataUtil getInstance] uploadPhotoInfo:@[photo] success:^(id info){
                 EZDEBUG(@"Update photo info:%@", info);
                 NSString* photoID = [info objectAtIndex:0];
@@ -1493,6 +1484,7 @@
                 EZDEBUG(@"Recieved photoID:%@, currnet photoID:%@", photoID, photo.photoID);
                 photo.updateStatus = kUpdateDone;
                 photo.photoID = photoID;
+                [[EZDataUtil getInstance]storeAllPhotos:@[photo]];
                 --_uploadingTasks;
                 //uploadContent(photo);
             } failure:^(id err){
@@ -1552,7 +1544,7 @@
             ph.localPhoto = photo;
             [res addObject:ph];
         if(!ph.isUploadDone){
-            EZDEBUG(@"will add photo into pending upload:%@, relations:%i", ph.photoID, ph.photoRelations.count);
+            //EZDEBUG(@"will add photo into pending upload:%@, relations:%i", ph.photoID, ph.photoRelations.count);
             [self.pendingUploads addObject:ph];
         }
     }
@@ -1564,12 +1556,29 @@
     [self storeAllPhotos:_currentPhotos];
 }
 
+
+- (void) setPauseUpload:(BOOL)pauseUpload
+{
+    [EZNetworkUtility getInstance].isPauseRequest = pauseUpload;
+    _pauseUpload = pauseUpload;
+    if(pauseUpload){
+        [[EZMessageCenter getInstance] postEvent:EZResumeNetwork attached:nil];
+    }
+}
+
 - (void) storeAllPhotos:(NSArray*)photos
 {
     for(EZPhoto* ph in photos){
         LocalPhotos* lp = ph.localPhoto;
         if(lp){
             EZDEBUG(@"store old objects");
+            id obj = [[EZCoreAccessor getClientAccessor] fetchByID:lp.objectID];
+            if(obj){
+                
+            }else{
+                EZDEBUG(@"quit for removed old objects");
+                return;
+            }
         }else{
             NSPredicate *predicate = [NSPredicate predicateWithFormat:@"photoID = %@", ph.photoID];
             NSArray* existPhoto = [[EZCoreAccessor getClientAccessor] fetchObject:[LocalPhotos class] byPredicate:predicate withSortField:Nil ascending:NO];
@@ -1591,6 +1600,16 @@
     [[EZCoreAccessor getClientAccessor] saveContext];
 }
 
+
+- (EZPhoto*) getStoredPhotoByID:(NSString*)photoID
+{
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"photoID = %@", photoID];
+    NSArray* existPhoto = [[EZCoreAccessor getClientAccessor] fetchObject:[LocalPhotos class] byPredicate:predicate withSortField:Nil ascending:NO];
+    if(existPhoto.count){
+        return [existPhoto objectAtIndex:0];
+    }
+    return nil;
+}
 
 - (void) addPendingUpload:(EZPhoto*)photo
 {
@@ -1659,14 +1678,19 @@
     //EZPerson* currentUser = nil;
     for(NSString* pid in _sortedUsers){
         EZPerson* ps = [_currentQueryUsers objectForKey:pid];
-        if(![stored containsObject:pid]){
+        if(ps && ![stored containsObject:pid]){
             if(![pid isEqualToString:currentLoginID]){
                 [res addObject:ps];
             }
         }
     }
     //[addedUser addObjectsFromArray:res];
-    [res insertObject:currentLoginUser atIndex:0];
+    EZDEBUG(@"All the person:%i", res.count);
+    if(currentLoginUser){
+        [res insertObject:currentLoginUser atIndex:0];
+    }else{
+        [res insertObject:[[EZPerson alloc] init] atIndex:0];
+    }
     return res;
 }
 
