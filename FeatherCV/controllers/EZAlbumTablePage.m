@@ -422,6 +422,7 @@ static int photoCount = 1;
             CGSize fitSize = [_leftText sizeThatFits:CGSizeMake(999, 40)];
             [_leftText setWidth:fitSize.width];
             [_triangler setX:fitSize.width + 2];
+            [_leftCyleButton setWidth:_leftText.frame.origin.x + _leftText.frame.size.width];
             [_combinedPhotos removeAllObjects];
             [_combinedPhotos addObjectsFromArray:[self wrapPhotos:[[EZDataUtil getInstance] getStoredPhotos]]];
             EZDEBUG(@"The combined photo size:%i", _combinedPhotos.count);
@@ -440,6 +441,7 @@ static int photoCount = 1;
         _leftText.font = largeFont;//titleFontCN;
         CGSize fitSize = [_leftText sizeThatFits:CGSizeMake(999, 40)];
         [_leftText setWidth:fitSize.width];
+        [_leftCyleButton setWidth:_leftText.frame.origin.x + _leftText.frame.size.width];
         [_triangler setX:fitSize.width + 2];
         [_combinedPhotos removeAllObjects];
         
@@ -472,7 +474,7 @@ static int photoCount = 1;
             //    [self.tableView reloadData];
             //}
             [self scrollToBottom:NO];
-        } reload:YES];
+        } reload:YES pageSize:10];
 
     }else{
         return;
@@ -492,11 +494,12 @@ static int photoCount = 1;
     }
 }
 
-- (void) loadMorePhoto:(EZEventBlock)completed reload:(BOOL)reload
+- (void) loadMorePhoto:(EZEventBlock)completed reload:(BOOL)reload pageSize:(int)pageSize
 {
-    int pageStart = _combinedPhotos.count/photoPageSize;
+    
+    int pageStart = _combinedPhotos.count/pageSize;
     EZDEBUG(@"Will load from %i", pageStart);
-    [[EZDataUtil getInstance] queryPhotos:pageStart pageSize:photoPageSize otherID:_currentUser.personID success:^(NSArray* arr){
+    [[EZDataUtil getInstance] queryPhotos:pageStart pageSize:pageSize otherID:_currentUser.personID success:^(NSArray* arr){
         //EZDEBUG(@"Reloaded about %i rows of data, inset:%@", arr.count, NSStringFromUIEdgeInsets(self.tableView.contentInset));
         [self reloadRows:arr reload:reload];
         if(completed){
@@ -810,7 +813,7 @@ static int photoCount = 1;
     [self loadMorePhoto:^(NSNumber* obj){
         //[self endRefresh:obj.intValue];
         [self.refreshControl endRefreshing];
-    }reload:NO];
+    }reload:NO pageSize:1];
     //[self.refreshControl endRefreshing];
 
 }
@@ -988,7 +991,8 @@ static int photoCount = 1;
         EZDEBUG(@"newly login user:%@, id:%@", user.name, user.personID);
         if(user){
             //Mean new user are login.
-            [EZCoreAccessor cleanClientDB];
+            //[EZCoreAccessor cleanClientDB];
+            //[[EZDataUtil getInstance] cleanDBPhotos];
             [_combinedPhotos removeAllObjects];
             [weakSelf.tableView reloadData];
         }
@@ -1144,7 +1148,13 @@ static int photoCount = 1;
         disPhoto.isFront = YES;
         disPhoto.photo = note.srcPhoto;
         note.srcPhoto.photoRelations = @[note.matchedPhoto];
+        note.srcPhoto.createdTime = [NSDate date];
         [[EZDataUtil getInstance] storeAllPhotos:@[note.srcPhoto]];
+        
+        if(_currentUser && ![note.matchedPhoto.personID isEqualToString:_currentUser.personID]){
+            EZDEBUG(@"Quit for not displayable");
+            return;
+        }
         [_combinedPhotos insertObject:disPhoto atIndex:_combinedPhotos.count];
         [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:_combinedPhotos.count - 1 inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
         return;
@@ -1182,6 +1192,15 @@ static int photoCount = 1;
     }
    
     EZPhoto* orgin = ((EZDisplayPhoto*)[_combinedPhotos objectAtIndex:pos]).photo;
+    
+    NSMutableArray* ma = [[NSMutableArray alloc] initWithArray:orgin.photoRelations];
+    [ma addObject:note.matchedPhoto];
+    orgin.photoRelations = ma;
+    [[EZDataUtil getInstance] storeAllPhotos:@[orgin]];
+    if(_currentUser && ![note.matchedPhoto.personID isEqualToString:_currentUser.personID]){
+        EZDEBUG(@"Quit for not displayable");
+        return;
+    }
     EZPhoto* cloned = orgin.copy;
     cloned.photoRelations = @[note.matchedPhoto];
     EZDisplayPhoto* disPhoto = [[EZDisplayPhoto alloc] init];
@@ -2007,10 +2026,10 @@ static int photoCount = 1;
 -(id<UIViewControllerAnimatedTransitioning>)animationControllerForDismissedController:(UIViewController *)dismissed {
     EZDEBUG(@"_dismissAnimation");
     _raiseAnimation.type = AnimationTypeDismiss;
-    dispatch_later(0.3, ^(){
-        _leftContainer.hidden = NO;
-        _rightCycleButton.hidden = NO;
-    });
+    //dispatch_later(0.3, ^(){
+    //_leftContainer.hidden = NO;
+    //_rightCycleButton.hidden = NO;
+    //});
     return _raiseAnimation;
 }
 

@@ -129,6 +129,11 @@
 //Will load data for user
 - (void) loadFriends:(EZEventBlock)success failure:(EZEventBlock)failure;
 
+
+//The purpose is to remove all the photos after login.
+//Leave person when user login.
+- (void) cleanDBPhotos;
+
 //If all the photo book uploaded, then I could get from the map immediately.
 //Else i will call the old method.
 - (NSArray*) getSortedPersons:(EZEventBlock)successBlck;

@@ -1600,6 +1600,16 @@
     [[EZCoreAccessor getClientAccessor] saveContext];
 }
 
+- (void) cleanDBPhotos
+{
+    NSArray* storedPhotos = [[EZCoreAccessor getClientAccessor] fetchAll:[LocalPhotos class] sortField:nil ascending:YES];
+    EZDEBUG(@"Clean photos, total count:%i", storedPhotos.count);
+    for(int i = 0; i < storedPhotos.count; i++){
+        NSManagedObject* mo = [storedPhotos objectAtIndex:i];
+        [[EZCoreAccessor getClientAccessor]remove:mo];
+    }
+}
+
 
 - (EZPhoto*) getStoredPhotoByID:(NSString*)photoID
 {

@@ -187,8 +187,9 @@
     [EZDataUtil getInstance].currentPersonID = nil;
     [EZDataUtil getInstance].currentLoginPerson = nil;
     [[EZDataUtil getInstance].pendingUploads removeAllObjects];
-    [[EZDataUtil getInstance].currentQueryUsers removeAllObjects];
-    [EZCoreAccessor cleanClientDB];
+    //[[EZDataUtil getInstance].currentQueryUsers removeAllObjects];
+    //[EZCoreAccessor cleanClientDB];
+    [[EZDataUtil getInstance] cleanDBPhotos];
     //[self dismissViewControllerAnimated:YES completion:^(){
     [self.navigationController popViewControllerAnimated:NO];
     [[EZDataUtil getInstance] triggerLogin:^(EZPerson* ps){} failure:^(id err){} reason:@"请重新登录" isLogin:YES];
