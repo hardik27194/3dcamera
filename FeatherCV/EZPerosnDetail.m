@@ -85,6 +85,8 @@
      **/
     //[[EZDataUtil getInstance] preloadImage:_person.avatar ]
     [_uploadAvatar loadImageURL:_person.avatar haveThumb:NO loading:NO];
+    
+    EZDEBUG(@"currentID:%@, person:%@", currentLoginID, _person.personID);
     if([currentLoginID isEqualToString:_person.personID]){
         //_quitUser.hidden = NO;
         //_quitButton.hidden = YES;
@@ -92,7 +94,7 @@
     }else{
         //_quitUser.hidden = YES;
         //_quitButton.hidden = NO;
-        [_quitUser setTitle:@"查看合照" forState:UIControlStateNormal];
+        [_quitUser setTitle:[NSString stringWithFormat:@"%i对照片", _person.photoCount] forState:UIControlStateNormal];
     }
 }
 
@@ -184,20 +186,28 @@
 {
     if([_person.personID isEqualToString:currentLoginID]){
     
-    [EZDataUtil getInstance].currentPersonID = nil;
-    [EZDataUtil getInstance].currentLoginPerson = nil;
-    [[EZDataUtil getInstance].pendingUploads removeAllObjects];
-    //[[EZDataUtil getInstance].currentQueryUsers removeAllObjects];
-    //[EZCoreAccessor cleanClientDB];
-    [[EZDataUtil getInstance] cleanDBPhotos];
-    //[self dismissViewControllerAnimated:YES completion:^(){
+    
+        
+    NSArray* photos = [[EZDataUtil getInstance] getStoredPhotos];
+    EZDEBUG(@"Photos after cleaned:%i", photos.count);
+    //[[EZDataUtil getInstance] cleanDBPhotos];
+    [[EZDataUtil getInstance] cleanAllLoginInfo];
     [self.navigationController popViewControllerAnimated:NO];
-    [[EZDataUtil getInstance] triggerLogin:^(EZPerson* ps){} failure:^(id err){} reason:@"请重新登录" isLogin:YES];
+    [[EZDataUtil getInstance] triggerLogin:^(EZPerson* ps){
+        [[EZDataUtil getInstance] getMatchUsers:^(NSArray* arr){
+            EZDEBUG(@"all matched users:%i", arr.count);
+            for(EZPerson* ps in arr){
+                [[EZDataUtil getInstance].sortedUsers addObject:ps.personID];
+            }
+        } failure:^(id obj){
+            EZDEBUG(@"The error detail:%@", obj);
+        }];
+    
+    } failure:^(id err){} reason:@"请重新登录" isLogin:YES];
     }else{
         [[EZMessageCenter getInstance] postEvent:EZSetAlbumUser attached:_person];
         [self.navigationController popViewControllerAnimated:YES];
     }
-    //}];
 }
 
 @end

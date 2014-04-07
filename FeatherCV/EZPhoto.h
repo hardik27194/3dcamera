@@ -63,6 +63,9 @@ typedef enum {
 //But only change for the UI, to address the issue 2 purpose contradict with each other.
 @property (nonatomic, assign) EZPhotoType typeUI;
 
+//This is only shared among 2 persons
+@property (nonatomic, assign) BOOL isPair;
+
 //Only start upload when this flag is true
 @property (nonatomic, assign) BOOL startUpload;
 

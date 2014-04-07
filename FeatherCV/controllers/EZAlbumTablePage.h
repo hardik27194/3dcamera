@@ -25,6 +25,11 @@
 
 @property (nonatomic, strong) NSMutableArray* combinedPhotos;
 
+//The photo not splitted yet.
+//So the startPage will based on this list
+//So I can get the correct photo back.
+@property (nonatomic, strong) NSMutableArray* nonsplitted;
+
 //@property (nonatomic, strong) UISwipeGestureRecognize
 
 
@@ -121,6 +126,11 @@
 @property (nonatomic, strong) EZHairButton* rightCycleButton;
 
 @property (nonatomic, strong) UILabel* networkStatus;
+
+@property (nonatomic, assign) int totalCount;
+
+//How many photos are just place holder
+@property (nonatomic, assign) int fillCount;
 
 - (void) storeCurrent;
 //Where do we begin

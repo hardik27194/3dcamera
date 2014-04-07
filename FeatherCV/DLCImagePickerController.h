@@ -163,6 +163,8 @@ typedef enum {
 @property (nonatomic, assign) int imageCount;
 @property (nonatomic, assign) EZFlipStatus flipStatus;
 
+@property (nonatomic, strong) EZClickImage* otherIcon;
+
 //I will need this flag to check if the image is showing our self or not.
 @property (nonatomic, assign) BOOL showOther;
 
@@ -174,6 +176,8 @@ typedef enum {
 @property (nonatomic, assign) BOOL isPhotoRequest;
 
 @property (nonatomic, strong) EZEventBlock refreshTable;
+
+@property (nonatomic, strong) UIButton* backButton;
 
 //Keep this photo for input text
 @property (nonatomic, strong) EZDisplayPhoto* savedPhoto;

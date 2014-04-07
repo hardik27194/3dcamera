@@ -196,6 +196,11 @@
         //_container.enableTouchEffects = NO;
         //_chatUnit = [[EZChatUnit alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 200, CurrentScreenWidth, 40)];
         //[_container addSubview:_chatUnit];
+        _activityView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+        _activityView.center = CGPointMake(_frontImage.width/2.0, _frontImage.height/2.0);
+        [_frontImage addSubview:_activityView];
+        //weakCell.activityView = ai;
+
         
     }
     return self;

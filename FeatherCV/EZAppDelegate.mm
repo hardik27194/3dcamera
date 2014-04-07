@@ -366,9 +366,13 @@
     //EZDEBUG("Fonts %@", [UIFont familyNames]);
     
     //[EZCoreAccessor cleanClientDB];
+    EZDEBUG(@"login info:%@", [[EZDataUtil getInstance] getCurrentPersonID]);
     if(![[EZDataUtil getInstance] getCurrentPersonID]){
+        [[EZDataUtil getInstance]cleanAllLoginInfo];
         dispatch_later(0.1, ^(){
-        [[EZDataUtil getInstance] triggerLogin:^(EZPerson* ps){} failure:^(id err){} reason:@"请注册" isLogin:NO];
+            [[EZDataUtil getInstance] triggerLogin:^(EZPerson* ps){
+                [[EZDataUtil getInstance] getMatchUsers:nil failure:nil];
+            } failure:^(id err){} reason:@"请注册" isLogin:NO];
         });
     }else{
         [[EZDataUtil getInstance] loadAllPersons];

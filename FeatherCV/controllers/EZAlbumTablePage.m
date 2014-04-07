@@ -39,13 +39,7 @@
 #import "EZTrianglerView.h"
 
 
-#define  largeFont [UIFont fontWithName:@"HelveticaNeue-Light" size:25]
-#define  smallFont [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:30]
 
-#define  titleSlimFont [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:40]
-#define  titleFontCN [UIFont fontWithName:@"STHeitiSC-Light" size:20]
-
-#define  originalTitle  @"feather"
 
 
 static int photoCount = 1;
@@ -85,6 +79,12 @@ static int photoCount = 1;
     
     __weak EZAlbumTablePage* weakSelf = self;
     __weak EZPhotoCell* weakCell = cell;
+    if(cp.isPlaceHolder){
+        EZDEBUG(@"Find a place holder");
+        cell.activityView.hidden = NO;
+        [cell.activityView startAnimating];
+        return cell;
+    }
     EZDEBUG(@"Will display front image type:%i", myPhoto.typeUI);
     if(cp.isFront){
         [cell setFrontFormat:true];
@@ -115,7 +115,7 @@ static int photoCount = 1;
         //cell.otherName.textColor = [UIColor whiteColor];
         [cell setFrontFormat:false];
         [self setWaitingInfo:cell displayPhoto:cp back:switchPhoto];
-        if(switchPhoto.type == kPhotoRequest || [cp.photo.exchangePersonID isNotEmpty]){
+        if(switchPhoto.type == kPhotoRequest || ([cp.photo.exchangePersonID isNotEmpty] && switchPhoto == nil)){
             
         }else if(switchPhoto == nil){
             //weakCell.frontImage.image = nil;
@@ -143,9 +143,6 @@ static int photoCount = 1;
     };
     if(!myPhoto.photoRelations.count && !(myPhoto.type == 1)){
         EZDEBUG(@"Will register upload success");
-        //[_progressBar setProgress:0.2 animated:YES];
-        //_progressBar.hidden = NO;
-        
         myPhoto.progress = ^(NSNumber* number){
             if(cell.currentPos == indexPath.row){
                 if(number){
@@ -416,15 +413,19 @@ static int photoCount = 1;
             _currentUser = nil;
             self.title = @"";
             [_rightCycleButton setButtonStyle:NO];
-            _leftText.text = originalTitle;
+            _leftText.text = EZOriginalTitle;
             //_leftText.font = largeFont;//[UIFont fontWithName:@"HelveticaNeue-UltraLight" size:30];
-            _leftText.font = titleSlimFont;
+            _leftText.font = EZTitleSlimFont;
             CGSize fitSize = [_leftText sizeThatFits:CGSizeMake(999, 40)];
             [_leftText setWidth:fitSize.width];
             [_triangler setX:fitSize.width + 2];
             [_leftCyleButton setWidth:_leftText.frame.origin.x + _leftText.frame.size.width];
             [_combinedPhotos removeAllObjects];
-            [_combinedPhotos addObjectsFromArray:[self wrapPhotos:[[EZDataUtil getInstance] getStoredPhotos]]];
+            [_nonsplitted removeAllObjects];
+            NSArray* orgPhoto = [[EZDataUtil getInstance] getStoredPhotos];
+            [_nonsplitted addObjectsFromArray:orgPhoto];
+            NSArray* splitted = [self splitPhotos:orgPhoto];
+            [_combinedPhotos addObjectsFromArray:[self wrapPhotos:splitted]];
             EZDEBUG(@"The combined photo size:%i", _combinedPhotos.count);
             [self.tableView reloadData];
             [self scrollToBottom:NO];
@@ -434,20 +435,22 @@ static int photoCount = 1;
         }
     }else if(![currentUser.personID isEqualToString:_currentUser.personID]){
         [_rightCycleButton setButtonStyle:YES];
-        self.title = currentUser.name;
+        self.title = @""; //currentUser.name;
         _currentUser = currentUser;
         _leftText.text = currentUser.name;
         //_leftText.font = smallFont;//[UIFont systemFontOfSize:20];
-        _leftText.font = largeFont;//titleFontCN;
+        _leftText.font = EZLargeFont;//titleFontCN;
         CGSize fitSize = [_leftText sizeThatFits:CGSizeMake(999, 40)];
         [_leftText setWidth:fitSize.width];
         [_leftCyleButton setWidth:_leftText.frame.origin.x + _leftText.frame.size.width];
         [_triangler setX:fitSize.width + 2];
         [_combinedPhotos removeAllObjects];
-        
-        
-        NSArray*  storedPhoto = [self wrapPhotos:[[EZDataUtil getInstance] getStoredPhotos]];
-        EZDEBUG(@"All stored photos:%i", storedPhoto.count);
+        [_nonsplitted removeAllObjects];
+        NSArray* orgPhoto = [[EZDataUtil getInstance] getStoredPhotos];
+        [_nonsplitted addObjectsFromArray:orgPhoto];
+        NSArray* splitted = [self splitPhotos:orgPhoto];
+        NSArray*  storedPhoto = [self wrapPhotos:splitted];
+        EZDEBUG(@"Person All stored photos:%i, non splitted:%i", storedPhoto.count, _nonsplitted.count);
         for(EZDisplayPhoto* dp in storedPhoto){
             EZPhoto* ph = nil;
             for(int i = 0; i < dp.photo.photoRelations.count; i++){
@@ -466,15 +469,15 @@ static int photoCount = 1;
         EZDEBUG(@"After search out:%i", _combinedPhotos.count);
         [self.tableView reloadData];
         [self scrollToBottom:NO];
-        dispatch_later(0.2, ^(){
-            self.tableView.contentOffset = CGPointMake(0, 0);
-        });
+        //dispatch_later(0.2, ^(){
+        //    self.tableView.contentOffset = CGPointMake(0, 0);
+        //});
         [self loadMorePhoto:^(id obj){
             //if(!_combinedPhotos.count){
             //    [self.tableView reloadData];
             //}
             [self scrollToBottom:NO];
-        } reload:YES pageSize:10];
+        } reload:YES pageSize:5];
 
     }else{
         return;
@@ -497,13 +500,16 @@ static int photoCount = 1;
 - (void) loadMorePhoto:(EZEventBlock)completed reload:(BOOL)reload pageSize:(int)pageSize
 {
     
-    int pageStart = _combinedPhotos.count/pageSize;
+    int pageStart = _nonsplitted.count/pageSize;
     EZDEBUG(@"Will load from %i", pageStart);
-    [[EZDataUtil getInstance] queryPhotos:pageStart pageSize:pageSize otherID:_currentUser.personID success:^(NSArray* arr){
+    [[EZDataUtil getInstance] queryPhotos:pageStart pageSize:pageSize otherID:_currentUser.personID success:^(EZResult* res){
+        
         //EZDEBUG(@"Reloaded about %i rows of data, inset:%@", arr.count, NSStringFromUIEdgeInsets(self.tableView.contentInset));
-        [self reloadRows:arr reload:reload];
+        _totalCount = res.totalCount;
+        //Assumption is that already have photo filled.
+        [self reloadRows:res.result reload:reload];
         if(completed){
-            completed(@(arr.count));
+            completed(@(res.result.count));
         }
         //[self.refreshControl endRefreshing];
     } failure:^(id err){
@@ -813,7 +819,8 @@ static int photoCount = 1;
     [self loadMorePhoto:^(NSNumber* obj){
         //[self endRefresh:obj.intValue];
         [self.refreshControl endRefreshing];
-    }reload:NO pageSize:1];
+    }reload:NO pageSize:5];
+     
     //[self.refreshControl endRefreshing];
 
 }
@@ -896,7 +903,7 @@ static int photoCount = 1;
 
     _combinedPhotos = [[NSMutableArray alloc] init];
     
-    
+    _nonsplitted = [[NSMutableArray alloc] init];
     //self.refreshControl = [[UIRefreshControl alloc] init];
     //[self.refreshControl addTarget:self action:@selector(refreshInvoked:forState:)forControlEvents:UIControlEventValueChanged];
     //self.tableView.indicatorStyle = UIScrollViewIndicatorStyleWhite;
@@ -938,13 +945,28 @@ static int photoCount = 1;
     [[EZMessageCenter getInstance] registerEvent:EZTakePicture block:^(EZDisplayPhoto* dp){
         EZDEBUG(@"A photo get generated");
         [_combinedPhotos addObject:dp];
+        [_nonsplitted addObject:dp];
         [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:_combinedPhotos.count-1 inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
         //[self.tableView a]
+    }];
+    
+    [[EZMessageCenter getInstance] registerEvent:EZRaisePersonDetail block:^(EZPerson* ps){
+        EZPersonDetail* pd = [[EZPersonDetail alloc] initWithPerson:ps];
+        //pd.modalPresentationStyle = UIModalPresentationPageSheet;
+        //pd.transitioningDelegate = weakSelf;
+        //pd.modalPresentationStyle = UIModalPresentationCustom;
+        _isPushCamera = false;
+        //pd.modalTransitionStyle
+        //self.transitioningDelegate
+        _leftContainer.hidden = YES;
+        _rightCycleButton.hidden = YES;
+        [self.navigationController pushViewController:pd animated:YES];
     }];
     
     [[EZMessageCenter getInstance] registerEvent:EZAlbumImageReaded block:^(EZDisplayPhoto* dp){
         EZDEBUG(@"Recieved a image from album");
         [_combinedPhotos addObject:dp];
+        [_nonsplitted addObject:dp];
         [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:_combinedPhotos.count-1 inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
     }];
     
@@ -994,17 +1016,29 @@ static int photoCount = 1;
             //[EZCoreAccessor cleanClientDB];
             //[[EZDataUtil getInstance] cleanDBPhotos];
             [_combinedPhotos removeAllObjects];
+            [_nonsplitted removeAllObjects];
             [weakSelf.tableView reloadData];
         }
-        [_combinedPhotos addObjectsFromArray:[self wrapPhotos:[[EZDataUtil getInstance] getStoredPhotos]]];
+        
+        NSArray* storedPhotos = [[EZDataUtil getInstance] getStoredPhotos];
+        NSArray* splitted = [self splitPhotos:storedPhotos];
+        EZDEBUG(@"Total stored:%i, splitted:%i", storedPhotos.count, splitted.count);
+        [_combinedPhotos addObjectsFromArray:[self wrapPhotos:splitted]];
+        [_nonsplitted addObjectsFromArray:storedPhotos];
         EZDEBUG(@"The stored photo is %i", _combinedPhotos.count);
-        [[EZDataUtil getInstance] queryPhotos:_combinedPhotos.count pageSize:photoPageSize otherID:_currentUser.personID success:^(NSArray* arr){
-            EZDEBUG(@"returned length:%i", arr.count);
+        [[EZDataUtil getInstance] queryPhotos:_nonsplitted.count pageSize:photoPageSize otherID:_currentUser.personID success:^(EZResult* res){
+            _totalCount = res.totalCount;
+            _currentUser.photoCount = _totalCount;
+            if(!_currentUser){
+                currentLoginUser.photoCount = _totalCount;
+            }
+            NSArray* arr = res.result;
+            EZDEBUG(@"returned length:%i, total photo:%i", arr.count, _totalCount);
             //[_combinedPhotos addObjectsFromArray:arr];
-            [self reloadRows:arr reload:NO];
+            [self reloadFirst:arr totalCount:_totalCount];
             dispatch_later(0.1,
             ^(){
-                [self scrollToBottom:YES];
+                [self scrollToBottom:NO];
             });
         } failure:^(NSError* err){
             EZDEBUG(@"Error detail:%@", err);
@@ -1084,7 +1118,7 @@ static int photoCount = 1;
 {
     
     int pos = [self findPhoto:note.srcID matchID:note.matchedID];
-    EZDEBUG(@"upload srcPhotoID:%@, uploaded:%i, matchedID:%@, uploaded:%i, position:%i", note.srcPhoto.photoID, note.srcPhoto.uploaded, note.matchedID, note.matchedPhoto.uploaded, pos);
+    EZDEBUG(@"upload srcPhotoID:%@, uploaded:%i, matchedID:%@, uploaded:%i, position:%i, match type:%i", note.srcPhoto.photoID, note.srcPhoto.uploaded, note.matchedID, note.matchedPhoto.uploaded, pos, note.matchedPhoto.type);
     if(pos <  0){
         EZDEBUG(@"Quit for not find the id:%@", note.srcID);
         return;
@@ -1093,15 +1127,14 @@ static int photoCount = 1;
     EZDisplayPhoto* disPhoto = [_combinedPhotos objectAtIndex:pos];
     disPhoto.isFront = NO;
     disPhoto.photo.photoRelations = @[note.matchedPhoto];
-    //disPhoto.photo.type = 0;
     [[EZDataUtil getInstance] storeAllPhotos:@[disPhoto.photo]];
-    EZDEBUG(@"matchedPhoto converstion:%@, url:%@", note.matchedPhoto.conversations, note.matchedPhoto.screenURL);
+    EZDEBUG(@"matchedPhoto converstion:%@, url:%@, disPhotoID:%@", note.matchedPhoto.conversations, note.matchedPhoto.screenURL, disPhoto.photo.photoID);
     //disPhoto.photo = note.srcPhoto;
     //[_combinedPhotos addObject:disPhoto];
     //preloadimage(note.matchedPhoto.screenURL);
-    [[EZDataUtil getInstance] preloadImage:note.matchedPhoto.screenURL success:^(id sender) {
-        [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:pos  inSection:0]] withRowAnimation:UITableViewRowAnimationBottom];
-    } failed:^(id obj){}];
+    //[[EZDataUtil getInstance] preloadImage:note.matchedPhoto.screenURL success:^(id sender) {
+    [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:pos  inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
+    //} failed:^(id obj){}];
     return;
     //}
 }
@@ -1156,6 +1189,7 @@ static int photoCount = 1;
             return;
         }
         [_combinedPhotos insertObject:disPhoto atIndex:_combinedPhotos.count];
+        [_nonsplitted addObject:note.srcPhoto];
         [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:_combinedPhotos.count - 1 inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
         return;
         
@@ -1209,6 +1243,20 @@ static int photoCount = 1;
     [_combinedPhotos insertObject:disPhoto atIndex:pos];
      [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:pos inSection:0]] withRowAnimation:UITableViewRowAnimationTop];
     
+}
+
+
+- (NSMutableArray*) splitPhotos:(NSArray*)photos
+{
+    NSMutableArray* res = [[NSMutableArray alloc] init];
+    for(EZPhoto* pt in photos){
+        for(EZPhoto* subPt in pt.photoRelations){
+            EZPhoto* orgCopy = pt.copy;
+            orgCopy.photoRelations = @[subPt];
+            [res addObject:orgCopy];
+        }
+    }
+    return res;
 }
 
 - (void) addLike:(EZNote*)note
@@ -1278,15 +1326,15 @@ static int photoCount = 1;
     }
 }
 
-- (BOOL) existed:(NSString*)pid
+- (EZPhoto*) existed:(NSString*)pid
 {
-    for(int i = 0; i < _combinedPhotos.count; i ++){
-        EZDisplayPhoto* dp = [_combinedPhotos objectAtIndex:i];
-        if([dp.photo.photoID isEqualToString:pid]){
-            return true;
+    for(int i = 0; i < _nonsplitted.count; i ++){
+        EZPhoto* photo = [_nonsplitted objectAtIndex:i];
+        if([photo.photoID isEqualToString:pid]){
+            return photo;
         }
     }
-    return false;
+    return nil;
 }
 
 - (EZDisplayPhoto*) wrapPhoto:(EZPhoto*)photo
@@ -1302,35 +1350,102 @@ static int photoCount = 1;
     return ed;
 }
 
-//Will store for every newly queryed photo
+//The purpose of this method
+//Is to load all the photos into the
+//Reload the photo from the images
+- (void) reloadFirst:(NSArray*)photos totalCount:(int)totalCount
+{
+    int count = 0;
+    NSMutableArray* stored = [[NSMutableArray alloc] init];
+    for(EZPhoto* pt in photos){
+        EZPhoto* finded = [self existed:pt.photoID];
+        if(!finded){
+            
+            //EZDEBUG(@"Transfer the image to EZDisplayPhoto successfully, personID:%@",pt.personID);
+            NSArray* splitted = [self splitPhotos:@[pt]];
+            for(EZPhoto* sp in splitted){
+                EZDisplayPhoto* dp = [self wrapPhoto:sp];
+                [_combinedPhotos insertObject:dp atIndex:0];
+                count ++;
+            }
+            [_nonsplitted insertObject:pt atIndex:0];
+            [stored addObject:pt];
+        }
+    }
+    _fillCount = totalCount - _nonsplitted.count;
+    EZDEBUG(@"total count:%i, _combinedPhoto:%i, non-splitCount:%i, fillCount:%i", totalCount, _combinedPhotos.count, _nonsplitted.count, _fillCount);
+    
+    //for(int i = 0; i < _fillCount; i ++){
+    //    EZDisplayPhoto* dp = [[EZDisplayPhoto alloc] init];
+    //    dp.isPlaceHolder = true;
+    //    [_combinedPhotos insertObject:dp atIndex:0];
+    //}
+    [[EZDataUtil getInstance] storeAllPhotos:stored];
+    [self.tableView reloadData];
+}
+
+- (int) findPlaceHolder
+{
+    //int res = -1;
+    for(int i = 0; i < _combinedPhotos.count; i++){
+        EZDisplayPhoto* dp = [_combinedPhotos objectAtIndex:i];
+        if(dp.isPlaceHolder){
+            return i;
+        }
+    }
+    return -1;
+}
+
+
+//Return true if it is update
+//Return false if it is add
+- (BOOL) fillCombinePhotos:(EZPhoto*)photo
+{
+    //int placePos = [self findPlaceHolder];
+    //if(placePos >= 0){
+    //    EZDisplayPhoto* dp = [_combinedPhotos objectAtIndex:placePos];
+    //    dp.photo = photo;
+    //    dp.isPlaceHolder = false;
+    //    dp.isFront = NO;
+    //    [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:placePos inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
+    //    return true;
+    //}else{
+    //if(placePos >= 0){
+    EZDisplayPhoto* dp = [self wrapPhoto:photo];
+    [_combinedPhotos insertObject:dp atIndex:0];
+    [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
+    return false;
+     //}
+    //}
+}
+
 - (void) reloadRows:(NSArray*)photos reload:(BOOL)reload
 {
     int count = 0;
     NSMutableArray* stored = [[NSMutableArray alloc] init];
     for(EZPhoto* pt in photos){
-        if(! [self existed:pt.photoID]){
-            count ++;
-            EZDEBUG(@"Transfer the image to EZDisplayPhoto successfully, personID:%@",pt.personID);
-            EZDisplayPhoto* dp = [self wrapPhoto:pt];
-            [_combinedPhotos insertObject:dp atIndex:0];
+        EZPhoto* finded = [self existed:pt.photoID];
+        if(!finded){
+            EZDEBUG(@"reload successfully, personID:%@",pt.personID);
+            NSArray* splitted = [self splitPhotos:@[pt]];
+            for(EZPhoto* sp in splitted){
+                //EZDisplayPhoto* dp = [self wrapPhoto:sp];
+                //[_combinedPhotos insertObject:dp atIndex:0];
+                [self fillCombinePhotos:sp];
+                count ++;
+            }
+            [_nonsplitted insertObject:pt atIndex:0];
             [stored addObject:pt];
+        }else{
+            
         }
         
     }
     [[EZDataUtil getInstance] storeAllPhotos:stored];
     EZDEBUG(@"newly loaded count:%i", count);
-    if(count && !reload){
-        NSMutableArray* updatePaths = [[NSMutableArray alloc] init];
-        for(int i = 0; i < count; i++){
-            [updatePaths addObject:[NSIndexPath indexPathForRow:i inSection:0]];
-        }
-        [self.tableView insertRowsAtIndexPaths:updatePaths withRowAnimation:UITableViewRowAnimationNone];
-        //if(updatePaths.count){
-        //    [self.tableView insertRowsAtIndexPaths:updatePaths withRowAnimation:UITableViewRowAnimationTop];
-        //}
-    }else if(photos.count && reload){
-        [self.tableView reloadData];
-    }
+    //if(photos.count && reload){
+    //    [self.tableView reloadData];
+    //}
 }
 
 //Pull and refresh will help to check if we have more photo to match.
@@ -1414,10 +1529,10 @@ static int photoCount = 1;
     _alreadyExecuted = true;
     //[self.refreshControl setPosition:CGPointMake(230, 64)];
     self.refreshControl.y = 64;
+    self.refreshControl.alpha = 0;
     self.navigationItem.titleView = [[UIView alloc] init];
     CGRect bounds = [UIScreen mainScreen].bounds;
     self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 0, 0);
-    
     
     /**
     clickView.longPressBlock = ^(EZCenterButton* obj){
@@ -1466,7 +1581,7 @@ static int photoCount = 1;
     //_leftCyleButton.layer.borderColor = [UIColor whiteColor].CGColor;
     //_leftCyleButton.layer.borderWidth = 2;
     _leftText = [[UILabel alloc] initWithFrame:CGRectMake(0, -5, 120, 46)];
-    _leftText.font = titleSlimFont;
+    _leftText.font = EZTitleSlimFont;
     _leftText.textAlignment = NSTextAlignmentLeft;
     _leftText.text = @"feather";
     _leftText.textColor = [UIColor whiteColor];
@@ -1688,14 +1803,6 @@ static int photoCount = 1;
 {
     //NSString* secondURL = @"http://192.168.1.102:8080/static/5666df6256e9504dd8b5f6a4b21edbac.jpg";
     UIActivityIndicatorView* ai = weakCell.activityView;
-    
-    if(!ai){
-        ai = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
-        ai.center = weakCell.frontImage.center;
-        [weakCell.frontImage addSubview:ai];
-        weakCell.activityView = ai;
-        
-    }
     ai.hidden = YES;
     __block BOOL loaded = false;
     __weak EZAlbumTablePage* weakSelf = self;
@@ -1824,7 +1931,7 @@ static int photoCount = 1;
     EZDEBUG(@"setWaitingInfo get called:%i, %i", back.typeUI, back
             .type);
     EZPerson* otherPerson = pid2person(back.personID);
-    if(back.type == kPhotoRequest || [cp.photo.exchangePersonID isNotEmpty]){
+    if(back.type == kPhotoRequest || ([cp.photo.exchangePersonID isNotEmpty] && back==nil)){
         cell.frontImage.image = nil;
         cell.frontImage.backgroundColor = ClickedColor;
         cell.waitingInfo.text =[NSString stringWithFormat:@"等待\"%@\"的照片", otherPerson.name?otherPerson.name:@"朋友"];
@@ -1839,7 +1946,7 @@ static int photoCount = 1;
     
     EZPhoto* photo = nil;
     NSString* localFull = checkimageload(back.screenURL);
-    EZDEBUG(@"try to local url:%@, local:%@, back is:%i", back.screenURL, localFull, (int)back);
+    EZDEBUG(@"try to local url:%@, local:%@, back is:%i, back type:%i", back.screenURL, localFull, (int)back, back.type);
     //if(!localFull && !back.type){
     //    return;
     //}
@@ -1853,9 +1960,9 @@ static int photoCount = 1;
             photo = back;
             [weakCell setFrontFormat:false];
             [self setWaitingInfo:weakCell displayPhoto:cp back:back];
-            if(back.type == kPhotoRequest || [cp.photo.exchangePersonID isNotEmpty]){
+            if(back.type == kPhotoRequest || ([cp.photo.exchangePersonID isNotEmpty] && back == nil)){
                 //weakCell.frontImage.image = [UIImage imageNamed:@"background.png"];
-                
+                EZDEBUG(@"waiting for response");
             }else if(photo == nil){
                 //weakCell.frontImage.image = nil;
                 [[EZUIUtility sharedEZUIUtility] showErrorInfo:macroControlInfo(@"Network not available") delay:1.0 view:self.view];

@@ -11,6 +11,15 @@
 #include "EZConstants.h"
 //#include <opencv2/opencv.hpp>
 //Will hold the Application related constants.
+
+#define  EZLargeFont [UIFont fontWithName:@"HelveticaNeue-Light" size:25]
+#define  EZSmallFont [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:30]
+
+#define  EZTitleSlimFont [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:40]
+#define  EZTitleFontCN [UIFont fontWithName:@"STHeitiSC-Light" size:20]
+
+#define  EZOriginalTitle  @"feather"
+
 #define EZStatusBarBackgroundColor [UIColor blackColor]
 
 #define CenterUpShift 20
@@ -28,7 +37,7 @@
 
 #define DefaultChatUnitHeight 95.0
 
-#define photoPageSize 5
+#define photoPageSize 500
 
 #define smallIconRadius 35
 
@@ -133,6 +142,8 @@
 
 #define EZContactsReaded @"EZContactsReaded"
 
+#define EZRaisePersonDetail @"EZRaisePersonDetail"
+
 #define EZPhotoUploadSuccess @"EZPhotoUploadSuccess"
 
 #define EZUserEditted @"EZUserEditted"
@@ -182,6 +193,8 @@
 #define EZCenterBigRadius 60.0
 
 #define EZCenterSmallRadius 70.0
+
+#define EZShotButtonDiameter 46
 
 #define EZOuterCycleRadius  15.0
 

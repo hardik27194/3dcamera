@@ -37,8 +37,18 @@
         [_headIcon enableRoundImage];
         [self.contentView addSubview:_headIcon];
         
+        _headIcon.releasedBlock = ^(id obj){
+            
+        };
+        
         
         EZClickView* clickView = [[EZClickView alloc] initWithFrame:CGRectMake(265, 0, 44, 60)];
+        
+        _photoCount = [[UILabel alloc] initWithFrame:CGRectMake(200, (cellHeight - 14.0)/2.0, 30.0,14.0)];
+        _photoCount.font = buttonFontCN;
+        _photoCount.textColor = [UIColor whiteColor];
+        _photoCount.textAlignment = NSTextAlignmentCenter;
+        [self.contentView addSubview:_photoCount];
         
         _inviteButton = [[UILabel alloc] initWithFrame:CGRectMake(0, (cellHeight - 40)/2.0, 40, 60)];
         [clickView addSubview:_inviteButton];
@@ -68,6 +78,12 @@
         self.contentView.backgroundColor = [UIColor clearColor];
     }
     return self;
+}
+
+- (void) fitLine
+{
+    CGSize sizeToFit = [self.name sizeThatFits:CGSizeMake(200, _name.frame.size.height)];
+    [_photoCount setX:_name.frame.origin.x + sizeToFit.width + 10];
 }
 
 - (void) inviteClicked:(id)obj

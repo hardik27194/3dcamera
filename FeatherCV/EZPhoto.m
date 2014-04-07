@@ -105,7 +105,8 @@
              @"exchangePersonID":(_exchangePersonID ? _exchangePersonID : @""),
              //@"conversationUpdated":@(_conversationUploaded),
              @"deleted":@(_deleted),
-             @"type":@(_type)
+             @"type":@(_type),
+             @"isPair":@(_isPair)
              };
 }
 
@@ -130,8 +131,10 @@
              @"relationUsers":[self relationsUserID],
              @"type":@(_type),
              //@"screenURL":[self screenURL],
-             @"likedUsers":_likedUsers.count?_likedUsers:@[]
+             @"likedUsers":_likedUsers.count?_likedUsers:@[],
+             @"isPair":@(_isPair)
                  };
+        
     }else{
         return @{
                  //@"id":_photoID,
@@ -150,7 +153,8 @@
                  @"relationUsers":[self relationsUserID],
                  //@"screenURL":[self screenURL],
                  @"type":@(_type),
-                 @"liked":_likedUsers.count?_likedUsers:@[]
+                 @"liked":_likedUsers.count?_likedUsers:@[],
+                 @"isPair":@(_isPair)
                  };
 
     }
@@ -214,6 +218,7 @@
     pt.deleted = _deleted;
     pt.type = _type;
     pt.typeUI = _type;
+    pt.isPair = _isPair;
     return pt;
 }
 
@@ -242,6 +247,7 @@
     _thumbURL = url2thumb(_screenURL);
     _conversations = [self conversationFromJson:[dict objectForKey:@"conversations"]];
     [_likedUsers addObjectsFromArray:[dict objectForKey:@"likedUsers"]];
+    _isPair = [[dict objectForKey:@"isPair"] boolValue];
     CGFloat width = [[dict objectForKey:@"width"] floatValue];
     CGFloat height = [[dict objectForKey:@"height"] floatValue];
 

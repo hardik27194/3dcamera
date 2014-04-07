@@ -23,4 +23,8 @@
 
 @property (nonatomic, strong) EZEventBlock inviteClicked;
 
+@property (nonatomic, strong) UILabel* photoCount;
+
+- (void) fitLine;
+
 @end

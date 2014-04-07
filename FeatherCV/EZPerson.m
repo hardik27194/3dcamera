@@ -28,9 +28,11 @@
              @"email":null2Empty(_email),
              @"mock":@(_mock),
              @"joinedTime":_joinedTime?isoDateFormat(_joinedTime):@"",
-             @"joined":@(_joined)
+             @"joined":@(_joined),
+             @"photoCount":@(_photoCount)
              };
 }
+
 
 - (void) fromJson:(NSDictionary*)dict
 {
@@ -40,6 +42,7 @@
     _mobile = [dict objectForKey:@"mobile"];
     _avatar = [dict objectForKey:@"avatar"];
     _email = [dict objectForKey:@"email"];
+    _photoCount = [[dict objectForKey:@"photoCount"] integerValue];
     _isFriend = [[dict objectForKey:@"isFriend"] integerValue];
     if([dict objectForKey:@"joinedTime"]){
         _joinedTime = [[EZDataUtil getInstance].isoFormatter  dateFromString:[dict objectForKey:@"joinedTime"]];

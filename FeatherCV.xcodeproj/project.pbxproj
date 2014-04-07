@@ -233,6 +233,7 @@
 		18E3483A1843086200C9D89D /* EZFaceResult.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 18E348381843086100C9D89D /* EZFaceResult.cpp */; };
 		18E3483D18433FC000C9D89D /* UIImage+ResizeMagick.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E3483C18433FBF00C9D89D /* UIImage+ResizeMagick.m */; };
 		18E4FBB018EEAEAD00FA6C21 /* EZHairButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E4FBAF18EEAEAD00FA6C21 /* EZHairButton.m */; };
+		18E4FBB518F1415E00FA6C21 /* EZResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E4FBB418F1415E00FA6C21 /* EZResult.m */; };
 		18E746EA18A4A26A0023967B /* AFHTTPRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E746C818A4A26A0023967B /* AFHTTPRequestOperation.m */; };
 		18E746EB18A4A26A0023967B /* AFHTTPRequestOperationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E746CA18A4A26A0023967B /* AFHTTPRequestOperationManager.m */; };
 		18E746EC18A4A26A0023967B /* AFHTTPSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E746CC18A4A26A0023967B /* AFHTTPSessionManager.m */; };
@@ -643,6 +644,8 @@
 		18E3483C18433FBF00C9D89D /* UIImage+ResizeMagick.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+ResizeMagick.m"; sourceTree = "<group>"; };
 		18E4FBAE18EEAEAD00FA6C21 /* EZHairButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZHairButton.h; sourceTree = "<group>"; };
 		18E4FBAF18EEAEAD00FA6C21 /* EZHairButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZHairButton.m; sourceTree = "<group>"; };
+		18E4FBB318F1415E00FA6C21 /* EZResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZResult.h; sourceTree = "<group>"; };
+		18E4FBB418F1415E00FA6C21 /* EZResult.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZResult.m; sourceTree = "<group>"; };
 		18E746C718A4A26A0023967B /* AFHTTPRequestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFHTTPRequestOperation.h; sourceTree = "<group>"; };
 		18E746C818A4A26A0023967B /* AFHTTPRequestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFHTTPRequestOperation.m; sourceTree = "<group>"; };
 		18E746C918A4A26A0023967B /* AFHTTPRequestOperationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFHTTPRequestOperationManager.h; sourceTree = "<group>"; };
@@ -1278,6 +1281,8 @@
 				18A37043185BF97E0022F0A8 /* EZPhotoRelation.m */,
 				1823DA3E18DA9AB900E6E8B3 /* EZNote.h */,
 				1823DA3F18DA9AB900E6E8B3 /* EZNote.m */,
+				18E4FBB318F1415E00FA6C21 /* EZResult.h */,
+				18E4FBB418F1415E00FA6C21 /* EZResult.m */,
 			);
 			name = dataobjects;
 			sourceTree = "<group>";
@@ -1669,6 +1674,7 @@
 				18E746EC18A4A26A0023967B /* AFHTTPSessionManager.m in Sources */,
 				18E3474A183DFA7300C9D89D /* EZPerson.m in Sources */,
 				1866AD9C18965EF000DB46E2 /* EZCycleTongFilter.m in Sources */,
+				18E4FBB518F1415E00FA6C21 /* EZResult.m in Sources */,
 				18F58B7518796CE9006CB966 /* EZNightBlurFilter.m in Sources */,
 				18E746F618A4A26A0023967B /* UIButton+AFNetworking.m in Sources */,
 				1866ADCA189F9F5900DB46E2 /* EZSkinMaskFilter.m in Sources */,

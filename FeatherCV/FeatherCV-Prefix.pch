@@ -28,4 +28,5 @@
     #import "UIView+Shadow.h"
 #import "UIImage+ImageEffects.h"
 #import "LiveFrost.h"
+#import "EZResult.h"
 #endif

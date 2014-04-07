@@ -36,6 +36,10 @@
 
 @property (nonatomic, strong) ALAssetsLibrary* assetLibaray;
 
+@property (nonatomic, strong) NSMutableArray* mainPhotos;
+
+@property (nonatomic, strong) NSMutableArray* mainNonSplits;
+
 //This queue are used to execute the task without blocking the front end
 @property (nonatomic, strong) dispatch_queue_t asyncQueue;
 
@@ -208,7 +212,7 @@
 //This is small detail, which is poilicy. Let's define this later.
 - (void) getAllContacts:(EZEventBlock)blk;
 
-
+- (void) getMatchUsers:(EZEventBlock)block failure:(EZEventBlock)failure;
 //- (void) uploadAvatar:()
 //When need to call this?
 //When I get the photo album access, I will upload all the extracted photo information
@@ -223,6 +227,8 @@
 - (void) cancelPrematchPhoto:(EZPhoto*)photo success:(EZEventBlock)success failure:(EZEventBlock)failure;
 
 - (void) queryPhotos:(int)page pageSize:(int)pageSize otherID:(NSString*)otherID success:(EZEventBlock)success failure:(EZEventBlock)failure;
+
+- (void) cleanAllLoginInfo;
 
 //Will check if any new photo in the album.
 //I will use the filename as hash?

@@ -307,22 +307,26 @@
 - (void) queryPhotos:(int)page pageSize:(int)pageSize otherID:(NSString *)otherID success:(EZEventBlock)success failure:(EZEventBlock)failure
 {
     NSDictionary* parameters = @{
-                        @"cmd":@"query",
+                        @"cmd":@"queryCount",
                         @"startPage":@(page),
                         @"pageSize":@(pageSize)
                         };
 
     if(otherID){
         parameters = @{
-          @"cmd":@"query",
+          @"cmd":@"queryCount",
           @"startPage":@(page),
           @"pageSize":@(pageSize),
           @"otherID":otherID
           };
     }
-    [EZNetworkUtility postParameterAsJson:@"photo/info" parameters:parameters complete:^(NSArray* photos){
-                         EZDEBUG(@"Photo size:%i",photos.count);
+    [EZNetworkUtility postParameterAsJson:@"photo/info" parameters:parameters complete:^(NSDictionary* resDict){
+                        int totalCount = [[resDict objectForKey:@"totalCount"] intValue];
+                        NSArray* photos = [resDict objectForKey:@"photos"];
+                        EZDEBUG(@"Photo size:%i, totalCount:%i",photos.count, totalCount);
+        
                          NSMutableArray* res = [[NSMutableArray alloc] initWithCapacity:photos.count];
+                         
                          for(NSDictionary* dict in photos){
                              EZPhoto* photo = [[EZPhoto alloc] init];
                              [photo fromJson:dict];
@@ -351,7 +355,7 @@
                              }
                          }
                          if(success){
-                             success(res);
+                             success([[EZResult alloc] initWithCount:totalCount array:res]);
                          }
     
     } failblk:failure];
@@ -723,6 +727,16 @@
     }
 }
 
+- (void) cleanAllLoginInfo
+{
+    [EZDataUtil getInstance].currentPersonID = nil;
+    [EZDataUtil getInstance].currentLoginPerson = nil;
+    [[EZDataUtil getInstance].pendingUploads removeAllObjects];
+    [[EZDataUtil getInstance].currentQueryUsers removeAllObjects];
+    [[EZDataUtil getInstance].sortedUsers removeAllObjects];
+    [EZCoreAccessor cleanClientDB];
+}
+
 //What's the purpose of this
 //Whether we allow the login page to show off or not.
 //Why do we ask them to register
@@ -745,6 +759,9 @@
         [[EZMessageCenter getInstance] registerEvent:EZUserAuthenticated block:^(EZPerson* ps){
             EZDEBUG(@"dismiss login person:%@, avatar:%@", ps.name, ps.avatar);
             //[login dismissViewControllerAnimated:NO completion:nil];
+            if(success){
+                success(ps);
+            }
         }];
     }else{
         EZRegisterCtrl* registerCtl = [[EZRegisterCtrl alloc] init];
@@ -753,6 +770,9 @@
         [[EZMessageCenter getInstance] registerEvent:EZUserAuthenticated block:^(EZPerson* ps){
             EZDEBUG(@"dismiss login person:%@, avatar:%@", ps.name, ps.avatar);
             //[registerCtl dismissViewControllerAnimated:NO completion:nil];
+            if(success){
+                success(ps);
+            }
         }];
     }
 }
@@ -1038,6 +1058,40 @@
     }
                                                  });
     //return res;
+}
+
+- (void) getMatchUsers:(EZEventBlock)block failure:(EZEventBlock)failure
+{
+    EZDEBUG(@"Try to fetch all contacts");
+    NSDictionary* params = @{@"cmd":@"friend"};
+    [EZNetworkUtility postJson:@"person/info" parameters:params complete:^(NSArray* arr){
+        _queryingCount = false;
+        EZDEBUG(@"successfully query matched user:%lu", (unsigned long)arr.count);
+        if(!arr.count){
+            return;
+        }
+        NSMutableArray* persons = [[NSMutableArray alloc] init];
+        for(NSDictionary* pdict in arr){
+            EZPerson* ps = [self addPersonToStore:pdict isQuerying:NO];
+            EZDEBUG(@"matched Person name:%@", ps.name);
+            //ps.name = formatRelativeTime([NSDate date]);
+            //[_currentQueryUsers setValue:ps forKey:ps.personID];
+            //[_pendingUserQuery removeObject:ps.personID];
+            //[self callPendingQuery:ps];
+            //ps.joined = YES;
+            //if(ps.joined){
+            //    [_joinedUsers addObject:ps.personID];
+            //}else{
+            //    [_notJoinedUsers addObject:ps.personID];
+            //}
+            [persons addObject:ps];
+            //[_sortedUsers addObject:ps.personID];
+        }
+        [self storeAllPersons:persons];
+        if(block){
+            block(persons);
+        }
+    } failblk:failure];
 }
 
 //Dummy implementation now.
@@ -1377,7 +1431,7 @@
         //}
         
         
-        EZDEBUG(@"upload status:%i, updateStatus:%i, infoStatus:%i, exchangeStatus:%i", photo.contentStatus, photo.updateStatus, photo.infoStatus, photo.exchangeStatus);
+        EZDEBUG(@"upload status:%i, updateStatus:%i, infoStatus:%i, exchangeStatus:%i, exchangeID:%@", photo.contentStatus, photo.updateStatus, photo.infoStatus, photo.exchangeStatus, photo.exchangePersonID);
         
         EZEventBlock exchangeContent = ^(EZPhoto* photo){
              EZDEBUG(@"Will invoke exchange photo, status:%i, personID:%@, exchangeID:%@", photo.exchangeStatus, photo.personID, photo.exchangePersonID);
@@ -1414,7 +1468,7 @@
                 ++_uploadingTasks;
                 EZDEBUG(@"Will start upload photo content for:%@", photo.photoID);
                 [[EZDataUtil getInstance] uploadPhoto:photo success:^(id info){
-                    EZDEBUG(@"uploaded content success:%@, photoRelations:%i", info, photo.photoRelations.count);
+                    EZDEBUG(@"uploaded content success:%@, photoRelations:%lu", info, (unsigned long)photo.photoRelations.count);
                     //photo.uploadStatus = kExchangePhoto;
                     photo.contentStatus = kUploadDone;
                     photo.uploaded = TRUE;
@@ -1496,6 +1550,11 @@
             }];
             
         };
+        
+        if([photo.exchangePersonID isNotEmpty] && (photo.exchangeStatus == kExchangeFailure || photo.exchangeStatus == kExchangeStart)){
+            EZDEBUG(@"Call exchange first");
+            exchangeContent(photo);
+        }else
         if(photo.infoStatus == kUploadInit){
             uploadInfo(photo);
         }else if(photo.exchangeStatus == kExchangeFailure || photo.exchangeStatus == kExchangeStart){
@@ -1634,7 +1693,7 @@
         ps.uploaded = true;
         LocalPersons* lp = ps.localPerson;
         if(lp){
-            EZDEBUG(@"store old persons %@, json:%@", ps.localPerson, [ps toJson]);
+            //EZDEBUG(@"store old persons %@, json:%@", ps.localPerson, [ps toJson]);
             lp.payloads = [ps toJson];
         }else{
             lp = [[EZCoreAccessor getClientAccessor] create:[LocalPersons class]];
@@ -1686,7 +1745,24 @@
     //NSMutableArray* addedUser = [[NSMutableArray alloc] init];
     NSMutableSet* stored = [[NSMutableSet alloc] init];
     //EZPerson* currentUser = nil;
-    for(NSString* pid in _sortedUsers){
+    //NSArray* allPids = _currentQueryUsers.allKeys;
+    NSMutableArray* pids = [[NSMutableArray alloc] init];
+    [pids addObject:currentLoginID];
+    
+    [pids addObjectsFromArray:_sortedUsers];
+    [pids addObjectsFromArray:_currentQueryUsers.allKeys];
+    //[pids addObjectsFromArray:[_joinedUsers allObjects]];
+    [pids addObjectsFromArray:_notJoinedUsers.allObjects];
+    [_sortedUserSets removeAllObjects];
+    NSMutableArray* sortedPids = [[NSMutableArray alloc] init];
+    for(NSString* pid in pids){
+        if(![_sortedUserSets containsObject:pid]){
+            [_sortedUserSets addObject:pid];
+            [sortedPids addObject:pid];
+        }
+    }
+
+    for(NSString* pid in sortedPids){
         EZPerson* ps = [_currentQueryUsers objectForKey:pid];
         if(ps && ![stored containsObject:pid]){
             if(![pid isEqualToString:currentLoginID]){
@@ -1737,7 +1813,7 @@
 - (void) reloadAllStoredPersons
 {
     NSArray* persons = [[EZCoreAccessor getClientAccessor] fetchAll:[LocalPersons class] sortField:@"lastActive" ascending:NO];
-    EZDEBUG(@"All stored persons:%i", persons.count);
+    EZDEBUG(@"All stored persons:%lu", (unsigned long)persons.count);
     for(LocalPersons* lp in persons){
         EZPerson* ps = [[EZPerson alloc] init];
         [ps fromJson:lp.payloads];
@@ -1761,7 +1837,7 @@
     
     NSMutableDictionary* res = [[NSMutableDictionary alloc] init];
     NSArray* persons = [[EZCoreAccessor getClientAccessor] fetchAll:[LocalPersons class] sortField:@"lastActive" ascending:NO];
-    EZDEBUG(@"All stored persons:%i", persons.count);
+    EZDEBUG(@"All stored persons:%lu", (unsigned long)persons.count);
     for(LocalPersons* lp in persons){
         EZPerson* ps = [[EZPerson alloc] init];
         [ps fromJson:lp.payloads];
@@ -1784,7 +1860,7 @@
 {
     NSArray* persons = [[EZCoreAccessor getClientAccessor] fetchAll:[LocalPersons class] sortField:nil ascending:NO];
     //NSMutableArray* res = [[NSMutableArray alloc] init];
-    EZDEBUG(@"stored person count:%i", persons.count);
+    EZDEBUG(@"stored person count:%lu", (unsigned long)persons.count);
     for(LocalPersons* ps in persons){
         //LocalPhotos* lp = [[EZCoreAccessor getClientAccessor] create:[LocalPhotos class]];
         //if([photo.payloads isKindOfClass:[NSDictionary class]]){

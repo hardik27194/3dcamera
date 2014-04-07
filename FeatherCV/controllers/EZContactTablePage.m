@@ -15,6 +15,7 @@
 #import "EZUIUtility.h"
 #import "EZCenterButton.h"
 #import "UIImageView+AFNetworking.h"
+#import "EZPersonDetail.h"
 
 @interface EZContactTablePage ()
 
@@ -204,8 +205,15 @@
     EZPerson* person = [_contacts objectAtIndex:indexPath.row];
     if(indexPath.row == 0){
         cell.name.text = @"所有照片";
+        EZDEBUG(@"current user id:%@, this id:%@", currentLoginID, person.personID);
     }else{
         cell.name.text = person.name;
+    }
+    
+    if(person.photoCount){
+        cell.photoCount.text = int2str(person.photoCount);
+    }else{
+        cell.photoCount.text = nil;
     }
     //[(UIImageView*)cell.headIcon setImageWithURL:str2url(person.avatar)];
     cell.headIcon.backgroundColor = randBack(nil);
@@ -247,9 +255,23 @@
     }
     cell.headIcon.releasedBlock = ^(id object){
         EZDEBUG(@"Header clicked");
+        
+        //EZPersonDetail* pd = [[EZPersonDetail alloc] initWithPerson:frontPerson];
+        //pd.transitioningDelegate = weakSelf;
+        //pd.modalPresentationStyle = UIModalPresentationCustom;
+        //_isPushCamera = false;
+        //_leftContainer.hidden = YES;
+        //_rightCycleButton.hidden = YES;
+        //[self presentViewController:pd animated:YES completion:^(){
+        //}];
+        [self.navigationController popToRootViewControllerAnimated:NO];
+        dispatch_later(0.1,^(){
+            [[EZMessageCenter getInstance] postEvent:EZRaisePersonDetail attached:person];
+        });
+        //[self.navigationController pushViewController:pd animated:YES];
     };
     
-    
+    [cell fitLine];
     EZDEBUG(@"I will show the person:%@, pos:%i", person.name, indexPath.row);
     return cell;
 }

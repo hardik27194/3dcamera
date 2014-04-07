@@ -42,6 +42,8 @@
 
 @property (nonatomic, assign) BOOL uploaded;
 
+@property (nonatomic, assign) int photoCount;
+
 //Used to sort the user in the array.
 @property (nonatomic, strong) NSDate* lastActive;
 

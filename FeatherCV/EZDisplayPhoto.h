@@ -57,6 +57,12 @@ typedef enum {
 
 @property (nonatomic, strong) UIView* oldTurnedImage;
 
+//If this is a place hold or not.
+//Mean I am loading the photo.
+@property (nonatomic, assign) BOOL isPlaceHolder;
+
+@property (nonatomic, assign) BOOL isLoading;
+
 //What's the status of the turning angle.
 //To visualize the whole process, is that, we will uploading the image
 //In the meanwhile, we will try to download the image.

@@ -499,6 +499,9 @@
         EZPhoto* localPhoto = _shotPhoto;
         _shotPhoto.personID = currentLoginID;
         _shotPhoto.exchangePersonID = _personID;
+        if(_personID){
+            _shotPhoto.isPair = true;
+        }
         [self startPreFetch:localPhoto imageSuccess:nil];
     }
 }
@@ -655,6 +658,66 @@
     [self adjustSlideValue:_blueGap];
 }
 
+- (void) addNewAcc
+{
+    
+}
+
+- (void) deleteAction
+{
+    
+}
+
+- (void) viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    EZPerson* person = nil;
+    if(_personID){
+        person = pid2person(_personID);
+    }else
+    if(_isPhotoRequest){
+        EZPhoto* otherPhoto = [_disPhoto.photo.photoRelations objectAtIndex:0];
+        person = pid2person(otherPhoto.photoID);
+    }
+    
+    //EZClickImage* clickImage = [[EZClickImage alloc] initWithFrame:CGRectMake(30, 20, EZShotButtonDiameter, EZShotButtonDiameter)];
+    //[clickImage loadImageURL:person.avatar haveThumb:NO loading:NO];
+    //[clickImage enableRoundImage];
+    
+    //[self.view addSubview:clickImage];
+    if(person){
+        _backButton = [[UIButton alloc] initWithFrame:CGRectMake(30, 22, 60, 40)];
+        
+        [_backButton setTitle:person.name forState:UIControlStateNormal];
+        [_backButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        _backButton.titleLabel.font = EZLargeFont;
+        [_backButton addTarget:self action:@selector(quit:) forControlEvents:UIControlEventTouchUpInside];
+        _backButton.titleLabel.textAlignment = NSTextAlignmentLeft;
+        CGSize fit = [_backButton.titleLabel sizeThatFits:CGSizeMake(200, 40)];
+        if(fit.width > 60){
+            _backButton.width = fit.width;
+        }
+        //UIBarButtonItem *quitItem = [[UIBarButtonItem alloc]
+                               //initWithCustomView:_backButton];
+        [TopView addSubview:_backButton];
+        //self.navigationItem.leftItemsSupplementBackButton = YES;
+        //self.navigationItem.leftBarButtonItems = @[quitItem];
+        
+    }
+    /**
+    UIBarButtonItem *delAcc = [[UIBarButtonItem alloc]
+                               initWithTitle:@"Del"
+                               style:UIBarButtonItemStylePlain
+                               target:self
+                               action:@selector(deleteAction)];
+    **/
+    //NSArray *arrBtns = [[NSArray alloc]initWithObjects:addAcc,delAcc, nil];
+    //self.navigationItem.leftItemsSupplementBackButton = YES;
+    //self.navigationItem.leftBarButtonItems = @[addAcc];
+    //self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
+}
+
 - (void) viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
@@ -675,15 +738,18 @@
     [self.configButton setTitleColor:RGBCOLOR(43, 43, 43) forState:UIControlStateNormal];
 }
 
+
 - (void) viewDidLoad
 {
     [EZUIUtility sharedEZUIUtility].cameraRaised = true;
     [super viewDidLoad];
+    //self.navigationItem.rightBarButtonItem =
     //Stop all the upload
     //[EZDataUtil getInstance].pauseUpload = TRUE;
     self.view.backgroundColor = VinesGray;
     self.cameraRotateContainer.backgroundColor = VinesGray;
     //
+    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
     _senseRotate = true;
     //_recordedMotions = [[NSMutableArray alloc] init];
     _flashView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
@@ -1433,6 +1499,7 @@ context:(void *)context
     [[EZMotionUtility getInstance] unregisterHandler:@"CameraMotion"];
     [[EZUIUtility sharedEZUIUtility] enableProximate:NO];
     _isVisible = false;
+    [_backButton removeFromSuperview];
     [[EZMessageCenter getInstance] unregisterEvent:EZFaceCovered forObject:faceCovered];
     [[EZMessageCenter getInstance] unregisterEvent:EventKeyboardWillRaise forObject:keyboardRaiseHandler];
     [[EZMessageCenter getInstance] unregisterEvent:EventKeyboardWillHide forObject:keyboardHideHandler];
@@ -2579,11 +2646,14 @@ context:(void *)context
 
 }
 
-- (void) confirmUpload
+- (void) confirmUpload:(CGFloat)progressStart
 {
     _progressView.hidden = NO;
     __weak DLCImagePickerController* weakSelf = self;
     [self addChatInfo:weakSelf.shotPhoto];
+    
+    
+    /**
     if(self.shotPhoto.conversations.count){
         //weakSelf.shotPhoto.uploadStatus = kUpdateConversation;
         self.shotPhoto.updateStatus = kUpdateStart;
@@ -2592,8 +2662,8 @@ context:(void *)context
         [[EZDataUtil getInstance] uploadPendingPhoto];
         //EZDEBUG(@"directly call success");
     }
+     **/
     
-    [[EZDataUtil getInstance] storeAllPhotos:@[self.shotPhoto]];
     _disPhoto = [weakSelf createDisplayPhoto:weakSelf.shotPhoto];
     //[[EZMessageCenter getInstance]postEvent:EZTakePicture attached:_disPhoto];
     EZDEBUG(@"Current photo converstaion:%@", _shotPhoto.conversations);
@@ -2653,8 +2723,6 @@ context:(void *)context
             weakSelf.progressView.hidden = YES;
         });
 
-        
-        
         [weakSelf changePhoto:^(id obj){
             //weakSelf.progressView.hidden = YES;
             [weakSelf innerCancel:YES];
@@ -2662,17 +2730,37 @@ context:(void *)context
         }];
     };
     _shotPhoto.uploadSuccess = _uploadSuccessBlock;
-    //_shotPhoto.
-    if(_uploadStatus == kUploading){
-        EZDEBUG(@"have nothing to do");
-    }else if(_uploadStatus == kUploadingFailure){
-        EZDEBUG(@"directly call failure");
-        _uploadFailureBlock(nil);
-    }else if(_uploadStatus == kUploadingSuccess){
-        EZDEBUG(@"directly call success");
-        _uploadSuccessBlock(nil);
+    EZDEBUG(@"personID and photoRelations count:%@, %i", _personID, _shotPhoto.photoRelations.count);
+    if(_personID && !_shotPhoto.photoRelations.count){
+        EZDEBUG(@"Will exchange first");
+        _shotPhoto.exchangeStatus = kExchangeStart;
     }
-
+    [[EZDataUtil getInstance] storeAllPhotos:@[self.shotPhoto]];
+    [self savePhoto:^(NSNumber* number){
+        EZDEBUG(@"the upload progress:%f, thread:%i", number.floatValue, [NSThread isMainThread]);
+        if(number){
+            //_progressView.progress = number.floatValue;
+            [weakSelf.progressView setProgress:progressStart + number.floatValue * 0.8 animated:YES];
+        }else{
+            EZDEBUG(@"image failed to upload");
+            //weakSelf.progressView.hidden = YES;
+            weakSelf.uploadStatus = kUploadingFailure;
+            if(weakSelf.uploadFailureBlock){
+                EZDEBUG(@"I will call the failure");
+                weakSelf.uploadFailureBlock(nil);
+            }
+            //[[EZDataUtil getInstance].cachedPointer removeObjectForKey:@"Camera"];
+            
+        }
+    } uploadSuccess:^(id sender){
+        EZDEBUG(@"upload success");
+        //weakSelf.progressView.hidden = YES;
+        weakSelf.uploadStatus = kUploadingSuccess;
+        if(weakSelf.uploadSuccessBlock){
+            weakSelf.uploadSuccessBlock(nil);
+        }
+        //[[EZDataUtil getInstance].cachedPointer removeObjectForKey:@"Camera"];
+    }];
 }
 
 
@@ -2809,11 +2897,11 @@ context:(void *)context
         _captureComplete = ^(id obj){
             EZDEBUG(@"photo captured, we will upload, specified person:%@, isPhotoRequest:%i", weakSelf.personID, weakSelf.isPhotoRequest);
             weakSelf.uploadStatus = kUploading;
-            if(!weakSelf.isPhotoRequest){
+            //if(!weakSelf.isPhotoRequest){
                 //if(weakSelf.shotPhoto.photoRelations.count){
-                [weakSelf saveCapturedImage:progressStart];
+            //    [weakSelf saveCapturedImage:progressStart];
                 //}
-            }
+            //}
         };
         [self prepareForCapture];
     }else{
@@ -2826,7 +2914,7 @@ context:(void *)context
                 [_leftBarButton setTitle:macroControlInfo(@"Return")];
                 _isUploading = true;
                 if(!_isPhotoRequest){
-                    [self confirmUpload];
+                    [self confirmUpload:progressStart];
                 }else{
                     [self confirmPhotoRequest:progressStart];
                 }
@@ -3150,7 +3238,12 @@ context:(void *)context
 
 - (void) quit:(id)sender
 {
-    
+    [self innerCancel:YES];
+    if(!_isPhotoRequest){
+        _shotPhoto.deleted = true;
+        [self cancelAll:_shotPhoto];
+    }
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void) switchDisplayImage
