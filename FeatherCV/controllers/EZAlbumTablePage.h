@@ -64,6 +64,11 @@
 
 @property (nonatomic, strong) EZShapeCover* shapeCover;
 
+//Sign
+@property (nonatomic, strong) UIView* signRegion;
+
+@property (nonatomic, strong) UILabel* numberLabel;
+
 @property (nonatomic, assign) BOOL animStarted;
 
 @property (nonatomic, assign) BOOL showShapeCover;
@@ -131,6 +136,10 @@
 
 //How many photos are just place holder
 @property (nonatomic, assign) int fillCount;
+
+
+@property (nonatomic, assign) int newMessageCount;
+//@property (nonatomic, strong) NSMutableArray* unhandledNotes;
 
 - (void) storeCurrent;
 //Where do we begin

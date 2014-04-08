@@ -206,6 +206,18 @@ SINGLETON_FOR_CLASS(EZUIUtility)
     
 }
 
+- (UILabel*) createNumberLabel
+{
+    UILabel* numberLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 14, 16, 16)];
+    numberLabel.font = [UIFont boldSystemFontOfSize:10];
+    numberLabel.textAlignment = NSTextAlignmentCenter;
+    numberLabel.backgroundColor = RGBCOLOR(249, 49, 55);
+    numberLabel.textColor = [UIColor whiteColor];
+    //numberLabel.text = @"1";
+    [numberLabel enableRoundEdge];
+    return numberLabel;
+}
+
 - (EZHairButton*) createShotButton
 {
     EZHairButton* clickView =  [[EZHairButton alloc] initWithFrame:CGRectMake(CurrentScreenWidth - 46 - 10, 30, 46, 46)];

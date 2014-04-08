@@ -86,6 +86,8 @@
 
 #define shaderSkinRange 0.4
 
+#define EZOrangeColor RGBCOLOR(255, 73, 33)
+
 #define VinesGray RGBCOLOR(190, 180, 180)
 
 #define CellBackground [UIColor blueColor]
@@ -113,6 +115,9 @@
 
 #define isoStr2Date(curStr) [[EZDataUtil getInstance].isoFormatter dateFromString:curStr]
 
+#define EZNoteCountChange @"EZNoteCountChange"
+
+#define EZNoteCountSet @"EZNoteCountSet"
 
 #define inviteMessageURL @"http://www.enjoyxue.com:8080/"
 

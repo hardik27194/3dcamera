@@ -554,6 +554,13 @@ NSString* doubleString(NSString* str)
     }
 }
 
+- (void) enableRoundEdge
+{
+    self.layer.cornerRadius = self.bounds.size.height/2;
+    self.contentMode  = UIViewContentModeScaleAspectFill;
+    self.clipsToBounds = YES;
+}
+
 - (void) enableRoundImage
 {
     self.layer.cornerRadius = self.bounds.size.width/2;

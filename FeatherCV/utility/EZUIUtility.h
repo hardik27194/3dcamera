@@ -59,6 +59,8 @@
 
 - (void) enableProximate:(BOOL)enable;
 
+- (UILabel*) createNumberLabel;
+
 - (EZHairButton*) createShotButton;
 
 - (EZClickImage*) createLargeShotButton;

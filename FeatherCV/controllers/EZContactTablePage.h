@@ -18,6 +18,7 @@
 //Whenever quit, will call this
 @property (nonatomic, strong) EZEventBlock completedBlock;
 
+@property (nonatomic, strong) UIView* barBackground;
 
 
 //Will be called to load all the contacts from the directory.

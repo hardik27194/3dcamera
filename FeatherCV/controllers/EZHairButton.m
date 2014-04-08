@@ -30,6 +30,7 @@
         
         _horizon.center = CGPointMake(23, 23);
         _vertical.center = CGPointMake(23, 23);
+        //self.pressedColor = EZOrangeColor;
         [self addSubview:_horizon];
         [self addSubview:_vertical];
         self.backgroundColor = ButtonWhiteColor;

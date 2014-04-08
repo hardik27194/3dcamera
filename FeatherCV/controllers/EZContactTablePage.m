@@ -35,6 +35,10 @@
     //self.tableView.backgroundColor = RGBA(255, 255, 255, 128);
     self.tableView.backgroundColor = [UIColor clearColor];
     [self.view addSubview:self.tableView];
+    _barBackground = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, 64)];
+    _barBackground.backgroundColor = ClickedColor;
+    //_barBackground.hidden = YES;
+    
 }
 
 - (id)init
@@ -52,12 +56,28 @@
 }
 
 
+- (void) viewDidAppear:(BOOL)animated
+{
+    EZDEBUG(@"View did appear");
+    [super viewDidAppear:animated];
+    //[self.view addSubview:_barBackground];
+}
+
 - (void) viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
     //Pervent the camera from raising again
     [EZUIUtility sharedEZUIUtility].stopRotationRaise = true;
     [EZDataUtil getInstance].centerButton.hidden = YES;
+    //[TopView addSubview:_barBackground];
+    
+    _barBackground.y = - _barBackground.frame.size.height;
+    [TopView addSubview:_barBackground];
+    [UIView animateWithDuration:0.5 animations:^(){
+        _barBackground.y = 0;
+    } completion:^(BOOL completed){
+        [self.view addSubview:_barBackground];
+    }];
     //[[self navigationController] setNavigationBarHidden:NO animated:YES];
 }
 
@@ -208,6 +228,13 @@
         EZDEBUG(@"current user id:%@, this id:%@", currentLoginID, person.personID);
     }else{
         cell.name.text = person.name;
+    }
+    
+    if(person.pendingEventCount){
+        cell.notesNumber.alpha = 1.0;
+        cell.notesNumber.text = int2str(person.pendingEventCount);
+    }else{
+        cell.notesNumber.alpha = 0.0;
     }
     
     if(person.photoCount){

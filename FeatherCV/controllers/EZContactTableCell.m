@@ -50,6 +50,10 @@
         _photoCount.textAlignment = NSTextAlignmentCenter;
         [self.contentView addSubview:_photoCount];
         
+        _notesNumber = [[EZUIUtility sharedEZUIUtility] createNumberLabel];
+        _notesNumber.center = CGPointMake(230 , cellHeight/2.0);
+        [self.contentView addSubview:_notesNumber];
+        
         _inviteButton = [[UILabel alloc] initWithFrame:CGRectMake(0, (cellHeight - 40)/2.0, 40, 60)];
         [clickView addSubview:_inviteButton];
         
@@ -84,6 +88,7 @@
 {
     CGSize sizeToFit = [self.name sizeThatFits:CGSizeMake(200, _name.frame.size.height)];
     [_photoCount setX:_name.frame.origin.x + sizeToFit.width + 10];
+    [_notesNumber setX:_photoCount.frame.origin.x + _photoCount.frame.size.width + 10];
 }
 
 - (void) inviteClicked:(id)obj

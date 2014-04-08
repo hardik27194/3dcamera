@@ -3033,7 +3033,7 @@ context:(void *)context
 - (void) createPhoto:(UIImage*)img orgData:(NSDictionary*)orgdata shotPhoto:(EZPhoto*)shotPhoto
 {
     
-    NSString* storedURL = [EZFileUtil saveImageToCache:img];
+    NSString* storedURL = [EZFileUtil saveImageToDocument:img];
     
     //[EZFileUtil saveImageToDocument:img];
     EZDEBUG(@"Stored file name:%@", storedURL);

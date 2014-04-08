@@ -25,6 +25,8 @@
 
 @property (nonatomic, strong) UILabel* photoCount;
 
+@property (nonatomic, strong) UILabel* notesNumber;
+
 - (void) fitLine;
 
 @end

@@ -281,7 +281,7 @@ static EZNetworkUtility* instance;
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:str2url(fullURL)];
     //AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-    NSString* filePath = [EZFileUtil getCacheFileName:holder.filename];
+    NSString* filePath = [EZFileUtil getDocumentFileName:holder.filename];
     AFHTTPRequestOperation *operation = [manager HTTPRequestOperationWithRequest:request success:^(AFHTTPRequestOperation *operation, id responseObject) {
         EZDEBUG(@"successfully downloaded");
         NSString* fileURL = [NSString stringWithFormat:@"file://%@", filePath];

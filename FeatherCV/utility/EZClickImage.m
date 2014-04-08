@@ -60,7 +60,7 @@
                     [_pressedView setFrame:self.bounds];
                 }
                 [self bringSubviewToFront:_pressedView];
-                _pressedView.backgroundColor = ClickedColor; //randBack(_pressedColor);
+                _pressedView.backgroundColor = _pressedColor?_pressedColor:ClickedColor; //randBack(_pressedColor);
                 _pressedView.hidden = false;
             
             }

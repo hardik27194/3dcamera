@@ -61,6 +61,7 @@ static int photoCount = 1;
     cell.authorName.text = nil;
     cell.otherName.text = nil;
     cell.frontImage.image = nil;
+    cell.frontImage.backgroundColor = ClickedColor;
     cell.activityView.hidden = YES;
     //cell.frontImage.backgroundColor = VinesGray;
     cell.cameraView.hidden = YES;
@@ -101,6 +102,7 @@ static int photoCount = 1;
             weakCell.requestInfo.text =[NSString stringWithFormat:@"\"%@\"发来的照片", otherPerson.name?otherPerson.name:@"朋友"];
             weakSelf.rightCycleButton.hidden = YES;
             cell.shotPhoto.hidden = NO;
+            cell.frontImage.backgroundColor = EZOrangeColor;
             cell.shotPhoto.releasedBlock = ^(id obj){
                 EZDEBUG(@"cameraView clicked");
                 [self raiseCamera:cp indexPath:indexPath];
@@ -418,14 +420,21 @@ static int photoCount = 1;
             _leftText.font = EZTitleSlimFont;
             CGSize fitSize = [_leftText sizeThatFits:CGSizeMake(999, 40)];
             [_leftText setWidth:fitSize.width];
-            [_triangler setX:fitSize.width + 2];
+            [_signRegion setX:fitSize.width + 2];
             [_leftCyleButton setWidth:_leftText.frame.origin.x + _leftText.frame.size.width];
             [_combinedPhotos removeAllObjects];
             [_nonsplitted removeAllObjects];
-            NSArray* orgPhoto = [[EZDataUtil getInstance] getStoredPhotos];
-            [_nonsplitted addObjectsFromArray:orgPhoto];
-            NSArray* splitted = [self splitPhotos:orgPhoto];
-            [_combinedPhotos addObjectsFromArray:[self wrapPhotos:splitted]];
+            //
+            if([EZDataUtil getInstance].mainPhotos.count){
+                [_combinedPhotos addObjectsFromArray:[EZDataUtil getInstance].mainPhotos];
+                [_nonsplitted addObjectsFromArray:[EZDataUtil getInstance].mainNonSplits];
+            }else{
+                NSArray* orgPhoto = [[EZDataUtil getInstance] getStoredPhotos];
+                NSArray* splitted = [self splitPhotos:orgPhoto];
+                [_combinedPhotos addObjectsFromArray:[self wrapPhotos:splitted]];
+                [_nonsplitted addObjectsFromArray:orgPhoto];
+            }
+            
             EZDEBUG(@"The combined photo size:%i", _combinedPhotos.count);
             [self.tableView reloadData];
             [self scrollToBottom:NO];
@@ -436,6 +445,10 @@ static int photoCount = 1;
     }else if(![currentUser.personID isEqualToString:_currentUser.personID]){
         [_rightCycleButton setButtonStyle:YES];
         self.title = @""; //currentUser.name;
+        if(!_currentUser){
+            [EZDataUtil getInstance].mainPhotos = [NSMutableArray arrayWithArray:_combinedPhotos];
+            [EZDataUtil getInstance].mainNonSplits = [NSMutableArray arrayWithArray:_nonsplitted];
+        }
         _currentUser = currentUser;
         _leftText.text = currentUser.name;
         //_leftText.font = smallFont;//[UIFont systemFontOfSize:20];
@@ -443,13 +456,22 @@ static int photoCount = 1;
         CGSize fitSize = [_leftText sizeThatFits:CGSizeMake(999, 40)];
         [_leftText setWidth:fitSize.width];
         [_leftCyleButton setWidth:_leftText.frame.origin.x + _leftText.frame.size.width];
-        [_triangler setX:fitSize.width + 2];
+        [_signRegion setX:fitSize.width + 2];
         [_combinedPhotos removeAllObjects];
         [_nonsplitted removeAllObjects];
-        NSArray* orgPhoto = [[EZDataUtil getInstance] getStoredPhotos];
-        [_nonsplitted addObjectsFromArray:orgPhoto];
-        NSArray* splitted = [self splitPhotos:orgPhoto];
-        NSArray*  storedPhoto = [self wrapPhotos:splitted];
+        NSArray* storedPhoto = nil;
+        
+        if([EZDataUtil getInstance].mainPhotos.count){
+            //[_combinedPhotos addObjectsFromArray:[EZDataUtil getInstance].mainPhotos];
+            storedPhoto  = [EZDataUtil getInstance].mainPhotos;
+            //[_nonsplitted addObjectsFromArray:[EZDataUtil getInstance].mainNonSplits];
+        }else{
+            storedPhoto = [[EZDataUtil getInstance] getStoredPhotos];
+            //NSArray* splitted = [self splitPhotos:orgPhoto];
+            //[_combinedPhotos addObjectsFromArray:[self wrapPhotos:splitted]];
+            
+            //[_nonsplitted addObjectsFromArray:orgPhoto];
+        }
         EZDEBUG(@"Person All stored photos:%i, non splitted:%i", storedPhoto.count, _nonsplitted.count);
         for(EZDisplayPhoto* dp in storedPhoto){
             EZPhoto* ph = nil;
@@ -460,12 +482,13 @@ static int photoCount = 1;
                         if(dp.photo.type != kPhotoRequest){
                             dp.isFront = NO;
                         }
-                        //}
                     }
                     [_combinedPhotos addObject:dp];
+                    [_nonsplitted addObject:dp.photo];
                 }
             }
         }
+        //[_nonsplitted addObjectsFromArray:_combinedPhotos];
         EZDEBUG(@"After search out:%i", _combinedPhotos.count);
         [self.tableView reloadData];
         [self scrollToBottom:NO];
@@ -946,6 +969,10 @@ static int photoCount = 1;
         EZDEBUG(@"A photo get generated");
         [_combinedPhotos addObject:dp];
         [_nonsplitted addObject:dp];
+        
+        [[EZDataUtil getInstance].mainPhotos addObject:dp];
+        [[EZDataUtil getInstance].mainNonSplits addObject:dp.photo];
+        _totalCount++;
         [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:_combinedPhotos.count-1 inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
         //[self.tableView a]
     }];
@@ -982,6 +1009,30 @@ static int photoCount = 1;
     [[EZMessageCenter getInstance] registerEvent:EZTriggerCamera block:^(id obj){
         //[weakSelf raiseCamera];
         [weakSelf raiseCamera:nil indexPath:nil personID:obj];
+    }];
+    
+    [[EZMessageCenter getInstance] registerEvent:EZNoteCountChange block:^(NSNumber* num){
+        _newMessageCount += num.integerValue;
+        
+        if(_newMessageCount <= 0){
+            _newMessageCount = 0;
+            _numberLabel.alpha = 0;
+        }else{
+            _numberLabel.text = int2str(_newMessageCount);
+            _numberLabel.alpha = 1;
+        }
+        
+    }];
+    
+    [[EZMessageCenter getInstance] registerEvent:EZNoteCountSet block:^(NSNumber* num){
+        _newMessageCount = num.integerValue;
+        if(_newMessageCount <= 0){
+            _newMessageCount = 0;
+            _numberLabel.alpha = 0;
+        }else{
+            _numberLabel.text = int2str(_newMessageCount);
+            _numberLabel.alpha = 1;
+        }
     }];
     
     [[EZMessageCenter getInstance] registerEvent:EZRecievedNotes block:^(EZNote* note){
@@ -1589,8 +1640,16 @@ static int photoCount = 1;
     
     CGSize reginSize = [_leftText sizeThatFits:CGSizeMake(999, 40)];
     
-    _triangler = [[EZTrianglerView alloc] initWithFrame:CGRectMake(reginSize.width + 2,  21, 7, 4)];
-    [_leftCyleButton addSubview:_triangler];
+    _signRegion = [[UIView alloc] initWithFrame:CGRectMake(reginSize.width + 2,  0, 20, 46)];
+    
+    _numberLabel = [[EZUIUtility sharedEZUIUtility] createNumberLabel];
+    _numberLabel.alpha = 0;
+    
+    _triangler = [[EZTrianglerView alloc] initWithFrame:CGRectMake(0,  21, 7, 4)];
+    [_signRegion addSubview:_triangler];
+    [_signRegion addSubview:_numberLabel];
+    
+    [_leftCyleButton addSubview:_signRegion];
     _leftCyleButton.enableTouchEffects = FALSE;
     //[_triangler enableShadow:[UIColor whiteColor]];
     
@@ -1933,7 +1992,7 @@ static int photoCount = 1;
     EZPerson* otherPerson = pid2person(back.personID);
     if(back.type == kPhotoRequest || ([cp.photo.exchangePersonID isNotEmpty] && back==nil)){
         cell.frontImage.image = nil;
-        cell.frontImage.backgroundColor = ClickedColor;
+        cell.frontImage.backgroundColor = EZOrangeColor;
         cell.waitingInfo.text =[NSString stringWithFormat:@"等待\"%@\"的照片", otherPerson.name?otherPerson.name:@"朋友"];
         cell.waitingInfo.hidden = NO;
     }else{

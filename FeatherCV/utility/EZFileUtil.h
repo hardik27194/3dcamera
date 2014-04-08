@@ -60,6 +60,8 @@ static EZLRUMap* imageCaches;
 
 + (NSString*) getCacheFileName:(NSString*)fileName;
 
++ (NSString*) getDocumentFileName:(NSString *)fileName;
+
 + (NSString*) fileURLToFullPath:(NSString*)url;
 //It is to remove all the audio file on the iPad
 //So I could use the directory space for other purpose.

@@ -734,6 +734,8 @@
     [[EZDataUtil getInstance].pendingUploads removeAllObjects];
     [[EZDataUtil getInstance].currentQueryUsers removeAllObjects];
     [[EZDataUtil getInstance].sortedUsers removeAllObjects];
+    [[EZDataUtil getInstance].mainNonSplits removeAllObjects];
+    [[EZDataUtil getInstance].mainPhotos removeAllObjects];
     [EZCoreAccessor cleanClientDB];
 }
 

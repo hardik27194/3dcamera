@@ -156,6 +156,8 @@ typedef void  (^ IterateOperation)(id obj);
 //The code which can rotate the view to a particlar angle.
 - (void) rotateAngle:(CGFloat)angle;
 
+- (void) enableRoundEdge;
+
 - (void) enableRoundImage;
 
 - (UIImage*) contentAsImage;

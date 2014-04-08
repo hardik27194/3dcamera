@@ -51,6 +51,10 @@
 
 @property (nonatomic, strong) LocalPersons* localPerson;
 
+
+//Will be use to remind how many pending event on this user.
+@property (nonatomic, assign) int pendingEventCount;
+
 - (NSDictionary*) toJson;
 
 - (void) fromJson:(NSDictionary*)dict;

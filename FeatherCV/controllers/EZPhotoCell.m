@@ -190,6 +190,7 @@
         [_container addSubview:_shotPhoto];
         _shotPhoto.enableTouchEffects = true;
         _shotPhoto.hidden = YES;
+        _shotPhoto.pressedColor = EZOrangeColor;
         //[self createTimeLabel];
         //[_frontImage addSubview:_toolRegion];
         //[_rotateContainer addSubview:_toolRegion];

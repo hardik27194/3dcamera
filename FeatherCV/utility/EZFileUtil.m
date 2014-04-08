@@ -585,6 +585,15 @@
     //EZDEBUG(@"Full path will be stored:%@", filePath);
     return filePath;
 }
+
++ (NSString*) getDocumentFileName:(NSString *)fileName
+{
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsPath = [paths objectAtIndex:0]; //Get the docs directory
+    NSString *filePath = [documentsPath stringByAppendingPathComponent:fileName]; //Add the file name
+    //EZDEBUG(@"Full path will be stored:%@", filePath);
+    return filePath;
+}
 //Save data to cache;
 //more general.
 //Return the full path, so that we could use later.
