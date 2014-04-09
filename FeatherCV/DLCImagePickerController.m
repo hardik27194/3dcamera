@@ -48,6 +48,7 @@
 #import "EZSharpenGaussian.h"
 #import "EZKeyboadUtility.h"
 #import "EZCenterButton.h"
+#import "EZHairButton.h"
 
 //#include <vector>
 
@@ -206,14 +207,14 @@
 - (EZColorBrighter*) createRedEnhanceFilter
 {
     EZColorBrighter* res = [[EZColorBrighter alloc] init];
-    res.redEnhanceLevel = 0.65; //0.725
-    res.redRatio = 0.95;
+    res.redEnhanceLevel = 0.3; //0.725
+    res.redRatio = 1.5;//0.95;
     
     res.blueEnhanceLevel = 0.6;
     res.blueRatio = 0.2;
     
-    res.greenEnhanceLevel = 0.6;//0.8
-    res.greenRatio = 1.3;
+    res.greenEnhanceLevel = 0.0;//0.8
+    res.greenRatio = 4.0;//1.3
     
     return res;
 }
@@ -671,24 +672,24 @@
 - (void) viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
+    __weak DLCImagePickerController* weakSelf = self;
     EZPerson* person = nil;
     if(_personID){
         person = pid2person(_personID);
     }else
     if(_isPhotoRequest){
         EZPhoto* otherPhoto = [_disPhoto.photo.photoRelations objectAtIndex:0];
-        person = pid2person(otherPhoto.photoID);
+        person = pid2person(otherPhoto.personID);
     }
     
+    EZDEBUG(@"person name:%@", person.name);
     //EZClickImage* clickImage = [[EZClickImage alloc] initWithFrame:CGRectMake(30, 20, EZShotButtonDiameter, EZShotButtonDiameter)];
     //[clickImage loadImageURL:person.avatar haveThumb:NO loading:NO];
     //[clickImage enableRoundImage];
     
     //[self.view addSubview:clickImage];
     if(person){
-        _backButton = [[UIButton alloc] initWithFrame:CGRectMake(30, 22, 60, 40)];
-        
+        _backButton = [[UIButton alloc] initWithFrame:CGRectMake(12,25, 120, 46)];
         [_backButton setTitle:person.name forState:UIControlStateNormal];
         [_backButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         _backButton.titleLabel.font = EZLargeFont;
@@ -705,6 +706,31 @@
         //self.navigationItem.leftBarButtonItems = @[quitItem];
         
     }
+    _quitCrossButton =  [[EZUIUtility sharedEZUIUtility] createShotButton];
+    [_quitCrossButton setButtonStyle:kShotScreen];
+    [TopView addSubview:_quitCrossButton];
+    [UIView animateWithDuration:0.2 animations:^(){
+        _quitCrossButton.transform = CGAffineTransformMakeRotation(M_PI_4);
+    } completion:^(BOOL completed){
+        
+    }];
+    _quitCrossButton.enableTouchEffects = false;
+    
+    _quitBlock = ^(id obj){
+        [UIView animateWithDuration:0.2 animations:^(){
+            weakSelf.quitCrossButton.transform = CGAffineTransformIdentity;
+            //_quitCrossButton.alpha = 0;
+        } completion:^(BOOL completed){
+            [weakSelf quit:nil];
+            [UIView animateWithDuration:0.3 animations:^(){
+                weakSelf.quitCrossButton.alpha = 0;
+            } completion:^(BOOL completed){
+                [weakSelf.quitCrossButton removeFromSuperview];
+            }];
+        }];
+    };
+
+    _quitCrossButton.releasedBlock = _quitBlock;
     /**
     UIBarButtonItem *delAcc = [[UIBarButtonItem alloc]
                                initWithTitle:@"Del"
@@ -749,7 +775,7 @@
     self.view.backgroundColor = VinesGray;
     self.cameraRotateContainer.backgroundColor = VinesGray;
     //
-    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
+    self.navigationItem.backBarButtonItem = nil;//[[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
     _senseRotate = true;
     //_recordedMotions = [[NSMutableArray alloc] init];
     _flashView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
@@ -829,6 +855,7 @@
     _progressView.hidden = YES;
     [self.view addSubview:_progressView];
     
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
     //_leftBarButton = [[UIBarButtonItem alloc] initWithTitle:@"退出" style:UIBarButtonItemStylePlain target:self action:@selector(cancelClicked:)];
     //_upperCancel = [[UIButton alloc] initWithFrame:CGRectMake(-10, 0, 60, 44)];
     //[_upperCancel setTitle:@"退出" forState:UIControlStateNormal];
@@ -1323,7 +1350,11 @@ context:(void *)context
         }];
     };
     [self.view addSubview:_shotButton];
+    
+    //dispatch_later(0.3, ^()
 }
+
+
 
 
 - (void) viewWillLayoutSubviews
@@ -1496,6 +1527,7 @@ context:(void *)context
     _senseRotate = false;
     [stillCamera stopCameraCapture];
     [self removeAllTargets];
+    //[_quitCrossButton removeFromSuperview];
     [[EZMotionUtility getInstance] unregisterHandler:@"CameraMotion"];
     [[EZUIUtility sharedEZUIUtility] enableProximate:NO];
     _isVisible = false;
@@ -3184,7 +3216,18 @@ context:(void *)context
     //    EZDEBUG(@"DLCCamera Will get dismissed");
     //}];
     //[EZDataUtil getInstance].pauseUpload = false;
-    [self.navigationController popViewControllerAnimated:animated];
+    [UIView animateWithDuration:0.2 animations:^(){
+        _quitCrossButton.transform = CGAffineTransformIdentity;
+        //_quitCrossButton.alpha = 0;
+    } completion:^(BOOL completed){
+        //[weakSelf quit:nil];
+        [self.navigationController popViewControllerAnimated:animated];
+        [UIView animateWithDuration:0.3 animations:^(){
+            _quitCrossButton.alpha = 0;
+        } completion:^(BOOL completed){
+            [_quitCrossButton removeFromSuperview];
+        }];
+    }];
     //[self cancelPrematchPhoto];
     if(_personID){
         _disPhoto.isFront = NO;
@@ -3192,6 +3235,7 @@ context:(void *)context
     if(!_isPhotoRequest){
         [self.delegate imagePickerControllerDidCancel:self imageCount:_imageCount];
     }
+    
 }
 
 -(IBAction) cancelClicked:(id)sender {

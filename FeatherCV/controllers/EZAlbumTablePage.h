@@ -120,7 +120,7 @@
 
 @property (nonatomic, assign) BOOL alreadyExecuted;
 
-@property (nonatomic, strong) UIView* leftContainer;
+//@property (nonatomic, strong) UIView* leftContainer;
 
 @property (nonatomic, strong) EZClickView* leftCyleButton;
 

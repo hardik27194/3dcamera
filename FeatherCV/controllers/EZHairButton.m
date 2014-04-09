@@ -38,16 +38,20 @@
     return self;
 }
 
-- (void) setButtonStyle:(BOOL)isOther
+- (void) setButtonStyle:(EZShotButtonStyle)style
 {
-    if(isOther){
+    if(style == kShotForOne){
         _vertical.backgroundColor = [UIColor whiteColor];
         _horizon.backgroundColor = [UIColor whiteColor];
         self.backgroundColor = ClickedColor;
-    }else{
+    }else if(style == kShotForAll){
         _vertical.backgroundColor = ClickedColor;
         _horizon.backgroundColor = ClickedColor;
         self.backgroundColor = ButtonWhiteColor;
+    }else if(style == kShotScreen){
+        _vertical.backgroundColor = [UIColor whiteColor];
+        _horizon.backgroundColor = [UIColor whiteColor];
+        self.backgroundColor = EZOrangeColor;
     }
 }
 

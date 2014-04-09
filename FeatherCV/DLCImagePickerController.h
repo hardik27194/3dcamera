@@ -14,6 +14,7 @@
 #import "EZSharpenGaussianNormal.h"
 
 @class EZClickImage;
+@class EZHairButton;
 
 typedef enum {
     kNormalMode,
@@ -102,6 +103,10 @@ typedef enum {
 @property (nonatomic, weak) IBOutlet UILabel* redGapText;
 @property (nonatomic, weak) IBOutlet UILabel* blueGapText;
 @property (nonatomic, weak) IBOutlet UIButton *photoCaptureButton;
+
+@property (nonatomic, weak) EZHairButton* quitCrossButton;
+
+@property (nonatomic, strong) EZEventBlock quitBlock;
 @property (nonatomic, strong) UIButton *cancelButton;
 @property (nonatomic, strong) UIButton *configButton;
 

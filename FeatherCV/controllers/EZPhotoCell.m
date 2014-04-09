@@ -94,12 +94,12 @@
         [_otherTalk enableTextWrap];
         [self.container addSubview:_otherTalk];
 
-        UILabel* andSymbol = [[UILabel alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 225 - startPos, 20, 20)];
-        [andSymbol setTextColor:[UIColor whiteColor]];
-        andSymbol.font = [UIFont systemFontOfSize:13];
+        _andSymbol = [[UILabel alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 225 - startPos, 20, 20)];
+        [_andSymbol setTextColor:[UIColor whiteColor]];
+        _andSymbol.font = [UIFont systemFontOfSize:13];
         //[andSymbol enableShadow:[UIColor blackColor]];
-        andSymbol.text = @"&";
-        [self.container addSubview:andSymbol];
+        _andSymbol.text = @"&";
+        [self.container addSubview:_andSymbol];
         
         _headIcon = [[EZClickImage alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 198 - startPos, smallIconRadius, smallIconRadius)];
         _homeSliverLine = [[UIView alloc] initWithFrame:CGRectMake(10-1, CurrentScreenHeight - 198 - startPos-1, smallIconRadius+2, smallIconRadius+2)];

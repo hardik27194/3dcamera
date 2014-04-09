@@ -77,6 +77,7 @@
 
 @property (nonatomic, strong) UILabel* photoDate;
 
+@property (nonatomic, strong) UILabel* andSymbol;
 
 @property (nonatomic, strong) UILabel* ownTalk;
 

@@ -88,7 +88,7 @@
 
 #define EZOrangeColor RGBCOLOR(255, 73, 33)
 
-#define VinesGray RGBCOLOR(190, 180, 180)
+#define VinesGray RGBCOLOR(210, 220, 220)
 
 #define CellBackground [UIColor blueColor]
 

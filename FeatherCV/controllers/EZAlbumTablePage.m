@@ -60,6 +60,13 @@ static int photoCount = 1;
     cell.otherIcon.image = nil;
     cell.authorName.text = nil;
     cell.otherName.text = nil;
+    cell.otherName.hidden = NO;
+    cell.otherIcon.hidden = NO;
+    cell.andSymbol.hidden = NO;
+    cell.otherTalk.hidden = NO;
+    cell.authorName.hidden = NO;
+    cell.headIcon.hidden = NO;
+    cell.ownTalk.hidden = NO;
     cell.frontImage.image = nil;
     cell.frontImage.backgroundColor = ClickedColor;
     cell.activityView.hidden = YES;
@@ -103,6 +110,13 @@ static int photoCount = 1;
             weakSelf.rightCycleButton.hidden = YES;
             cell.shotPhoto.hidden = NO;
             cell.frontImage.backgroundColor = EZOrangeColor;
+            cell.otherIcon.hidden = YES;
+            cell.otherName.hidden = YES;
+            cell.otherTalk.hidden = YES;
+            cell.andSymbol.hidden = YES;
+            cell.authorName.hidden = YES;
+            cell.headIcon.hidden = YES;
+            
             cell.shotPhoto.releasedBlock = ^(id obj){
                 EZDEBUG(@"cameraView clicked");
                 [self raiseCamera:cp indexPath:indexPath];
@@ -340,7 +354,7 @@ static int photoCount = 1;
         _isPushCamera = false;
         //pd.modalTransitionStyle
         //self.transitioningDelegate
-        _leftContainer.hidden = YES;
+        _leftCyleButton.hidden = YES;
         _rightCycleButton.hidden = YES;
         //[self presentViewController:pd animated:YES completion:^(){
         //}];
@@ -353,7 +367,7 @@ static int photoCount = 1;
         //pd.transitioningDelegate = weakSelf;
         //pd.modalPresentationStyle = UIModalPresentationCustom;
         _isPushCamera = false;
-        _leftContainer.hidden = YES;
+        _leftCyleButton.hidden = YES;
         _rightCycleButton.hidden = YES;
         //[self presentViewController:pd animated:YES completion:^(){
         //}];
@@ -414,14 +428,14 @@ static int photoCount = 1;
         if(_currentUser){
             _currentUser = nil;
             self.title = @"";
-            [_rightCycleButton setButtonStyle:NO];
+            [_rightCycleButton setButtonStyle:kShotForAll];
             _leftText.text = EZOriginalTitle;
             //_leftText.font = largeFont;//[UIFont fontWithName:@"HelveticaNeue-UltraLight" size:30];
             _leftText.font = EZTitleSlimFont;
             CGSize fitSize = [_leftText sizeThatFits:CGSizeMake(999, 40)];
             [_leftText setWidth:fitSize.width];
             [_signRegion setX:fitSize.width + 2];
-            [_leftCyleButton setWidth:_leftText.frame.origin.x + _leftText.frame.size.width];
+            [_leftCyleButton setWidth:_leftText.frame.origin.x + _leftText.frame.size.width + 10];
             [_combinedPhotos removeAllObjects];
             [_nonsplitted removeAllObjects];
             //
@@ -443,7 +457,7 @@ static int photoCount = 1;
             return;
         }
     }else if(![currentUser.personID isEqualToString:_currentUser.personID]){
-        [_rightCycleButton setButtonStyle:YES];
+        [_rightCycleButton setButtonStyle:kShotForOne];
         self.title = @""; //currentUser.name;
         if(!_currentUser){
             [EZDataUtil getInstance].mainPhotos = [NSMutableArray arrayWithArray:_combinedPhotos];
@@ -455,7 +469,7 @@ static int photoCount = 1;
         _leftText.font = EZLargeFont;//titleFontCN;
         CGSize fitSize = [_leftText sizeThatFits:CGSizeMake(999, 40)];
         [_leftText setWidth:fitSize.width];
-        [_leftCyleButton setWidth:_leftText.frame.origin.x + _leftText.frame.size.width];
+        [_leftCyleButton setWidth:_leftText.frame.origin.x + _leftText.frame.size.width + 10];
         [_signRegion setX:fitSize.width + 2];
         [_combinedPhotos removeAllObjects];
         [_nonsplitted removeAllObjects];
@@ -579,7 +593,7 @@ static int photoCount = 1;
 {
     [super viewWillAppear:animated];
     _rightCycleButton.hidden = NO;
-    _leftContainer.hidden = NO;
+    _leftCyleButton.hidden = NO;
     //.hidden = NO;
     //[[UINavigationBar appearance] setBackgroundImage:ClearBarImage forBarMetrics:UIBarMetricsDefault];
     //[self.navigationController.view addSubview:[EZDataUtil getInstance].naviBarBlur];
@@ -591,7 +605,7 @@ static int photoCount = 1;
     [super viewWillDisappear:animated];
     //[TopView addSubview:_progressBar];
     _progressBar.hidden = YES;
-    _leftContainer.hidden = YES;
+    _leftCyleButton.hidden = YES;
     _rightCycleButton.hidden = YES;
     //[[UINavigationBar appearance] setBackgroundImage:nil forBarMetrics:UIBarMetricsDefault];
     //[_moreButton removeFromSuperview];
@@ -784,6 +798,8 @@ static int photoCount = 1;
     //    EZDEBUG(@"Presentation completed");
     //}];
     [self.navigationController pushViewController:camera animated:YES];
+    
+    
 }
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
@@ -968,7 +984,7 @@ static int photoCount = 1;
     [[EZMessageCenter getInstance] registerEvent:EZTakePicture block:^(EZDisplayPhoto* dp){
         EZDEBUG(@"A photo get generated");
         [_combinedPhotos addObject:dp];
-        [_nonsplitted addObject:dp];
+        [_nonsplitted addObject:dp.photo];
         
         [[EZDataUtil getInstance].mainPhotos addObject:dp];
         [[EZDataUtil getInstance].mainNonSplits addObject:dp.photo];
@@ -985,7 +1001,7 @@ static int photoCount = 1;
         _isPushCamera = false;
         //pd.modalTransitionStyle
         //self.transitioningDelegate
-        _leftContainer.hidden = YES;
+        _leftCyleButton.hidden = YES;
         _rightCycleButton.hidden = YES;
         [self.navigationController pushViewController:pd animated:YES];
     }];
@@ -1625,10 +1641,10 @@ static int photoCount = 1;
         };
     }];
     
-    _leftContainer = [[UIView alloc] initWithFrame:CGRectMake(12,30, 120, 46)];
-    _leftContainer.backgroundColor = [UIColor clearColor];
+    //_leftContainer = [[UIView alloc] initWithFrame:CGRectMake(12,30, 120, 46)];
+    //_leftContainer.backgroundColor = [UIColor clearColor];
     
-    _leftCyleButton = [[EZClickView alloc] initWithFrame:CGRectMake(0,0, 120, 46)];
+    _leftCyleButton = [[EZClickView alloc] initWithFrame:CGRectMake(12,30, 120, 46)];
     //_leftCyleButton.layer.borderColor = [UIColor whiteColor].CGColor;
     //_leftCyleButton.layer.borderWidth = 2;
     _leftText = [[UILabel alloc] initWithFrame:CGRectMake(0, -5, 120, 46)];
@@ -1661,10 +1677,10 @@ static int photoCount = 1;
     _leftMessageCount.backgroundColor = RGBCOLOR(255, 30, 10);
     [_leftMessageCount enableRoundImage];
     _leftMessageCount.hidden = YES;
-    [_leftContainer addSubview:_leftCyleButton];
-    [_leftContainer addSubview:_leftMessageCount];
+    //[_leftContainer addSubview:_leftCyleButton];
+    //[_leftContainer addSubview:_leftMessageCount];
     
-    [TopView addSubview:_leftContainer];
+    [TopView addSubview:_leftCyleButton];
     _leftCyleButton.pressedBlock = ^(id obj){
         [weakSelf.leftText setTextColor:ClickedColor];
     };
@@ -1995,6 +2011,12 @@ static int photoCount = 1;
         cell.frontImage.backgroundColor = EZOrangeColor;
         cell.waitingInfo.text =[NSString stringWithFormat:@"等待\"%@\"的照片", otherPerson.name?otherPerson.name:@"朋友"];
         cell.waitingInfo.hidden = NO;
+        cell.otherIcon.hidden = YES;
+        cell.otherName.hidden = YES;
+        cell.andSymbol.hidden = YES;
+        cell.ownTalk.hidden = YES;
+        cell.authorName.hidden = YES;
+        cell.headIcon.hidden = YES;
     }else{
         cell.waitingInfo.hidden = YES;
     }

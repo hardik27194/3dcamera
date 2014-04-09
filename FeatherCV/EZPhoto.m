@@ -179,7 +179,7 @@
 
 - (void) fromLocalJson:(NSDictionary*)dict
 {
-    EZDEBUG(@"from local json raw string:%@", dict);
+    //EZDEBUG(@"from local json raw string:%@", dict);
     _contentStatus = [[dict objectForKey:@"contentStatus"] integerValue];
     _infoStatus = [[dict objectForKey:@"infoStatus"] integerValue];
     _updateStatus = [[dict objectForKey:@"updateStatus"] integerValue];

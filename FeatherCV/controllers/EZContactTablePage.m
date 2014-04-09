@@ -28,15 +28,17 @@
     self.view = [[UIView alloc] initWithFrame:CGRectZero];
     self.view.userInteractionEnabled = TRUE;
     self.view.autoresizesSubviews = YES;
-    self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
+    self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 64, CurrentScreenWidth, CurrentScreenHeight - 64) style:UITableViewStylePlain];
+    self.tableView.contentInset = UIEdgeInsetsMake(-44, 0, 0, 0);
+    //self.tableView
     self.tableView.dataSource = self;
     self.tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
     self.tableView.delegate = self;
     //self.tableView.backgroundColor = RGBA(255, 255, 255, 128);
-    self.tableView.backgroundColor = [UIColor clearColor];
+    self.tableView.backgroundColor = RGBA(0, 0, 0, 40);
     [self.view addSubview:self.tableView];
     _barBackground = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, 64)];
-    _barBackground.backgroundColor = ClickedColor;
+    _barBackground.backgroundColor = ButtonWhiteColor;
     //_barBackground.hidden = YES;
     
 }
@@ -85,6 +87,13 @@
 {
     [super viewWillDisappear:animated];
     [EZUIUtility sharedEZUIUtility].stopRotationRaise = false;
+    [TopView addSubview:_barBackground];
+    [UIView animateWithDuration:0.5 animations:^(){
+        _barBackground.y = - _barBackground.frame.size.height;
+    } completion:^(BOOL completed){
+        //[self.view addSubview:_barBackground];
+        [_barBackground removeFromSuperview];
+    }];
     //[EZDataUtil getInstance].centerButton.hidden = NO;
 }
 

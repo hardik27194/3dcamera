@@ -696,7 +696,7 @@
         NSString* header = [normalURL substringToIndex:range.location];
         NSString* ender = [normalURL substringFromIndex:range.location];
         res =[NSString stringWithFormat:@"%@%@%@",header,@"tb",ender];
-        EZDEBUG(@"Substring is:%@", res);
+        //EZDEBUG(@"Substring is:%@", res);
     }
     return res;
 }

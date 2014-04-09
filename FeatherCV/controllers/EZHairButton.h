@@ -8,12 +8,19 @@
 
 #import "EZClickImage.h"
 
+typedef enum {
+    kShotForAll,
+    kShotForOne,
+    kShotScreen
+} EZShotButtonStyle;
+
+
 @interface EZHairButton : EZClickImage
 
 @property (nonatomic, strong) UIView* horizon;
 
 @property (nonatomic, strong) UIView* vertical;
 
-- (void) setButtonStyle:(BOOL)isSelf;
+- (void) setButtonStyle:(EZShotButtonStyle)style;
 
 @end
