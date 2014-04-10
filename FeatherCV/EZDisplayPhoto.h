@@ -47,6 +47,9 @@ typedef enum {
 //Whether I am turning the image or not
 @property (nonatomic, assign) BOOL isTurning;
 
+//Once this one get displayed, I will disappear.
+@property (nonatomic, assign) BOOL isFirstTime;
+
 //Some animation will need to be used.
 @property (nonatomic, strong) EZEventBlock turningAnimation;
 

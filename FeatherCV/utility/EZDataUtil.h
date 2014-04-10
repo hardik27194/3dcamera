@@ -184,6 +184,10 @@
 //Check cache first, if not then will query the person
 - (EZPerson*) getPersonByID:(NSString*)personID success:(EZEventBlock)success;
 
+
+//When recieve the person from the server side, what do we need to do?
+- (EZPerson*) updatePerson:(EZPerson*)person;
+
 //Get converstaion regarding this photo
 - (void) getConversation:(int)combineID success:(EZEventBlock)success failure:(EZEventBlock)failure;
 

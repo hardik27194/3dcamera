@@ -13,6 +13,8 @@
 
 @property (nonatomic, strong) NSMutableArray* contacts;
 
+@property (nonatomic, strong) NSMutableDictionary* photoCountMap;
+
 @property (nonatomic, strong) UITableView* tableView;
 
 //Whenever quit, will call this

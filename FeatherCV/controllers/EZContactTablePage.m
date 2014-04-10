@@ -16,7 +16,7 @@
 #import "EZCenterButton.h"
 #import "UIImageView+AFNetworking.h"
 #import "EZPersonDetail.h"
-
+#import "EZDisplayPhoto.h"
 @interface EZContactTablePage ()
 
 @end
@@ -38,7 +38,7 @@
     self.tableView.backgroundColor = RGBA(0, 0, 0, 40);
     [self.view addSubview:self.tableView];
     _barBackground = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, 64)];
-    _barBackground.backgroundColor = ButtonWhiteColor;
+    _barBackground.backgroundColor = RGBA(0, 0, 0, 60);
     //_barBackground.hidden = YES;
     
 }
@@ -75,7 +75,7 @@
     
     _barBackground.y = - _barBackground.frame.size.height;
     [TopView addSubview:_barBackground];
-    [UIView animateWithDuration:0.5 animations:^(){
+    [UIView animateWithDuration:0.3 animations:^(){
         _barBackground.y = 0;
     } completion:^(BOOL completed){
         [self.view addSubview:_barBackground];
@@ -88,7 +88,7 @@
     [super viewWillDisappear:animated];
     [EZUIUtility sharedEZUIUtility].stopRotationRaise = false;
     [TopView addSubview:_barBackground];
-    [UIView animateWithDuration:0.5 animations:^(){
+    [UIView animateWithDuration:0.3 animations:^(){
         _barBackground.y = - _barBackground.frame.size.height;
     } completion:^(BOOL completed){
         //[self.view addSubview:_barBackground];
@@ -139,44 +139,33 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    //[self reloadPersons];
-    
-    /**
-    [[EZMessageCenter getInstance] registerEvent:EZGetContacts block:^(NSArray* persons){
-        EZDEBUG(@"Get person, count:%i", persons.count);
-        //[_contacts addObjectsFromArray:persons];
-        _contacts = [EZDataUtil getInstance].contacts;
-        [self.tableView reloadData];
-    }];
-    
-    [[EZMessageCenter getInstance] registerEvent:EZUpdateContacts block:^(id sender){
-        EZDEBUG(@"Will update the contacts table");
-        _contacts = [EZDataUtil getInstance].contacts;
-        [self.tableView reloadData];
-    }];
-    **/
+    _photoCountMap = [[NSMutableDictionary alloc] init];
    
-        //[[EZMessageCenter getInstance] registerEvent:EZContactsReaded block:^(NSArray* contacts) {
-        //
-        //    [[EZDataUtil getInstance] checkAndUpload:contacts];
-        //    [self.tableView reloadData];
-        //}];
-    //}
-    //dispatch_later(0.3, ^(){
-        //[self loadPersonInfos];
-    //EZDEBUG(@"Person started");
+    NSArray* allPhotos = [NSArray arrayWithArray:[EZDataUtil getInstance].mainPhotos];
+    for(EZDisplayPhoto* ph in allPhotos){
+        EZPhoto* matchedPh = [ph.photo.photoRelations objectAtIndex:0];
+        EZPerson* ps = pid2person(matchedPh.personID);
+        NSNumber* count = [_photoCountMap objectForKey:ps.personID];
+        //if(count){
+        //    count.integerValue += 1;
+        //}
+        [_photoCountMap setValue:@(count.integerValue + 1) forKey:ps.personID];
+    }
+    [_photoCountMap setValue:@(allPhotos.count) forKey:currentLoginID];
+    
     _contacts = [[NSMutableArray alloc] init];
     NSArray* arrs = [[EZDataUtil getInstance] getStoredPersonLists];
     EZDEBUG(@"after person");
     [_contacts addObjectsFromArray:arrs];
+    __weak EZContactTablePage* weakSelf = self;
     EZDEBUG(@"Stored person count:%i, arrs:%i", _contacts.count, arrs.count);
     if(![EZDataUtil getInstance].contacts.count){
         [[EZDataUtil getInstance] loadPhotoBooks];
         [[EZMessageCenter getInstance] registerEvent:EZContactsReaded block:^(NSArray* contacts) {
             EZDEBUG(@"loaded persons:%i", contacts.count);
             //[[EZDataUtil getInstance] checkAndUpload:contacts];
-            [_contacts addObjectsFromArray:contacts];
-            [self.tableView reloadData];
+            [weakSelf.contacts addObjectsFromArray:contacts];
+            [weakSelf.tableView reloadData];
         } once:YES];
     }else{
         [_contacts addObjectsFromArray:[EZDataUtil getInstance].contacts];
@@ -194,10 +183,11 @@
 
 - (void) reloadPersons
 {
+    __weak EZContactTablePage* weakSelf = self;
     [[EZDataUtil getInstance] getAllContacts:^(NSArray* persons){
-        [_contacts addObjectsFromArray:persons];
-        EZDEBUG(@"Loaded person:%i, exist persons:%i", persons.count, _contacts.count);
-        [self.tableView reloadData];
+        [weakSelf.contacts addObjectsFromArray:persons];
+        EZDEBUG(@"Loaded person:%i, exist persons:%i", persons.count, weakSelf.contacts.count);
+        [weakSelf.tableView reloadData];
     }];
 
 }
@@ -239,15 +229,18 @@
         cell.name.text = person.name;
     }
     
-    if(person.pendingEventCount){
-        cell.notesNumber.alpha = 1.0;
-        cell.notesNumber.text = int2str(person.pendingEventCount);
+    if(person.pendingEventCount > 0){
+        //cell.notesNumber.alpha = 1.0;
+        //cell.notesNumber.text = int2str(person.pendingEventCount);
+        cell.photoCount.textColor = [UIColor redColor];
     }else{
-        cell.notesNumber.alpha = 0.0;
+        //cell.notesNumber.alpha = 0.0;
+        cell.photoCount.textColor = [UIColor whiteColor];
     }
     
-    if(person.photoCount){
-        cell.photoCount.text = int2str(person.photoCount);
+    NSNumber* photoCount = [_photoCountMap objectForKey:person.personID];
+    if(photoCount){
+        cell.photoCount.text = int2str(photoCount.integerValue);
     }else{
         cell.photoCount.text = nil;
     }
@@ -258,16 +251,8 @@
         //[[EZMessageCenter getInstance]postEvent:EZScreenSlide attached:@(1)];
         EZPerson* person = [weakSelf.contacts objectAtIndex:indexPath.row];
         EZDEBUG(@"Person name:%@, %@", person.name, person.personID);
-        //[self dismissViewControllerAnimated:YES completion:^(){
-        
-        //}];
-       
-        
         if(person.joined){
             [weakSelf.navigationController popViewControllerAnimated:YES];
-            //if(weakSelf.completedBlock){
-            //    weakSelf.completedBlock(person);
-            //}
             [[EZMessageCenter getInstance] postEvent:EZSetAlbumUser attached:person];
         }
     };
@@ -291,19 +276,10 @@
     }
     cell.headIcon.releasedBlock = ^(id object){
         EZDEBUG(@"Header clicked");
-        
-        //EZPersonDetail* pd = [[EZPersonDetail alloc] initWithPerson:frontPerson];
-        //pd.transitioningDelegate = weakSelf;
-        //pd.modalPresentationStyle = UIModalPresentationCustom;
-        //_isPushCamera = false;
-        //_leftContainer.hidden = YES;
-        //_rightCycleButton.hidden = YES;
-        //[self presentViewController:pd animated:YES completion:^(){
-        //}];
-        [self.navigationController popToRootViewControllerAnimated:NO];
-        dispatch_later(0.1,^(){
-            [[EZMessageCenter getInstance] postEvent:EZRaisePersonDetail attached:person];
-        });
+        //[weakSelf.navigationController popToRootViewControllerAnimated:NO];
+        //dispatch_later(0.1,^(){
+        //    [[EZMessageCenter getInstance] postEvent:EZRaisePersonDetail attached:person];
+        //});
         //[self.navigationController pushViewController:pd animated:YES];
     };
     

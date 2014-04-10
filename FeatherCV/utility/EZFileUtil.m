@@ -498,6 +498,17 @@
     return nil;
 }
 
++ (NSString*) isExistInDocument:(NSString*)fileName
+{
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsPath = [paths objectAtIndex:0]; //Get the docs directory
+    NSString *fullPath = [documentsPath stringByAppendingPathComponent:fileName];
+    if([[NSFileManager defaultManager] fileExistsAtPath:fullPath]){
+        return [@"file://" stringByAppendingString:fullPath];
+    }
+    return nil;
+}
+
 //This should be full File URL
 + (BOOL) isFileExist:(NSString*)fileName isURL:(BOOL)isURL
 {
@@ -590,9 +601,7 @@
 {
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsPath = [paths objectAtIndex:0]; //Get the docs directory
-    NSString *filePath = [documentsPath stringByAppendingPathComponent:fileName]; //Add the file name
-    //EZDEBUG(@"Full path will be stored:%@", filePath);
-    return filePath;
+    NSString *filePath = [documentsPath stringByAppendingPathComponent:fileName];    return filePath;
 }
 //Save data to cache;
 //more general.

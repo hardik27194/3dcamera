@@ -376,6 +376,10 @@
         });
     }else{
         [[EZDataUtil getInstance] loadAllPersons];
+        [[EZDataUtil getInstance] getMatchUsers:^(id obj){
+            EZDEBUG(@"Will setup notes");
+            [[EZMessageCenter getInstance] postEvent:EZNoteCountSet attached:nil];
+        } failure:nil];
     }
     //[[EZAnimationUtil sharedEZAnimationUtil] addAnimation:self];
     

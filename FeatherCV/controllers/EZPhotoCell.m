@@ -147,7 +147,7 @@
         _moreButton.center = CGPointMake(CurrentScreenWidth - 30, CurrentScreenHeight - 27);
         [self.container addSubview:_moreButton];
         
-        _cameraView = [[EZClickView alloc] initWithFrame:CGRectMake(0, 0, 320, 100)];
+        _cameraView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 100)];
         _cameraView.center = CGPointMake(CurrentScreenWidth/2.0, CurrentScreenHeight/2.0 + 20);
         _cameraView.backgroundColor = [UIColor clearColor]; //RGBCOLOR(, 128, 0);
         _cameraView.hidden = YES;
@@ -200,6 +200,11 @@
         _activityView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
         _activityView.center = CGPointMake(_frontImage.width/2.0, _frontImage.height/2.0);
         [_frontImage addSubview:_activityView];
+        
+        _firstTimeView = [[EZUIUtility sharedEZUIUtility] createNumberLabel];
+        [_firstTimeView setPosition:CGPointMake(30, 70)];
+        [self.contentView addSubview:_firstTimeView];
+         
         //weakCell.activityView = ai;
 
         

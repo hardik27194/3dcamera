@@ -234,6 +234,7 @@
 		18E3483D18433FC000C9D89D /* UIImage+ResizeMagick.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E3483C18433FBF00C9D89D /* UIImage+ResizeMagick.m */; };
 		18E4FBB018EEAEAD00FA6C21 /* EZHairButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E4FBAF18EEAEAD00FA6C21 /* EZHairButton.m */; };
 		18E4FBB518F1415E00FA6C21 /* EZResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E4FBB418F1415E00FA6C21 /* EZResult.m */; };
+		18E4FBB818F584DF00FA6C21 /* UIScrollView+ScrollIndicator.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E4FBB718F584DF00FA6C21 /* UIScrollView+ScrollIndicator.m */; };
 		18E746EA18A4A26A0023967B /* AFHTTPRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E746C818A4A26A0023967B /* AFHTTPRequestOperation.m */; };
 		18E746EB18A4A26A0023967B /* AFHTTPRequestOperationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E746CA18A4A26A0023967B /* AFHTTPRequestOperationManager.m */; };
 		18E746EC18A4A26A0023967B /* AFHTTPSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E746CC18A4A26A0023967B /* AFHTTPSessionManager.m */; };
@@ -646,6 +647,8 @@
 		18E4FBAF18EEAEAD00FA6C21 /* EZHairButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZHairButton.m; sourceTree = "<group>"; };
 		18E4FBB318F1415E00FA6C21 /* EZResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZResult.h; sourceTree = "<group>"; };
 		18E4FBB418F1415E00FA6C21 /* EZResult.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZResult.m; sourceTree = "<group>"; };
+		18E4FBB618F584DF00FA6C21 /* UIScrollView+ScrollIndicator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIScrollView+ScrollIndicator.h"; sourceTree = "<group>"; };
+		18E4FBB718F584DF00FA6C21 /* UIScrollView+ScrollIndicator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIScrollView+ScrollIndicator.m"; sourceTree = "<group>"; };
 		18E746C718A4A26A0023967B /* AFHTTPRequestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFHTTPRequestOperation.h; sourceTree = "<group>"; };
 		18E746C818A4A26A0023967B /* AFHTTPRequestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFHTTPRequestOperation.m; sourceTree = "<group>"; };
 		18E746C918A4A26A0023967B /* AFHTTPRequestOperationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFHTTPRequestOperationManager.h; sourceTree = "<group>"; };
@@ -1104,6 +1107,8 @@
 		18E346D5183DF91500C9D89D /* utility */ = {
 			isa = PBXGroup;
 			children = (
+				18E4FBB618F584DF00FA6C21 /* UIScrollView+ScrollIndicator.h */,
+				18E4FBB718F584DF00FA6C21 /* UIScrollView+ScrollIndicator.m */,
 				18E746FA18A4BBBC0023967B /* EZFeatherAPIClient.h */,
 				18E746FB18A4BBBC0023967B /* EZFeatherAPIClient.m */,
 				1866ADC01898F08500DB46E2 /* liveblur */,
@@ -1706,6 +1711,7 @@
 				181608D218B5B1A300DD5995 /* EZShapeCover.m in Sources */,
 				18E746F218A4A26A0023967B /* AFURLSessionManager.m in Sources */,
 				184DBE8218BDA16E00239F0F /* EZSharpenGaussian.m in Sources */,
+				18E4FBB818F584DF00FA6C21 /* UIScrollView+ScrollIndicator.m in Sources */,
 				18E34784183DFAA400C9D89D /* EZGeoUtility.m in Sources */,
 				18E746F018A4A26A0023967B /* AFURLRequestSerialization.m in Sources */,
 				184ADD6F18C4B3DD00367527 /* EZAvatarController.m in Sources */,

@@ -65,6 +65,8 @@
     _recievedNotify = [[NSMutableDictionary alloc] init];
     //Move to the persistent later.
     //Now keep it simple and stupid
+    _mainNonSplits = [[NSMutableArray alloc] init];
+    _mainPhotos = [[NSMutableArray alloc] init];
     _pendingUploads = [[NSMutableArray alloc] init];
     _prefetchImage = [[UIImageView alloc] init];
     _pendingUserQuery = [[NSMutableSet alloc] init];
@@ -634,7 +636,7 @@
         holder = [[EZDownloadHolder alloc] init];
         [_downloadedImages setObject:holder forKey:fullURL];
         holder.filename = fileName;
-        holder.downloaded = [EZFileUtil isExistInCache:fileName];
+        holder.downloaded = [EZFileUtil isExistInDocument:fileName];
     }
     EZDEBUG(@"File in cache:%@", holder.downloaded);
     if(!holder.downloaded){
@@ -1171,6 +1173,22 @@
     [_prefetchImage preloadImageURL:str2url(url) success:success failed:failure];
 }
 
+- (EZPerson*) updatePerson:(EZPerson*)person
+{
+    EZPerson* ps = [_currentQueryUsers objectForKey:person.personID];
+    if(!ps){
+        //[self queryPendingPerson]
+        //ps = [[EZPerson alloc] init];
+        //ps.personID = personID;
+        //ps.isQuerying = true;
+        [_currentQueryUsers setObject:person forKey:person.personID];
+        ps = person;
+    }else{
+        [ps copyValue:person];
+    }
+    return ps;
+}
+
 //Get the person object
 - (EZPerson*) getPersonByID:(NSString*)personID success:(EZEventBlock)success;
 {
@@ -1400,12 +1418,13 @@
         
         EZPhoto* photo = [uploads objectAtIndex:i];
         if(photo.deleted){
+            [_pendingUploads removeObject:photo];
             if(photo.photoID){
                 ++ _uploadingTasks;
                 EZDEBUG(@"Will delete:%@", photo.photoID);
                 [self deletePhoto:photo success:^(id info){
                     EZDEBUG(@"deleted success");
-                    [_pendingUploads removeObject:photo];
+                    
                     -- _uploadingTasks;
                     
                 } failure:^(id err){
@@ -1414,10 +1433,14 @@
                 }];
             }else{
                 EZDEBUG(@"need to delete a photo without id");
-                [_pendingUploads removeObject:photo];
+                
+            }
+            if(photo.localPhoto){
+                [[EZCoreAccessor getClientAccessor] remove:photo.localPhoto];
             }
             continue;
         }
+       
         
         if(photo.isUploadDone){
             EZDEBUG(@"Remove photo when upload is done:%i, screenURL:%@", photo.updateStatus, photo.screenURL);
@@ -1467,6 +1490,10 @@
         
         EZEventBlock uploadContent = ^(EZPhoto* photo){
             if(photo.contentStatus == kUploadInit){
+                if(![photo.assetURL isNotEmpty]){
+                    //photo.deleted = TRUE;
+                    return;
+                }
                 ++_uploadingTasks;
                 EZDEBUG(@"Will start upload photo content for:%@", photo.photoID);
                 [[EZDataUtil getInstance] uploadPhoto:photo success:^(id info){
@@ -1604,7 +1631,7 @@
             [ph fromLocalJson:photo.payloads];
             ph.localPhoto = photo;
             [res addObject:ph];
-        if(!ph.isUploadDone){
+        if(!ph.isUploadDone && ph.type != kPhotoRequest){
             //EZDEBUG(@"will add photo into pending upload:%@, relations:%i", ph.photoID, ph.photoRelations.count);
             [self.pendingUploads addObject:ph];
         }
@@ -1696,14 +1723,14 @@
         LocalPersons* lp = ps.localPerson;
         if(lp){
             //EZDEBUG(@"store old persons %@, json:%@", ps.localPerson, [ps toJson]);
-            lp.payloads = [ps toJson];
+            lp.payloads = [ps toLocalJson];
         }else{
             lp = [[EZCoreAccessor getClientAccessor] create:[LocalPersons class]];
             ps.localPerson = lp;
             lp.personID = ps.personID;
             lp.lastActive = ps.lastActive;
             lp.mobile = ps.mobile;
-            lp.payloads = [ps toJson];
+            lp.payloads = [ps toLocalJson];
         }
         lp.uploaded = @(ps.uploaded);
     }
@@ -1818,7 +1845,7 @@
     EZDEBUG(@"All stored persons:%lu", (unsigned long)persons.count);
     for(LocalPersons* lp in persons){
         EZPerson* ps = [[EZPerson alloc] init];
-        [ps fromJson:lp.payloads];
+        [ps fromLocalJson:lp.payloads];
         ps.localPerson = lp;
         ps.uploaded = lp.uploaded.integerValue;
         if(ps.joined){
@@ -1842,7 +1869,7 @@
     EZDEBUG(@"All stored persons:%lu", (unsigned long)persons.count);
     for(LocalPersons* lp in persons){
         EZPerson* ps = [[EZPerson alloc] init];
-        [ps fromJson:lp.payloads];
+        [ps fromLocalJson:lp.payloads];
         ps.localPerson = lp;
         ps.uploaded = lp.uploaded.integerValue;
         if(ps.joined){
@@ -1867,7 +1894,7 @@
         //LocalPhotos* lp = [[EZCoreAccessor getClientAccessor] create:[LocalPhotos class]];
         //if([photo.payloads isKindOfClass:[NSDictionary class]]){
         EZPerson* ph = [[EZPerson alloc] init];
-        [ph fromJson:ps.payloads];
+        [ph fromLocalJson:ps.payloads];
         ph.localPerson = ps;
         //[res addObject:ph];
         [_currentQueryUsers setObject:ph forKey:ph.personID];

@@ -80,7 +80,7 @@
 
 -(NSTimeInterval)transitionDuration:(id<UIViewControllerContextTransitioning>)transitionContext {
     //NSLog(@"transitionDuration get called, caller:%@", [NSThread callStackSymbols]);
-    return 0.5;
+    return EZRaiseAnimationDuration;
 }
 
 #pragma mark - Helper Methods

@@ -57,6 +57,16 @@
 
 - (NSDictionary*) toJson;
 
+- (NSDictionary*) toLocalJson;
+
 - (void) fromJson:(NSDictionary*)dict;
+
+- (void) fromLocalJson:(NSDictionary*)dict;
+
+- (void) copyValue:(EZPerson*)ps;
+
+- (void) adjustPendingEventCount:(NSInteger)inc;
+
+- (void) save;
 
 @end

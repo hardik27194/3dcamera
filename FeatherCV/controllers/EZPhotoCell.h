@@ -120,7 +120,7 @@
 @property (nonatomic, strong) EZEventBlock flippedCompleted;
 
 //will show this when encounter a photo request
-@property (nonatomic, strong) EZClickView* cameraView;
+@property (nonatomic, strong) UIView* cameraView;
 
 @property (nonatomic, strong) UILabel* requestInfo;
 
@@ -139,8 +139,11 @@
 @property (nonatomic, strong) EZClickImage* shotPhoto;
 
 
+@property (nonatomic, strong) UIView* firstTimeView;
 //@property (nonatomic, strong) EZChatUnit* chatUnit;
 
+//Used to maintain that only cell at the same rotation will happen
+@property (nonatomic, assign) NSInteger rotateCount;
 
 @property (nonatomic, strong) UIView* gradientView;
 //- (void) adjust

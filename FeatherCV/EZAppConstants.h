@@ -25,6 +25,8 @@
 #define CenterUpShift 20
 
 #define EZRotateAnimDuration 0.5
+
+#define EZRaiseAnimationDuration 0.3
 //RGBCOLOR(0, 197, 213);
 
 #define macroHideStatusBar(flag) [[UIApplication sharedApplication] setStatusBarHidden:flag withAnimation:UIStatusBarAnimationFade]

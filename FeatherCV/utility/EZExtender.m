@@ -119,9 +119,11 @@ NSString* doubleString(NSString* str)
     //NSString* thumbURL = url2thumb(url);
     UIActivityIndicatorView* activity = nil;
     NSString* localURL = [[EZDataUtil getInstance] preloadImage:url success:^(NSString* fileURL){
+        
         [activity stopAnimating];
         [activity removeFromSuperview];
         self.image = [UIImage imageWithContentsOfFile:url2fullpath(fileURL)];
+        EZDEBUG(@"Image fully loaded, url:%@", fileURL);
         } failed:^(id obj){
             [activity stopAnimating];
             [activity removeFromSuperview];

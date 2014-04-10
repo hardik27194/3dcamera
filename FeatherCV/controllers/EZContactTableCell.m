@@ -15,6 +15,8 @@
 
 #define buttonFontCN [UIFont fontWithName:@"STHeitiSC-Light" size:16]
 
+#define numberFontCN [UIFont fontWithName:@"STHeitiSC-Light" size:12]
+
 @implementation EZContactTableCell
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
@@ -45,14 +47,14 @@
         EZClickView* clickView = [[EZClickView alloc] initWithFrame:CGRectMake(265, 0, 44, 60)];
         
         _photoCount = [[UILabel alloc] initWithFrame:CGRectMake(200, (cellHeight - 14.0)/2.0, 30.0,14.0)];
-        _photoCount.font = buttonFontCN;
+        _photoCount.font = numberFontCN;
         _photoCount.textColor = [UIColor whiteColor];
         _photoCount.textAlignment = NSTextAlignmentCenter;
         [self.contentView addSubview:_photoCount];
         
-        _notesNumber = [[EZUIUtility sharedEZUIUtility] createNumberLabel];
-        _notesNumber.center = CGPointMake(230 , cellHeight/2.0);
-        [self.contentView addSubview:_notesNumber];
+        //_notesNumber = [[EZUIUtility sharedEZUIUtility] createNumberLabel];
+        //_notesNumber.center = CGPointMake(_name.frame.origin.x + _name.frame.size.width - 5 , (cellHeight - 14.0)/2.0);
+        //[self.contentView addSubview:_notesNumber];
         
         _inviteButton = [[UILabel alloc] initWithFrame:CGRectMake(0, (cellHeight - 40)/2.0, 40, 60)];
         [clickView addSubview:_inviteButton];
@@ -88,7 +90,7 @@
 {
     CGSize sizeToFit = [self.name sizeThatFits:CGSizeMake(200, _name.frame.size.height)];
     [_photoCount setX:_name.frame.origin.x + sizeToFit.width + 10];
-    [_notesNumber setX:_photoCount.frame.origin.x + _photoCount.frame.size.width + 10];
+    //[_notesNumber setX:self.name.frame.origin.x + sizeToFit.width + 10];
 }
 
 - (void) inviteClicked:(id)obj

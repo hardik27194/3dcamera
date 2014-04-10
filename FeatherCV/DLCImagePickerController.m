@@ -696,9 +696,9 @@
         [_backButton addTarget:self action:@selector(quit:) forControlEvents:UIControlEventTouchUpInside];
         _backButton.titleLabel.textAlignment = NSTextAlignmentLeft;
         CGSize fit = [_backButton.titleLabel sizeThatFits:CGSizeMake(200, 40)];
-        if(fit.width > 60){
-            _backButton.width = fit.width;
-        }
+        //if(fit.width > 60){
+        _backButton.width = fit.width;
+        //}
         //UIBarButtonItem *quitItem = [[UIBarButtonItem alloc]
                                //initWithCustomView:_backButton];
         [TopView addSubview:_backButton];
@@ -715,33 +715,10 @@
         
     }];
     _quitCrossButton.enableTouchEffects = false;
-    
-    _quitBlock = ^(id obj){
-        [UIView animateWithDuration:0.2 animations:^(){
-            weakSelf.quitCrossButton.transform = CGAffineTransformIdentity;
-            //_quitCrossButton.alpha = 0;
-        } completion:^(BOOL completed){
-            [weakSelf quit:nil];
-            [UIView animateWithDuration:0.3 animations:^(){
-                weakSelf.quitCrossButton.alpha = 0;
-            } completion:^(BOOL completed){
-                [weakSelf.quitCrossButton removeFromSuperview];
-            }];
-        }];
+   
+    _quitCrossButton.releasedBlock = ^(id obj){
+        [weakSelf cancelClicked:nil];
     };
-
-    _quitCrossButton.releasedBlock = _quitBlock;
-    /**
-    UIBarButtonItem *delAcc = [[UIBarButtonItem alloc]
-                               initWithTitle:@"Del"
-                               style:UIBarButtonItemStylePlain
-                               target:self
-                               action:@selector(deleteAction)];
-    **/
-    //NSArray *arrBtns = [[NSArray alloc]initWithObjects:addAcc,delAcc, nil];
-    //self.navigationItem.leftItemsSupplementBackButton = YES;
-    //self.navigationItem.leftBarButtonItems = @[addAcc];
-    //self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
 }
 
 - (void) viewDidAppear:(BOOL)animated
@@ -940,7 +917,7 @@ context:(void *)context
         EZDEBUG(@"Will start long cover");
         _coverStatus = kCoverStart;
         _longCover = ^(id obj){
-            [weakSelf longCoverStart];
+            //[weakSelf longCoverStart];
         };
         dispatch_later(1.0, ^(){
             if(_longCover){
@@ -1302,11 +1279,11 @@ context:(void *)context
     //[quitButton addTarget:self action:@selector(quit:) forControlEvents:UIControlEventTouchUpInside];
     //[self.view addSubview:quitButton];
     
-    cancelButton = [[UIButton alloc] initWithFrame:CGRectMake(5, bound.size.height - 44 - 10, 60, 44)];
-    [cancelButton setTitle:@"退出" forState:UIControlStateNormal];
-    [cancelButton addTarget:self action:@selector(cancelClicked:) forControlEvents:UIControlEventTouchUpInside];
-    cancelButton.center = CGPointMake(5+30, 80 - 35);
-    cancelButton.hidden = NO;
+    //cancelButton = [[UIButton alloc] initWithFrame:CGRectMake(5, bound.size.height - 44 - 10, 60, 44)];
+    //[cancelButton setTitle:@"退出" forState:UIControlStateNormal];
+    //[cancelButton addTarget:self action:@selector(cancelClicked:) forControlEvents:UIControlEventTouchUpInside];
+    //cancelButton.center = CGPointMake(5+30, 80 - 35);
+    //cancelButton.hidden = NO;
     
     _configButton = [[UIButton alloc] initWithFrame:CGRectMake(320 - 60 - 5, bound.size.height - 44 - 10, 60, 44)];
     [_configButton setTitle:@"设置" forState:UIControlStateNormal];
@@ -2695,7 +2672,14 @@ context:(void *)context
         //EZDEBUG(@"directly call success");
     }
      **/
-    
+    if(_personID){
+        EZPerson* ps = pid2person(_personID);
+        [ps setPendingEventCount:1];
+        [ps save];
+        //ps.photoCount += 1;
+        [[EZMessageCenter getInstance] postEvent:EZNoteCountChange attached:@(1)];
+        [[EZDataUtil getInstance] storeAllPersons:@[ps]];
+    }
     _disPhoto = [weakSelf createDisplayPhoto:weakSelf.shotPhoto];
     //[[EZMessageCenter getInstance]postEvent:EZTakePicture attached:_disPhoto];
     EZDEBUG(@"Current photo converstaion:%@", _shotPhoto.conversations);
@@ -2804,8 +2788,15 @@ context:(void *)context
     //weakSelf.shotPhoto.type = kNormalPhoto;
     
     EZDEBUG(@"Photo requst Current photo converstaion:%@", _shotPhoto.conversations);
-    
-  
+
+    EZPhoto* otherPhoto = [_disPhoto.photo.photoRelations objectAtIndex:0];
+    EZPerson* ps = pid2person(otherPhoto.personID);
+    //ps.pendingEventCount -= 1;
+    [ps setPendingEventCount:-1];
+    [ps save];
+    //ps.photoCount += 1;
+    [[EZMessageCenter getInstance] postEvent:EZNoteCountChange attached:@(-1)];
+    //[[EZDataUtil getInstance] storeAllPersons:@[ps]];
     __block BOOL executedFlag = false;
     dispatch_later(4.0, ^(){
         EZDEBUG(@"Timeout called");
