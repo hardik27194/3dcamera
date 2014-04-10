@@ -68,7 +68,7 @@ typedef enum {
     kUploadingFailure
 }EZUploadingStatus;
 
-
+@class EZUpArrow;
 @class EZPhoto;
 @class EZDisplayPhoto;
 @class DLCImagePickerController;
@@ -103,6 +103,8 @@ typedef enum {
 @property (nonatomic, weak) IBOutlet UILabel* redGapText;
 @property (nonatomic, weak) IBOutlet UILabel* blueGapText;
 @property (nonatomic, weak) IBOutlet UIButton *photoCaptureButton;
+
+@property (nonatomic, strong) EZUpArrow* upArrow;
 
 @property (nonatomic, weak) EZHairButton* quitCrossButton;
 

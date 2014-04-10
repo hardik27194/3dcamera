@@ -235,6 +235,7 @@
 		18E4FBB018EEAEAD00FA6C21 /* EZHairButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E4FBAF18EEAEAD00FA6C21 /* EZHairButton.m */; };
 		18E4FBB518F1415E00FA6C21 /* EZResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E4FBB418F1415E00FA6C21 /* EZResult.m */; };
 		18E4FBB818F584DF00FA6C21 /* UIScrollView+ScrollIndicator.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E4FBB718F584DF00FA6C21 /* UIScrollView+ScrollIndicator.m */; };
+		18E4FBBB18F68F7600FA6C21 /* EZUpArrow.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E4FBBA18F68F7600FA6C21 /* EZUpArrow.m */; };
 		18E746EA18A4A26A0023967B /* AFHTTPRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E746C818A4A26A0023967B /* AFHTTPRequestOperation.m */; };
 		18E746EB18A4A26A0023967B /* AFHTTPRequestOperationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E746CA18A4A26A0023967B /* AFHTTPRequestOperationManager.m */; };
 		18E746EC18A4A26A0023967B /* AFHTTPSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E746CC18A4A26A0023967B /* AFHTTPSessionManager.m */; };
@@ -649,6 +650,8 @@
 		18E4FBB418F1415E00FA6C21 /* EZResult.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZResult.m; sourceTree = "<group>"; };
 		18E4FBB618F584DF00FA6C21 /* UIScrollView+ScrollIndicator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIScrollView+ScrollIndicator.h"; sourceTree = "<group>"; };
 		18E4FBB718F584DF00FA6C21 /* UIScrollView+ScrollIndicator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIScrollView+ScrollIndicator.m"; sourceTree = "<group>"; };
+		18E4FBB918F68F7500FA6C21 /* EZUpArrow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZUpArrow.h; sourceTree = "<group>"; };
+		18E4FBBA18F68F7600FA6C21 /* EZUpArrow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZUpArrow.m; sourceTree = "<group>"; };
 		18E746C718A4A26A0023967B /* AFHTTPRequestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFHTTPRequestOperation.h; sourceTree = "<group>"; };
 		18E746C818A4A26A0023967B /* AFHTTPRequestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFHTTPRequestOperation.m; sourceTree = "<group>"; };
 		18E746C918A4A26A0023967B /* AFHTTPRequestOperationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFHTTPRequestOperationManager.h; sourceTree = "<group>"; };
@@ -1077,6 +1080,8 @@
 				180ADA5C18C4247F00AB490C /* EZCenterButton.m */,
 				18BF598818E67DD900995BEE /* EZTrianglerView.h */,
 				18BF598918E67DD900995BEE /* EZTrianglerView.m */,
+				18E4FBB918F68F7500FA6C21 /* EZUpArrow.h */,
+				18E4FBBA18F68F7600FA6C21 /* EZUpArrow.m */,
 			);
 			path = controllers;
 			sourceTree = "<group>";
@@ -1667,6 +1672,7 @@
 				1819040018853903001FC370 /* EZDoubleOutFilter.m in Sources */,
 				184ADD8318C8ACA300367527 /* EZShapeButton.m in Sources */,
 				18A36FF01855C1DB0022F0A8 /* DLCBlurOverlayView.m in Sources */,
+				18E4FBBB18F68F7600FA6C21 /* EZUpArrow.m in Sources */,
 				18E3477E183DFAA400C9D89D /* EZThreadUtility.m in Sources */,
 				18E34776183DFAA400C9D89D /* EZCycleDiminish.m in Sources */,
 				18FA52A3188FDDEE00C91D18 /* EZHomeLineBiFilter.m in Sources */,

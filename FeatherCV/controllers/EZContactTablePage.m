@@ -38,7 +38,13 @@
     self.tableView.backgroundColor = RGBA(0, 0, 0, 40);
     [self.view addSubview:self.tableView];
     _barBackground = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, 64)];
+    UILabel* friendTitle = [[UILabel alloc] initWithFrame:CGRectMake(0, 25, CurrentScreenWidth, 30)];
+    friendTitle.font = EZTitleFontCN;
+    friendTitle.textAlignment = NSTextAlignmentCenter;
+    friendTitle.textColor = [UIColor whiteColor];
+    friendTitle.text = @"朋友";
     _barBackground.backgroundColor = RGBA(0, 0, 0, 60);
+    [_barBackground addSubview:friendTitle];
     //_barBackground.hidden = YES;
     
 }

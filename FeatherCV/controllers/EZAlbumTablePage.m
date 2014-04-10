@@ -255,6 +255,18 @@ static int photoCount = 1;
         }else{
             EZDEBUG(@"photo request clicked: %@", myPhoto.photoID);
             //[self raiseCamera:cp indexPath:indexPath];
+            dispatch_later(0.15, ^(){
+            CATransform3D trans = CATransform3DRotate(CATransform3DIdentity, M_PI/6.0, 0.0, 1.0, 0.0);
+            trans.m34 = 1/3000.0;
+            
+            [UIView animateWithDuration:0.2 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(){
+                weakCell.container.layer.transform = trans;
+            } completion:^(BOOL complete){
+                [UIView animateWithDuration:0.2 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^(){
+                    weakCell.container.layer.transform = CATransform3DIdentity;
+                } completion:nil];
+            }];
+            });
         }
         //}
     };
@@ -358,6 +370,7 @@ static int photoCount = 1;
     //    curBlock(frontPerson);
     //}
     cell.otherIcon.releasedBlock = ^(id obj){
+        /**
         EZPersonDetail* pd = [[EZPersonDetail alloc] initWithPerson:backPerson];
         //pd.modalPresentationStyle = UIModalPresentationPageSheet;
         //pd.transitioningDelegate = weakSelf;
@@ -370,19 +383,22 @@ static int photoCount = 1;
         //[self presentViewController:pd animated:YES completion:^(){
         //}];
         [self.navigationController pushViewController:pd animated:YES];
+         **/
+        [self setCurrentUser:backPerson];
     };
     
     
     cell.headIcon.releasedBlock = ^(id obj){
-        EZPersonDetail* pd = [[EZPersonDetail alloc] initWithPerson:frontPerson];
+        //EZPersonDetail* pd = [[EZPersonDetail alloc] initWithPerson:frontPerson];
         //pd.transitioningDelegate = weakSelf;
         //pd.modalPresentationStyle = UIModalPresentationCustom;
-        _isPushCamera = false;
-        _leftCyleButton.hidden = YES;
-        _rightCycleButton.hidden = YES;
+        //_isPushCamera = false;
+        //_leftCyleButton.hidden = YES;
+        //_rightCycleButton.hidden = YES;
         //[self presentViewController:pd animated:YES completion:^(){
         //}];
-        [self.navigationController pushViewController:pd animated:YES];
+        //[self.navigationController pushViewController:pd animated:YES];
+        [self setCurrentUser:currentLoginUser];
     };
     return cell;
 }
@@ -2102,7 +2118,7 @@ static int photoCount = 1;
     EZPerson* otherPerson = pid2person(back.personID);
     if(back.type == kPhotoRequest || ([cp.photo.exchangePersonID isNotEmpty] && back==nil)){
         cell.frontImage.image = nil;
-        cell.frontImage.backgroundColor = EZOrangeColor;
+        cell.frontImage.backgroundColor = ClickedColor;
         cell.waitingInfo.text =[NSString stringWithFormat:@"等待\"%@\"的照片", otherPerson.name?otherPerson.name:@"朋友"];
         cell.waitingInfo.hidden = NO;
         cell.otherIcon.hidden = YES;

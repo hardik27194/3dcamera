@@ -64,6 +64,8 @@
 
 #define ButtonWhiteColor RGBA(230, 230, 230, 200)
 
+#define NaviBarBlack RGBACOLOR(0, 0, 0, 60)
+
 #define lightGrayBackground RGBCOLOR(217, 217, 217)
 //Interesting.
 #define turningMockPageTag 20070424
@@ -88,7 +90,7 @@
 
 #define shaderSkinRange 0.4
 
-#define EZOrangeColor RGBCOLOR(255, 73, 33)
+#define EZOrangeColor RGBCOLOR(255, 81, 57)
 
 #define VinesGray RGBCOLOR(210, 220, 220)
 

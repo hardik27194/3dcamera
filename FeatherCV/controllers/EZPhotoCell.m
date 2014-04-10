@@ -145,7 +145,7 @@
         
         _moreButton = [[EZShapeButton alloc] initWithFrame:CGRectMake(0, 0, 60, 44)];
         _moreButton.center = CGPointMake(CurrentScreenWidth - 30, CurrentScreenHeight - 27);
-        [self.container addSubview:_moreButton];
+        
         
         _cameraView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 100)];
         _cameraView.center = CGPointMake(CurrentScreenWidth/2.0, CurrentScreenHeight/2.0 + 20);
@@ -191,6 +191,7 @@
         _shotPhoto.enableTouchEffects = true;
         _shotPhoto.hidden = YES;
         _shotPhoto.pressedColor = EZOrangeColor;
+        
         //[self createTimeLabel];
         //[_frontImage addSubview:_toolRegion];
         //[_rotateContainer addSubview:_toolRegion];
@@ -204,7 +205,7 @@
         _firstTimeView = [[EZUIUtility sharedEZUIUtility] createNumberLabel];
         [_firstTimeView setPosition:CGPointMake(30, 70)];
         [self.contentView addSubview:_firstTimeView];
-         
+        [self.contentView addSubview:_moreButton];
         //weakCell.activityView = ai;
 
         

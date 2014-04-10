@@ -40,7 +40,7 @@
         [self.contentView addSubview:_headIcon];
         
         _headIcon.releasedBlock = ^(id obj){
-            
+            EZDEBUG(@"icon clicked");
         };
         
         

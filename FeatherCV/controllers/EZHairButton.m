@@ -52,6 +52,10 @@
         _vertical.backgroundColor = [UIColor whiteColor];
         _horizon.backgroundColor = [UIColor whiteColor];
         self.backgroundColor = EZOrangeColor;
+    }else if(style == kShotHappen){
+        _vertical.backgroundColor = [UIColor whiteColor];
+        _horizon.backgroundColor = [UIColor whiteColor];
+        self.backgroundColor= [UIColor clearColor];
     }
 }
 

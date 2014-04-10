@@ -49,6 +49,7 @@
 #import "EZKeyboadUtility.h"
 #import "EZCenterButton.h"
 #import "EZHairButton.h"
+#import "EZUpArrow.h"
 
 //#include <vector>
 
@@ -674,14 +675,17 @@
     [super viewWillAppear:animated];
     __weak DLCImagePickerController* weakSelf = self;
     EZPerson* person = nil;
+    NSString* instr = nil;
     if(_personID){
         person = pid2person(_personID);
+        instr = @"发送";
     }else
     if(_isPhotoRequest){
         EZPhoto* otherPhoto = [_disPhoto.photo.photoRelations objectAtIndex:0];
         person = pid2person(otherPhoto.personID);
+        instr = @"回复";
     }
-    
+    macroHideStatusBar(YES);
     EZDEBUG(@"person name:%@", person.name);
     //EZClickImage* clickImage = [[EZClickImage alloc] initWithFrame:CGRectMake(30, 20, EZShotButtonDiameter, EZShotButtonDiameter)];
     //[clickImage loadImageURL:person.avatar haveThumb:NO loading:NO];
@@ -693,11 +697,18 @@
         [_backButton setTitle:person.name forState:UIControlStateNormal];
         [_backButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         _backButton.titleLabel.font = EZLargeFont;
-        [_backButton addTarget:self action:@selector(quit:) forControlEvents:UIControlEventTouchUpInside];
+        //[_backButton addTarget:self action:@selector(quit:) forControlEvents:UIControlEventTouchUpInside];
         _backButton.titleLabel.textAlignment = NSTextAlignmentLeft;
         CGSize fit = [_backButton.titleLabel sizeThatFits:CGSizeMake(200, 40)];
         //if(fit.width > 60){
         _backButton.width = fit.width;
+        
+        UILabel* instrTitle = [[UILabel alloc] initWithFrame:CGRectMake(3, -5, 30, 12)];
+        instrTitle.font = [UIFont boldSystemFontOfSize:10];
+        instrTitle.textAlignment = NSTextAlignmentLeft;
+        instrTitle.textColor = [UIColor whiteColor];
+        instrTitle.text = instr;
+        [_backButton addSubview:instrTitle];
         //}
         //UIBarButtonItem *quitItem = [[UIBarButtonItem alloc]
                                //initWithCustomView:_backButton];
@@ -812,8 +823,7 @@
     skinBrighter = [self createSkinBrighter];
     imageView.backgroundColor = VinesGray;
     imageView.fillMode = kGPUImageFillModePreserveAspectRatioAndFill;
-    UIView* darkenView = [[EZUIUtility sharedEZUIUtility] createGradientView];
-    [self.view addSubview:darkenView];
+    //darkenView.backgroundColor = RGBACOLOR(100, 100, 100, 128);
     EZDEBUG(@"The imageView frame:%@", NSStringFromCGRect(imageView.frame));
     //[self setupEdgeDetector];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
@@ -833,6 +843,10 @@
     [self.view addSubview:_progressView];
     
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
+    
+    //UIView* upperBlack = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, 80)];
+    //upperBlack.backgroundColor = NaviBarBlack;
+    //[self.view addSubview:upperBlack];
     //_leftBarButton = [[UIBarButtonItem alloc] initWithTitle:@"退出" style:UIBarButtonItemStylePlain target:self action:@selector(cancelClicked:)];
     //_upperCancel = [[UIButton alloc] initWithFrame:CGRectMake(-10, 0, 60, 44)];
     //[_upperCancel setTitle:@"退出" forState:UIControlStateNormal];
@@ -1301,6 +1315,8 @@ context:(void *)context
     rotateContainer.alpha = 0.0;
     [self.view insertSubview:rotateContainer belowSubview:_toolBarRegion];
     
+    
+    
     rotateView = [[EZClickImage alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, CurrentScreenHeight)];
     rotateView.contentMode = UIViewContentModeScaleAspectFill;
     //[rotateView enableRoundImage];
@@ -1310,6 +1326,9 @@ context:(void *)context
         
     };
     [rotateContainer addSubview:rotateView];
+    UIView* darkenView = [[EZUIUtility sharedEZUIUtility] createGradientView];
+    [self.view insertSubview:darkenView aboveSubview:rotateContainer];
+    
     _isFrontCamera = false;
     retakeButton = cancelImage;
     topBar.backgroundColor = RGBA(255, 255, 255, 128);
@@ -1321,11 +1340,16 @@ context:(void *)context
     //[EZDataUtil getInstance].centerButton.radius = EZInnerCycleRadius;
     //[[EZDataUtil getInstance].centerButton setNeedsDisplay];
     //[EZDataUtil getInstance].centerButton.releasedBlock = nil;
+    _upArrow = [[EZUpArrow alloc] initWithFrame:CGRectMake(0, 0, EZInnerCycleRadius, EZInnerCycleRadius/3.0)];
+    _upArrow.hidden = YES;
     _shotButton.pressedBlock = ^(EZCenterButton* obj){
         [obj animateButton:0.3 lineWidth:13 completed:^(id obj){
         [weakSelf takePhoto:nil];
         }];
     };
+    
+    _upArrow.center = CGPointMake(_shotButton.bounds.size.width/2.0, _shotButton.bounds.size.height/2.0);
+    [_shotButton addSubview:_upArrow];
     [self.view addSubview:_shotButton];
     
     //dispatch_later(0.3, ^()
@@ -1503,6 +1527,7 @@ context:(void *)context
     _quitFaceDetection = true;
     _senseRotate = false;
     [stillCamera stopCameraCapture];
+    macroHideStatusBar(NO);
     [self removeAllTargets];
     //[_quitCrossButton removeFromSuperview];
     [[EZMotionUtility getInstance] unregisterHandler:@"CameraMotion"];
@@ -2674,7 +2699,7 @@ context:(void *)context
      **/
     if(_personID){
         EZPerson* ps = pid2person(_personID);
-        [ps setPendingEventCount:1];
+        [ps adjustPendingEventCount:1];
         [ps save];
         //ps.photoCount += 1;
         [[EZMessageCenter getInstance] postEvent:EZNoteCountChange attached:@(1)];
@@ -2902,6 +2927,8 @@ context:(void *)context
     __weak DLCImagePickerController* weakSelf = self;
     [self.photoCaptureButton setEnabled:NO];
     if (!isStatic) {
+        _upArrow.hidden = NO;
+        [_quitCrossButton setButtonStyle:kShotHappen];
         _uploadStatus = kInitialUploading;
         _isUploading = false;
         _detectedFaceObj = nil;
@@ -2929,12 +2956,14 @@ context:(void *)context
         [self prepareForCapture];
     }else{
         //Mean the upload started, at least mean the photo already stored.
+        
         if(_uploadStatus != kInitialUploading){
+            
             _toolBarRegion.alpha = 0.0;
             
             //_isSaved = true;
             if(!_isUploading){
-                [_leftBarButton setTitle:macroControlInfo(@"Return")];
+                //[_leftBarButton setTitle:macroControlInfo(@"Return")];
                 _isUploading = true;
                 if(!_isPhotoRequest){
                     [self confirmUpload:progressStart];
@@ -3125,6 +3154,8 @@ context:(void *)context
 }
 
 -(IBAction) retakePhoto:(UIButton *)button {
+    _upArrow.hidden = YES;
+    [_quitCrossButton setButtonStyle:kShotScreen];
     [self preMatchPhoto];
     [self hideRotateImage];
     smileDetected.alpha = 0.0;

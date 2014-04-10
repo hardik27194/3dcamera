@@ -18,7 +18,7 @@
         self.backgroundColor = [UIColor clearColor];
         _fillColor = [UIColor whiteColor];
         self.enableTouchEffects = false;
-        [self enableShadow:[UIColor blackColor]];
+        //[self enableShadow:[UIColor blackColor]];
         
     }
     return self;

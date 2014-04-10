@@ -11,7 +11,8 @@
 typedef enum {
     kShotForAll,
     kShotForOne,
-    kShotScreen
+    kShotScreen,
+    kShotHappen
 } EZShotButtonStyle;
 
 
