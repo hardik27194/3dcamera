@@ -332,6 +332,7 @@
                          for(NSDictionary* dict in photos){
                              EZPhoto* photo = [[EZPhoto alloc] init];
                              [photo fromJson:dict];
+                             [photo setFromServer];
                              EZDEBUG(@"Photo relationship:%i, otherID:%@", photo.photoRelations.count,otherID);
                              
                              if(otherID){
@@ -652,6 +653,8 @@
         if(!holder.isDownloading){
             holder.isDownloading = true;
             [EZNetworkUtility downloadImage:fullURL downloader:holder];
+        }else{
+            EZDEBUG(@"quit for downloading:%@", fullURL);
         }
         return nil;
     }else{

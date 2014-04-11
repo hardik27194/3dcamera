@@ -2700,7 +2700,7 @@ context:(void *)context
     if(_personID){
         EZPerson* ps = pid2person(_personID);
         [ps adjustPendingEventCount:1];
-        [ps save];
+        //[ps save];
         //ps.photoCount += 1;
         [[EZMessageCenter getInstance] postEvent:EZNoteCountChange attached:@(1)];
         [[EZDataUtil getInstance] storeAllPersons:@[ps]];
@@ -2817,8 +2817,8 @@ context:(void *)context
     EZPhoto* otherPhoto = [_disPhoto.photo.photoRelations objectAtIndex:0];
     EZPerson* ps = pid2person(otherPhoto.personID);
     //ps.pendingEventCount -= 1;
-    [ps setPendingEventCount:-1];
-    [ps save];
+    [ps adjustPendingEventCount:-1];
+    //[ps save];
     //ps.photoCount += 1;
     [[EZMessageCenter getInstance] postEvent:EZNoteCountChange attached:@(-1)];
     //[[EZDataUtil getInstance] storeAllPersons:@[ps]];

@@ -31,7 +31,7 @@
              @"joinedTime":_joinedTime?isoDateFormat(_joinedTime):@"",
              @"joined":@(_joined),
              @"photoCount":@(_photoCount),
-             @"pendingEventCount":@(_pendingEventCount)
+             //@"pendingEventCount":@(_pendingEventCount)
              };
 
 }
@@ -49,6 +49,9 @@
 {
     _uploaded = true;
     LocalPersons* lp = _localPerson;
+    if(_pendingEventCount < 0){
+        _pendingEventCount = 0;
+    }
     if(lp){
         //EZDEBUG(@"store old persons %@, json:%@", ps.localPerson, [ps toJson]);
         lp.payloads = [self toLocalJson];
@@ -96,7 +99,7 @@
     }
     _joined = [[dict objectForKey:@"joined"] integerValue];
     _mock = [[dict objectForKey:@"mock"] integerValue];
-    _pendingEventCount = [[dict objectForKey:@"pendingEventCount"] integerValue];
+    //_pendingEventCount = [[dict objectForKey:@"pendingEventCount"] integerValue];
 
 }
 

@@ -96,8 +96,8 @@ static int photoCount = 1;
         EZPerson* person = pid2person(switchPhoto.personID);
         EZDEBUG(@"name:%@, pendingCount:%i, photoID:%@", person.name, person.pendingEventCount, cp.photo.photoID);
         //person.pendingEventCount -= 1;
-        [person setPendingEventCount:-1];
-        [person save];
+        [person adjustPendingEventCount:-1];
+        //[person save];
         [[EZMessageCenter getInstance] postEvent:EZNoteCountChange attached:@(-1)];
     }else{
         cell.firstTimeView.hidden = YES;
@@ -247,6 +247,7 @@ static int photoCount = 1;
         //[[EZMessageCenter getInstance] postEvent:EZNoteCountChange attached:@(2)];
         if(myPhoto.typeUI != kPhotoRequest){
             EZPhoto* swPhoto = [myPhoto.photoRelations objectAtIndex:0];
+            //swPhoto.screenURL = @"http://192.168.1.102:8080/broken/49497";
             EZDEBUG(@"my photoID:%@, otherID:%@, otherPerson:%@, other photo upload:%i, other screenURL:%@", myPhoto.photoID,swPhoto.photoID, swPhoto.personID, swPhoto.uploaded, swPhoto.screenURL);
             //NSString* localURL = [[EZDataUtil getInstance] lo]
             //if(swPhoto){
@@ -384,7 +385,19 @@ static int photoCount = 1;
         //}];
         [self.navigationController pushViewController:pd animated:YES];
          **/
-        [self setCurrentUser:backPerson];
+        UIView* coverView = [weakCell snapshotViewAfterScreenUpdates:NO];
+        [self.view addSubview:coverView];
+        [self setCurrentUser:backPerson readyBlock:^(id obj){
+            for(int i = 0; i < weakSelf.combinedPhotos.count; i++){
+                EZDisplayPhoto* backDP = [weakSelf.combinedPhotos objectAtIndex:i];
+                EZPhoto* backPhoto = [backDP.photo.photoRelations objectAtIndex:0];
+                if([cp.photo.photoID isEqualToString:backDP.photo.photoID] && (!backPhoto || [backPhoto.photoID isEqualToString:switchPhoto.photoID])){
+                    [weakSelf.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
+                    break;
+                }
+            }
+            [coverView removeFromSuperview];
+        }];
     };
     
     
@@ -398,7 +411,19 @@ static int photoCount = 1;
         //[self presentViewController:pd animated:YES completion:^(){
         //}];
         //[self.navigationController pushViewController:pd animated:YES];
-        [self setCurrentUser:currentLoginUser];
+        UIView* coverView = [weakCell snapshotViewAfterScreenUpdates:NO];
+        [self.view addSubview:coverView];
+        [self setCurrentUser:currentLoginUser readyBlock:^(id obj){
+            for(int i = 0; i < weakSelf.combinedPhotos.count; i++){
+                EZDisplayPhoto* backDP = [weakSelf.combinedPhotos objectAtIndex:i];
+                EZPhoto* backPhoto = [backDP.photo.photoRelations objectAtIndex:0];
+                if([cp.photo.photoID isEqualToString:backDP.photo.photoID] && (!backPhoto || [backPhoto.photoID isEqualToString:switchPhoto.photoID])){
+                    [weakSelf.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
+                    break;
+                }
+            }
+            [coverView removeFromSuperview];
+        }];
     };
     return cell;
 }
@@ -473,7 +498,7 @@ static int photoCount = 1;
     }
 }
 
-- (void) setCurrentUser:(EZPerson *)currentUser
+- (void) setCurrentUser:(EZPerson *)currentUser readyBlock:(EZEventBlock)readyBlock
 {
     EZDEBUG(@"Will change the user from:%@ to %@", _currentUser, currentUser);
     
@@ -484,13 +509,14 @@ static int photoCount = 1;
             //[[EZMessageCenter getInstance] postEvent:EZNoteCountSet attached:@([self getPendingCount])];
              [self setNoteCount];
             [_rightCycleButton setButtonStyle:kShotForAll];
-            _leftText.text = EZOriginalTitle;
-            //_leftText.font = largeFont;//[UIFont fontWithName:@"HelveticaNeue-UltraLight" size:30];
-            _leftText.font = EZTitleSlimFont;
-            CGSize fitSize = [_leftText sizeThatFits:CGSizeMake(999, 40)];
-            [_leftText setWidth:fitSize.width];
-            [_signRegion setX:fitSize.width + 2];
-            [_leftCyleButton setWidth:_leftText.frame.origin.x + _leftText.frame.size.width + 10];
+            [_leftCyleButton setTitle:EZOriginalTitle forState:UIControlStateNormal];
+            _leftCyleButton.titleLabel.font = EZTitleSlimFont;
+            
+            CGSize fitSize = [_leftCyleButton.titleLabel sizeThatFits:CGSizeMake(999, 40)];
+            EZDEBUG(@"fit size width:%f", fitSize.width);
+            //[_leftText setWidth:fitSize.width];
+            [_signRegion setX:fitSize.width + 10];
+            [_leftCyleButton setWidth:fitSize.width + 2];
             [_combinedPhotos removeAllObjects];
             [_nonsplitted removeAllObjects];
             //
@@ -506,9 +532,16 @@ static int photoCount = 1;
             
             EZDEBUG(@"The combined photo size:%i", _combinedPhotos.count);
             [self.tableView reloadData];
-            [self scrollToBottom:NO];
+            if(readyBlock){
+                readyBlock(nil);
+            }else{
+                [self scrollToBottom:NO];
+            }
             
         }else{
+            if(readyBlock){
+                readyBlock(nil);
+            }
             return;
         }
     }else if(![currentUser.personID isEqualToString:_currentUser.personID]){
@@ -521,13 +554,16 @@ static int photoCount = 1;
         }
         _currentUser = currentUser;
          [self setNoteCount];
-        _leftText.text = currentUser.name;
+        //_leftText.text = currentUser.name;
         //_leftText.font = smallFont;//[UIFont systemFontOfSize:20];
-        _leftText.font = EZLargeFont;//titleFontCN;
-        CGSize fitSize = [_leftText sizeThatFits:CGSizeMake(999, 40)];
-        [_leftText setWidth:fitSize.width];
-        [_leftCyleButton setWidth:_leftText.frame.origin.x + _leftText.frame.size.width + 10];
-        [_signRegion setX:fitSize.width + 2];
+        //_leftText.font = EZLargeFont;//titleFontCN;
+        [_leftCyleButton setTitle:currentUser.name forState:UIControlStateNormal];
+        _leftCyleButton.titleLabel.font= EZLargeFont;
+        CGSize fitSize = [_leftCyleButton.titleLabel sizeThatFits:CGSizeMake(999, 40)];
+        EZDEBUG(@"fit size for string:%@, size:%f", currentUser.name, fitSize.width);
+        //[_leftText setWidth:fitSize.width];
+        [_leftCyleButton setWidth:fitSize.width + 2];
+        [_signRegion setX:fitSize.width + 10];
         [_combinedPhotos removeAllObjects];
         [_nonsplitted removeAllObjects];
         NSArray* storedPhoto = nil;
@@ -562,7 +598,11 @@ static int photoCount = 1;
         //[_nonsplitted addObjectsFromArray:_combinedPhotos];
         EZDEBUG(@"After search out:%i", _combinedPhotos.count);
         [self.tableView reloadData];
-        [self scrollToBottom:NO];
+        if(readyBlock){
+            readyBlock(nil);
+        }else{
+            [self scrollToBottom:NO];
+        }
         //dispatch_later(0.2, ^(){
         //    self.tableView.contentOffset = CGPointMake(0, 0);
         //});
@@ -570,10 +610,15 @@ static int photoCount = 1;
             //if(!_combinedPhotos.count){
             //    [self.tableView reloadData];
             //}
-            [self scrollToBottom:NO];
+            if(!readyBlock){
+                [self scrollToBottom:NO];
+            }
         } reload:YES pageSize:5];
 
     }else{
+        if(readyBlock){
+            readyBlock(nil);
+        }
         return;
     }
     
@@ -664,6 +709,7 @@ static int photoCount = 1;
         _rightCycleButton.hidden = NO;
     }
     _leftCyleButton.hidden = NO;
+    [self.tableView refreshCustomScrollIndicatorsWithAlpha:0.0];
     //.hidden = NO;
     //[[UINavigationBar appearance] setBackgroundImage:ClearBarImage forBarMetrics:UIBarMetricsDefault];
     //[self.navigationController.view addSubview:[EZDataUtil getInstance].naviBarBlur];
@@ -687,7 +733,6 @@ static int photoCount = 1;
 {
     //[EZDataUtil getInstance].centerButton.hidden = YES;
 }
-
 
 
 
@@ -1094,7 +1139,7 @@ static int photoCount = 1;
     }];
     
     [[EZMessageCenter getInstance] registerEvent:EZSetAlbumUser block:^(EZPerson* person){
-        [self setCurrentUser:person];
+        [self setCurrentUser:person readyBlock:nil];
     }];
     
     [[EZMessageCenter getInstance] registerEvent:EZUserEditted block:^(EZPerson* person){
@@ -1151,12 +1196,16 @@ static int photoCount = 1;
             //Mean new user are login.
             //[EZCoreAccessor cleanClientDB];
             //[[EZDataUtil getInstance] cleanDBPhotos];
+            _numberLabel.alpha = 0;
             [_combinedPhotos removeAllObjects];
             [_nonsplitted removeAllObjects];
             [weakSelf.tableView reloadData];
+            
         }
-        
         NSArray* storedPhotos = [[EZDataUtil getInstance] getStoredPhotos];
+        for(EZPhoto* photo in storedPhotos){
+            [self updatePendingCount:photo];
+        }
         NSArray* splitted = [self splitPhotos:storedPhotos];
         EZDEBUG(@"Total stored:%i, splitted:%i", storedPhotos.count, splitted.count);
         [_combinedPhotos addObjectsFromArray:[self wrapPhotos:splitted]];
@@ -1177,6 +1226,8 @@ static int photoCount = 1;
             dispatch_later(0.1,
             ^(){
                 [self scrollToBottom:NO];
+                [self setNoteCount];
+                //[self updatePendingCount:nil];
             });
         } failure:^(NSError* err){
             EZDEBUG(@"Error detail:%@", err);
@@ -1314,7 +1365,7 @@ static int photoCount = 1;
         EZPerson* ps =  [[EZDataUtil getInstance]updatePerson:note.senderPerson];
         //ps.pendingEventCount += 1;
         [ps adjustPendingEventCount:1];
-        [ps save];
+        //[ps save];
         //[[EZDataUtil getInstance]storeAllPersons:@[ps]];
         //[_combinedPhotos insertObject:disPhoto atIndex:_combinedPhotos.count];
         [_combinedPhotos addObject:disPhoto];
@@ -1376,7 +1427,7 @@ static int photoCount = 1;
     EZPerson* ps = [[EZDataUtil getInstance] updatePerson:note.senderPerson];
     //ps.pendingEventCount += 1;
     [ps adjustPendingEventCount:1];
-    [ps save];
+    //[ps save];
     //[[EZDataUtil getInstance]storeAllPersons:@[ps]];
     [[EZMessageCenter getInstance] postEvent:EZNoteCountChange attached:@(1)];
     //if(_currentUser){
@@ -1523,17 +1574,18 @@ static int photoCount = 1;
     for(EZPhoto* pt in photos){
         EZPhoto* finded = [self existed:pt.photoID];
         if(!finded){
-            
+            [self updatePendingCount:pt];
             //EZDEBUG(@"Transfer the image to EZDisplayPhoto successfully, personID:%@",pt.personID);
             NSArray* splitted = [self splitPhotos:@[pt]];
             for(EZPhoto* sp in splitted){
                 EZDisplayPhoto* dp = [self wrapPhoto:sp];
                 [_combinedPhotos insertObject:dp atIndex:0];
+                [[EZDataUtil getInstance].mainPhotos addObject:dp];
+                
                 count ++;
             }
-            [_nonsplitted insertObject:pt atIndex:0];
-            [[EZDataUtil getInstance].mainPhotos addObject:pt];
             [[EZDataUtil getInstance].mainNonSplits addObject:pt];
+            [_nonsplitted insertObject:pt atIndex:0];
             [stored addObject:pt];
         }
     }
@@ -1584,6 +1636,22 @@ static int photoCount = 1;
     //}
 }
 
+//What's the purpose of this function?
+//To find out the person and add the pendingCount to it.
+- (void) updatePendingCount:(EZPhoto*)photo
+{
+    EZPhoto* matched = [photo.photoRelations objectAtIndex:0];
+    EZPerson* ps = pid2person(matched.personID);
+    EZDEBUG(@"stored person id:%@, other id:%@", photo.personID, matched.personID);
+    if(photo.type == kPhotoRequest){
+        [ps adjustPendingEventCount:1];
+    }else{
+        if(matched.type == kPhotoRequest){
+            [ps adjustPendingEventCount:1];
+        }
+    }
+}
+
 - (void) reloadRows:(NSArray*)photos reload:(BOOL)reload
 {
     int count = 0;
@@ -1591,12 +1659,14 @@ static int photoCount = 1;
     for(EZPhoto* pt in photos){
         EZPhoto* finded = [self existed:pt.photoID];
         if(!finded){
+            [self updatePendingCount:pt];
             EZDEBUG(@"reload successfully, personID:%@",pt.personID);
             NSArray* splitted = [self splitPhotos:@[pt]];
             for(EZPhoto* sp in splitted){
                 //EZDisplayPhoto* dp = [self wrapPhoto:sp];
                 //[_combinedPhotos insertObject:dp atIndex:0];
                 [self fillCombinePhotos:sp];
+                
                 count ++;
             }
             [_nonsplitted insertObject:pt atIndex:0];
@@ -1661,6 +1731,8 @@ static int photoCount = 1;
 {
     EZDEBUG(@"View did show");
     [super viewDidAppear:animated];
+    //[UIView animateWithDuration:0.25 animations:^{
+    //}];
     [EZDataUtil getInstance].centerButton.hidden = NO;
     //if(!_progressBar.superview){
     //    [TopView addSubview:_progressBar];
@@ -1742,19 +1814,24 @@ static int photoCount = 1;
     //_leftContainer = [[UIView alloc] initWithFrame:CGRectMake(12,30, 120, 46)];
     //_leftContainer.backgroundColor = [UIColor clearColor];
     
-    _leftCyleButton = [[EZClickView alloc] initWithFrame:CGRectMake(12,30, 120, 46)];
+    _leftCyleButton = [[UIButton alloc] initWithFrame:CGRectMake(10,25, 120, 46)];
+    _leftCyleButton.titleLabel.font = EZTitleSlimFont;
+    [_leftCyleButton setTitleColor:ClickedColor forState:UIControlStateHighlighted];
+    [_leftCyleButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    _leftCyleButton.titleLabel.textAlignment = NSTextAlignmentLeft;
+    [_leftCyleButton setTitle:@"feather" forState:UIControlStateNormal];
     //_leftCyleButton.layer.borderColor = [UIColor whiteColor].CGColor;
     //_leftCyleButton.layer.borderWidth = 2;
-    _leftText = [[UILabel alloc] initWithFrame:CGRectMake(0, -5, 120, 46)];
-    _leftText.font = EZTitleSlimFont;
-    _leftText.textAlignment = NSTextAlignmentLeft;
-    _leftText.text = @"feather";
-    _leftText.textColor = [UIColor whiteColor];
-    [_leftCyleButton addSubview:_leftText];
+    //_leftText = [[UILabel alloc] initWithFrame:CGRectMake(0, -5, 120, 46)];
+    //_leftText.font = EZTitleSlimFont;
+    //_leftText.textAlignment = NSTextAlignmentLeft;
+    //_leftText.text = @"feather";
+    //_leftText.textColor = [UIColor whiteColor];
+    //[_leftCyleButton addSubview:_leftText];
     
-    CGSize reginSize = [_leftText sizeThatFits:CGSizeMake(999, 40)];
+    CGSize reginSize = [_leftCyleButton.titleLabel sizeThatFits:CGSizeMake(999, 40)];
     
-    _signRegion = [[UIView alloc] initWithFrame:CGRectMake(reginSize.width + 2,  0, 20, 46)];
+    _signRegion = [[UIView alloc] initWithFrame:CGRectMake(reginSize.width + 10,  0, 20, 46)];
     
     _numberLabel = [[EZUIUtility sharedEZUIUtility] createNumberLabel];
     _numberLabel.alpha = 0;
@@ -1764,7 +1841,7 @@ static int photoCount = 1;
     [_signRegion addSubview:_numberLabel];
     
     [_leftCyleButton addSubview:_signRegion];
-    _leftCyleButton.enableTouchEffects = FALSE;
+    //_leftCyleButton.enableTouchEffects = FALSE;
     //[_triangler enableShadow:[UIColor whiteColor]];
     
     //[_leftCyleButton enableRoundImage];
@@ -1779,19 +1856,19 @@ static int photoCount = 1;
     //[_leftContainer addSubview:_leftMessageCount];
     
     [TopView addSubview:_leftCyleButton];
-    _leftCyleButton.pressedBlock = ^(id obj){
-        [weakSelf.leftText setTextColor:ClickedColor];
-    };
-    _leftCyleButton.releasedBlock = ^(id obj){
-        weakSelf.leftMessageCount.hidden = YES;
-        
-        //dispatch_later(0.3, ^(){
-        [weakSelf.leftText setTextColor:[UIColor whiteColor]];
-        //});
-        [weakSelf showMenu:nil];
-        
-    };
-   
+    
+    [_leftCyleButton addTarget:self action:@selector(titleClicked:) forControlEvents:UIControlEventTouchUpInside];
+}
+
+- (void) titleClicked:(id)obj
+{
+    _leftMessageCount.hidden = YES;
+    
+    //dispatch_later(0.3, ^(){
+    //[weakSelf.leftText setTextColor:[UIColor whiteColor]];
+    //});
+    [self showMenu:nil];
+
 }
 
 - (void)didReceiveMemoryWarning
@@ -2032,9 +2109,9 @@ static int photoCount = 1;
         if(weakCell.currentPos != path.row || weakCell.rotateCount != rotateCount){
             return;
         }
-        if(count < 3){
-            [weakSelf loadImage:weakCell url:secondURL retry:count + 1 path:path];
-        }
+        //if(count < 3){
+        //    [weakSelf loadImage:weakCell url:secondURL retry:count + 1 path:path];
+        //}
         //[ai stopAnimating];
         //[ai removeFromSuperview];
     }];

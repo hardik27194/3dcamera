@@ -161,11 +161,12 @@ typedef enum {
 //@property (nonatomic, assign) BOOL uploadPhotoSuccess;
 //@property (nonatomic, assign) EZUploadStatus uploadStatus;
 
+
 @property (nonatomic, assign) EZUploadStatus contentStatus;
 
 @property (nonatomic, assign) EZUploadStatus infoStatus;
 
-@property (nonatomic, assign) EZUploadStatus exchangeStatus;
+@property (nonatomic, assign) EZExchangeStatus exchangeStatus;
 
 @property (nonatomic, assign) EZUpdateStatus updateStatus;
 
@@ -200,6 +201,9 @@ typedef enum {
 
 - (UIImage*) getThumbnail;
 
+//Set all the flag right, so that user will not upload the photo again.
+- (void) setFromServer;
+
 - (void) getAsyncImage:(EZEventBlock)block;
 
 - (NSDictionary*) toJson;
@@ -211,6 +215,5 @@ typedef enum {
 - (void) fromJson:(NSDictionary*)dict;
 
 - (BOOL) isUploadDone;
-
 
 @end

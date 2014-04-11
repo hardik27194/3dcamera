@@ -214,6 +214,7 @@
     [[UIBarButtonItem appearance] setTintColor:[UIColor whiteColor]];
     //UIImage *gradientImage44 =
     
+    [[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
     [[UINavigationBar appearance] setBackgroundImage:ClearBarImage forBarMetrics:UIBarMetricsDefault];
     [[UIScrollView appearance] setIndicatorStyle:UIScrollViewIndicatorStyleWhite];
     

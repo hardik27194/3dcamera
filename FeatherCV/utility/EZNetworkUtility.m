@@ -267,6 +267,19 @@ static EZNetworkUtility* instance;
     [uploadTask resume];
 }
 
++ (BOOL) isValidImage:(NSString*)imageFile
+{
+    NSData * theData = [NSData dataWithContentsOfMappedFile:imageFile];
+    //EZDEBUG(@"verify image total length:%i", theData.length);
+    uint8_t buffer[2];
+    [theData getBytes:buffer range:NSMakeRange(theData.length-2 ,2)];
+    EZDEBUG(@"byte is:%i, %i", buffer[0], buffer[1]);
+    if(buffer[0] == 0xFF && buffer[1] == 0xD9){
+        return true;
+    }
+    return false;
+}
+
 + (void) downloadImage:(NSString*)fullURL downloader:(EZDownloadHolder*)holder
 {
     
@@ -285,9 +298,15 @@ static EZNetworkUtility* instance;
     AFHTTPRequestOperation *operation = [manager HTTPRequestOperationWithRequest:request success:^(AFHTTPRequestOperation *operation, id responseObject) {
         EZDEBUG(@"successfully downloaded");
         NSString* fileURL = [NSString stringWithFormat:@"file://%@", filePath];
-        holder.downloaded = fileURL;
-        [holder callSuccess];
-        holder.isDownloading = false;
+        
+        if([self isValidImage:filePath]){
+            holder.downloaded = fileURL;
+            [holder callSuccess];
+            holder.isDownloading = false;
+        }else{
+            holder.isDownloading = false;
+            [holder callFailure:@"broken file"];
+        }
         //NSLog(@"SUCCCESSFULL IMG RETRIEVE to %@!",path);
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         EZDEBUG(@"fail to download:%@, error:%@", fullURL, error);

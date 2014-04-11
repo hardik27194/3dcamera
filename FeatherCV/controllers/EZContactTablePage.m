@@ -282,10 +282,10 @@
     }
     cell.headIcon.releasedBlock = ^(id object){
         EZDEBUG(@"Header clicked");
-        //[weakSelf.navigationController popToRootViewControllerAnimated:NO];
-        //dispatch_later(0.1,^(){
-        //    [[EZMessageCenter getInstance] postEvent:EZRaisePersonDetail attached:person];
-        //});
+        [weakSelf.navigationController popToRootViewControllerAnimated:NO];
+        dispatch_later(0.1,^(){
+            [[EZMessageCenter getInstance] postEvent:EZRaisePersonDetail attached:person];
+        });
         //[self.navigationController pushViewController:pd animated:YES];
     };
     

@@ -44,7 +44,7 @@
         };
         
         
-        EZClickView* clickView = [[EZClickView alloc] initWithFrame:CGRectMake(265, 0, 44, 60)];
+        //EZClickView* clickView = [[EZClickView alloc] initWithFrame:CGRectMake(265, 0, 44, 60)];
         
         _photoCount = [[UILabel alloc] initWithFrame:CGRectMake(200, (cellHeight - 14.0)/2.0, 30.0,14.0)];
         _photoCount.font = numberFontCN;
@@ -56,30 +56,23 @@
         //_notesNumber.center = CGPointMake(_name.frame.origin.x + _name.frame.size.width - 5 , (cellHeight - 14.0)/2.0);
         //[self.contentView addSubview:_notesNumber];
         
-        _inviteButton = [[UILabel alloc] initWithFrame:CGRectMake(0, (cellHeight - 40)/2.0, 40, 60)];
-        [clickView addSubview:_inviteButton];
-        
+        _inviteButton = [[UIButton alloc] initWithFrame:CGRectMake(265, 0, 40, 60)];
+        //[clickView addSubview:_inviteButton];
+        //[self.contentView addSubview:_inviteButton];
         //[_inviteButton setTitle:@"邀请" forState:UIControlStateNormal];
-        _inviteButton.font = buttonFontCN;
-        _inviteButton.text = @"邀请";
-        _inviteButton.textColor = [UIColor whiteColor];
+        _inviteButton.titleLabel.font = buttonFontCN;
+        //_inviteButton.text = @"邀请";
+        //_inviteButton.textColor = [UIColor whiteColor];
+        //_inviteButton.titleLabel.text = @"邀请";
+        [_inviteButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [_inviteButton setTitleColor:ClickedColor forState:UIControlStateHighlighted];
+        [_inviteButton setTitle:@"邀请" forState:UIControlStateNormal];
+        [_inviteButton setTitle:@"邀请" forState:UIControlStateHighlighted];
+        [_inviteButton addTarget:self action:@selector(inviteClicked:) forControlEvents:UIControlEventTouchUpInside];
         //[_inviteButton enableShadow:[UIColor blackColor]];
-        clickView.enableTouchEffects = false;
-        //[_inviteButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+                //[_inviteButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         //[_inviteButton addTarget:self action:@selector(inviteClicked:) forControlEvents:UIControlEventTouchUpInside];
-        clickView.releasedBlock = ^(id obj){
-            //[_inviteButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-            dispatch_later(0.3, ^(){
-                weakSelf.inviteButton.textColor = [UIColor whiteColor];
-            });
-            if(weakSelf.inviteClicked){
-                weakSelf.inviteClicked(nil);
-            }
-        };
-        clickView.pressedBlock = ^(id obj){
-            weakSelf.inviteButton.textColor = ClickedColor;
-        };
-        [self.contentView addSubview:clickView];
+        [self.contentView addSubview:_inviteButton];
         self.backgroundColor =[UIColor clearColor];
         self.contentView.backgroundColor = [UIColor clearColor];
     }
@@ -95,9 +88,11 @@
 
 - (void) inviteClicked:(id)obj
 {
+    dispatch_later(0.15, ^(){
     if(_inviteClicked){
         _inviteClicked(self);
     }
+    });
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated

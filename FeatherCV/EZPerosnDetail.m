@@ -186,8 +186,7 @@
 {
     if([_person.personID isEqualToString:currentLoginID]){
     
-    
-        
+    [[EZMessageCenter getInstance] postEvent:EZSetAlbumUser attached:currentLoginUser direct:YES];
     NSArray* photos = [[EZDataUtil getInstance] getStoredPhotos];
     EZDEBUG(@"Photos after cleaned:%i", photos.count);
     //[[EZDataUtil getInstance] cleanDBPhotos];

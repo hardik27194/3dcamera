@@ -122,7 +122,7 @@
 
 //@property (nonatomic, strong) UIView* leftContainer;
 
-@property (nonatomic, strong) EZClickView* leftCyleButton;
+@property (nonatomic, strong) UIButton* leftCyleButton;
 
 @property (nonatomic, strong) UILabel* leftText;
 

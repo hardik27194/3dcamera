@@ -177,6 +177,15 @@
     return (_contentStatus == kUploadDone && (_updateStatus == kUpdateDone || _updateStatus == kUpdateNone) && _infoStatus == kUploadDone && (_exchangeStatus == kExchangeNone || _exchangeStatus == kExchangeDone));
 }
 
+//Set all the flag right, so that user will not upload the photo again.
+- (void) setFromServer
+{
+    _contentStatus = kUploadDone;
+    _updateStatus = kUpdateDone;
+    _infoStatus = kUploadDone;
+    _exchangeStatus = kExchangeDone;
+}
+
 - (void) fromLocalJson:(NSDictionary*)dict
 {
     //EZDEBUG(@"from local json raw string:%@", dict);
