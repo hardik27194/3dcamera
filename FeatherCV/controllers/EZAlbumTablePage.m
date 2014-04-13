@@ -92,7 +92,7 @@ static int photoCount = 1;
     if(cp.isFirstTime){
        
         cp.isFirstTime = NO;
-        cell.firstTimeView.hidden = NO;
+        //cell.firstTimeView.hidden = NO;
         EZPerson* person = pid2person(switchPhoto.personID);
         EZDEBUG(@"name:%@, pendingCount:%i, photoID:%@", person.name, person.pendingEventCount, cp.photo.photoID);
         //person.pendingEventCount -= 1;
@@ -118,7 +118,7 @@ static int photoCount = 1;
             weakCell.requestInfo.text =[NSString stringWithFormat:@"\"%@\"发来的照片", otherPerson.name?otherPerson.name:@"朋友"];
             weakSelf.rightCycleButton.hidden = YES;
             cell.shotPhoto.hidden = NO;
-            cell.frontImage.backgroundColor = EZOrangeColor;
+            cell.frontImage.backgroundColor = ClickedColor;
             cell.otherIcon.hidden = YES;
             cell.otherName.hidden = YES;
             cell.otherTalk.hidden = YES;
@@ -512,11 +512,12 @@ static int photoCount = 1;
             [_leftCyleButton setTitle:EZOriginalTitle forState:UIControlStateNormal];
             _leftCyleButton.titleLabel.font = EZTitleSlimFont;
             
-            CGSize fitSize = [_leftCyleButton.titleLabel sizeThatFits:CGSizeMake(999, 40)];
-            EZDEBUG(@"fit size width:%f", fitSize.width);
+            CGSize fitSize = [_leftCyleButton.titleLabel sizeThatFits:CGSizeMake(230, 40)];
+            CGFloat width = fitSize.width > 230?230:fitSize.width;
+            EZDEBUG(@"fit size width:%f", width);
             //[_leftText setWidth:fitSize.width];
-            [_signRegion setX:fitSize.width + 10];
-            [_leftCyleButton setWidth:fitSize.width + 2];
+            [_signRegion setX:width + 10];
+            [_leftCyleButton setWidth:width + 2];
             [_combinedPhotos removeAllObjects];
             [_nonsplitted removeAllObjects];
             //
@@ -559,11 +560,12 @@ static int photoCount = 1;
         //_leftText.font = EZLargeFont;//titleFontCN;
         [_leftCyleButton setTitle:currentUser.name forState:UIControlStateNormal];
         _leftCyleButton.titleLabel.font= EZLargeFont;
-        CGSize fitSize = [_leftCyleButton.titleLabel sizeThatFits:CGSizeMake(999, 40)];
-        EZDEBUG(@"fit size for string:%@, size:%f", currentUser.name, fitSize.width);
+        CGSize fitSize = [_leftCyleButton.titleLabel sizeThatFits:CGSizeMake(230, 40)];
+        CGFloat width = fitSize.width > 230?230:fitSize.width;
+        EZDEBUG(@"fit size for string:%@, size:%f, width:%f", currentUser.name, fitSize.width, width);
         //[_leftText setWidth:fitSize.width];
-        [_leftCyleButton setWidth:fitSize.width + 2];
-        [_signRegion setX:fitSize.width + 10];
+        [_leftCyleButton setWidth:width + 2];
+        [_signRegion setX:width + 10];
         [_combinedPhotos removeAllObjects];
         [_nonsplitted removeAllObjects];
         NSArray* storedPhoto = nil;
@@ -1265,10 +1267,10 @@ static int photoCount = 1;
     };
 }
 
-- (int) findPhoto:(NSString*)photoID matchID:(NSString*)matchID
+- (int) findPhoto:(NSString*)photoID matchID:(NSString*)matchID  photos:(NSArray*)photos
 {
-    for(int i = 0; i < _combinedPhotos.count; i ++){
-        EZDisplayPhoto* dp = [_combinedPhotos objectAtIndex:i];
+    for(int i = 0; i < photos.count; i ++){
+        EZDisplayPhoto* dp = [photos objectAtIndex:i];
         if(dp.photo.photoRelations.count){
             EZPhoto* matchPhoto = [dp.photo.photoRelations objectAtIndex:0];
             if([photoID isEqualToString:dp.photo.photoID] && [matchPhoto.photoID isEqualToString:matchID]){
@@ -1279,13 +1281,33 @@ static int photoCount = 1;
     return -1;
 }
 
+- (int) findMainPhoto:(NSString*)photoID matchID:(NSString*)matchID  photos:(NSArray*)photos
+{
+    for(int i = 0; i < photos.count; i ++){
+        EZPhoto* photo = [photos objectAtIndex:i];
+        if(photo.photoRelations.count){
+            EZPhoto* matchPhoto = [photo.photoRelations objectAtIndex:0];
+            if([photoID isEqualToString:photo.photoID] && [matchPhoto.photoID isEqualToString:matchID]){
+                return i;
+            }
+        }
+    }
+    return -1;
+}
+
 - (void) insertUpload:(EZNote*)note
 {
     
-    int pos = [self findPhoto:note.srcID matchID:note.matchedID];
+    int pos = [self findPhoto:note.srcID matchID:note.matchedID photos:_combinedPhotos];
     EZDEBUG(@"upload srcPhotoID:%@, uploaded:%i, matchedID:%@, uploaded:%i, position:%i, match type:%i", note.srcPhoto.photoID, note.srcPhoto.uploaded, note.matchedID, note.matchedPhoto.uploaded, pos, note.matchedPhoto.type);
     if(pos <  0){
-        EZDEBUG(@"Quit for not find the id:%@", note.srcID);
+        EZDEBUG(@"Quit for not find the id:%@, let's find in total photos:%i", note.srcID, [EZDataUtil getInstance].mainNonSplits.count);
+        pos = [self findPhoto:note.srcID matchID:note.matchedID photos:[EZDataUtil getInstance].mainPhotos];
+        EZDisplayPhoto* disPhoto = [[EZDataUtil getInstance].mainPhotos objectAtIndex:pos];
+        disPhoto.isFront = NO;
+        disPhoto.photo.photoRelations = @[note.matchedPhoto];
+        disPhoto.isFirstTime = YES;
+        [[EZDataUtil getInstance] storeAllPhotos:@[disPhoto.photo]];
         return;
     }
     
@@ -1470,8 +1492,10 @@ static int photoCount = 1;
 {
     NSMutableArray* res = [[NSMutableArray alloc] init];
     for(EZPhoto* pt in photos){
+        //EZDEBUG(@"photo comments:%@", pt.conversations);
         for(EZPhoto* subPt in pt.photoRelations){
-            EZPhoto* orgCopy = pt.copy;
+            EZPhoto* orgCopy = pt.copy;//[pt copyWithZone:nil];
+            //EZDEBUG(@"copy comments:%@", orgCopy.conversations);
             orgCopy.photoRelations = @[subPt];
             [res addObject:orgCopy];
         }

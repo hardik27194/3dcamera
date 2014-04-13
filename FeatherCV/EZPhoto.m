@@ -215,8 +215,8 @@
     pt.shareStatus = _shareStatus;
     pt.size = _size;
     pt.createdTime = _createdTime;
-    pt.conversations = pt.conversations;
-    pt.photoRelations = pt.photoRelations;
+    pt.conversations = _conversations;
+    pt.photoRelations = _photoRelations;
     pt.screenURL = _screenURL;
     pt.likedUsers = _likedUsers;
     pt.infoStatus = _infoStatus;

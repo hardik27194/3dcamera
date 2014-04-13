@@ -678,12 +678,12 @@
     NSString* instr = nil;
     if(_personID){
         person = pid2person(_personID);
-        instr = @"发送";
+        instr = macroControlInfo(@"发送");
     }else
     if(_isPhotoRequest){
         EZPhoto* otherPhoto = [_disPhoto.photo.photoRelations objectAtIndex:0];
         person = pid2person(otherPhoto.personID);
-        instr = @"回复";
+        instr = macroControlInfo(@"回复");
     }
     macroHideStatusBar(YES);
     EZDEBUG(@"person name:%@", person.name);
@@ -703,12 +703,12 @@
         //if(fit.width > 60){
         _backButton.width = fit.width;
         
-        UILabel* instrTitle = [[UILabel alloc] initWithFrame:CGRectMake(3, -5, 30, 12)];
-        instrTitle.font = [UIFont boldSystemFontOfSize:10];
-        instrTitle.textAlignment = NSTextAlignmentLeft;
-        instrTitle.textColor = [UIColor whiteColor];
-        instrTitle.text = instr;
-        [_backButton addSubview:instrTitle];
+        _instrTitle = [[UILabel alloc] initWithFrame:CGRectMake(3, -4, 30, 12)];
+        _instrTitle.font = [UIFont boldSystemFontOfSize:10];
+        _instrTitle.textAlignment = NSTextAlignmentLeft;
+        _instrTitle.textColor = [UIColor whiteColor];
+        _instrTitle.text = instr;
+        [_backButton addSubview:_instrTitle];
         //}
         //UIBarButtonItem *quitItem = [[UIBarButtonItem alloc]
                                //initWithCustomView:_backButton];
@@ -2956,7 +2956,7 @@ context:(void *)context
         [self prepareForCapture];
     }else{
         //Mean the upload started, at least mean the photo already stored.
-        
+        _instrTitle.hidden = YES;
         if(_uploadStatus != kInitialUploading){
             
             _toolBarRegion.alpha = 0.0;
