@@ -38,7 +38,7 @@
 
 @property (nonatomic, strong) NSMutableArray* mainPhotos;
 
-@property (nonatomic, strong) NSMutableArray* mainNonSplits;
+//@property (nonatomic, strong) NSMutableArray* mainNonSplits;
 
 //This queue are used to execute the task without blocking the front end
 @property (nonatomic, strong) dispatch_queue_t asyncQueue;
@@ -301,5 +301,8 @@
 - (void) addPendingUpload:(EZPhoto*)photo;
 
 - (void) storePendingPhoto;
+
+//Will return the array which will have the photo displayed for the firstTime
+- (NSArray*) getFirstTimeArray;
 
 @end

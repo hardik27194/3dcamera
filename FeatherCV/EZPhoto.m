@@ -321,6 +321,15 @@
     return  [UIImage imageWithContentsOfFile:_assetURL];
 }
 
+- (NSString*) getConversation
+{
+    if(_conversations.count){
+        NSDictionary* convs = [_conversations objectAtIndex:0];
+        return [convs objectForKey:@"text"];
+    }
+    //cell.ownTalk.text = [conversation objectForKey:@"text"];
+    return @"";
+}
 
 - (void) getAsyncImage:(EZEventBlock)block
 {

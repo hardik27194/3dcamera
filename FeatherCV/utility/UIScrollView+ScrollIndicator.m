@@ -10,10 +10,10 @@
 #import <objc/runtime.h>
 #import <QuartzCore/QuartzCore.h>
 
-#define JMOScrollIndicatorHeight 7.0f
+#define JMOScrollIndicatorHeight 4.0f
 #define JMOScrollIndicatorHeightPageControl 20.0f
 #define JMOScrollIndicatorBottomSpace 2.0f
-#define JMOScrollIndicatorWidth 50.0f
+#define JMOScrollIndicatorWidth 30.0f
 
 #define JMOScrollIndicatorPageControlNumberOfPages 5
 

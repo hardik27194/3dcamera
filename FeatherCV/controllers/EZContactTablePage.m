@@ -141,6 +141,29 @@
     //}
 }
 
+- (NSArray*) getAllWaitRequests
+{
+    NSMutableArray* res = [[NSMutableArray alloc] init];
+    
+    NSArray* srcArr = [EZDataUtil getInstance].mainPhotos;
+    if(!srcArr.count){
+        srcArr = [[EZDataUtil getInstance] getStoredPhotos];
+    }
+    
+    
+    //[EZDataUtil getInstance].mainPhotos];
+    //[_nonsplitted addObjectsFromArray:[EZDataUtil getInstance].mainNonSplits];
+    for(EZDisplayPhoto* dp in srcArr){
+        EZPhoto* otherSide = dp.photo.photoRelations.count?[dp.photo.photoRelations objectAtIndex:0]:nil;
+        if(dp.photo.type == kPhotoRequest){
+            [res addObject:dp];
+        }else if(otherSide.type  == kPhotoRequest){
+            [res addObject:dp];
+        }
+    }
+    return res;
+}
+
 
 - (void)viewDidLoad
 {
@@ -148,14 +171,47 @@
     _photoCountMap = [[NSMutableDictionary alloc] init];
    
     NSArray* allPhotos = [NSArray arrayWithArray:[EZDataUtil getInstance].mainPhotos];
+    EZPerson* personNew = [[EZPerson alloc] init];
+    personNew.name = @"新照片";
+    personNew.filterType = kPhotoNewFilter;
+    personNew.joined = YES;
+    
+    EZPerson* personWait = [[EZPerson alloc] init];
+    personWait.name = @"待拍摄";
+    personWait.joined = YES;
+    personWait.filterType = kPhotoWaitFilter;
+    
+    
+    EZDEBUG(@"AllPhotos count:%i", allPhotos.count);
     for(EZDisplayPhoto* ph in allPhotos){
-        EZPhoto* matchedPh = [ph.photo.photoRelations objectAtIndex:0];
+        if(ph.isFirstTime){
+            personNew.photoCount += 1;
+            personNew.pendingEventCount += 1;
+        }
+
+        for(EZPhoto* matchedPh in ph.photo.photoRelations){
+        //EZPhoto* matchedPh = [ph.photo.photoRelations objectAtIndex:0];
         EZPerson* ps = pid2person(matchedPh.personID);
+        if(ph.photo.type == kPhotoRequest){
+            personWait.photoCount += 1;
+            personWait.pendingEventCount += 1;
+        }else
+        if(matchedPh.type == kPhotoRequest){
+            personWait.photoCount += 1;
+            personWait.pendingEventCount += 1;
+        }
+        
+
+        if(!ps.personID){
+            continue;
+        }
+            
         NSNumber* count = [_photoCountMap objectForKey:ps.personID];
         //if(count){
         //    count.integerValue += 1;
         //}
         [_photoCountMap setValue:@(count.integerValue + 1) forKey:ps.personID];
+        }
     }
     [_photoCountMap setValue:@(allPhotos.count) forKey:currentLoginID];
     
@@ -163,6 +219,9 @@
     NSArray* arrs = [[EZDataUtil getInstance] getStoredPersonLists];
     EZDEBUG(@"after person");
     [_contacts addObjectsFromArray:arrs];
+    
+    [_contacts insertObject:personNew atIndex:1];
+    [_contacts insertObject:personWait atIndex:2];
     __weak EZContactTablePage* weakSelf = self;
     EZDEBUG(@"Stored person count:%i, arrs:%i", _contacts.count, arrs.count);
     if(![EZDataUtil getInstance].contacts.count){
@@ -229,20 +288,20 @@
     
     EZPerson* person = [_contacts objectAtIndex:indexPath.row];
     if(indexPath.row == 0){
-        cell.name.text = @"所有照片";
+        cell.name.text = @"我的所有照片";
         EZDEBUG(@"current user id:%@, this id:%@", currentLoginID, person.personID);
     }else{
         cell.name.text = person.name;
     }
     
-    if(person.pendingEventCount > 0){
+    //if(person.pendingEventCount > 0){
         //cell.notesNumber.alpha = 1.0;
         //cell.notesNumber.text = int2str(person.pendingEventCount);
-        cell.photoCount.textColor = [UIColor redColor];
-    }else{
+    //    cell.photoCount.textColor = [UIColor redColor];
+    //}else{
         //cell.notesNumber.alpha = 0.0;
-        cell.photoCount.textColor = [UIColor whiteColor];
-    }
+    //    cell.photoCount.textColor = [UIColor whiteColor];
+    //}
     
     NSNumber* photoCount = [_photoCountMap objectForKey:person.personID];
     if(photoCount){
@@ -250,8 +309,19 @@
     }else{
         cell.photoCount.text = nil;
     }
+    
+    if(person.filterType){
+        cell.photoCount.text = int2str(person.photoCount);
+    }
+    
     //[(UIImageView*)cell.headIcon setImageWithURL:str2url(person.avatar)];
-    cell.headIcon.backgroundColor = randBack(nil);
+    if(person.filterType){
+        cell.headIcon.hidden = YES;
+    }else{
+        cell.headIcon.hidden = NO;
+    }
+    //cell.headIcon.backgroundColor = randBack(nil);
+    
     cell.clickRegion.releasedBlock = ^(id object){
         EZDEBUG(@"region clicked");
         //[[EZMessageCenter getInstance]postEvent:EZScreenSlide attached:@(1)];

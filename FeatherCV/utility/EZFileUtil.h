@@ -46,6 +46,7 @@ static EZLRUMap* imageCaches;
 + (NSString*) saveImageToCacheWithName:(UIImage*)img filename:(NSString*)filename;
 + (NSString*) saveImageToCache:(UIImage*)img;
 
++ (BOOL) isValidImage:(NSString*)imageFile;
 
 + (NSString*) isExistInDocument:(NSString*)fileName;
 

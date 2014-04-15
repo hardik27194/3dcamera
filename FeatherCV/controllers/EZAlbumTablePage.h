@@ -28,7 +28,7 @@
 //The photo not splitted yet.
 //So the startPage will based on this list
 //So I can get the correct photo back.
-@property (nonatomic, strong) NSMutableArray* nonsplitted;
+//@property (nonatomic, strong) NSMutableArray* nonsplitted;
 
 //@property (nonatomic, strong) UISwipeGestureRecognize
 

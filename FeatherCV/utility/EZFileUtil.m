@@ -383,6 +383,19 @@
     return fileURLS;
 }
 
++ (BOOL) isValidImage:(NSString*)imageFile
+{
+    NSData * theData = [NSData dataWithContentsOfMappedFile:imageFile];
+    //EZDEBUG(@"verify image total length:%i", theData.length);
+    uint8_t buffer[2];
+    [theData getBytes:buffer range:NSMakeRange(theData.length-2 ,2)];
+    EZDEBUG(@"byte is:%i, %i", buffer[0], buffer[1]);
+    if(buffer[0] == 0xFF && buffer[1] == 0xD9){
+        return true;
+    }
+    return false;
+}
+
 + (void) removeAllFileWithSuffix:(NSString*)suffix
 {
     NSArray* urls = [EZFileUtil listAllFiles:NSCachesDirectory];
@@ -504,7 +517,11 @@
     NSString *documentsPath = [paths objectAtIndex:0]; //Get the docs directory
     NSString *fullPath = [documentsPath stringByAppendingPathComponent:fileName];
     if([[NSFileManager defaultManager] fileExistsAtPath:fullPath]){
-        return [@"file://" stringByAppendingString:fullPath];
+        if([self isValidImage:fullPath]){
+            return [@"file://" stringByAppendingString:fullPath];
+        }else{
+            EZDEBUG(@"Found broken file:%@", fileName);
+        }
     }
     return nil;
 }

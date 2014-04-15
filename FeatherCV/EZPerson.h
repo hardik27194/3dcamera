@@ -9,6 +9,12 @@
 #import <Foundation/Foundation.h>
 #import "LocalPersons.h"
 
+typedef enum {
+    kPersonFilter,
+    kPhotoWaitFilter,
+    kPhotoNewFilter
+}EZFilterType;
+
 @interface EZPerson : NSObject
 
 @property (nonatomic, strong) NSString* personID;
@@ -26,6 +32,8 @@
 @property (nonatomic, assign) BOOL mock;
 
 @property (nonatomic, strong) NSDate* joinedTime;
+
+@property (nonatomic, assign) EZFilterType filterType;
 
 //If this user is already feather client or not
 //joined is good enough

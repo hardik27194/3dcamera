@@ -15,6 +15,8 @@
 #import "UIImageView+AFNetworking.h"
 #import "EZSimpleClick.h"
 #import "EZShapeButton.h"
+#import "EZScrollViewer.h"
+#import "EZDataUtil.h"
 
 #define kHeartRadius 35
 
@@ -190,7 +192,7 @@
         [_container addSubview:_shotPhoto];
         _shotPhoto.enableTouchEffects = true;
         _shotPhoto.hidden = YES;
-        _shotPhoto.pressedColor = EZOrangeColor;
+        _shotPhoto.pressedColor = ClickedColor;
         
         //[self createTimeLabel];
         //[_frontImage addSubview:_toolRegion];
@@ -202,6 +204,9 @@
         _activityView.center = CGPointMake(_frontImage.width/2.0, _frontImage.height/2.0);
         [_frontImage addSubview:_activityView];
         
+        //_scrollView = [[EZScrollViewer alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, CurrentScreenHeight)];
+        //[_frontImage addSubview:_scrollView];
+        
         _firstTimeView = [[EZUIUtility sharedEZUIUtility] createNumberLabel];
         [_firstTimeView setPosition:CGPointMake(30, 70)];
         [self.contentView addSubview:_firstTimeView];
@@ -210,6 +215,7 @@
 
         
     }
+    EZDEBUG(@"PhotoCell init completed");
     return self;
 }
 
@@ -226,6 +232,7 @@
         [_otherIcon enableShadow:[UIColor blackColor]];
         [_otherTalk enableShadow:[UIColor blackColor]];
         [_otherName enableShadow:[UIColor blackColor]];
+        [_frontImage setFront:NO];
     }else{
         [_otherName disableShadow];
         [_otherTalk disableShadow];
@@ -233,7 +240,7 @@
         [_headIcon enableShadow:[UIColor blackColor]];
         [_ownTalk enableShadow:[UIColor blackColor]];
         [_authorName enableShadow:[UIColor blackColor]];
-        
+        [_frontImage setFront:YES];
     }
     
     //_otherIcon.alpha = otherAlpha;
@@ -270,7 +277,20 @@
     return rotateContainer;
 }
 
-- (EZSimpleClick*) createFrontImage
+
+- (EZScrollViewer*) createFrontImage
+{
+    EZScrollViewer* frontImage = [[EZScrollViewer alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, CurrentScreenHeight)];
+    frontImage.imageView.contentMode = UIViewContentModeScaleAspectFill;
+    frontImage.imageView.backgroundColor = ClickedColor;
+    frontImage.imageView.clipsToBounds = true;
+    //frontImage.clipsToBounds = true;
+    frontImage.backgroundColor = ClickedColor;
+    //[frontImage enableRoundImage];
+    return frontImage;
+}
+
+- (EZSimpleClick*) createFrontImageOld
 {
     EZSimpleClick* frontImage = [[EZSimpleClick alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, CurrentScreenHeight)];
     frontImage.contentMode = UIViewContentModeScaleAspectFill;
@@ -353,25 +373,6 @@
     
 }
 
-- (void) displayEffectImage:(UIImage*)img
-{
-    CGSize imgSize = img.size;
-    CGFloat adjustedHeight = [self calHeight:imgSize];
-    CGRect adjustedFrame = CGRectMake(0, 0, 320, adjustedHeight);
-    if(!_frontImage){
-        //_frontImage = [EZStyleImage createFilteredImage:adjustedFrame];
-        _frontImage = [[UIImageView alloc] initWithFrame:adjustedFrame];
-        //_frontImage.contentMode = UIViewContentModeScaleAspectFill;
-        [_container setFrame:adjustedFrame];
-        [_container addSubview:_frontImage];
-    }else{
-        [_frontImage setFrame:adjustedFrame];
-        [_container setFrame:adjustedFrame];
-        [_container addSubview:_frontImage];
-    }
-    [_frontImage setImage:img];
-}
-
 
 - (void) displayImage:(UIImage*)img
 {
@@ -426,6 +427,9 @@
         }else{
             //[_frontImage setImageWithURL:str2url(curPhoto.screenURL) placeholderImage:placeholdImage];
             [_frontImage setImageWithURL:str2url(curPhoto.screenURL)];
+           // NSString* localFull = preloadimage(curPhoto.screenURL);
+            //[_frontImage setImage:]
+            
         }
         [UIView flipTransition:srcView dest:_rotateContainer container:_container isLeft:YES duration:2 complete:^(id obj){
             [srcView removeFromSuperview];

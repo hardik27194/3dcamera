@@ -201,6 +201,7 @@ typedef enum {
 
 - (UIImage*) getThumbnail;
 
+- (NSString*) getConversation;
 //Set all the flag right, so that user will not upload the photo again.
 - (void) setFromServer;
 

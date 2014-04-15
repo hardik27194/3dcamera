@@ -50,6 +50,10 @@ typedef enum {
 //Once this one get displayed, I will disappear.
 @property (nonatomic, assign) BOOL isFirstTime;
 
+
+//Only display a single photo
+@property (nonatomic, assign) BOOL isSingle;
+
 //Some animation will need to be used.
 @property (nonatomic, strong) EZEventBlock turningAnimation;
 
@@ -66,6 +70,8 @@ typedef enum {
 
 @property (nonatomic, assign) BOOL isLoading;
 
+//The photo will be displayed.
+@property (nonatomic, assign) int photoPos;
 //What's the status of the turning angle.
 //To visualize the whole process, is that, we will uploading the image
 //In the meanwhile, we will try to download the image.

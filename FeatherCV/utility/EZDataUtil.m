@@ -65,7 +65,7 @@
     _recievedNotify = [[NSMutableDictionary alloc] init];
     //Move to the persistent later.
     //Now keep it simple and stupid
-    _mainNonSplits = [[NSMutableArray alloc] init];
+    //_mainNonSplits = [[NSMutableArray alloc] init];
     _mainPhotos = [[NSMutableArray alloc] init];
     _pendingUploads = [[NSMutableArray alloc] init];
     _prefetchImage = [[UIImageView alloc] init];
@@ -305,6 +305,29 @@
         } failblk:failure];
 
 }
+
+- (NSArray*) getFirstTimeArray
+{
+    NSMutableArray* res = [[NSMutableArray alloc] init];
+    
+    NSArray* srcArr = [EZDataUtil getInstance].mainPhotos;
+    EZDEBUG(@"First time from main:%i", srcArr.count);
+    
+    //if(!srcArr.count){
+    //    srcArr = [[EZDataUtil getInstance] getStoredPhotos];
+    //}
+    //EZDEBUG(@"Read from stored:%i", srcArr.count);
+    //[EZDataUtil getInstance].mainPhotos];
+    //[_nonsplitted addObjectsFromArray:[EZDataUtil getInstance].mainNonSplits];
+    for(EZDisplayPhoto* dp in srcArr){
+        //EZPhoto* otherSide = dp.photo.photoRelations.count?[dp.photo.photoRelations objectAtIndex:0]:nil;
+        if(dp.isFirstTime){
+            [res addObject:dp];
+        }
+    }
+    return res;
+}
+
 //
 - (void) queryPhotos:(int)page pageSize:(int)pageSize otherID:(NSString *)otherID success:(EZEventBlock)success failure:(EZEventBlock)failure
 {
@@ -344,18 +367,8 @@
                                      }
                                  }
                              }else{
-                             if(!photo.photoRelations.count){
                                  [res addObject:photo];
-                             }else{
-                                 [res addObject:photo];
-                                 for(int i = 1; i < photo.photoRelations.count; i++){
-                                     EZPhoto* ph = [photo copy];//[[EZPhoto alloc] init];
-                                     //[ph fromJson:dict];
-                                     ph.photoRelations = @[[photo.photoRelations objectAtIndex:i]];
-                                     [res addObject:ph];
-                                 }
-                             }
-                             }
+                            }
                          }
                          if(success){
                              success([[EZResult alloc] initWithCount:totalCount array:res]);
@@ -739,7 +752,7 @@
     [[EZDataUtil getInstance].pendingUploads removeAllObjects];
     [[EZDataUtil getInstance].currentQueryUsers removeAllObjects];
     [[EZDataUtil getInstance].sortedUsers removeAllObjects];
-    [[EZDataUtil getInstance].mainNonSplits removeAllObjects];
+    //[[EZDataUtil getInstance].mainNonSplits removeAllObjects];
     [[EZDataUtil getInstance].mainPhotos removeAllObjects];
     [EZCoreAccessor cleanClientDB];
 }
