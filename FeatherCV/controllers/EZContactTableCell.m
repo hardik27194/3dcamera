@@ -82,7 +82,11 @@
 - (void) fitLine
 {
     CGSize sizeToFit = [self.name sizeThatFits:CGSizeMake(200, _name.frame.size.height)];
-    [_photoCount setX:_name.frame.origin.x + sizeToFit.width + 10];
+    CGFloat width = sizeToFit.width;
+    if(width > 180){
+        width = 180;
+    }
+    [_photoCount setX:_name.frame.origin.x + width + 10];
     //[_notesNumber setX:self.name.frame.origin.x + sizeToFit.width + 10];
 }
 

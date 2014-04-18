@@ -27,6 +27,8 @@ typedef enum {
 
 @property (nonatomic, strong) NSString* email;
 
+@property (nonatomic, strong) NSString* pushToken;
+
 //A default user
 //Anything need a mock user to success
 @property (nonatomic, assign) BOOL mock;

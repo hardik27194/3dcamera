@@ -63,6 +63,8 @@
     _localPhotos = [[NSMutableArray alloc] init];
     _pendingPhotos = [[NSMutableArray alloc] init];
     _recievedNotify = [[NSMutableDictionary alloc] init];
+    _pushNotes = [[NSMutableDictionary alloc] init];
+    _mobileNumbers = [[NSMutableArray alloc] init];
     //Move to the persistent later.
     //Now keep it simple and stupid
     //_mainNonSplits = [[NSMutableArray alloc] init];
@@ -259,7 +261,11 @@
 
 - (void) registerUser:(NSDictionary*)person success:(EZEventBlock)success error:(EZEventBlock)error
 {
-    [EZNetworkUtility postJson:@"register" parameters:person complete:^(NSDictionary* dict){
+    
+    NSMutableDictionary* md = [[NSMutableDictionary alloc] initWithDictionary:person];
+    EZDEBUG(@"current login languge:%@", currentLocalLang);
+    [md setValue:currentLocalLang forKey:@"lang"];
+    [EZNetworkUtility postJson:@"register" parameters:md complete:^(NSDictionary* dict){
         EZPerson* person = [self addPersonToStore:dict isQuerying:NO];
         self.currentPersonID  = person.personID;
         self.currentLoginPerson = person;
@@ -464,6 +470,7 @@
         }
         currPerson.activityCount = 1;
         [self adjustActivity:currPerson.personID];
+        [[EZDataUtil getInstance] storeAllPersons:@[currPerson]];
     }
     [[EZMessageCenter getInstance] postEvent:EZRecievedNotes attached:note];
 }
@@ -477,6 +484,11 @@
         EZDEBUG(@"pause notification for shot");
         return;
     }
+    if(_isQueryingNotes){
+        EZDEBUG(@"querying note quit");
+        return;
+    }
+    _isQueryingNotes = true;
     [EZNetworkUtility postJson:@"notify" parameters:nil complete:^(NSArray* notes){
         EZDEBUG("notes count:%i", notes.count);
         int count = 0;
@@ -490,8 +502,10 @@
                 [self populateNotification:dict];
             }
         }
+        _isQueryingNotes = false;
         EZDEBUG(@"no notification count %i", count);
     } failblk:^(id err){
+        _isQueryingNotes = false;
         EZDEBUG(@"Failed to query notification:%@", err);
     }];
 }
@@ -501,7 +515,7 @@
     EZDEBUG(@"Begin call exchange photo");
     //NSDictionary* dict = [photo toJson];
     NSMutableDictionary* dict = [[NSMutableDictionary alloc] init];
-    if(matchPersonID){
+    if([matchPersonID isNotEmpty]){
         [dict setValue:matchPersonID forKey:@"personID"];
     }
     if(photoID){
@@ -749,6 +763,8 @@
 {
     [EZDataUtil getInstance].currentPersonID = nil;
     [EZDataUtil getInstance].currentLoginPerson = nil;
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:EZTokenUploaded];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:EZUploadedMobile];
     [[EZDataUtil getInstance].pendingUploads removeAllObjects];
     [[EZDataUtil getInstance].currentQueryUsers removeAllObjects];
     [[EZDataUtil getInstance].sortedUsers removeAllObjects];
@@ -800,7 +816,11 @@
 
 - (void) loginUser:(NSDictionary*)loginInfo success:(EZEventBlock)success error:(EZEventBlock)error
 {
-    [EZNetworkUtility postJson:@"login" parameters:loginInfo complete:^(NSDictionary* dict){
+    NSMutableDictionary* md = [[NSMutableDictionary alloc] initWithDictionary:loginInfo];
+    EZDEBUG(@"current login languge:%@", currentLocalLang);
+    [md setValue:currentLocalLang forKey:@"lang"];
+    
+    [EZNetworkUtility postJson:@"login" parameters:md complete:^(NSDictionary* dict){
         EZPerson* person = [self addPersonToStore:dict isQuerying:NO];//[[EZPerson alloc] init];
         //[person fromJson:dict];
         self.currentPersonID = person.personID;
@@ -880,9 +900,7 @@
             [sortedPids addObject:pid];
         }
     }
-    
     EZDEBUG(@"Current QueryUser:%i, sortedPids:%i", _currentQueryUsers.count, _sortedUserSets.count);
-    
     if(sortedPids.count){
         for(NSString* pid in sortedPids){
             EZPerson* ps = [_currentQueryUsers objectForKey:pid];
@@ -965,6 +983,8 @@
                                                      person.name = name;
                                                      person.mobile = phone;
                                                      person.email = email;
+                                                     if(phone)
+                                                         [_mobileNumbers addObject:phone];
                                                      //if(i % 2 == 0){
                                                      //    person.joined = true;
                                                      //    person.avatar = [EZFileUtil fileToURL:@"header_1.png"].absoluteString;
@@ -990,7 +1010,6 @@
                                                      [[EZMessageCenter getInstance] registerEvent:EZUserAuthenticated block:uploadBlock];
                                                  }
                                                  **/
-
                                                  [[EZMessageCenter getInstance] postEvent:EZContactsReaded attached:res];
                                                 });
     });
@@ -1183,6 +1202,20 @@
     
 }
 
+- (void) uploadMobile:(NSArray*)arr success:(EZEventBlock)success
+{
+    
+    [EZNetworkUtility postParameterAsJson:@"person/info" parameters:@{@"cmd":@"mobileupload", @"mobiles":_mobileNumbers} complete:^(id info){
+        //EZDEBUG(@"upload mobile success:%@", info);
+        if(success){
+            success(info);
+        }
+    } failblk:^(id info){
+        EZDEBUG(@"error upload %@",info);
+    }];
+
+}
+
 
 - (void) prefetchImage:(NSString*) url success:(EZEventBlock)success failure:(EZEventBlock)failure
 {
@@ -1198,6 +1231,7 @@
         //ps.personID = personID;
         //ps.isQuerying = true;
         [_currentQueryUsers setObject:person forKey:person.personID];
+        [self storeAllPersons:@[person]];
         ps = person;
     }else{
         [ps copyValue:person];
@@ -1416,6 +1450,23 @@
     //[[EZCoreAccessor getClientAccessor] saveContext];
 }
 
+- (void) updatePerson:(NSDictionary*)dict success:(EZEventBlock)success failure:(EZEventBlock)failure
+{
+    EZDEBUG(@"Begin updatePerson");
+    //NSDictionary* dict = [photo toJson];
+    //NSMutableDictionary* dict = [[NSMutableDictionary alloc] init];
+    NSDictionary* payload = @{
+                              @"persons":dict,
+                              @"cmd":@"update"
+                              };
+    [EZNetworkUtility postJson:@"person/info" parameters:payload complete:^(id obj){
+        EZDEBUG(@"update preson:%@", obj);
+        if(success){
+            success(obj);
+        }
+    } failblk:failure];
+}
+
 - (void) uploadPendingPhoto
 {
     if(_pauseUpload){
@@ -1519,7 +1570,6 @@
                     photo.uploaded = TRUE;
                     photo.progress = nil;
                     photo.type = kNormalPhoto;
-                    [[EZDataUtil getInstance]storeAllPhotos:@[photo]];
                     --_uploadingTasks;
                     if(photo.photoRelations.count){
                         //photo.uploadStatus = kUploadDone;
@@ -1529,6 +1579,10 @@
                         photo.uploadSuccess = nil;
                     }else{
                         photo.exchangeStatus = kExchangeStart;
+                        
+                    }
+                    [[EZDataUtil getInstance]storeAllPhotos:@[photo]];
+                    if(photo.exchangeStatus == kExchangeStart){
                         exchangeContent(photo);
                     }
                     

@@ -53,6 +53,9 @@
 		184DBE8218BDA16E00239F0F /* EZSharpenGaussian.m in Sources */ = {isa = PBXBuildFile; fileRef = 184DBE8118BDA16E00239F0F /* EZSharpenGaussian.m */; };
 		184DBE8918BE2B5800239F0F /* EZChromaBiFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 184DBE8818BE2B5800239F0F /* EZChromaBiFilter.m */; };
 		18512A331861BE6300282264 /* shot_voice.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 18512A321861BE6300282264 /* shot_voice.aiff */; };
+		185CE25F18FFAE760037947A /* EZPageControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 185CE25E18FFAE760037947A /* EZPageControl.m */; };
+		185CE266190123ED0037947A /* libMobClickLibrary_armv6.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 185CE263190123ED0037947A /* libMobClickLibrary_armv6.a */; };
+		185CE267190123ED0037947A /* libMobClickLibrary.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 185CE264190123ED0037947A /* libMobClickLibrary.a */; };
 		1862FC6C18FA760F00C2D0B5 /* EZScrollViewer.m in Sources */ = {isa = PBXBuildFile; fileRef = 1862FC6B18FA760F00C2D0B5 /* EZScrollViewer.m */; };
 		1866AD8C1890FC7000DB46E2 /* EZSkinBrighter.m in Sources */ = {isa = PBXBuildFile; fileRef = 1866AD8B1890FC7000DB46E2 /* EZSkinBrighter.m */; };
 		1866AD9C18965EF000DB46E2 /* EZCycleTongFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 1866AD9B18965EF000DB46E2 /* EZCycleTongFilter.m */; };
@@ -389,6 +392,11 @@
 		184DBE8718BE2B5800239F0F /* EZChromaBiFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZChromaBiFilter.h; sourceTree = "<group>"; };
 		184DBE8818BE2B5800239F0F /* EZChromaBiFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZChromaBiFilter.m; sourceTree = "<group>"; };
 		18512A321861BE6300282264 /* shot_voice.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = shot_voice.aiff; sourceTree = "<group>"; };
+		185CE25D18FFAE760037947A /* EZPageControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZPageControl.h; sourceTree = "<group>"; };
+		185CE25E18FFAE760037947A /* EZPageControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZPageControl.m; sourceTree = "<group>"; };
+		185CE263190123ED0037947A /* libMobClickLibrary_armv6.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libMobClickLibrary_armv6.a; sourceTree = "<group>"; };
+		185CE264190123ED0037947A /* libMobClickLibrary.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libMobClickLibrary.a; sourceTree = "<group>"; };
+		185CE265190123ED0037947A /* MobClick.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MobClick.h; sourceTree = "<group>"; };
 		1862FC6A18FA760F00C2D0B5 /* EZScrollViewer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZScrollViewer.h; sourceTree = "<group>"; };
 		1862FC6B18FA760F00C2D0B5 /* EZScrollViewer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZScrollViewer.m; sourceTree = "<group>"; };
 		1866AD8A1890FC7000DB46E2 /* EZSkinBrighter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZSkinBrighter.h; sourceTree = "<group>"; };
@@ -731,6 +739,8 @@
 				18E346D1183DF6FD00C9D89D /* QuartzCore.framework in Frameworks */,
 				18E346CF183DF6EB00C9D89D /* OpenGLES.framework in Frameworks */,
 				18E346CD183DF6D700C9D89D /* GLKit.framework in Frameworks */,
+				185CE267190123ED0037947A /* libMobClickLibrary.a in Frameworks */,
+				185CE266190123ED0037947A /* libMobClickLibrary_armv6.a in Frameworks */,
 				18E346CB183DF6C400C9D89D /* CoreMedia.framework in Frameworks */,
 				18E346C9183DF6B700C9D89D /* CoreLocation.framework in Frameworks */,
 				18E346C7183DF6AF00C9D89D /* CoreImage.framework in Frameworks */,
@@ -785,6 +795,16 @@
 				182A55061862C71A003D4A01 /* GPUImageTests.octest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		185CE262190123DF0037947A /* umeng */ = {
+			isa = PBXGroup;
+			children = (
+				185CE263190123ED0037947A /* libMobClickLibrary_armv6.a */,
+				185CE264190123ED0037947A /* libMobClickLibrary.a */,
+				185CE265190123ED0037947A /* MobClick.h */,
+			);
+			name = umeng;
 			sourceTree = "<group>";
 		};
 		1866AD9F18966E5200DB46E2 /* animation */ = {
@@ -983,6 +1003,7 @@
 		18E34685183DF54400C9D89D /* FeatherCV */ = {
 			isa = PBXGroup;
 			children = (
+				185CE262190123DF0037947A /* umeng */,
 				181608DD18B7333E00DD5995 /* login */,
 				18E746C518A4A26A0023967B /* afnetwork */,
 				18C0E7691861A07200D694CE /* sound_effects */,
@@ -1189,6 +1210,8 @@
 				184ADD8218C8ACA200367527 /* EZShapeButton.m */,
 				184ADD8B18CDA96200367527 /* EZDownloadHolder.h */,
 				184ADD8C18CDA96200367527 /* EZDownloadHolder.m */,
+				185CE25D18FFAE760037947A /* EZPageControl.h */,
+				185CE25E18FFAE760037947A /* EZPageControl.m */,
 			);
 			path = utility;
 			sourceTree = "<group>";
@@ -1697,6 +1720,7 @@
 				1866ADCA189F9F5900DB46E2 /* EZSkinMaskFilter.m in Sources */,
 				18F58B72187916F2006CB966 /* EZColorGaussianFilter.m in Sources */,
 				180ADA5518C1CA1000AB490C /* EZChatRegion.m in Sources */,
+				185CE25F18FFAE760037947A /* EZPageControl.m in Sources */,
 				18E34785183DFAA400C9D89D /* EZKeyboadUtility.m in Sources */,
 				181903F4187FF49C001FC370 /* EZHomeBlendFilter.m in Sources */,
 				18E34786183DFAA400C9D89D /* EZUIUtility.m in Sources */,
@@ -1893,6 +1917,10 @@
 					"/Users/apple/Documents/open_source/GPUImageCV/framework/**",
 				);
 				INFOPLIST_FILE = "FeatherCV/FeatherCV-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/FeatherCV",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
@@ -1919,6 +1947,10 @@
 					"/Users/apple/Documents/open_source/GPUImageCV/framework/**",
 				);
 				INFOPLIST_FILE = "FeatherCV/FeatherCV-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/FeatherCV",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;

@@ -29,9 +29,9 @@
     CGContextRef ctx = UIGraphicsGetCurrentContext();
     
     CGContextBeginPath(ctx);
-    CGContextMoveToPoint(ctx, CGRectGetMaxX(rect), CGRectGetMinY(rect));  // bottom left
+    CGContextMoveToPoint(ctx, CGRectGetMaxX(rect), CGRectGetMaxY(rect));  // bottom left
     CGContextAddLineToPoint(ctx, CGRectGetMidX(rect), CGRectGetMinY(rect));  // top mid
-    CGContextAddLineToPoint(ctx, CGRectGetMinX(rect), CGRectGetMinY(rect));  // bottom right
+    CGContextAddLineToPoint(ctx, CGRectGetMinX(rect), CGRectGetMaxY(rect));  // bottom right
     CGContextClosePath(ctx);
     CGContextSetRGBFillColor(ctx, 1, 1, 1, 1);
     CGContextFillPath(ctx);

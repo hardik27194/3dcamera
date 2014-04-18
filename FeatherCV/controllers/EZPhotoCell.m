@@ -207,9 +207,9 @@
         //_scrollView = [[EZScrollViewer alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, CurrentScreenHeight)];
         //[_frontImage addSubview:_scrollView];
         
-        _firstTimeView = [[EZUIUtility sharedEZUIUtility] createNumberLabel];
-        [_firstTimeView setPosition:CGPointMake(30, 70)];
-        [self.contentView addSubview:_firstTimeView];
+        //_firstTimeView = [[EZUIUtility sharedEZUIUtility] createNumberLabel];
+        //[_firstTimeView setPosition:CGPointMake(30, 70)];
+        //[self.contentView addSubview:_firstTimeView];
         [self.contentView addSubview:_moreButton];
         //weakCell.activityView = ai;
 

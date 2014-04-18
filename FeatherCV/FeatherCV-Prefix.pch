@@ -29,4 +29,5 @@
 #import "UIImage+ImageEffects.h"
 #import "LiveFrost.h"
 #import "EZResult.h"
+#import "MobClick.h"
 #endif

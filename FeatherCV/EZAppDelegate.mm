@@ -36,6 +36,7 @@
 #import "EZKeyboadUtility.h"
 #import "UIImageView+AFNetworking.h"
 #import "EZCoreAccessor.h"
+#import "EZNote.h"
 
 
 @implementation EZAppDelegate
@@ -299,6 +300,24 @@
 }
 
 
+//isLive mean if we recieved from the foreground or from the background
+- (void) handleNotification:(NSDictionary*)dict isLive:(BOOL)isLive
+{
+    //[UIApplication sharedApplication].applicationIconBadgeNumber += [[dict objectForKey:@"badge"] integerValue];
+    //[UIApplication sharedApplication].applicationIconBadgeNumber-1;
+    //EZNote* mockNote = [EZNote alloc]
+    
+    EZDEBUG(@"Notification is alive:%i", isLive);
+    //EZNote* mockNote = [[EZNote alloc] init];
+    NSString* noteID = [dict objectForKey:@"noteID"];
+    if(!isLive){
+        if(![[EZDataUtil getInstance].pushNotes objectForKey:noteID]){
+            [[EZDataUtil getInstance].pushNotes setObject:@"" forKey:noteID];
+        }
+        [[EZDataUtil getInstance] queryNotify];
+    }
+}
+
 - (void)application:(UIApplication*)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData*)deviceToken
 {
 	const unsigned *tokenBytes = (const unsigned*)[deviceToken bytes];
@@ -314,6 +333,8 @@
     //NSInteger loginID = currentLoginID;
     
     [[NSUserDefaults standardUserDefaults] setValue:hexToken forKey:DeviceTokenKey];
+    
+    
     EZDEBUG(@"Push notificatin id:%@", hexToken);
 }
 
@@ -326,6 +347,24 @@
         [EZDataUtil getInstance].timerBlock(nil);
     }
     [[EZDataUtil getInstance] queryNotify];
+    
+    if(currentLoginID){
+        BOOL uploaded = [[NSUserDefaults standardUserDefaults] boolForKey:EZTokenUploaded];
+        if(!uploaded){
+            EZDEBUG(@"try to upload token");
+            NSString* token = [[NSUserDefaults standardUserDefaults] stringForKey:DeviceTokenKey];
+            if(token){
+                [[EZDataUtil getInstance] updatePerson:@{@"pushToken":token} success:^(id obj){
+                    EZDEBUG(@"upload the token success:%@", currentLoginID);
+                    [[NSUserDefaults standardUserDefaults] setBool:true forKey:EZTokenUploaded];
+                } failure:^(id err){
+                    EZDEBUG(@"upload token failed, will try later:%@", err);
+                }];
+            }else{
+                
+            }
+        }
+    }
     /**
     static int count = 1;
     ++count;
@@ -337,12 +376,34 @@
      **/
 }
 
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
+{
+    EZDEBUG(@"Recieved message:%@, %@, current badge number:%i, state:%i", userInfo, [userInfo objectForKey:@"alert"], [UIApplication sharedApplication].applicationIconBadgeNumber, application.applicationState);
+    if ( application.applicationState == UIApplicationStateActive ){
+        [self handleNotification:userInfo isLive:YES];
+    }else{
+        [self handleNotification:userInfo isLive:NO];
+    }
+}
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     _cameraRaised = false;
     ///[EZDataUtil getInstance].currentPersonID = @"52f783d7e7b5b9dd9c28f1cc";
+    [MobClick startWithAppkey:@"5350f11d56240bb1e901071a" reportPolicy:SENDWIFIONLY   channelId:@"AppStore"];
+    NSString *version = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
+    EZDEBUG(@"Mobile version:%@", version);
+    [MobClick setAppVersion:version];
+    [MobClick beginEvent:EZALStartPeriod label:@"launch"];
     [EZTestSuites testAll];
     [self setupRecieveNotification];
+    
+    NSDictionary *remoteNote =  [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
+    EZDEBUG(@"Launched options:%@", remoteNote);
+    if(remoteNote){
+        [self handleNotification:remoteNote isLive:NO];
+    }
+
     //NSString* thumb = url2thumb(@"http://cool.guy/cool.jpg");
     //EZDEBUG(@"The thumb url is:%@", thumb);
     //CFTimeInterval startTime = CACurrentMediaTime();
@@ -441,23 +502,32 @@
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
     [[EZDataUtil getInstance] storePendingPhoto];
     [[EZCoreAccessor getClientAccessor] saveContext];
+    [MobClick endEvent:EZALStartPeriod label:@"enterBackground"];
     EZDEBUG(@"Will enter background");
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
     // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
+    [MobClick beginEvent:EZALStartPeriod label:@"enterForeground"];
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+    
+    //[MobClick event:EZALStartPeriod label:@"start"];
+    EZDEBUG(@"Become active");
+    [[EZDataUtil getInstance] queryNotify];
+    [MobClick beginEvent:EZALStartPeriod label:@"becomeActive"];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application
 {
     // Saves changes in the application's managed object context before the application terminates.
     EZDEBUG(@"Will terminate");
+    //[MobClick event:EZALStartPeriod label:@"end"];
+    [MobClick endEvent:EZALStartPeriod label:@"terminate"];
     //[[EZDataUtil getInstance] storePendingPhoto];
     [self saveContext];
 }

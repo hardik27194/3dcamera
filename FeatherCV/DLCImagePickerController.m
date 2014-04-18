@@ -728,6 +728,7 @@
     _quitCrossButton.enableTouchEffects = false;
    
     _quitCrossButton.releasedBlock = ^(id obj){
+        [MobClick event:EZALCameraCancel label:@"cross"];
         [weakSelf cancelClicked:nil];
     };
 }
@@ -2954,11 +2955,12 @@ context:(void *)context
             //}
         };
         [self prepareForCapture];
+        [MobClick event:EZALCameraShot label:[NSString stringWithFormat:@"%@,%i", _personID?@"request":@"person", _isPhotoRequest]];
     }else{
         //Mean the upload started, at least mean the photo already stored.
         _instrTitle.hidden = YES;
         if(_uploadStatus != kInitialUploading){
-            
+            [MobClick event:EZALCameraShot label:@"confirm"];
             _toolBarRegion.alpha = 0.0;
             
             //_isSaved = true;
@@ -2991,6 +2993,7 @@ context:(void *)context
 {
     _hideTextInput = false;
     if(![_textField.text isEmpty]){
+        [MobClick event:EZALInputComment];
         [photo.conversations addObject:@{
                             @"text":_textField.text,
                             @"date":[NSDate date]
@@ -3262,6 +3265,7 @@ context:(void *)context
 
 -(IBAction) cancelClicked:(id)sender {
     EZDEBUG(@"Cancel get called");
+    [MobClick event:EZALCameraCancel label:@"click"];
     EZPhoto* currentPhoto = _shotPhoto;
     if(isStatic){
         //_hideTextInput = TRUE;

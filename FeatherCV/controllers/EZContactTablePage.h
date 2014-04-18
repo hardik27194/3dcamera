@@ -17,6 +17,8 @@
 
 @property (nonatomic, strong) UITableView* tableView;
 
+@property (nonatomic, strong) NSMutableDictionary* filteredMobile;
+
 //Whenever quit, will call this
 @property (nonatomic, strong) EZEventBlock completedBlock;
 

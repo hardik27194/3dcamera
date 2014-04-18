@@ -57,6 +57,7 @@
         self.view.backgroundColor = [UIColor clearColor];
         //self.title = @"朋友";
         [self.tableView registerClass:[EZContactTableCell class] forCellReuseIdentifier:@"Cell"];
+        _filteredMobile = [[NSMutableDictionary alloc] init];
         //_contacts = [[NSMutableArray alloc] init];
         //_contacts = [EZDataUtil getInstance].contacts;
     }
@@ -113,32 +114,10 @@
         if(arr){
             [_contacts insertObjects:arr];
             
-            /**
-            //Remvoe this code when we quit the debug mode
-            EZPerson* tiange = [[EZPerson alloc] init];
-            tiange.name = @"Tiange";
-            tiange.personID = @"532585b321ae7a2e53522fa0";
-            tiange.joined = TRUE;
-
-            EZPerson* p123 = [[EZPerson alloc] init];
-            p123.name = @"123";
-            p123.personID = @"5325944f21ae7a427d586ae7";
-            p123.joined = TRUE;
-
-            if([currentLoginID isEqualToString:tiange.personID]){
-                [_contacts insertObject:p123 atIndex:1];
-            }else{
-                [_contacts insertObject:tiange atIndex:1];
-            }
-            **/
             [self.tableView reloadData];
         }
     }];
-    //[_contacts insertObject:currentLoginUser atIndex:0];
-    
-    //if(_contacts.count){
-    //    [self.tableView reloadData];
-    //}
+
 }
 
 - (NSArray*) getAllWaitRequests
@@ -149,10 +128,6 @@
     if(!srcArr.count){
         srcArr = [[EZDataUtil getInstance] getStoredPhotos];
     }
-    
-    
-    //[EZDataUtil getInstance].mainPhotos];
-    //[_nonsplitted addObjectsFromArray:[EZDataUtil getInstance].mainNonSplits];
     for(EZDisplayPhoto* dp in srcArr){
         EZPhoto* otherSide = dp.photo.photoRelations.count?[dp.photo.photoRelations objectAtIndex:0]:nil;
         if(dp.photo.type == kPhotoRequest){
@@ -188,7 +163,6 @@
             personNew.photoCount += 1;
             personNew.pendingEventCount += 1;
         }
-
         for(EZPhoto* matchedPh in ph.photo.photoRelations){
         //EZPhoto* matchedPh = [ph.photo.photoRelations objectAtIndex:0];
         EZPerson* ps = pid2person(matchedPh.personID);
@@ -218,6 +192,9 @@
     _contacts = [[NSMutableArray alloc] init];
     NSArray* arrs = [[EZDataUtil getInstance] getStoredPersonLists];
     EZDEBUG(@"after person");
+    for(EZPerson* ps in arrs){
+        [_filteredMobile setObject:@"" forKey:ps.mobile];
+    }
     [_contacts addObjectsFromArray:arrs];
     
     [_contacts insertObject:personNew atIndex:1];
@@ -229,11 +206,45 @@
         [[EZMessageCenter getInstance] registerEvent:EZContactsReaded block:^(NSArray* contacts) {
             EZDEBUG(@"loaded persons:%i", contacts.count);
             //[[EZDataUtil getInstance] checkAndUpload:contacts];
-            [weakSelf.contacts addObjectsFromArray:contacts];
+            if(![[NSUserDefaults standardUserDefaults] boolForKey:@"EZUploadedMobile"]){
+                [[EZDataUtil getInstance] uploadMobile:[EZDataUtil getInstance].mobileNumbers success:^(id obj){
+                    EZDEBUG(@"upload mobile success");
+                    [[NSUserDefaults standardUserDefaults] setBool:true forKey:@"EZUploadedMobile"];
+                }];
+            }
+            
+            for(EZPerson* ps in contacts){
+                if(!ps.mobile){
+                    continue;
+                }
+                if(![_filteredMobile objectForKey:ps.mobile]){
+                    [_filteredMobile setObject:@"" forKey:ps.mobile];
+                    [weakSelf.contacts addObject:ps];
+                }
+            }
+
+            //[weakSelf.contacts addObjectsFromArray:contacts];
             [weakSelf.tableView reloadData];
         } once:YES];
     }else{
-        [_contacts addObjectsFromArray:[EZDataUtil getInstance].contacts];
+        
+        if(![[NSUserDefaults standardUserDefaults] boolForKey:@"EZUploadedMobile"]){
+            [[EZDataUtil getInstance] uploadMobile:[EZDataUtil getInstance].mobileNumbers success:^(id obj){
+                EZDEBUG(@"upload mobile success");
+                [[NSUserDefaults standardUserDefaults] setBool:true forKey:@"EZUploadedMobile"];
+            }];
+        }
+        //[_contacts addObjectsFromArray:[EZDataUtil getInstance].contacts];
+        for(EZPerson* ps in [EZDataUtil getInstance].contacts){
+            if(!ps.mobile){
+                continue;
+            }
+            if(![_filteredMobile objectForKey:ps.mobile]){
+                [_filteredMobile setObject:@"" forKey:ps.mobile];
+                [weakSelf.contacts addObject:ps];
+            }
+        }
+
     }
     [self.tableView reloadData];
     //});

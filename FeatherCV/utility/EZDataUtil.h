@@ -30,6 +30,8 @@
 
 @property (nonatomic, assign) int queryingCount;
 
+@property (nonatomic, assign) BOOL isQueryingNotes;
+
 @property (nonatomic, strong) EZCenterButton* centerButton;
 
 @property (nonatomic, strong) UIView* barBackground;
@@ -37,6 +39,8 @@
 @property (nonatomic, strong) ALAssetsLibrary* assetLibaray;
 
 @property (nonatomic, strong) NSMutableArray* mainPhotos;
+
+@property (nonatomic, strong) NSMutableArray* mobileNumbers;
 
 //@property (nonatomic, strong) NSMutableArray* mainNonSplits;
 
@@ -80,6 +84,11 @@
 @property (nonatomic, strong) NSMutableDictionary* pendingPersonCall;
 
 @property (nonatomic, strong) NSMutableDictionary* currentQueryUsers;
+
+//Used to check if the notes was triggered by user, if it is we would like to
+//switch user to that person and scroll to the photo then waiting for the photo to show off
+//This is just great. I love this game.
+@property (nonatomic, strong) NSMutableDictionary* pushNotes;
 
 @property (nonatomic, strong) NSMutableSet* joinedUsers;
 
@@ -146,6 +155,8 @@
 //Should I give the person id or what?
 //Let's give it. Expose the parameter make the function status free. More easier to debug
 - (void) likedPhoto:(NSString*)photoID ownPhotoID:(NSString*)ownPhotoID like:(BOOL)like success:(EZEventBlock)success failure:(EZEventBlock)failure;
+
+- (void) uploadMobile:(NSArray*)arr success:(EZEventBlock)success;
 
 - (void) prefetchImage:(NSString*) url success:(EZEventBlock)success failure:(EZEventBlock)failure;
 
@@ -295,6 +306,8 @@
 - (NSArray*) getStoredPersonLists;
 
 - (NSMutableDictionary*) getStoredPersons;
+
+- (void) updatePerson:(NSDictionary*)dict success:(EZEventBlock)success failure:(EZEventBlock)failure;
 
 - (void) loadAllPersons;
 

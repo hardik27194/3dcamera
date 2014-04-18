@@ -108,6 +108,7 @@
 
 #define pointValue(x,y) [NSValue valueWithCGPoint:CGPointMake(x, y)]
 
+#define currentLocalLang [[NSLocale preferredLanguages] objectAtIndex:0]
 
 #define currentPerson [[EZDataUtil getInstance] getCurrentPerson] 
 
@@ -123,17 +124,19 @@
 
 #define EZNoteCountSet @"EZNoteCountSet"
 
+#define EZUploadedMobile @"EZUploadedMobile"
+
 //#define inviteMessageURL @"http://www.enjoyxue.com:8080/"
 
-//#define baseUploadURL @"http://172.13.0.85:8080/upload"
-//#define baseUploadURL @"http://10.0.1.6:8080/upload"
+//#define baseUploadURL @"http://172.13.0.107:8080/upload"
+#define baseUploadURL @"http://10.0.1.6:8080/upload"
 //#define baseUploadURL @"http://www.enjoyxue.com:8080/upload"
-#define baseUploadURL @"http://192.168.1.102:8080/upload"
+//#define baseUploadURL @"http://192.168.1.102:8080/upload"
 
-//#define baseServiceURL @"http://172.13.0.85:8080/"
-//#define baseServiceURL @"http://10.0.1.6:8080/"
+//#define baseServiceURL @"http://172.13.0.107:8080/"
+#define baseServiceURL @"http://10.0.1.6:8080/"
 //#define baseServiceURL @"http://www.enjoyxue.com:8080/"
-#define baseServiceURL @"http://192.168.1.102:8080/"
+//#define baseServiceURL @"http://192.168.1.102:8080/"
 
 #define EZButtonGreen RGBCOLOR(56, 216, 116)
 
@@ -154,6 +157,8 @@
 #define EZRaisePersonDetail @"EZRaisePersonDetail"
 
 #define EZPhotoUploadSuccess @"EZPhotoUploadSuccess"
+
+#define EZTokenUploaded @"EZTokenUploaded"
 
 #define EZUserEditted @"EZUserEditted"
 
@@ -198,6 +203,23 @@
 //Doesn't gurantee that the user is a mock or official user
 #define EZUserAuthenticated @"EZUserAuthenticated"
 
+#define EZALRecievedNotes @"EZALRecievedNotes"
+
+#define EZALContactPage @"EZALContactPage"
+
+#define EZALCameraShot @"EZALCameraShot"
+
+#define EZALCameraConfirm @"EZALCameraConfirm"
+
+#define EZALInputComment @"EZALInputComment"
+
+#define EZALCameraCancel @"EZALCameraCancel"
+
+#define EZALLogout @"EZALLogout"
+
+#define EZALLogin @"EZALLogin"
+
+#define EZALStartPeriod @"EZALStartPeriod"
 
 #define EZCenterBigRadius 60.0
 
