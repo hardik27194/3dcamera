@@ -304,9 +304,11 @@
 - (void) handleNotification:(NSDictionary*)dict isLive:(BOOL)isLive
 {
     //[UIApplication sharedApplication].applicationIconBadgeNumber += [[dict objectForKey:@"badge"] integerValue];
-    //[UIApplication sharedApplication].applicationIconBadgeNumber-1;
+    //[UIApplication sharedApplication].applicationIconBadgeNumber = 0;
     //EZNote* mockNote = [EZNote alloc]
-    
+    [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
+    [[UIApplication sharedApplication] cancelAllLocalNotifications];
+    //[[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
     EZDEBUG(@"Notification is alive:%i", isLive);
     //EZNote* mockNote = [[EZNote alloc] init];
     NSString* noteID = [dict objectForKey:@"noteID"];

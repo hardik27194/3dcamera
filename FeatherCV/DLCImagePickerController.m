@@ -2343,9 +2343,7 @@ context:(void *)context
     EZPerson* matchedPerson = pid2person(matched.personID);
     //NSString* thumbURL = url2thumb(matched.screenURL);
     _disPhoto.isFront = false;
-    if(_refreshTable){
-        _refreshTable(nil);
-    }
+    
     NSString* localFull = [[EZDataUtil getInstance] preloadImage:matched.screenURL success:Nil failed:nil];
     NSString* thumbURL = url2thumb(matched.screenURL);
     NSString* thumbLocal = nil;
@@ -3247,6 +3245,9 @@ context:(void *)context
     } completion:^(BOOL completed){
         //[weakSelf quit:nil];
         [self.navigationController popViewControllerAnimated:animated];
+        if(_refreshTable){
+            _refreshTable(nil);
+        }
         [UIView animateWithDuration:0.3 animations:^(){
             _quitCrossButton.alpha = 0;
         } completion:^(BOOL completed){

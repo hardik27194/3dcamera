@@ -407,7 +407,7 @@ static int photoCount = 1;
     //    curBlock(frontPerson);
     //}
     cell.otherIcon.releasedBlock = ^(id obj){
-        /**
+        
         EZPersonDetail* pd = [[EZPersonDetail alloc] initWithPerson:backPerson];
         //pd.modalPresentationStyle = UIModalPresentationPageSheet;
         //pd.transitioningDelegate = weakSelf;
@@ -420,7 +420,8 @@ static int photoCount = 1;
         //[self presentViewController:pd animated:YES completion:^(){
         //}];
         [self.navigationController pushViewController:pd animated:YES];
-         **/
+        
+        /**
         UIView* coverView = [weakCell snapshotViewAfterScreenUpdates:NO];
         [self.view addSubview:coverView];
         [self setCurrentUser:backPerson readyBlock:^(id obj){
@@ -434,19 +435,21 @@ static int photoCount = 1;
             }
             [coverView removeFromSuperview];
         }];
+         **/
     };
     
     
     cell.headIcon.releasedBlock = ^(id obj){
-        //EZPersonDetail* pd = [[EZPersonDetail alloc] initWithPerson:frontPerson];
+        EZPersonDetail* pd = [[EZPersonDetail alloc] initWithPerson:frontPerson];
         //pd.transitioningDelegate = weakSelf;
         //pd.modalPresentationStyle = UIModalPresentationCustom;
-        //_isPushCamera = false;
-        //_leftCyleButton.hidden = YES;
-        //_rightCycleButton.hidden = YES;
+        _isPushCamera = false;
+        _leftCyleButton.hidden = YES;
+        _rightCycleButton.hidden = YES;
         //[self presentViewController:pd animated:YES completion:^(){
         //}];
-        //[self.navigationController pushViewController:pd animated:YES];
+        [self.navigationController pushViewController:pd animated:YES];
+        /**
         UIView* coverView = [weakCell snapshotViewAfterScreenUpdates:NO];
         [self.view addSubview:coverView];
         [self setCurrentUser:currentLoginUser readyBlock:^(id obj){
@@ -460,6 +463,7 @@ static int photoCount = 1;
             }
             [coverView removeFromSuperview];
         }];
+         **/
     };
     return cell;
 }
@@ -1148,6 +1152,15 @@ static int photoCount = 1;
     [UIView animateWithDuration:0.25 animations:^{
         [self.tableView refreshCustomScrollIndicatorsWithAlpha:0.0];
     }];
+    NSInteger pos = _tableView.contentOffset.y/CurrentScreenHeight;
+    if(_combinedPhotos.count > pos){
+        EZDisplayPhoto* dp = [_combinedPhotos objectAtIndex:pos];
+        if(dp.photo.typeUI == kPhotoRequest){
+            _rightCycleButton.hidden = YES;
+        }else{
+            _rightCycleButton.hidden = NO;
+        }
+    }
 }
 
 
@@ -1257,7 +1270,7 @@ static int photoCount = 1;
         
         BOOL triggerByNotes = [[EZDataUtil getInstance].pushNotes objectForKey:note.noteID] != nil;
         NSString* trigger = [NSString stringWithFormat:@"%@,%i", note.type, triggerByNotes];
-        [MobClick event:@"recievedNotes" label:trigger];
+        [MobClick event:EZALRecievedNotes label:trigger];
         EZDEBUG(@"Recieved notes:%@, notes:%@, pointer:%i", note.type, note.noteID, (int)note);
         if([@"match" isEqualToString:note.type]){
             //EZPhoto* matchedPhoto = note.matchedPhoto;
@@ -2308,7 +2321,6 @@ static int photoCount = 1;
     };
 
 }
-
 
 - (void) setWaitingInfo:(EZPhotoCell*)cell displayPhoto:(EZDisplayPhoto*)cp back:(EZPhoto*)back
 {
