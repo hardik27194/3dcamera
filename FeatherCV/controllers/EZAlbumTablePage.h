@@ -21,6 +21,7 @@
 @class EZShapeCover;
 @class EZPerson;
 @class EZTrianglerView;
+@class EZEnlargedView;
 @interface EZAlbumTablePage : UIViewController<DLCImagePickerDelegate, UINavigationControllerDelegate, UIViewControllerTransitioningDelegate, UIActionSheetDelegate, UIAlertViewDelegate, UITableViewDelegate, UITableViewDataSource>
 
 @property (nonatomic, strong) NSMutableArray* combinedPhotos;
@@ -128,7 +129,7 @@
 
 @property (nonatomic, strong) UIView* leftMessageCount;
 
-@property (nonatomic, strong) EZHairButton* rightCycleButton;
+@property (nonatomic, strong) EZEnlargedView* rightCycleButton;
 
 @property (nonatomic, strong) UILabel* networkStatus;
 

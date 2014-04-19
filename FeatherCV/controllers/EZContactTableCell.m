@@ -9,6 +9,7 @@
 #import "EZContactTableCell.h"
 #import "EZClickImage.h"
 #import "EZClickView.h"
+#import "EZEnlargedView.h"
 
 #define slimFont [UIFont fontWithName:@"HelveticaNeue-Thin" size:20]
 #define slimFontCN [UIFont fontWithName:@"STHeitiSC-Light" size:20]
@@ -32,10 +33,10 @@
         [self.contentView addSubview:_name];
         
         //[_name enableShadow:[UIColor blackColor]];
-        _clickRegion = [[EZClickView alloc] initWithFrame:CGRectMake(0, 0, 320, cellHeight)];
+        _clickRegion = [[EZClickView alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, cellHeight)];
         [self.contentView addSubview:_clickRegion];
 
-        _headIcon = [[EZClickImage alloc] initWithFrame:CGRectMake(265, (cellHeight - 35.0)/2.0, 35.0, 35.0)];
+        _headIcon = [[EZEnlargedView alloc] initWithFrame:CGRectMake(265, (cellHeight - 35.0)/2.0, 35.0, 35.0) enlargeRatio:EZEnlargeIconRatio];
         [_headIcon enableRoundImage];
         [self.contentView addSubview:_headIcon];
         
@@ -87,6 +88,7 @@
         width = 180;
     }
     [_photoCount setX:_name.frame.origin.x + width + 10];
+    [self.name setWidth:width];
     //[_notesNumber setX:self.name.frame.origin.x + sizeToFit.width + 10];
 }
 

@@ -72,6 +72,7 @@ typedef enum {
 @class EZPhoto;
 @class EZDisplayPhoto;
 @class DLCImagePickerController;
+@class EZEnlargedView;
 
 @protocol DLCImagePickerDelegate <NSObject>
 @optional
@@ -108,7 +109,7 @@ typedef enum {
 
 @property (nonatomic, strong) EZUpArrow* upArrow;
 
-@property (nonatomic, weak) EZHairButton* quitCrossButton;
+@property (nonatomic, strong) EZEnlargedView* quitCrossButton;
 
 @property (nonatomic, strong) EZEventBlock quitBlock;
 @property (nonatomic, strong) UIButton *cancelButton;

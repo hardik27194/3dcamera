@@ -46,4 +46,10 @@ typedef enum {
 
 - (void) recieveLongPress:(CGFloat)time callback:(EZEventBlock)block;
 
+- (void) pressed;
+
+- (void) unpressed;
+
+- (void) changeColor;
+
 @end

@@ -90,6 +90,8 @@
 
 #define shaderSkinRange 0.4
 
+#define EZEnlargeIconRatio 1.5
+
 #define EZOrangeColor RGBCOLOR(255, 81, 57)
 
 #define VinesGray RGBCOLOR(210, 220, 220)
@@ -223,7 +225,7 @@
 
 #define EZCenterBigRadius 60.0
 
-#define EZCenterSmallRadius 70.0
+#define EZCenterSmallRadius 90.0
 
 #define EZShotButtonDiameter 46
 

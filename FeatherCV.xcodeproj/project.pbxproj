@@ -56,6 +56,7 @@
 		185CE25F18FFAE760037947A /* EZPageControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 185CE25E18FFAE760037947A /* EZPageControl.m */; };
 		185CE266190123ED0037947A /* libMobClickLibrary_armv6.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 185CE263190123ED0037947A /* libMobClickLibrary_armv6.a */; };
 		185CE267190123ED0037947A /* libMobClickLibrary.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 185CE264190123ED0037947A /* libMobClickLibrary.a */; };
+		185CE26A190299D30037947A /* EZEnlargedView.m in Sources */ = {isa = PBXBuildFile; fileRef = 185CE269190299D30037947A /* EZEnlargedView.m */; };
 		1862FC6C18FA760F00C2D0B5 /* EZScrollViewer.m in Sources */ = {isa = PBXBuildFile; fileRef = 1862FC6B18FA760F00C2D0B5 /* EZScrollViewer.m */; };
 		1866AD8C1890FC7000DB46E2 /* EZSkinBrighter.m in Sources */ = {isa = PBXBuildFile; fileRef = 1866AD8B1890FC7000DB46E2 /* EZSkinBrighter.m */; };
 		1866AD9C18965EF000DB46E2 /* EZCycleTongFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 1866AD9B18965EF000DB46E2 /* EZCycleTongFilter.m */; };
@@ -397,6 +398,8 @@
 		185CE263190123ED0037947A /* libMobClickLibrary_armv6.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libMobClickLibrary_armv6.a; sourceTree = "<group>"; };
 		185CE264190123ED0037947A /* libMobClickLibrary.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libMobClickLibrary.a; sourceTree = "<group>"; };
 		185CE265190123ED0037947A /* MobClick.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MobClick.h; sourceTree = "<group>"; };
+		185CE268190299D20037947A /* EZEnlargedView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZEnlargedView.h; sourceTree = "<group>"; };
+		185CE269190299D30037947A /* EZEnlargedView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZEnlargedView.m; sourceTree = "<group>"; };
 		1862FC6A18FA760F00C2D0B5 /* EZScrollViewer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZScrollViewer.h; sourceTree = "<group>"; };
 		1862FC6B18FA760F00C2D0B5 /* EZScrollViewer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZScrollViewer.m; sourceTree = "<group>"; };
 		1866AD8A1890FC7000DB46E2 /* EZSkinBrighter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZSkinBrighter.h; sourceTree = "<group>"; };
@@ -1212,6 +1215,8 @@
 				184ADD8C18CDA96200367527 /* EZDownloadHolder.m */,
 				185CE25D18FFAE760037947A /* EZPageControl.h */,
 				185CE25E18FFAE760037947A /* EZPageControl.m */,
+				185CE268190299D20037947A /* EZEnlargedView.h */,
+				185CE269190299D30037947A /* EZEnlargedView.m */,
 			);
 			path = utility;
 			sourceTree = "<group>";
@@ -1665,6 +1670,7 @@
 				18A36FF31855C1F50022F0A8 /* DLCGrayscaleContrastFilter.m in Sources */,
 				18F58B7C187AF205006CB966 /* EZFaceResultObj.m in Sources */,
 				180ADA5A18C1CA2500AB490C /* EZChatUnit.m in Sources */,
+				185CE26A190299D30037947A /* EZEnlargedView.m in Sources */,
 				18E34738183DFA5800C9D89D /* EZCollectionPhotoCell.m in Sources */,
 				1823DA3618D5A1E000E6E8B3 /* EZKeyboardController.m in Sources */,
 				18F58B7F187AF540006CB966 /* EZFaceUtilWrapper.mm in Sources */,

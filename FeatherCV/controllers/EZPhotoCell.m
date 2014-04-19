@@ -17,6 +17,7 @@
 #import "EZShapeButton.h"
 #import "EZScrollViewer.h"
 #import "EZDataUtil.h"
+#import "EZEnlargedView.h"
 
 #define kHeartRadius 35
 
@@ -72,7 +73,7 @@
         [_otherSliverLine enableRoundImage];
         //[self.container addSubview:_otherSliverLine];
         
-        _otherIcon = [[EZClickImage alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 300 - startPos, smallIconRadius, smallIconRadius)];
+        _otherIcon = [[EZEnlargedView alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 300 - startPos, smallIconRadius, smallIconRadius) enlargeRatio:EZEnlargeIconRatio];
         //_otherIcon.backgroundColor = randBack(nil);
         [_otherIcon enableRoundImage];
         [_otherIcon enableTouchEffects];
@@ -103,7 +104,7 @@
         _andSymbol.text = @"&";
         [self.container addSubview:_andSymbol];
         
-        _headIcon = [[EZClickImage alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 198 - startPos, smallIconRadius, smallIconRadius)];
+        _headIcon = [[EZEnlargedView alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 198 - startPos, smallIconRadius, smallIconRadius) enlargeRatio:EZEnlargeIconRatio];
         _homeSliverLine = [[UIView alloc] initWithFrame:CGRectMake(10-1, CurrentScreenHeight - 198 - startPos-1, smallIconRadius+2, smallIconRadius+2)];
         _homeSliverLine.layer.borderColor = [UIColor whiteColor].CGColor;
         _homeSliverLine.layer.borderWidth = 1;

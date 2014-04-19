@@ -41,6 +41,7 @@
 #define FeedbackRegionRect CGRectMake(0,380, 300, 40)
 
 @class EZShapeButton;
+@class EZEnlargedView;
 
 @interface EZPhotoCell : UITableViewCell
 
@@ -70,11 +71,11 @@
 
 @property (nonatomic, strong) UILabel* photoTalk;
 
-@property (nonatomic, strong) EZClickImage* headIcon;
+@property (nonatomic, strong) EZEnlargedView* headIcon;
 
 @property (nonatomic, strong) UILabel* authorName;
 
-@property (nonatomic, strong) EZClickImage* otherIcon;
+@property (nonatomic, strong) EZEnlargedView* otherIcon;
 
 @property (nonatomic, strong) UILabel* otherName;
 

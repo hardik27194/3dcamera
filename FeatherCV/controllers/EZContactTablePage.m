@@ -17,6 +17,7 @@
 #import "UIImageView+AFNetworking.h"
 #import "EZPersonDetail.h"
 #import "EZDisplayPhoto.h"
+#import "EZEnlargedView.h"
 @interface EZContactTablePage ()
 
 @end
@@ -328,12 +329,14 @@
     //[(UIImageView*)cell.headIcon setImageWithURL:str2url(person.avatar)];
     if(person.filterType){
         cell.headIcon.hidden = YES;
+        cell.headIcon.userInteractionEnabled = false;
     }else{
         cell.headIcon.hidden = NO;
+        cell.headIcon.userInteractionEnabled = true;
     }
     //cell.headIcon.backgroundColor = randBack(nil);
     
-    cell.clickRegion.releasedBlock = ^(id object){
+    cell.headIcon.releasedBlock = ^(id object){
         EZDEBUG(@"region clicked");
         //[[EZMessageCenter getInstance]postEvent:EZScreenSlide attached:@(1)];
         EZPerson* person = [weakSelf.contacts objectAtIndex:indexPath.row];
@@ -357,7 +360,7 @@
     
     if(person.avatar){
         //[cell.headIcon setImageWithURL:str2url(person.avatar)];
-        [cell.headIcon loadImageURL:person.avatar haveThumb:NO loading:NO];
+        [cell.headIcon.clickImage loadImageURL:person.avatar haveThumb:NO loading:NO];
     }else{
         cell.headIcon.image = nil;
     }

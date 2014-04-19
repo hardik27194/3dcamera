@@ -50,6 +50,7 @@
 #import "EZCenterButton.h"
 #import "EZHairButton.h"
 #import "EZUpArrow.h"
+#import "EZEnlargedView.h"
 
 //#include <vector>
 
@@ -717,8 +718,13 @@
         //self.navigationItem.leftBarButtonItems = @[quitItem];
         
     }
-    _quitCrossButton =  [[EZUIUtility sharedEZUIUtility] createShotButton];
-    [_quitCrossButton setButtonStyle:kShotScreen];
+    
+    EZHairButton* bu = [[EZUIUtility sharedEZUIUtility] createShotButton];
+    bu.userInteractionEnabled = false;
+    _quitCrossButton = [[EZEnlargedView alloc] initWithFrame:bu.frame innerView:bu enlargeRatio:EZEnlargeIconRatio];
+    
+
+    [bu setButtonStyle:kShotScreen];
     [TopView addSubview:_quitCrossButton];
     [UIView animateWithDuration:0.2 animations:^(){
         _quitCrossButton.transform = CGAffineTransformMakeRotation(M_PI_4);
@@ -2927,7 +2933,7 @@ context:(void *)context
     [self.photoCaptureButton setEnabled:NO];
     if (!isStatic) {
         _upArrow.hidden = NO;
-        [_quitCrossButton setButtonStyle:kShotHappen];
+        [(EZHairButton*)_quitCrossButton.innerView setButtonStyle:kShotHappen];
         _uploadStatus = kInitialUploading;
         _isUploading = false;
         _detectedFaceObj = nil;
@@ -3156,7 +3162,7 @@ context:(void *)context
 
 -(IBAction) retakePhoto:(UIButton *)button {
     _upArrow.hidden = YES;
-    [_quitCrossButton setButtonStyle:kShotScreen];
+    [(EZHairButton*)_quitCrossButton.innerView setButtonStyle:kShotScreen];
     [self preMatchPhoto];
     [self hideRotateImage];
     smileDetected.alpha = 0.0;

@@ -39,6 +39,7 @@
 #import "EZTrianglerView.h"
 #import "UIScrollView+ScrollIndicator.h"
 #import "EZScrollViewer.h"
+#import "EZEnlargedView.h"
 
 
 
@@ -111,7 +112,7 @@ static int photoCount = 1;
         if(cell.currentPos == indexPath.row){
             cell.otherName.text = person.name;
             //[cell.otherIcon setImageWithURL:str2url(person.avatar)];
-            [cell.otherIcon loadImageURL:person.avatar haveThumb:NO loading:NO];
+            [cell.otherIcon.clickImage loadImageURL:person.avatar haveThumb:NO loading:NO];
         }
     };
 
@@ -394,7 +395,7 @@ static int photoCount = 1;
     EZEventBlock curBlock = ^(EZPerson*  person){
         if(cell.currentPos == indexPath.row){
             cell.authorName.text = person.name;
-            [cell.headIcon loadImageURL:person.avatar haveThumb:NO loading:NO];
+            [cell.headIcon.clickImage loadImageURL:person.avatar haveThumb:NO loading:NO];
         }
     };
     
@@ -623,7 +624,7 @@ static int photoCount = 1;
             self.title = @"";
             //[[EZMessageCenter getInstance] postEvent:EZNoteCountSet attached:@([self getPendingCount])];
              [self setNoteCount];
-            [_rightCycleButton setButtonStyle:kShotForAll];
+            [(EZHairButton*)_rightCycleButton.innerView setButtonStyle:kShotForAll];
             [_leftCyleButton setTitle:EZOriginalTitle forState:UIControlStateNormal];
             _leftCyleButton.titleLabel.font = EZTitleSlimFont;
             
@@ -661,7 +662,7 @@ static int photoCount = 1;
             return;
         }
     }else if(![currentUser.personID isEqualToString:_currentUser.personID]){
-        [_rightCycleButton setButtonStyle:kShotForOne];
+        [(EZHairButton*)_rightCycleButton.innerView setButtonStyle:kShotForOne];
         self.title = @""; //currentUser.name;
         _currentUser = currentUser;
         [self setNoteCount];
@@ -1924,7 +1925,9 @@ static int photoCount = 1;
         }];
     };
      **/
-    EZHairButton* clickView = [[EZUIUtility sharedEZUIUtility] createShotButton];
+    EZHairButton* hairButton = [[EZUIUtility sharedEZUIUtility] createShotButton];
+    hairButton.userInteractionEnabled = false;
+    EZEnlargedView* clickView = [[EZEnlargedView alloc] initWithFrame:hairButton.frame innerView:hairButton enlargeRatio:EZEnlargeIconRatio];
     clickView.releasedBlock = ^(id obj){
         [weakSelf raiseCamera:nil indexPath:nil];
     };

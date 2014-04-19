@@ -10,11 +10,12 @@
 
 @class EZClickImage;
 @class EZClickView;
+@class EZEnlargedView;
 @interface EZContactTableCell : UITableViewCell
 
 @property (nonatomic, strong) UILabel* name;
 
-@property (nonatomic, strong) EZClickImage* headIcon;
+@property (nonatomic, strong) EZEnlargedView* headIcon;
 
 //The place will get clicked 
 @property (nonatomic, strong) EZClickView* clickRegion;
