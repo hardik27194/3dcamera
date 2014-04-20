@@ -1832,8 +1832,11 @@
             }
         }else{
             NSPredicate *predicate = [NSPredicate predicateWithFormat:@"photoID = %@", ph.photoID];
-            NSArray* existPhoto = [[EZCoreAccessor getClientAccessor] fetchObject:[LocalPhotos class] byPredicate:predicate withSortField:Nil ascending:NO];
-            EZDEBUG(@"Query ID in db:%@,query count:%i", ph.photoID, existPhoto.count);
+            NSArray* existPhoto = nil;
+            if([ph.photoID isNotEmpty]){
+                existPhoto = [[EZCoreAccessor getClientAccessor] fetchObject:[LocalPhotos class] byPredicate:predicate withSortField:Nil ascending:NO];
+                EZDEBUG(@"Query ID in db:%@,query count:%i", ph.photoID, existPhoto.count);
+            }
             if(existPhoto.count){
                 lp = [existPhoto objectAtIndex:0];
             }else{

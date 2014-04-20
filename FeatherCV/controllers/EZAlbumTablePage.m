@@ -178,6 +178,7 @@ static int photoCount = 1;
         pid2personCall(backPt.personID, otherBlock);
     };
 
+    /**
     if(cp.isFirstTime){
        
         cp.isFirstTime = NO;
@@ -195,6 +196,8 @@ static int photoCount = 1;
     }else{
         cell.firstTimeView.hidden = YES;
     }
+    **/
+    
     EZDEBUG(@"Will display front image type:%i", myPhoto.typeUI);
     if(cp.isFront){
         [cell setFrontFormat:true];
@@ -223,6 +226,7 @@ static int photoCount = 1;
             cell.andSymbol.hidden = YES;
             cell.authorName.hidden = YES;
             cell.headIcon.hidden = YES;
+            cell.ownTalk.hidden = YES;
             
             cell.shotPhoto.releasedBlock = ^(id obj){
                 EZDEBUG(@"cameraView clicked");
@@ -242,7 +246,7 @@ static int photoCount = 1;
             
         }else if(switchPhoto == nil){
             //weakCell.frontImage.image = nil;
-            [[EZUIUtility sharedEZUIUtility] showErrorInfo:macroControlInfo(@"Network not available") delay:1.0 view:self.view];
+            //[[EZUIUtility sharedEZUIUtility] showErrorInfo:macroControlInfo(@"Network not available") delay:1.0 view:self.view];
         }
         else{
             //cell.waitingInfo.hidden = YES;
@@ -1254,7 +1258,7 @@ static int photoCount = 1;
     
     CGFloat exceedY = scrollView.contentOffset.y + CurrentScreenHeight - scrollView.contentSize.height;
     if(exceedY > 80){
-        if(_asset){
+        if(_asset && !_currentUser.filterType){
             _raiseAssetCamera = true;
             //dispatch_later(0.2, ^(){
             //    [self raiseCamera:_asset personID:_currentUser.personID];
@@ -1276,6 +1280,13 @@ static int photoCount = 1;
             _rightCycleButton.hidden = YES;
         }else{
             _rightCycleButton.hidden = NO;
+        }
+        if(dp.isFirstTime){
+            dp.isFirstTime = false;
+            if(_currentUser.filterType == kPhotoNewFilter){
+                [_currentUser adjustPendingEventCount:-1];
+            }
+            [self setNoteCount];
         }
     }
     if(_raiseAssetCamera){
@@ -1522,7 +1533,7 @@ static int photoCount = 1;
     _progressBar.trackTintColor = [UIColor clearColor];
     _progressBar.hidden = YES;
     
-    _networkStatus = [[UILabel alloc] initWithFrame:CGRectMake(0, 22, CurrentScreenWidth, 20)];
+    _networkStatus = [[UILabel alloc] initWithFrame:CGRectMake(0, 20, CurrentScreenWidth, 20)];
     _networkStatus.textAlignment = NSTextAlignmentCenter;
     _networkStatus.textColor = [UIColor whiteColor];
     _networkStatus.font = [UIFont systemFontOfSize:12];

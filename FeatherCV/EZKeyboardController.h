@@ -7,8 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "EZCameraNaviAnimation.h"
 
-@interface EZKeyboardController : UIViewController<UITextFieldDelegate>
+@interface EZKeyboardController : UIViewController<UITextFieldDelegate,UINavigationControllerDelegate, UIViewControllerTransitioningDelegate>
 
 //-- Keyboard related functions
 @property (nonatomic, strong) EZEventBlock keyboardRaiseHandler;
@@ -18,6 +19,8 @@
 @property (nonatomic, strong) UITextField* currentFocused;
 
 @property (nonatomic, assign) CGFloat prevKeyboard;
+
+@property (nonatomic, strong) EZCameraNaviAnimation* cameraNaviAnim;
 
 @property (nonatomic, assign) BOOL haveDelta;
 

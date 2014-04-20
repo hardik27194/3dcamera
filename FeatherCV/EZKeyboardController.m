@@ -31,6 +31,7 @@
 {
     [super viewDidLoad];
     [self setupKeyboard];
+    self.navigationController.delegate = self;
     
     UIImageView* imageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
     imageView.image = [UIImage imageNamed:@"background.png"]; //createBlurImage:20];
@@ -216,6 +217,40 @@
             }];
         }
     }
+}
+
+
+
+#pragma mark - Navigation Controller Delegate
+
+-(id<UIViewControllerAnimatedTransitioning>)navigationController:(UINavigationController *)navigationController animationControllerForOperation:(UINavigationControllerOperation)operation fromViewController:(UIViewController *)fromVC toViewController:(UIViewController *)toVC {
+    
+    EZDEBUG(@"Exactly before transition");
+    
+    switch (operation) {
+        case UINavigationControllerOperationPush:
+           // if(_isPushCamera){
+                _cameraNaviAnim.type = AnimationTypePresent;
+                return _cameraNaviAnim;
+        case UINavigationControllerOperationPop:
+                _cameraNaviAnim.type = AnimationTypeDismiss;
+                return _cameraNaviAnim;
+        default: return nil;
+    }
+    
+}
+
+-(id<UIViewControllerInteractiveTransitioning>)navigationController:(UINavigationController *)navigationController interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransitioning>)animationController {
+    
+    EZDEBUG(@"Somebody ask if I am interactive transition or not");
+    /**
+     if ([animationController isKindOfClass:[ScaleAnimation class]]) {
+     ScaleAnimation *controller = (ScaleAnimation *)animationController;
+     if (controller.isInteractive) return controller;
+     else return nil;
+     } else return nil;
+     **/
+    return nil;
 }
 
 

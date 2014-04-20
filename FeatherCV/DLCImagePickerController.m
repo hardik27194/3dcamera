@@ -3117,6 +3117,7 @@ context:(void *)context
         //_shotPhoto.updateStatus = kUpdateStart;
     }
     //[[EZDataUtil getInstance].pendingUploads addObject:_shotPhoto];
+    [[EZDataUtil getInstance]storeAllPhotos:@[_shotPhoto]];
     [[EZDataUtil getInstance].pendingUploads addObject:_shotPhoto];
     [[EZDataUtil getInstance] uploadPendingPhoto];
 }
