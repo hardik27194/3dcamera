@@ -65,6 +65,8 @@
 
 @property (nonatomic, strong) EZShapeCover* shapeCover;
 
+
+@property (nonatomic, assign) BOOL raiseAssetCamera;
 //Sign
 @property (nonatomic, strong) UIView* signRegion;
 
@@ -132,6 +134,12 @@
 @property (nonatomic, strong) EZEnlargedView* rightCycleButton;
 
 @property (nonatomic, strong) UILabel* networkStatus;
+
+@property (nonatomic, strong) UIImage* assetImage;
+
+@property (nonatomic, strong) UIImageView* assetView;
+
+@property (nonatomic, strong) NSString* asset;
 
 @property (nonatomic, assign) int totalCount;
 

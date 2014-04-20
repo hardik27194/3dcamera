@@ -336,7 +336,7 @@
     }
     //cell.headIcon.backgroundColor = randBack(nil);
     
-    cell.headIcon.releasedBlock = ^(id object){
+    cell.clickRegion.releasedBlock = ^(id object){
         EZDEBUG(@"region clicked");
         //[[EZMessageCenter getInstance]postEvent:EZScreenSlide attached:@(1)];
         EZPerson* person = [weakSelf.contacts objectAtIndex:indexPath.row];
@@ -357,12 +357,10 @@
         };
         cell.headIcon.hidden = YES;
     }
-    
+     cell.headIcon.image = nil;
     if(person.avatar){
         //[cell.headIcon setImageWithURL:str2url(person.avatar)];
         [cell.headIcon.clickImage loadImageURL:person.avatar haveThumb:NO loading:NO];
-    }else{
-        cell.headIcon.image = nil;
     }
     cell.headIcon.releasedBlock = ^(id object){
         EZDEBUG(@"Header clicked");

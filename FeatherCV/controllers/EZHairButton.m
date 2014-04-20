@@ -40,6 +40,7 @@
 
 - (void) setButtonStyle:(EZShotButtonStyle)style
 {
+    EZDEBUG(@"setButtonStyle:%i", style);
     if(style == kShotForOne){
         _vertical.backgroundColor = [UIColor whiteColor];
         _horizon.backgroundColor = [UIColor whiteColor];

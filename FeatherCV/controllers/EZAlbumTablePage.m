@@ -52,13 +52,53 @@ static int photoCount = 1;
 
 @implementation EZAlbumTablePage
 
+
+- (void) setEmptyInfo:(EZPhotoCell*)cell isEmpty:(BOOL)isEmpty
+{
+    __weak EZAlbumTablePage* weakSelf = self;
+    //if(back.type == kPhotoRequest || ([cp.photo.exchangePersonID isNotEmpty] && back==nil)){
+    if(isEmpty){
+        cell.frontImage.image = nil;
+        cell.frontImage.backgroundColor = ClickedColor;
+        cell.requestFixInfo.text = @"我拍故我在";
+        //cell.waitingInfo.text =@"我拍故我在";//[NSString stringWithFormat:@"等待\"%@\"的照片", otherPerson.name?otherPerson.name:@"朋友"];
+        cell.waitingInfo.hidden = YES;
+        cell.otherIcon.hidden = YES;
+        cell.otherName.hidden = YES;
+        cell.andSymbol.hidden = YES;
+        cell.ownTalk.hidden = YES;
+        cell.authorName.hidden = YES;
+        cell.headIcon.hidden = YES;
+        cell.cameraView.hidden = NO;
+        cell.otherTalk.hidden = YES;
+        cell.shotPhoto.hidden = NO;
+        cell.shotPhoto.releasedBlock = ^(id obj){
+            [weakSelf raiseCamera:nil personID:_currentUser.personID];
+        };
+        
+        cell.frontImage.tappedBlock = nil;
+    }else{
+        cell.requestFixInfo.text = @"拍摄后翻看";
+        
+    }
+
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     EZDEBUG(@"cellForRow Called:%i", indexPath.row);
     static NSString *CellIdentifier = @"PhotoCell";
     EZPhotoCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
-    EZDisplayPhoto* cp = [_combinedPhotos objectAtIndex:indexPath.row];
+    
+    
+    EZDisplayPhoto* cp = nil;
+    if(_combinedPhotos.count){
+        cp = [_combinedPhotos objectAtIndex:indexPath.row];
+    }else{
+        cp = [[EZDisplayPhoto alloc] init];
+        cp.isPlaceHolder = TRUE;
+    }
     EZDEBUG(@"pos1");
     cell.backgroundColor = VinesGray;
     cell.headIcon.image = nil;
@@ -79,6 +119,10 @@ static int photoCount = 1;
     cell.cameraView.hidden = YES;
     cell.waitingInfo.hidden = YES;
     cell.shotPhoto.hidden = YES;
+    if(cp.isPlaceHolder){
+        cell.andSymbol.hidden = YES;
+        cell.frontImage.pageControl.hidden = YES;
+    }else{
     if(cp.photo.isPair){
         cell.andSymbol.hidden = NO;
         cell.frontImage.pageControl.hidden = YES;
@@ -87,11 +131,13 @@ static int photoCount = 1;
         cell.frontImage.pageControl.hidden = NO;
     }
     [cell.frontImage setPhotos:cp.photo.photoRelations position:cp.photoPos];
+    }
     //[cell.frontImage cleanAllPhotos];
     //[cell.frontImage setPhotos:cp.photo.photoRelations currentPos:cp.photoPos];
     _rightCycleButton.hidden = NO;
     //This is for later update purpose. great, let's get whole thing up and run.
     cell.currentPos = indexPath.row;
+    
     //EZCombinedPhoto* curPhoto = [cp.combinedPhotos objectAtIndex:cp.selectedCombinePhoto];
     EZPhoto* myPhoto = cp.photo;
     EZDEBUG(@"pos2 switchPhoto:%i", cp.photo.photoRelations.count);
@@ -108,6 +154,11 @@ static int photoCount = 1;
     __weak EZPhotoCell* weakCell = cell;
  
     
+    if(cp.isPlaceHolder){
+        EZDEBUG(@"Encounter empty");
+        [self setEmptyInfo:cell isEmpty:YES];
+        return cell;
+    }
     EZEventBlock otherBlock = ^(EZPerson*  person){
         if(cell.currentPos == indexPath.row){
             cell.otherName.text = person.name;
@@ -286,6 +337,14 @@ static int photoCount = 1;
 
     //__block NSString* staticFile = nil;
     cell.frontImage.tappedBlock = ^(id obj){
+        //[[EZDataUtil getInstance] fetchLastImage:^(ALAsset* image){
+            //EZDEBUG(@"Get image from album");
+            //weakCell.frontImage.image = image;
+            //CGImageRef cgImage = [[image defaultRepresentation] fullScreenImage];
+            //NSString* assetURL = [[image valueForProperty:ALAssetPropertyAssetURL] absoluteString];
+            //weakSelf.assetImage =[UIImage imageWithCGImage:cgImage scale:1.0 orientation:UIImageOrientationUp];
+            //[weakSelf raiseCamera:assetURL personID:nil];
+        //}];
         //EZDEBUG(@"Send a message out");
         //[[EZMessageCenter getInstance] postEvent:EZNoteCountChange attached:@(2)];
         if(myPhoto.typeUI != kPhotoRequest){
@@ -322,6 +381,7 @@ static int photoCount = 1;
             return;
         }
         longPressed = TRUE;
+        
         EZClickImage* fullView = [[EZClickImage alloc] initWithFrame:[UIScreen mainScreen].bounds];
         fullView.contentMode = UIViewContentModeScaleAspectFill;
         fullView.image = weakCell.frontImage.image;
@@ -470,6 +530,36 @@ static int photoCount = 1;
 }
 
 
+- (void) raiseCamera:(NSString *)photo personID:(NSString*)personID
+{
+    //if(camera.isFrontCamera){
+    //    [camera switchCamera];
+    //}
+    _isPushCamera = YES;
+    _newlyCreated = 0;
+    EZDEBUG(@"before present");
+    if([EZUIUtility sharedEZUIUtility].cameraRaised || [EZUIUtility sharedEZUIUtility].stopRotationRaise){
+        return;
+    }
+    
+    
+    //if(_picker == nil){
+    
+    DLCImagePickerController* camera = [[DLCImagePickerController alloc] initWithAsset:photo image:_assetImage];
+    //}
+    //controller.prefersStatusBarHidden = TRUE;
+    //camera.transitioningDelegate = _cameraAnimation;
+    camera.delegate = self;
+    //if(photo)
+    //if(pers)
+    camera.personID = personID;
+
+    //[self presentViewController:camera animated:TRUE completion:^(){
+    //    EZDEBUG(@"Presentation completed");
+    //}];
+    [self.navigationController pushViewController:camera animated:YES];
+}
+
 - (void) refreshVisibleCell
 {
     //self.tableView.visibleCells
@@ -579,6 +669,12 @@ static int photoCount = 1;
 - (void) setCurrentUser:(EZPerson *)currentUser readyBlock:(EZEventBlock)readyBlock
 {
     EZDEBUG(@"Will change the user from:%@ to %@", _currentUser, currentUser);
+    if(currentUser.filterType){
+        _assetView.hidden = YES;
+    }else{
+        _assetView.hidden = NO;
+    }
+    
     if(currentUser.filterType == kPhotoNewFilter){
         _currentUser = currentUser;
         //_numberLabel.alpha = 1;
@@ -802,20 +898,25 @@ static int photoCount = 1;
 {
     [super viewWillAppear:animated];
     
-    NSArray* visiblepaths = [self.tableView indexPathsForVisibleRows];
-    EZDEBUG(@"visiblePaths:%i", visiblepaths.count);
-    if(visiblepaths.count){
-        NSIndexPath* path = [visiblepaths objectAtIndex:0];
-        EZDisplayPhoto* dp = [_combinedPhotos objectAtIndex:path.row];
-        if(dp.photo.typeUI == kPhotoRequest){
-            _rightCycleButton.hidden = YES;
+    if(_combinedPhotos.count){
+        NSArray* visiblepaths = [self.tableView indexPathsForVisibleRows];
+        EZDEBUG(@"visiblePaths:%i", visiblepaths.count);
+        if(visiblepaths.count){
+            NSIndexPath* path = [visiblepaths objectAtIndex:0];
+            EZDisplayPhoto* dp = [_combinedPhotos objectAtIndex:path.row];
+            if(dp.photo.typeUI == kPhotoRequest){
+                _rightCycleButton.hidden = YES;
+            }else{
+                _rightCycleButton.hidden = NO;
+            }
         }else{
             _rightCycleButton.hidden = NO;
         }
+        _leftCyleButton.hidden = NO;
     }else{
+        _leftCyleButton.hidden = NO;
         _rightCycleButton.hidden = NO;
     }
-    _leftCyleButton.hidden = NO;
     [self.tableView refreshCustomScrollIndicatorsWithAlpha:0.0];
     //.hidden = NO;
     //[[UINavigationBar appearance] setBackgroundImage:ClearBarImage forBarMetrics:UIBarMetricsDefault];
@@ -1147,6 +1248,21 @@ static int photoCount = 1;
     return res;
 }
 
+- (void) scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
+{
+    EZDEBUG(@"content offset:%f, total height:%f, decelerate:%i", scrollView.contentOffset.y, scrollView.contentSize.height, decelerate);
+    
+    CGFloat exceedY = scrollView.contentOffset.y + CurrentScreenHeight - scrollView.contentSize.height;
+    if(exceedY > 80){
+        if(_asset){
+            _raiseAssetCamera = true;
+            //dispatch_later(0.2, ^(){
+            //    [self raiseCamera:_asset personID:_currentUser.personID];
+            //});
+        }
+    }
+    //if(scrollView.contentOffset.y )
+}
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
@@ -1161,6 +1277,10 @@ static int photoCount = 1;
         }else{
             _rightCycleButton.hidden = NO;
         }
+    }
+    if(_raiseAssetCamera){
+        _raiseAssetCamera = false;
+        [self raiseCamera:_asset personID:_currentUser.personID];
     }
 }
 
@@ -1191,7 +1311,7 @@ static int photoCount = 1;
     //self.tableView.contentInset = UIEdgeInsetsMake(-64, 0, 0, 0);
     EZDEBUG(@"Before change:%i", self.edgesForExtendedLayout);
     //self.edgesForExtendedLayout = UIRectEdgeAll;
-    self.tableView.backgroundColor = ClickedColor; //VinesGray;
+    self.tableView.backgroundColor = [UIColor clearColor]; //VinesGray;
     //self.tableView.backgroundColor = VinesGray; //[UIColor blackColor];
     //self.tableView.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"featherPage"]];
     //[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
@@ -1213,7 +1333,11 @@ static int photoCount = 1;
         [[EZDataUtil getInstance].mainPhotos addObject:dp];
         //[[EZDataUtil getInstance].mainNonSplits addObject:dp.photo];
         _totalCount++;
-        [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:_combinedPhotos.count-1 inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
+        if(_combinedPhotos.count == 1){
+            [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:_combinedPhotos.count-1 inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
+        }else{
+            [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:_combinedPhotos.count-1 inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
+        }
         //[self.tableView a]
     }];
     
@@ -1228,6 +1352,34 @@ static int photoCount = 1;
         _leftCyleButton.hidden = YES;
         _rightCycleButton.hidden = YES;
         [self.navigationController pushViewController:pd animated:YES];
+    }];
+    [[EZMessageCenter getInstance] registerEvent:EZAlbumImageUpdate block:^(id obj){
+        [[EZDataUtil getInstance] fetchLastImage:^(ALAsset* image){
+            
+            //weakCell.frontImage.image = image;
+            CGImageRef cgImage = [[image defaultRepresentation] fullScreenImage];
+            NSString* assetURL = [[image valueForProperty:ALAssetPropertyAssetURL] absoluteString];
+            weakSelf.assetImage =[UIImage imageWithCGImage:cgImage scale:1.0 orientation:UIImageOrientationUp];
+            EZDEBUG(@"Get image from album, size:%@", NSStringFromCGSize(weakSelf.assetImage.size));
+            weakSelf.asset = assetURL;
+            if(!_assetView){
+                _assetView = [[UIImageView alloc] initWithFrame:self.view.bounds];
+                UIView* upperCover = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, CurrentScreenHeight/2.0)];
+                upperCover.backgroundColor = ClickedColor;
+                [_assetView addSubview:upperCover];
+                _assetView.contentMode = UIViewContentModeScaleAspectFill;
+                _assetView.clipsToBounds = TRUE;
+                [weakSelf.view insertSubview:weakSelf.assetView belowSubview:weakSelf.tableView];
+            }
+            _assetView.image = weakSelf.assetImage;
+            //[weakSelf raiseCamera:assetURL personID:nil];
+        } failure:^(id err){
+            EZDEBUG(@"failed to get album:%@", err);
+            _assetView.image = nil;
+            _asset = nil;
+            _assetImage = nil;
+        }];
+
     }];
     
     [[EZMessageCenter getInstance] registerEvent:EZAlbumImageReaded block:^(EZDisplayPhoto* dp){
@@ -1260,7 +1412,16 @@ static int photoCount = 1;
         [self setNoteCount];
     }];
     
-    
+    [[EZMessageCenter getInstance] registerEvent:EZNetworkStatus block:^(NSNumber* num){
+        EZDEBUG(@"network change :%i", [EZDataUtil getInstance].networkAvailable);
+        if(![EZDataUtil getInstance].networkAvailable){
+            _networkStatus.hidden = NO;
+            _networkStatus.text = macroControlInfo(@"Network not available");
+        }else{
+            //_networkStatus.text = @"";
+            _networkStatus.hidden = YES;
+        }
+    }];
     
     [[EZMessageCenter getInstance] registerEvent:EZNoteCountSet block:^(NSNumber* num){
         EZDEBUG(@"set notes count:%i", num.intValue);
@@ -1305,6 +1466,8 @@ static int photoCount = 1;
     
     EZDEBUG(@"The login personID:%@, getID:%@", [EZDataUtil getInstance].currentPersonID, [[EZDataUtil getInstance] getCurrentPersonID]);
     
+    //[[EZMessageCenter getInstance] postEvent:EZAlbumImageUpdate attached:nil];
+    
     EZEventBlock queryPhotoBlock = ^(EZPerson* user){
         EZDEBUG(@"newly login user:%@, id:%@", user.name, user.personID);
         if(user){
@@ -1315,7 +1478,6 @@ static int photoCount = 1;
             [_combinedPhotos removeAllObjects];
             //[_nonsplitted removeAllObjects];
             [weakSelf.tableView reloadData];
-            
         }
         NSArray* storedPhotos = [[EZDataUtil getInstance] getStoredPhotos];
         for(EZPhoto* photo in storedPhotos){
@@ -1360,17 +1522,19 @@ static int photoCount = 1;
     _progressBar.trackTintColor = [UIColor clearColor];
     _progressBar.hidden = YES;
     
-    _networkStatus = [[UILabel alloc] initWithFrame:CGRectMake(0, 25, CurrentScreenWidth, 20)];
+    _networkStatus = [[UILabel alloc] initWithFrame:CGRectMake(0, 22, CurrentScreenWidth, 20)];
     _networkStatus.textAlignment = NSTextAlignmentCenter;
     _networkStatus.textColor = [UIColor whiteColor];
     _networkStatus.font = [UIFont systemFontOfSize:12];
-    [_networkStatus enableShadow:[UIColor blackColor]];
+    //[_networkStatus enableShadow:[UIColor blackColor]];
     [self.view addSubview:_networkStatus];
     _networkStatus.hidden = YES;
     
     dispatch_later(0.3, ^(){
         [self scrollToBottom:NO];
     });
+    
+    /**
     EZClickImage* bigClickButton = [[EZUIUtility sharedEZUIUtility] createBackShotButton];
     bigClickButton.center = CGPointMake(CurrentScreenWidth/2.0, CurrentScreenHeight - bigClickButton.frame.size.height/2.0 - 20);
     
@@ -1378,6 +1542,7 @@ static int photoCount = 1;
     bigClickButton.releasedBlock = ^(id obj){
         [weakSelf raiseCamera:nil indexPath:nil];
     };
+     **/
 }
 
 - (int) findPhoto:(NSString*)photoID matchID:(NSString*)matchID  photos:(NSArray*)photos
@@ -1823,25 +1988,7 @@ static int photoCount = 1;
     //}
 }
 
-//Pull and refresh will help to check if we have more photo to match.
-//This really make sense
-//Refresh to get more
 
-/**
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView
-{
-    if(!_isFirstCompleted){
-        _isFirstCompleted = TRUE;
-        return;
-    }
-        
-    if ((scrollView.contentOffset.y + scrollView.frame.size.height) >= scrollView.contentSize.height + 40)
-    {
-        EZDEBUG(@"Will raise camera");
-        //[self raiseCamera];
-    }
-}
-**/
 - (void) loadingView
 {
     EZDEBUG(@"I will load more data");
@@ -2053,8 +2200,15 @@ static int photoCount = 1;
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return _combinedPhotos.count;
-    //return 0;
+    
+    if(_combinedPhotos.count){
+        return _combinedPhotos.count;
+    }else{
+        if(!_currentUser.filterType){
+            return 1;
+        }
+    }
+    return 0;
 }
 
 - (void) testRegister:(EZPhoto*)photo
@@ -2371,7 +2525,8 @@ static int photoCount = 1;
                 EZDEBUG(@"waiting for response");
             }else if(photo == nil){
                 //weakCell.frontImage.image = nil;
-                [[EZUIUtility sharedEZUIUtility] showErrorInfo:macroControlInfo(@"Network not available") delay:1.0 view:self.view];
+                //[[EZUIUtility sharedEZUIUtility] showErrorInfo:macroControlInfo(@"Network not available") delay:1.0 view:self.view];
+                
             }
             else
             {
@@ -2405,10 +2560,9 @@ static int photoCount = 1;
             [self setWaitingInfo:weakCell displayPhoto:cp back:back];
             if(back.type == kPhotoRequest){
                 //weakCell.frontImage.image = [UIImage imageNamed:@"background.png"];
-                
             }
             else if(photo == nil){
-                [[EZUIUtility sharedEZUIUtility] showErrorInfo:macroControlInfo(@"Network not available") delay:1.0 view:self.view];
+                //[[EZUIUtility sharedEZUIUtility] showErrorInfo:macroControlInfo(@"Network not available") delay:1.0 view:self.view];
             }
 
             else{

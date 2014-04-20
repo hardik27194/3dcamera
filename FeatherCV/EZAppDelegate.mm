@@ -267,21 +267,10 @@
     NSURLCache *URLCache = [[NSURLCache alloc] initWithMemoryCapacity:4 * 1024 * 1024 diskCapacity:100 * 1024 * 1024 diskPath:nil];
     [NSURLCache setSharedURLCache:URLCache];
     
-    AFNetworkReachabilityManager* manager = [AFNetworkReachabilityManager managerForDomain:reachableDomain];
+   
     [[AFNetworkActivityIndicatorManager sharedManager] setEnabled:YES];
     
-    [manager setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
-        //EZDEBUG(@"Reachability: %@", AFStringFromNetworkReachabilityStatus(status));
-        EZDEBUG(@"network status:%i", status);
-        if(status == AFNetworkReachabilityStatusReachableViaWWAN || status == AFNetworkReachabilityStatusReachableViaWiFi){
-            [EZDataUtil getInstance].networkAvailable = TRUE;
-            [EZDataUtil getInstance].networkStatus = status;
-        }else{
-            [EZDataUtil getInstance].networkStatus = status;
-            [EZDataUtil getInstance].networkAvailable = FALSE;
-        }
-    }];
-    
+    [[EZDataUtil getInstance] setupNetworkMonitor];
     
     [NSTimer scheduledTimerWithTimeInterval:15.0
                                      target:self
@@ -521,6 +510,7 @@
     //[MobClick event:EZALStartPeriod label:@"start"];
     EZDEBUG(@"Become active");
     [[EZDataUtil getInstance] queryNotify];
+    [[EZMessageCenter getInstance] postEvent:EZAlbumImageUpdate attached:nil];
     [MobClick beginEvent:EZALStartPeriod label:@"becomeActive"];
 }
 

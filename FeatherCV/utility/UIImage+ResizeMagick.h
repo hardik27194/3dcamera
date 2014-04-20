@@ -21,12 +21,15 @@
 
 - (UIImage *) createBlurImage:(CGFloat)blurSize;
 
+- (UIImage*) orientationAdjust:(UIImageOrientation)orientation;
 
 - (UIImage*) croppedImageWithRect: (CGRect) rect;
 //This is exactly what do I need.
 - (UIImage *) imageCroppedWithRect:(CGRect)rect;
 //- (UIImage *) rotateToRightDirection;
 - (UIImage *) rotateByOrientation:(UIImageOrientation)orientation;
+
+- (UIImage*) orientationAdjust:(UIImageOrientation)orientation;
 
 //Change the orientation without rotate it.
 - (UIImage *) changeOriention:(UIImageOrientation)orientation;

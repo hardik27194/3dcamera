@@ -146,7 +146,7 @@
 
 #define ClickedColor RGBCOLOR(61, 191, 216)
 
-#define reachableDomain @"www.enjoyxue.com"
+#define reachableDomain @"www.google.com"
 
 #define placeholdImage [UIImage imageNamed:@"head_icon"] 
 //This is from show hair.
@@ -159,6 +159,8 @@
 #define EZRaisePersonDetail @"EZRaisePersonDetail"
 
 #define EZPhotoUploadSuccess @"EZPhotoUploadSuccess"
+
+#define EZNetworkStatus @"EZNetworkStatus"
 
 #define EZTokenUploaded @"EZTokenUploaded"
 
@@ -211,6 +213,10 @@
 
 #define EZALCameraShot @"EZALCameraShot"
 
+#define EZAlbumImageUpdate @"EZAlbumImageUpdate"
+
+#define EZALCameraAlbum @"EZALCameraAlbum"
+
 #define EZALCameraConfirm @"EZALCameraConfirm"
 
 #define EZALInputComment @"EZALInputComment"
@@ -223,9 +229,11 @@
 
 #define EZALStartPeriod @"EZALStartPeriod"
 
+#define EZUsedAlbumPhotos @"EZUsedAlbumPhotos"
+
 #define EZCenterBigRadius 60.0
 
-#define EZCenterSmallRadius 90.0
+#define EZCenterSmallRadius 70.0
 
 #define EZShotButtonDiameter 46
 

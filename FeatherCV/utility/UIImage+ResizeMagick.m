@@ -21,6 +21,12 @@ static inline CGFloat degreesToRadians(CGFloat degrees)
     return M_PI * (degrees / 180.0);
 }
 
+//Mean don't change anything. just change the orienation flag. 
+- (UIImage*) orientationAdjust:(UIImageOrientation)orientation
+{
+    return [[UIImage alloc] initWithCGImage:self.CGImage scale:self.scale orientation:orientation];
+}
+
 static inline CGSize swapWidthAndHeight(CGSize size)
 {
     CGFloat  swap = size.width;

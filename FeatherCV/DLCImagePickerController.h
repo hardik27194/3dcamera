@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <AssetsLibrary/AssetsLibrary.h>
 #import "GPUImage.h"
 #import "DLCBlurOverlayView.h"
 #import "EZSoundEffect.h"
@@ -108,6 +109,10 @@ typedef enum {
 
 
 @property (nonatomic, strong) EZUpArrow* upArrow;
+
+@property (nonatomic, strong) NSString* assetURL;
+
+@property (nonatomic, strong) UIImage* assetImage;
 
 @property (nonatomic, strong) EZEnlargedView* quitCrossButton;
 
@@ -291,7 +296,7 @@ typedef enum {
 
 - (IBAction) configClicked:(id)sender;
 
-
+- (id) initWithAsset:(NSString*)asset image:(UIImage*)image;
 
 - (id) initWithFront:(BOOL)frontFacing;
 

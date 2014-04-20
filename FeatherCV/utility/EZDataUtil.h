@@ -52,6 +52,8 @@
 
 @property (nonatomic, assign) AFNetworkReachabilityStatus networkStatus;
 
+@property (nonatomic, assign) BOOL isWifiAvailable;
+
 @property (nonatomic, assign) BOOL networkAvailable;
 
 @property (nonatomic, assign) BOOL wifiOnly;
@@ -121,6 +123,7 @@
 
 @property (nonatomic, assign) BOOL pauseUpload;
 
+@property (nonatomic, strong) AFNetworkReachabilityManager* manager;
 
 //Check the current status
 - (BOOL) canUpload;
@@ -133,6 +136,7 @@
 
 - (NSString*) getCurrentPersonID;
 
+- (void) setupNetworkMonitor;
 
 - (void) jumpCycleAnimation:(EZEventBlock)callBack;
 //@property (nonatomic, strong) NSMutable
@@ -272,6 +276,10 @@
 
 - (void) assetURLToAsset:(NSURL*)url success:(EZEventBlock)success;
 
+
+- (void) setAssetUsed:(NSString*) asset;
+//Get last unused image
+- (void) fetchLastImage:(EZEventBlock)success failure:(EZEventBlock)failure;
 //Just a trigger.
 //We will return the album one at a time
 - (void) readAlbumInBackground:(int)start limit:(int)limit;

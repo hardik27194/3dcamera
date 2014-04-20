@@ -52,6 +52,7 @@
 #import "EZUpArrow.h"
 #import "EZEnlargedView.h"
 
+
 //#include <vector>
 
 #define kStaticBlurSize 2.0f
@@ -369,6 +370,13 @@
     return [self initWithNibName:@"DLCImagePicker" bundle:nil];
 }
 
+- (id) initWithAsset:(NSString*)asset image:(UIImage*)assetImage
+{
+    _assetURL = asset;
+    _assetImage = assetImage;
+    return  [self initWithNibName:@"DLCImagePicker" bundle:nil];
+}
+
 -(BOOL)prefersStatusBarHidden {
     return YES;
 }
@@ -507,6 +515,8 @@
         }
         [self startPreFetch:localPhoto imageSuccess:nil];
     }
+    //if(_assetImage){
+    //}
 }
 
 //This method is no more necessary.
@@ -749,7 +759,10 @@
     //[self startMobileMotion];
     [[EZMessageCenter getInstance] registerEvent:EZFaceCovered block:faceCovered];
     [self preMatchPhoto];
-    [[EZUIUtility sharedEZUIUtility] enableProximate:YES];
+    if(_assetImage){
+        [self setStaticImage:_assetImage];
+    }
+    //[[EZUIUtility sharedEZUIUtility] enableProximate:YES];
 }
 
 - (void) setupButton
@@ -833,9 +846,7 @@
     //darkenView.backgroundColor = RGBACOLOR(100, 100, 100, 128);
     EZDEBUG(@"The imageView frame:%@", NSStringFromCGRect(imageView.frame));
     //[self setupEdgeDetector];
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-        [self setupCamera];
-    });
+    
     //[self startFaceCapture];
     [self setupUI];
     [self createTextField];
@@ -850,7 +861,14 @@
     [self.view addSubview:_progressView];
     
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        [self setupCamera];
+    });
     
+    if(_assetImage){
+        [self prepareRotateImage:_assetImage];
+        [self showTextField:YES];
+    }
     //UIView* upperBlack = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, 80)];
     //upperBlack.backgroundColor = NaviBarBlack;
     //[self.view addSubview:upperBlack];
@@ -1626,6 +1644,7 @@ context:(void *)context
     [self.view insertSubview:roundBackground belowSubview:rotateContainer];
     //rotateContainer.center = centerPoint;
     EZDEBUG(@"Camera aspect:%f, %@", ratio, NSStringFromCGSize(_cameraAspectSize));
+    
 }
 
 -(void) filterClicked:(UIButton *) sender {
@@ -2915,6 +2934,49 @@ context:(void *)context
 }
 
 
+- (void) setStaticImage:(UIImage*)image
+{
+    _upArrow.hidden = NO;
+    [(EZHairButton*)_quitCrossButton.innerView setButtonStyle:kShotHappen];
+    _uploadStatus = kUploading;
+    _isUploading = false;
+    _detectedFaceObj = nil;
+    [stillCamera stopCameraCapture];
+    [self removeAllTargets];
+    //_takingPhoto = TRUE;
+    _showOther = NO;
+    _isSaved = NO;
+    isStatic = YES;
+    _turnedImage = FALSE;
+    _uploadSuccessBlock = nil;
+    _uploadFailureBlock = nil;
+    _takingPhoto = false;
+    [self changeButtonStatus:YES];
+    _isImageWithFlash = NO;
+    //image = [image orientationAdjust:UIImageOrientationUp];
+    //staticPicture = [[GPUImagePicture alloc] initWithImage:image smoothlyScaleOutput:YES];
+    //staticPictureOriginalOrientation = image.imageOrientation;
+    //[self dismissViewControllerAnimated:YES completion:nil];
+    //[self.cameraToggleButton setEnabled:NO];
+    //[self.flashToggleButton setEnabled:NO];
+    //[self prepareStaticFilter];
+    [_progressView setProgress:0.2 animated:NO];
+    //[[EZDataUtil getInstance].cachedPointer setObject:self forKey:@"Camera"];
+    //[self prepareForCapture];
+    //[staticPicture processImage];
+    EZDEBUG(@"_shotPhoto is %@", _shotPhoto);
+    [self createPhoto:_assetImage orgData:photoMeta shotPhoto:_shotPhoto];
+    if(_shotPhoto.photoRelations.count){
+        EZPhoto* matched = [_shotPhoto.photoRelations objectAtIndex:0];
+        EZDEBUG(@"prefetch image:%@", matched.screenURL);
+        preloadimage(matched.screenURL);
+    }else{
+        EZDEBUG(@"Not find match photo");
+    }
+    
+    [MobClick event:EZALCameraAlbum label:[NSString stringWithFormat:@"%@,%i", _personID?@"request":@"person", _isPhotoRequest]];
+}
+
 
 -(IBAction) takePhoto:(id)sender{
     smileDetected.alpha = 0;
@@ -2965,6 +3027,10 @@ context:(void *)context
         _instrTitle.hidden = YES;
         if(_uploadStatus != kInitialUploading){
             [MobClick event:EZALCameraShot label:@"confirm"];
+            if(_assetURL){
+                [[EZDataUtil getInstance] setAssetUsed:_assetURL];
+                [[EZMessageCenter getInstance] postEvent:EZAlbumImageUpdate attached:nil];
+            }
             _toolBarRegion.alpha = 0.0;
             
             //_isSaved = true;
@@ -3271,7 +3337,7 @@ context:(void *)context
 }
 
 -(IBAction) cancelClicked:(id)sender {
-    EZDEBUG(@"Cancel get called");
+    EZDEBUG(@"Cancel clicked get called, static:%i, takingPhoto:%i, photoRequest:%i", isStatic, _isUploading, _isPhotoRequest);
     [MobClick event:EZALCameraCancel label:@"click"];
     EZPhoto* currentPhoto = _shotPhoto;
     if(isStatic){
@@ -3287,11 +3353,13 @@ context:(void *)context
             return;
         }
         //I will delete
-        
+        //_assetImage = nil;
+        //_assetURL = nil;
         if(!_isPhotoRequest){
             currentPhoto.deleted = true;
             [self cancelAll:currentPhoto];
         }
+        
         [self showTextField:false];
         //self.hideTextInput
         //_shotPhoto = [[EZPhoto alloc] init];
@@ -3302,6 +3370,7 @@ context:(void *)context
         //This will trigger the view update?
         rotateView.image = nil;
         [self changeButtonStatus:NO];
+        EZDEBUG(@"cancel clicked get called");
     }else{
         [self innerCancel:YES];
         if(!_isPhotoRequest){

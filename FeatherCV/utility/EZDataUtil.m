@@ -845,6 +845,26 @@
     EZDEBUG(@"stored:%@, fetched:%@", currentPersonID, fetchedBack);
 }
 
+- (void) setupNetworkMonitor
+{
+    _manager = [AFNetworkReachabilityManager managerForDomain:reachableDomain];
+    //[[AFNetworkActivityIndicatorManager sharedManager] setEnabled:YES];
+    
+    [_manager setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
+        //EZDEBUG(@"Reachability: %@", AFStringFromNetworkReachabilityStatus(status));
+        EZDEBUG(@"network status:%i", status);
+        if(status == AFNetworkReachabilityStatusReachableViaWWAN || status == AFNetworkReachabilityStatusReachableViaWiFi){
+            _networkAvailable = TRUE;
+            _networkStatus = status;
+        }else{
+            _networkStatus = status;
+            _networkAvailable = FALSE;
+        }
+        [[EZMessageCenter getInstance] postEvent:EZNetworkStatus attached:@(status)];
+    }];
+    [_manager startMonitoring];
+}
+
 - (NSString*) getCurrentPersonID
 {
     if(!_currentPersonID){
@@ -1425,6 +1445,79 @@
 //So that next time I will continue what I am doing.
 //This is just great.
 
+- (void) setAssetUsed:(NSString*) asset
+{
+    
+    NSMutableDictionary* storedUsed = [[[NSUserDefaults standardUserDefaults] dictionaryForKey:EZUsedAlbumPhotos] mutableCopy];
+    if(!storedUsed){
+        storedUsed = [[NSMutableDictionary alloc] init];
+    }
+    //NSString* assetURL = [[asset valueForProperty:ALAssetPropertyAssetURL] absoluteString];
+    [storedUsed setValue:@"" forKey:asset];
+    [[NSUserDefaults standardUserDefaults] setValue:storedUsed forKey:EZUsedAlbumPhotos];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+
+- (void) fetchLastImage:(EZEventBlock)block failure:(EZEventBlock)failure
+{
+   ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
+    
+    NSDictionary* storedUsed = [[NSUserDefaults standardUserDefaults] dictionaryForKey:EZUsedAlbumPhotos];
+    //if(!storedUsed){
+    //    storedUsed = [[NSMutableDictionary alloc] init];
+    //}
+    EZDEBUG(@"usedPhotos %i", storedUsed.count);
+    
+    NSInteger usedCount = storedUsed.count;
+        // Enumerate just the photos and videos group by using ALAssetsGroupSavedPhotos.
+    __block BOOL found = false;
+    [library enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
+            // Within the group enumeration block, filter to enumerate just photos.
+        [group setAssetsFilter:[ALAssetsFilter allPhotos]];
+        NSInteger albumCount = [group numberOfAssets];
+        EZDEBUG(@"Album size:%i, startPos:%i", albumCount, usedCount);
+        if(albumCount <= usedCount){
+            return;
+        }
+        
+        NSInteger beginPos = albumCount - usedCount - 1;
+        EZDEBUG(@"begin pos:%i", beginPos);
+        [group enumerateAssetsAtIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(beginPos, usedCount + 1)] options:0 usingBlock:^(ALAsset *alAsset, NSUInteger index, BOOL *innerStop) {
+                // The end of the enumeration is signaled by asset == nil.
+            if (alAsset) {
+                ///EZDEBUG(@"will compare %i", index);
+                NSString* assetURL = [[alAsset valueForProperty:ALAssetPropertyAssetURL] absoluteString];
+                if(![storedUsed objectForKey:assetURL]){
+                    //UIImage* screenImage = [UIImage imageWithCGImage:[[alAsset defaultRepresentation] fullScreenImage]];
+                    *stop = true;
+                    if(block){
+                        block(alAsset);
+                    }
+                    found = true;
+                }else{
+                    //EZDEBUG(@"used");
+                }
+                //UIImage *latestPhoto = [UIImage imageWithCGImage:[representation fullScreenImage]];
+            }else{
+                if(!found && failure){
+                    failure(@"all used");
+                }
+                EZDEBUG(@"encounter null asset");
+            }
+            }];
+        } failureBlock: ^(NSError *error) {
+            NSLog(@"No groups");
+            if(failure){
+                failure(error);
+            }
+    }];
+}
+
+- (BOOL) isWifiAvailable
+{
+    return _networkStatus == AFNetworkReachabilityStatusReachableViaWiFi;
+}
 
 - (void) storePendingPhoto
 {
