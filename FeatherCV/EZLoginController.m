@@ -43,7 +43,7 @@
     _titleInfo.font = [UIFont systemFontOfSize:35];
     _titleInfo.text = macroControlInfo(@"羽毛");
     
-    _introduction = [[UITextView alloc] initWithFrame:CGRectMake(37, 190.0 + startGap, CurrentScreenWidth - 37.0 * 2, 40)];
+    _introduction = [[UITextView alloc] initWithFrame:CGRectMake(37, 190.0 + startGap, CurrentScreenWidth - 37.0 * 2, 55)];
     _introduction.textAlignment = NSTextAlignmentCenter;
     _introduction.textColor = [UIColor whiteColor];
     //_introduction.font = [UIFont systemFontOfSize:8];
@@ -87,7 +87,7 @@
     UIView* passWrap = [self createWrap:_passwordField.frame];
     _passwordField.textAlignment = NSTextAlignmentCenter;
     _passwordField.textColor = [UIColor whiteColor];
-    
+    _passwordField.autocapitalizationType = UITextAutocapitalizationTypeNone;
     _passwordField.font = [UIFont systemFontOfSize:13];
     _passwordField.delegate = self;
     _passwordField.returnKeyType = UIReturnKeyJoin;
@@ -145,15 +145,15 @@
 {
     EZDEBUG(@"switch to register called %@", self.presentingViewController);
     //[self dismissViewControllerAnimated:YES completion:nil];
-    if([self.presentingViewController isKindOfClass:[EZRegisterCtrl class]]){
-        [self dismissViewControllerAnimated:YES completion:^(){
-        }];
+    if(self.navigationController.viewControllers.count > 1){
+        [self.navigationController popViewControllerAnimated:YES];
         EZDEBUG(@"Already presented in register");
     }else{
         //[self dismissViewControllerAnimated:NO completion:^(){
         EZRegisterCtrl* registerCtrl = [[EZRegisterCtrl alloc] init];
-        registerCtrl.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-        [self presentViewController:registerCtrl animated:YES completion:nil];
+        //registerCtrl.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+        //[self presentViewController:registerCtrl animated:YES completion:nil];
+        [self.navigationController pushViewController:registerCtrl animated:YES];
         //}];
     }
 }
@@ -194,6 +194,8 @@
         [coverView removeFromSuperview];
         EZDEBUG(@"Login success, name:%@", person);
         //[[EZUIUtility sharedEZUIUtility] raiseInfoWindow:macroControlInfo(@"Login success") info: macroControlInfo(@"Congradulation")];
+        
+        /**
         UIViewController* presenting = self.presentingViewController;
         [weakSelf dismissViewControllerAnimated:YES completion:^(){
             EZDEBUG(@"presenting class:%@", presenting);
@@ -201,13 +203,15 @@
                 [presenting dismissViewControllerAnimated:NO completion:nil];
             }
         }];
+         **/
+        [weakSelf.navigationController dismissViewControllerAnimated:YES completion:nil];
         [[EZMessageCenter getInstance] postEvent:EZUserAuthenticated attached:person];
     } error:^(id err){
         EZDEBUG(@"Register error:%@", err);
         [activity stopAnimating];
         [activity removeFromSuperview];
         [coverView removeFromSuperview];
-        [[EZUIUtility sharedEZUIUtility] raiseInfoWindow:macroControlInfo(@"Login failure") info:macroControlInfo(@"Check network and try later")];
+        [[EZUIUtility sharedEZUIUtility] raiseInfoWindow:macroControlInfo(@"Login failure") info:macroControlInfo(@"Check password and mobile number")];
     }];
     
     

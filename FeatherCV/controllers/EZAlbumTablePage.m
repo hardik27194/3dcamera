@@ -2156,6 +2156,10 @@ static int photoCount = 1;
     //[_leftContainer addSubview:_leftMessageCount];
     
     [TopView addSubview:_leftCyleButton];
+    if(!currentLoginID){
+        _leftCyleButton.hidden = YES;
+        _rightCycleButton.hidden = YES;
+    }
     
     [_leftCyleButton addTarget:self action:@selector(titleClicked:) forControlEvents:UIControlEventTouchUpInside];
 }

@@ -31,11 +31,13 @@
 {
     [super viewDidLoad];
     [self setupKeyboard];
+    EZDEBUG(@"navigation delegate:%i", (int)self.navigationController);
     self.navigationController.delegate = self;
+    self.navigationController.transitioningDelegate = self;
     
     UIImageView* imageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
     imageView.image = [UIImage imageNamed:@"background.png"]; //createBlurImage:20];
-    
+    _cameraNaviAnim = [[EZCameraNaviAnimation alloc] init];
     UIView* blackCover = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
     blackCover.backgroundColor = ClickedColor;//RGBA(0, 0, 0, 50);
     //[self.view addSubview:imageView];

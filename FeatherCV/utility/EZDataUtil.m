@@ -790,8 +790,10 @@
     
     if(isLogin){
         EZLoginController* login = [[EZLoginController alloc] init];
+        UINavigationController* navi = [[UINavigationController alloc] initWithRootViewController:login];
+        [navi setNavigationBarHidden:YES animated:NO];
         UIViewController* presenter = [EZUIUtility topMostController];
-        [presenter presentViewController:login animated:YES completion:nil];
+        [presenter presentViewController:navi animated:YES completion:nil];
         [[EZMessageCenter getInstance] registerEvent:EZUserAuthenticated block:^(EZPerson* ps){
             EZDEBUG(@"dismiss login person:%@, avatar:%@", ps.name, ps.avatar);
             //[login dismissViewControllerAnimated:NO completion:nil];
@@ -801,8 +803,10 @@
         }];
     }else{
         EZRegisterCtrl* registerCtl = [[EZRegisterCtrl alloc] init];
+        UINavigationController* navi = [[UINavigationController alloc] initWithRootViewController:registerCtl];
+        [navi setNavigationBarHidden:YES animated:NO];
         UIViewController* presenter = [EZUIUtility topMostController];
-        [presenter presentViewController:registerCtl animated:YES completion:nil];
+        [presenter presentViewController:navi animated:YES completion:nil];
         [[EZMessageCenter getInstance] registerEvent:EZUserAuthenticated block:^(EZPerson* ps){
             EZDEBUG(@"dismiss login person:%@, avatar:%@", ps.name, ps.avatar);
             //[registerCtl dismissViewControllerAnimated:NO completion:nil];
@@ -1488,7 +1492,9 @@
             if (alAsset) {
                 ///EZDEBUG(@"will compare %i", index);
                 NSString* assetURL = [[alAsset valueForProperty:ALAssetPropertyAssetURL] absoluteString];
+                
                 if(![storedUsed objectForKey:assetURL]){
+
                     //UIImage* screenImage = [UIImage imageWithCGImage:[[alAsset defaultRepresentation] fullScreenImage]];
                     *stop = true;
                     if(block){

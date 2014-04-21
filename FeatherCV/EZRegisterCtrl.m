@@ -103,7 +103,7 @@
     _titleInfo.font = [UIFont systemFontOfSize:35];
     _titleInfo.text = macroControlInfo(@"羽毛");
     
-    _introduction = [[UITextView alloc] initWithFrame:CGRectMake(30, 110.0 + startGap, CurrentScreenWidth - 30.0 * 2, 40)];
+    _introduction = [[UITextView alloc] initWithFrame:CGRectMake(30, 110.0 + startGap, CurrentScreenWidth - 30.0 * 2, 55)];
     _introduction.textAlignment = NSTextAlignmentCenter;
     _introduction.textColor = [UIColor whiteColor];
     //_introduction.font = [UIFont systemFontOfSize:8];
@@ -243,15 +243,17 @@
 - (void) registerSwitch:(id)obj
 {
     EZDEBUG(@"register called %@", self.presentingViewController);
-    if([self.presentingViewController isKindOfClass:[EZLoginController class]]){
+    if(self.navigationController.viewControllers.count > 1){
         EZDEBUG(@"Mean this is a register");
-        [self dismissViewControllerAnimated:YES completion:nil];
+        //[self dismissViewControllerAnimated:YES completion:nil];
+        [self.navigationController popViewControllerAnimated:YES];
     }else{
     
         EZLoginController* login = [[EZLoginController alloc] init];
-        login.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+        //login.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
         //[self dismissViewControllerAnimated:NO completion:^(){
-        [self presentViewController:login animated:YES completion:nil];
+        //[self presentViewController:login animated:YES completion:nil];
+        [self.navigationController pushViewController:login animated:YES];
        // }];
     }
     //[self presentViewController:login animated:YES completion:nil];
@@ -403,6 +405,7 @@
             //[[EZDataUtil]]
             [[EZMessageCenter getInstance] postEvent:EZUserAuthenticated attached:person];
             
+            /**
             UIViewController* presenting = weakSelf.presentingViewController;
             
             [weakSelf dismissViewControllerAnimated:YES completion:^(){
@@ -411,6 +414,8 @@
                     [presenting dismissViewControllerAnimated:NO completion:nil];
                 }
             }];
+             **/
+            [weakSelf.navigationController dismissViewControllerAnimated:YES completion:nil];
         } error:^(id err){
             EZDEBUG(@"Register error:%@", err);
             [activity stopAnimating];
