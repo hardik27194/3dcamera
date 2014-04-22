@@ -41,11 +41,12 @@
 //So I need to compare it.
 
 //Whether to show the hidden button or not.
+//Will add field for the album
+//@property (nonatomic, strong) UIView* container;
+
 @property (nonatomic, assign) BOOL showHiddenButton;
 
 @property (nonatomic, strong) UITableView* tableView;
-
-@property (nonatomic, strong) UIView* container;
 
 @property (nonatomic, strong) UIRefreshControl* refreshControl;
 
@@ -54,7 +55,7 @@
 @property (nonatomic, strong) UILabel* monthCount;
 @property (nonatomic, strong) UILabel* weekCount;
 @property (nonatomic, strong) UILabel* dailyCount;
-//@property (nonatomic, strong) UIView* container;
+@property (nonatomic, strong) UIView* albumContainer;
 @property (nonatomic, strong) UIProgressView* progressBar;
 
 @property (nonatomic, strong) EZTrianglerView* triangler;
@@ -141,8 +142,6 @@
 
 @property (nonatomic, strong) UIImageView* assetView;
 
-@property (nonatomic, strong) UIImageView* tableImageView;
-
 @property (nonatomic, strong) NSString* asset;
 
 @property (nonatomic, assign) int totalCount;
@@ -150,15 +149,13 @@
 //How many photos are just place holder
 @property (nonatomic, assign) int fillCount;
 
-
-@property (nonatomic, assign) int newMessageCount;
-
-//Animator
 @property (nonatomic, strong) UIDynamicAnimator *animator;
 @property (nonatomic, strong) UIGravityBehavior *gravityBehaviour;
 @property (nonatomic, strong) UIPushBehavior* pushBehavior;
 @property (nonatomic, strong) UIAttachmentBehavior *panAttachmentBehaviour;
 
+
+@property (nonatomic, assign) int newMessageCount;
 //@property (nonatomic, strong) NSMutableArray* unhandledNotes;
 
 - (void) storeCurrent;
@@ -169,7 +166,5 @@
 - (void) raiseCamera:(EZDisplayPhoto*)disPhoto indexPath:(NSIndexPath*)indexPath personID:(NSString*)personID;
 
 - (void) refreshVisibleCell;
-
-- (void) alignElement;
 
 @end
