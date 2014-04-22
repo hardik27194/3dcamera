@@ -3029,7 +3029,7 @@ context:(void *)context
             [MobClick event:EZALCameraShot label:@"confirm"];
             if(_assetURL){
                 [[EZDataUtil getInstance] setAssetUsed:_assetURL];
-                [[EZMessageCenter getInstance] postEvent:EZAlbumImageUpdate attached:nil];
+                [[EZMessageCenter getInstance] postEvent:EZAlbumImageClean attached:nil];
             }
             _toolBarRegion.alpha = 0.0;
             

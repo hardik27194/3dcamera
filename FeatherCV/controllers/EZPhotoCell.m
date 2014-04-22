@@ -64,7 +64,9 @@
         [_container addSubview:_clickHeart];
         //_clickHeart.backgroundColor = randBack(nil);
         **/
-        _gradientView = [[EZUIUtility sharedEZUIUtility] createGradientView];
+        _gradientView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, CurrentScreenHeight)];   //[[EZUIUtility sharedEZUIUtility] createGradientView];
+        _gradientView.backgroundColor = RGBA(0, 0, 0, 60);
+        _gradientView.userInteractionEnabled = NO;
         [self.container addSubview:_gradientView];
         
         _otherSliverLine = [[UIView alloc] initWithFrame:CGRectMake(10-1, CurrentScreenHeight - 300 - startPos-1, smallIconRadius+2, smallIconRadius+2)];

@@ -1481,13 +1481,16 @@
         [group setAssetsFilter:[ALAssetsFilter allPhotos]];
         NSInteger albumCount = [group numberOfAssets];
         EZDEBUG(@"Album size:%i, startPos:%i", albumCount, usedCount);
-        if(albumCount <= usedCount){
+        //if(albumCount <= usedCount){
+        //    return;
+        //}
+        if(!albumCount){
             return;
         }
         
-        NSInteger beginPos = albumCount - usedCount - 1;
-        EZDEBUG(@"begin pos:%i", beginPos);
-        [group enumerateAssetsAtIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(beginPos, usedCount + 1)] options:0 usingBlock:^(ALAsset *alAsset, NSUInteger index, BOOL *innerStop) {
+        //NSInteger beginPos = albumCount - usedCount - 1;
+        //EZDEBUG(@"begin pos:%i", beginPos);
+        [group enumerateAssetsAtIndexes:[NSIndexSet indexSetWithIndex:albumCount-1] options:0 usingBlock:^(ALAsset *alAsset, NSUInteger index, BOOL *innerStop) {
                 // The end of the enumeration is signaled by asset == nil.
             if (alAsset) {
                 ///EZDEBUG(@"will compare %i", index);

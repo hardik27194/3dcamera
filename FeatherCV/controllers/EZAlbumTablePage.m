@@ -177,26 +177,6 @@ static int photoCount = 1;
         weakCell.otherTalk.text = [backPt getConversation];
         pid2personCall(backPt.personID, otherBlock);
     };
-
-    /**
-    if(cp.isFirstTime){
-       
-        cp.isFirstTime = NO;
-        //cell.firstTimeView.hidden = NO;
-        EZPerson* person = pid2person(switchPhoto.personID);
-        EZDEBUG(@"name:%@, pendingCount:%i, photoID:%@", person.name, person.pendingEventCount, cp.photo.photoID);
-        //person.pendingEventCount -= 1;
-        [person adjustPendingEventCount:-1];
-        //[person save];
-        //[[EZMessageCenter getInstance] postEvent:EZNoteCountChange attached:@(-1)];
-        if(_currentUser.filterType == kPhotoNewFilter){
-            [_currentUser adjustPendingEventCount:-1];
-            [self setNoteCount];
-        }
-    }else{
-        cell.firstTimeView.hidden = YES;
-    }
-    **/
     
     EZDEBUG(@"Will display front image type:%i", myPhoto.typeUI);
     if(cp.isFront){
@@ -354,10 +334,11 @@ static int photoCount = 1;
         if(myPhoto.typeUI != kPhotoRequest){
             EZPhoto* swPhoto = [myPhoto.photoRelations objectAtIndex:cp.photoPos];
             //swPhoto.screenURL = @"http://192.168.1.102:8080/broken/49497";
+            EZDEBUG(@"contentOffset:%f, size:%f, pos:%f, inset:%f", _tableView.contentOffset.y, _tableView.contentSize.height, _tableView.contentOffset.y / CurrentScreenHeight, _tableView.contentInset.top);
             EZDEBUG(@"my photoID:%@, otherID:%@, otherPerson:%@, other photo upload:%i, other screenURL:%@, status content:%i, match:%i, update:%i", myPhoto.photoID,swPhoto.photoID, swPhoto.personID, swPhoto.uploaded, swPhoto.screenURL, myPhoto.contentStatus, myPhoto.exchangeStatus, myPhoto.updateStatus);
             //NSString* localURL = [[EZDataUtil getInstance] lo]
             //if(swPhoto){
-            [weakSelf switchImage:weakCell displayPhoto:cp front:myPhoto back:swPhoto animate:YES path:indexPath position:cp.photoPos];
+            //[weakSelf switchImage:weakCell displayPhoto:cp front:myPhoto back:swPhoto animate:YES path:indexPath position:cp.photoPos];
             //}
         }else{
             EZDEBUG(@"photo request clicked: %@, type:%i, otherEnd:%@", myPhoto.photoID, myPhoto.type, switchPhoto.photoID);
@@ -385,7 +366,7 @@ static int photoCount = 1;
             return;
         }
         longPressed = TRUE;
-        
+        //[weakSelf triggerFallAnim];
         EZClickImage* fullView = [[EZClickImage alloc] initWithFrame:[UIScreen mainScreen].bounds];
         fullView.contentMode = UIViewContentModeScaleAspectFill;
         fullView.image = weakCell.frontImage.image;
@@ -452,7 +433,8 @@ static int photoCount = 1;
         //[self presentViewController:activityViewController animated:YES completion:^{
         //    EZDEBUG(@"Completed sharing");
         //}];
-        
+        EZDEBUG(@"assetView Y:%f, contentSize:%f", _assetView.frame.origin.y, _tableView.contentSize.height);
+        [self triggerFallAnim];
         
     };
 
@@ -566,7 +548,7 @@ static int photoCount = 1;
 
 - (void) refreshVisibleCell
 {
-    //self.tableView.visibleCells
+    //self.tableView.bleCells
     NSArray* visibleRows = self.tableView.indexPathsForVisibleRows;
     if(visibleRows.count){
         [self.tableView reloadRowsAtIndexPaths:visibleRows withRowAnimation:UITableViewRowAnimationNone];
@@ -670,6 +652,13 @@ static int photoCount = 1;
     return res;
 }
 
+- (void) scrollToBottomLater:(CGFloat)time animated:(BOOL)animated
+{
+    dispatch_later(time, ^(){
+        [self scrollToBottom:animated];
+    });
+}
+
 - (void) setCurrentUser:(EZPerson *)currentUser readyBlock:(EZEventBlock)readyBlock
 {
     EZDEBUG(@"Will change the user from:%@ to %@", _currentUser, currentUser);
@@ -696,7 +685,8 @@ static int photoCount = 1;
         [_combinedPhotos removeAllObjects];
         [_combinedPhotos addObjectsFromArray:[[EZDataUtil getInstance] getFirstTimeArray]];
         [_tableView reloadData];
-        [self scrollToBottom:NO];
+        [self scrollToBottomLater:0.1 animated:NO];
+        //[self scrollToBottom:NO];
         
     }else
     if(currentUser.filterType == kPhotoWaitFilter){
@@ -715,7 +705,8 @@ static int photoCount = 1;
         [_combinedPhotos removeAllObjects];
         [_combinedPhotos addObjectsFromArray:requests];
         [_tableView reloadData];
-        [self scrollToBottom:NO];
+        [self scrollToBottomLater:0.1 animated:NO];
+        //[self scrollToBottom:NO];
     }
     else
     if([currentUser.personID isEqualToString:currentLoginID]){
@@ -752,7 +743,7 @@ static int photoCount = 1;
             if(readyBlock){
                 readyBlock(nil);
             }else{
-                [self scrollToBottom:NO];
+               [self scrollToBottomLater:0.1 animated:NO];
             }
             
         }else{
@@ -813,7 +804,7 @@ static int photoCount = 1;
         if(readyBlock){
             readyBlock(nil);
         }else{
-            [self scrollToBottom:NO];
+           [self scrollToBottomLater:0.1 animated:NO];
         }
 
         [self loadMorePhoto:^(id obj){
@@ -821,6 +812,7 @@ static int photoCount = 1;
                 [self scrollToBottom:NO];
             }
         } reload:YES pageSize:5];
+        //[self scrollToBottomLater:0.1 animated:NO];
 
     }else{
         if(readyBlock){
@@ -904,7 +896,7 @@ static int photoCount = 1;
     
     if(_combinedPhotos.count){
         NSArray* visiblepaths = [self.tableView indexPathsForVisibleRows];
-        EZDEBUG(@"visiblePaths:%i", visiblepaths.count);
+        
         if(visiblepaths.count){
             NSIndexPath* path = [visiblepaths objectAtIndex:0];
             EZDisplayPhoto* dp = [_combinedPhotos objectAtIndex:path.row];
@@ -913,6 +905,8 @@ static int photoCount = 1;
             }else{
                 _rightCycleButton.hidden = NO;
             }
+            //EZDEBUG(@"visiblePaths:%i, offset:%f, adjusted:%f", visiblepaths.count, _tableView.contentOffset.y, path.row * CurrentScreenHeight);
+            //_tableView.contentOffset = CGPointMake(0, path.row * CurrentScreenHeight);
         }else{
             _rightCycleButton.hidden = NO;
         }
@@ -925,7 +919,8 @@ static int photoCount = 1;
     //.hidden = NO;
     //[[UINavigationBar appearance] setBackgroundImage:ClearBarImage forBarMetrics:UIBarMetricsDefault];
     //[self.navigationController.view addSubview:[EZDataUtil getInstance].naviBarBlur];
-    EZDEBUG(@"initial content inset:%@", NSStringFromUIEdgeInsets(self.tableView.contentInset));
+    EZDEBUG(@"initial content inset:%@, offset:%f, pos:%f", NSStringFromUIEdgeInsets(self.tableView.contentInset), _tableView.contentOffset.y, _tableView.contentOffset.y/CurrentScreenHeight);
+    _tableView.contentInset = UIEdgeInsetsMake(0, 0, 0, 0);
 }
 
 - (void) viewWillDisappear:(BOOL)animated
@@ -1263,6 +1258,27 @@ static int photoCount = 1;
             //dispatch_later(0.2, ^(){
             //    [self raiseCamera:_asset personID:_currentUser.personID];
             //});
+            //_tableView.contentInset = UIEdgeInsetsMake(0, 0, exceedY, 0);
+            //_tableView.contentOffset = CGPointMake(0, _tableView.contentOffset.y + exceedY);
+            UIView* snapShot = [_container snapshotViewAfterScreenUpdates:NO];
+            [self.view addSubview:snapShot];
+            
+            dispatch_later(0.15, ^(){
+                [_container setY:-exceedY];
+                [snapShot removeFromSuperview];
+            [UIView animateWithDuration:0.5 animations:^(){
+                //[_container setY:-CurrentScreenHeight];
+                //_tableView.contentOffset = CGPointMake(0, _tableView.contentSize.height);
+                [_container setY:-CurrentScreenHeight];
+            } completion:^(BOOL completed){
+                [self raiseCamera:_asset personID:_currentUser.personID];
+                //_tableView.contentInset = UIEdgeInsetsMake(0, 0, 0, 0);
+                //_tableView.contentOffset = CGPointMake(0, _tableView.contentSize.height - CurrentScreenHeight);
+                //[_container setY:0];
+                [_container setY:0];
+            }];
+            });
+            
         }
     }
     //if(scrollView.contentOffset.y )
@@ -1289,10 +1305,32 @@ static int photoCount = 1;
             [self setNoteCount];
         }
     }
+    
+    /**
+    if(_raiseAssetCamera){
+        _raiseAssetCamera = false;
+        dispatch_later(0.1, ^(){
+            
+        });
+    }
+     **/
+    /**
     if(_raiseAssetCamera){
         _raiseAssetCamera = false;
         [self raiseCamera:_asset personID:_currentUser.personID];
     }
+     **/
+}
+
+
+//I will do following things
+- (void) triggerFallAnim
+{
+    EZDEBUG(@"will fall it");
+    //[UIView animate]
+    self.pushBehavior.pushDirection = CGVectorMake(0.0f, -80.0f);
+    // active is set to NO once the instantaneous force is applied. All we need to do is reactivate it on each button press.
+    self.pushBehavior.active = YES;
 }
 
 
@@ -1302,13 +1340,20 @@ static int photoCount = 1;
 
     _combinedPhotos = [[NSMutableArray alloc] init];
     self.view.backgroundColor = ClickedColor;//VinesGray;
+    
+    _container = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    _container.backgroundColor = [UIColor clearColor];
     self.tableView = [[UITableView alloc] initWithFrame:[UIScreen mainScreen].bounds];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
-
+    [_container addSubview:_tableView];
+    
+    
     [self.tableView enableCustomScrollIndicatorsWithScrollIndicatorType:JMOScrollIndicatorTypeClassic positions:JMOVerticalScrollIndicatorPositionRight color:[UIColor whiteColor]];
     [self.tableView registerClass:[EZPhotoCell class] forCellReuseIdentifier:@"PhotoCell"];
-    [self.view addSubview:self.tableView];
+    [self.view addSubview:_container];
+    
+    //[self.tableView addObserver:self forKeyPath:@"contentSize" options:0 context:NULL];
     
     _refreshControl = [[UIRefreshControl alloc] init];
     [_refreshControl addTarget:self
@@ -1344,10 +1389,17 @@ static int photoCount = 1;
         [[EZDataUtil getInstance].mainPhotos addObject:dp];
         //[[EZDataUtil getInstance].mainNonSplits addObject:dp.photo];
         _totalCount++;
+        if(_currentUser.filterType){
+            [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:_combinedPhotos.count-1 inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
+            [self scrollToBottomLater:0.1 animated:NO];
+        }else{
         if(_combinedPhotos.count == 1){
             [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:_combinedPhotos.count-1 inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
         }else{
             [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:_combinedPhotos.count-1 inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
+            [self scrollToBottomLater:0.1 animated:NO];
+            //[self scrollToBottom:NO];
+        }
         }
         //[self.tableView a]
     }];
@@ -1364,9 +1416,21 @@ static int photoCount = 1;
         _rightCycleButton.hidden = YES;
         [self.navigationController pushViewController:pd animated:YES];
     }];
+    
+    [[EZMessageCenter getInstance] registerEvent:EZAlbumImageClean block:^(id obj){
+        _assetView.image = nil;
+        _tableImageView.image = nil;
+        _asset = nil;
+        _assetImage = nil;
+    }];
     [[EZMessageCenter getInstance] registerEvent:EZAlbumImageUpdate block:^(id obj){
         [[EZDataUtil getInstance] fetchLastImage:^(ALAsset* image){
-            
+            ALAssetRepresentation* ap = [image defaultRepresentation];
+            EZDEBUG(@"dimension is:%@", NSStringFromCGSize(ap.dimensions));
+            if(ap.dimensions.width/2.0 == CurrentScreenWidth && ap.dimensions.height/2.0 == CurrentScreenHeight){
+                EZDEBUG(@"Quit for encounter screenshot");
+                return;
+            }
             //weakCell.frontImage.image = image;
             CGImageRef cgImage = [[image defaultRepresentation] fullScreenImage];
             NSString* assetURL = [[image valueForProperty:ALAssetPropertyAssetURL] absoluteString];
@@ -1375,20 +1439,43 @@ static int photoCount = 1;
             weakSelf.asset = assetURL;
             if(!_assetView){
                 _assetView = [[UIImageView alloc] initWithFrame:self.view.bounds];
-                UIView* upperCover = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, CurrentScreenHeight/2.0)];
-                upperCover.backgroundColor = ClickedColor;
-                [_assetView addSubview:upperCover];
+                //UIView* upperCover = [[UIView alloc] initWithFrame:CGRectMake(0, CurrentScreenHeight, CurrentScreenWidth, CurrentScreenHeight/2.0)];
+                //upperCover.backgroundColor = ClickedColor;
+                //[_assetView addSubview:upperCover];
+                
                 _assetView.contentMode = UIViewContentModeScaleAspectFill;
                 _assetView.clipsToBounds = TRUE;
-                [weakSelf.view insertSubview:weakSelf.assetView belowSubview:weakSelf.tableView];
+                //[weakSelf.view insertSubview:weakSelf.assetView belowSubview:weakSelf.tableView];
+                [weakSelf.tableView addSubview:_assetView];
+                if(self.tableView.contentSize.height < CurrentScreenHeight){
+                    [_assetView setY:CurrentScreenHeight];
+                }else{
+                    [_assetView setY:self.tableView.contentSize.height];
+                }
+                
+                _tableImageView = [[UIImageView alloc] initWithFrame:self.view.bounds];
+                _tableImageView.contentMode = UIViewContentModeScaleAspectFill;
+                _tableImageView.clipsToBounds = TRUE;
+                [_tableImageView setY:CurrentScreenHeight];
+                [_container addSubview:_tableImageView];
             }
             _assetView.image = weakSelf.assetImage;
+            _tableImageView.image = weakSelf.assetImage;
+            NSString* oldPhotoURL = [[NSUserDefaults standardUserDefaults] stringForKey:EZOldPhotoAssetURL];
+            if(![oldPhotoURL isEqualToString:assetURL]){
+                [[NSUserDefaults standardUserDefaults]  setObject:assetURL forKey:EZOldPhotoAssetURL];
+                [self triggerFallAnim];
+                dispatch_later(1.5, ^(){
+                    [self triggerFallAnim];
+                });
+            }
             //[weakSelf raiseCamera:assetURL personID:nil];
         } failure:^(id err){
-            EZDEBUG(@"failed to get album:%@", err);
-            _assetView.image = nil;
-            _asset = nil;
-            _assetImage = nil;
+            //EZDEBUG(@"failed to get album:%@", err);
+            //_assetView.image = nil;
+            //_tableImageView.image = nil;
+            //_asset = nil;
+            //_assetImage = nil;
         }];
 
     }];
@@ -1475,6 +1562,8 @@ static int photoCount = 1;
         }
     }];
     
+    
+    //[[EZMessageCenter getInstance] registeredEvent:EZFoundNewPhoto
     EZDEBUG(@"The login personID:%@, getID:%@", [EZDataUtil getInstance].currentPersonID, [[EZDataUtil getInstance] getCurrentPersonID]);
     
     //[[EZMessageCenter getInstance] postEvent:EZAlbumImageUpdate attached:nil];
@@ -1545,6 +1634,7 @@ static int photoCount = 1;
         [self scrollToBottom:NO];
     });
     
+    //[self setupContentViewControllerAnimatorProperties];
     /**
     EZClickImage* bigClickButton = [[EZUIUtility sharedEZUIUtility] createBackShotButton];
     bigClickButton.center = CGPointMake(CurrentScreenWidth/2.0, CurrentScreenHeight - bigClickButton.frame.size.height/2.0 - 20);
@@ -1554,6 +1644,33 @@ static int photoCount = 1;
         [weakSelf raiseCamera:nil indexPath:nil];
     };
      **/
+}
+
+
+-(void)setupContentViewControllerAnimatorProperties {
+    NSAssert(self.animator == nil, @"Animator is not nil – setupContentViewControllerAnimatorProperties likely called twice.");
+    
+    self.animator = [[UIDynamicAnimator alloc] initWithReferenceView:self.view];
+    
+    UICollisionBehavior *collisionBehaviour = [[UICollisionBehavior alloc] initWithItems:@[_container]];
+    // Need to create a boundary that lies to the left off of the right edge of the screen.
+    //collisionBehaviour.translatesReferenceBoundsIntoBoundary = YES;
+    [collisionBehaviour setTranslatesReferenceBoundsIntoBoundaryWithInsets:UIEdgeInsetsMake(-300, 0, 0, 0)];
+    //collisionBehaviour.collisionDelegate = self;
+    [self.animator addBehavior:collisionBehaviour];
+    
+    self.gravityBehaviour = [[UIGravityBehavior alloc] initWithItems:@[_container]];
+    //self.gravityBehaviour.gravityDirection = CGVectorMake(0, 1);
+    [self.animator addBehavior:self.gravityBehaviour];
+    
+    self.pushBehavior = [[UIPushBehavior alloc] initWithItems:@[_container] mode:UIPushBehaviorModeInstantaneous];
+    self.pushBehavior.magnitude = 0.0f;
+    self.pushBehavior.angle = 0.0f;
+    [self.animator addBehavior:self.pushBehavior];
+    
+    UIDynamicItemBehavior *itemBehaviour = [[UIDynamicItemBehavior alloc] initWithItems:@[_container]];
+    itemBehaviour.elasticity = 0.45f;
+    [self.animator addBehavior:itemBehaviour];
 }
 
 - (int) findPhoto:(NSString*)photoID matchID:(NSString*)matchID  photos:(NSArray*)photos
@@ -1582,6 +1699,12 @@ static int photoCount = 1;
         }
     }
     return -1;
+}
+
+//Why need to call it on every moment?
+- (void) alignElement
+{
+    
 }
 
 - (void) insertUpload:(EZNote*)note
@@ -1856,17 +1979,18 @@ static int photoCount = 1;
     } reason:@"试一试" isLogin:false];
 }
 
-
+/**
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context {
-    EZDEBUG(@"Key path get called %@, object type:%@", keyPath, object);
-    if ([keyPath isEqual:@"uploaded"]) {
-        NSNumber* changedName = [change objectForKey:NSKeyValueChangeNewKey];
-        EZDEBUG(@"changed value:%i", changedName.intValue);
+    EZDEBUG(@"Key path get called %@", keyPath);
+    if ([keyPath isEqual:@"contentSize"]) {
+        CGSize contentSize = [[change objectForKey:NSKeyValueChangeNewKey] CGSizeValue];
+        EZDEBUG(@"changed value:%@", NSStringFromCGSize(contentSize));
         //do something with the changedName - call a method or update the UI here
         //self.nameLabel.text = changedName;
+        [_assetView setY:contentSize.height];
     }
 }
-
+**/
 - (EZPhoto*) existed:(NSString*)pid
 {
     NSArray* totalNonSplit = [EZDataUtil getInstance].mainPhotos;
@@ -2040,6 +2164,7 @@ static int photoCount = 1;
     }
     _notFirstTime = true;
     [self setupUI];
+    //[self setupContentViewControllerAnimatorProperties];
 
 }
 
@@ -2652,10 +2777,18 @@ static int photoCount = 1;
 }
 
 
-- (void)scrollViewWillBeginDraggingOld:(UIScrollView *)scrollView
+
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
 {
-    EZDEBUG(@"Begin dragging point:%@, size:%@", NSStringFromCGPoint(scrollView.contentOffset), NSStringFromCGSize(scrollView.contentSize));
-    _isScrolling = true;
+    //EZDEBUG(@"Begin dragging point:%@, size:%@", NSStringFromCGPoint(scrollView.contentOffset), NSStringFromCGSize(scrollView.contentSize));
+    //_isScrolling = true;
+    CGFloat height = self.tableView.contentSize.height;
+    if(height < CurrentScreenHeight){
+        height = CurrentScreenHeight;
+    }
+    if(_assetView.image && _assetView.frame.origin.y != height){
+        [_assetView setY:height];
+    }
 }
 
 - (void)scrollViewDidEndDraggingOld:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate

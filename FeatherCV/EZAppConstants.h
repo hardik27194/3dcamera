@@ -215,6 +215,8 @@
 
 #define EZAlbumImageUpdate @"EZAlbumImageUpdate"
 
+#define EZAlbumNewImage @"EZAlbumNewImage"
+
 #define EZALCameraAlbum @"EZALCameraAlbum"
 
 #define EZALCameraConfirm @"EZALCameraConfirm"
@@ -227,9 +229,13 @@
 
 #define EZALLogin @"EZALLogin"
 
+#define EZAlbumImageClean @"EZAlbumImageClean"
+
 #define EZALStartPeriod @"EZALStartPeriod"
 
 #define EZUsedAlbumPhotos @"EZUsedAlbumPhotos"
+
+#define EZOldPhotoAssetURL @"EZOldPhotoAssetURL"
 
 #define EZCenterBigRadius 60.0
 
