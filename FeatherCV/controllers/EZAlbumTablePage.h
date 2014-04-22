@@ -48,6 +48,8 @@
 
 @property (nonatomic, strong) UITableView* tableView;
 
+@property (nonatomic, strong) UIImageView* outerImageView;
+
 @property (nonatomic, strong) UIRefreshControl* refreshControl;
 
 @property (nonatomic, strong) EZPerson* currentUser;
@@ -68,10 +70,11 @@
 
 @property (nonatomic, strong) EZShapeCover* shapeCover;
 
-
 @property (nonatomic, assign) BOOL raiseAssetCamera;
 //Sign
 @property (nonatomic, strong) UIView* signRegion;
+
+@property (nonatomic, assign) BOOL startCameraRaise;
 
 @property (nonatomic, strong) UILabel* numberLabel;
 
@@ -154,6 +157,13 @@
 @property (nonatomic, strong) UIPushBehavior* pushBehavior;
 @property (nonatomic, strong) UIAttachmentBehavior *panAttachmentBehaviour;
 
+@property (nonatomic, assign) BOOL innerCameraRaised;
+
+@property (nonatomic, assign) BOOL addBottom;
+
+@property (nonatomic, strong) DLCImagePickerController* innerPicker;
+
+@property (nonatomic, assign) BOOL innerFirstTime;
 
 @property (nonatomic, assign) int newMessageCount;
 //@property (nonatomic, strong) NSMutableArray* unhandledNotes;

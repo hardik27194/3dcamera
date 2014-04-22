@@ -107,6 +107,8 @@ typedef enum {
 @property (nonatomic, weak) IBOutlet UIButton *photoCaptureButton;
 @property (nonatomic, strong) UILabel* instrTitle;
 
+@property (nonatomic, strong) EZEventBlock innerCancelBlock;
+
 
 @property (nonatomic, strong) EZUpArrow* upArrow;
 
@@ -295,6 +297,8 @@ typedef enum {
 - (IBAction) panHandler:(id)sender;
 
 - (IBAction) configClicked:(id)sender;
+
+- (void) embededCancel;
 
 - (id) initWithAsset:(NSString*)asset image:(UIImage*)image;
 

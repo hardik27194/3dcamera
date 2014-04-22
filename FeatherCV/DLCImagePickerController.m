@@ -734,7 +734,9 @@
     bu.userInteractionEnabled = false;
     _quitCrossButton = [[EZEnlargedView alloc] initWithFrame:bu.frame innerView:bu enlargeRatio:EZEnlargeIconRatio];
     
-
+    if(_assetImage){
+        _quitCrossButton.hidden = YES;
+    }
     [bu setButtonStyle:kShotScreen];
     [TopView addSubview:_quitCrossButton];
     [UIView animateWithDuration:0.2 animations:^(){
@@ -862,9 +864,11 @@
     [self.view addSubview:_progressView];
     
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-        [self setupCamera];
-    });
+    if(!_assetImage){
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+            [self setupCamera];
+        });
+    }
     
     if(_assetImage){
         [self prepareRotateImage:_assetImage];
@@ -3028,6 +3032,8 @@ context:(void *)context
         EZDEBUG(@"are Taking Photo");
         return;
     }
+    
+    EZDEBUG(@"take photo isStatic:%i",isStatic);
     __weak DLCImagePickerController* weakSelf = self;
     [self.photoCaptureButton setEnabled:NO];
     if (!isStatic) {
@@ -3061,6 +3067,7 @@ context:(void *)context
         [MobClick event:EZALCameraShot label:[NSString stringWithFormat:@"%@,%i", _personID?@"request":@"person", _isPhotoRequest]];
     }else{
         //Mean the upload started, at least mean the photo already stored.
+        EZDEBUG(@"Take photo get called");
         _instrTitle.hidden = YES;
         if(_uploadStatus != kInitialUploading){
             [MobClick event:EZALCameraShot label:@"confirm"];
@@ -3344,6 +3351,10 @@ context:(void *)context
 //It is a method to 
 - (void) innerCancel:(BOOL)animated
 {
+    
+    if(_innerCancelBlock){
+        _innerCancelBlock(nil);
+    }
     EZUIUtility.sharedEZUIUtility.cameraClickButton.releasedBlock = nil;
     //[self dismissViewControllerAnimated:YES completion:^(){
     //    EZDEBUG(@"DLCCamera Will get dismissed");
@@ -3418,6 +3429,14 @@ context:(void *)context
     }
     //[self cancelPrematchPhoto:currentPhoto];
     
+}
+
+- (void) embededCancel
+{
+    if(!_isUploading){
+        _shotPhoto.deleted = true;
+        [self cancelAll:_shotPhoto];
+    }
 }
 
 - (void) quit:(id)sender

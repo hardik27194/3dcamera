@@ -164,10 +164,10 @@ static int photoCount = 1;
         return cell;
     }
     EZEventBlock otherBlock = ^(EZPerson*  person){
-        if(cell.currentPos == indexPath.row){
-            cell.otherName.text = person.name;
+        if(weakCell.currentPos == indexPath.row){
+            weakCell.otherName.text = person.name;
             //[cell.otherIcon setImageWithURL:str2url(person.avatar)];
-            [cell.otherIcon.clickImage loadImageURL:person.avatar haveThumb:NO loading:NO];
+            [weakCell.otherIcon.clickImage loadImageURL:person.avatar haveThumb:NO loading:NO];
         }
     };
 
@@ -540,6 +540,27 @@ static int photoCount = 1;
     return cell;
 }
 
+
+- (DLCImagePickerController*) embedCamera:(NSString*)photo personID:(NSString*)personID
+{
+    _newlyCreated = 0;
+    EZDEBUG(@"before present");
+    if([EZUIUtility sharedEZUIUtility].cameraRaised || [EZUIUtility sharedEZUIUtility].stopRotationRaise){
+        return nil;
+    }
+
+    DLCImagePickerController* camera = [[DLCImagePickerController alloc] initWithAsset:photo image:_assetImage];
+    //}
+    //controller.prefersStatusBarHidden = TRUE;
+    //camera.transitioningDelegate = _cameraAnimation;
+    camera.delegate = self;
+    //if(photo)
+    //if(pers)
+    camera.personID = personID;
+
+    camera.view.frame = self.view.bounds;
+    return camera;
+}
 
 - (void) raiseCamera:(NSString *)photo personID:(NSString*)personID
 {
@@ -1260,48 +1281,7 @@ static int photoCount = 1;
     return res;
 }
 
-- (void) scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
-{
-    EZDEBUG(@"content offset:%f, total height:%f, decelerate:%i", scrollView.contentOffset.y, scrollView.contentSize.height, decelerate);
-    
-    CGFloat exceedY = scrollView.contentOffset.y + CurrentScreenHeight - scrollView.contentSize.height;
-    if(exceedY > 80){
-        if(_asset && !_currentUser.filterType){
-            _raiseAssetCamera = true;
-            //dispatch_later(0.2, ^(){
-            //    [self raiseCamera:_asset personID:_currentUser.personID];
-            //});
-        }
-    }
-    //if(scrollView.contentOffset.y )
-}
 
-- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
-{
-    [UIView animateWithDuration:0.25 animations:^{
-        [self.tableView refreshCustomScrollIndicatorsWithAlpha:0.0];
-    }];
-    NSInteger pos = _tableView.contentOffset.y/CurrentScreenHeight;
-    if(_combinedPhotos.count > pos){
-        EZDisplayPhoto* dp = [_combinedPhotos objectAtIndex:pos];
-        if(dp.photo.typeUI == kPhotoRequest){
-            _rightCycleButton.hidden = YES;
-        }else{
-            _rightCycleButton.hidden = NO;
-        }
-        if(dp.isFirstTime){
-            dp.isFirstTime = false;
-            if(_currentUser.filterType == kPhotoNewFilter){
-                [_currentUser adjustPendingEventCount:-1];
-            }
-            [self setNoteCount];
-        }
-    }
-    if(_raiseAssetCamera){
-        _raiseAssetCamera = false;
-        [self raiseCamera:_asset personID:_currentUser.personID];
-    }
-}
 
 - (void) triggerFallAnim
 {
@@ -1344,6 +1324,9 @@ static int photoCount = 1;
     //self.edgesForExtendedLayout = UIRectEdgeNone;
     //self.tableView.contentInset = UIEdgeInsetsMake(-64, 0, 0, 0);
     EZDEBUG(@"Before change:%i", self.edgesForExtendedLayout);
+    self.edgesForExtendedLayout = UIRectEdgeTop;
+    self.extendedLayoutIncludesOpaqueBars=NO;
+    self.automaticallyAdjustsScrollViewInsets=NO;
     //self.edgesForExtendedLayout = UIRectEdgeAll;
     self.tableView.backgroundColor = [UIColor clearColor]; //VinesGray;
     //self.tableView.backgroundColor = VinesGray; //[UIColor blackColor];
@@ -1395,6 +1378,7 @@ static int photoCount = 1;
         _assetView.image = nil;
         _asset = nil;
         _assetImage = nil;
+        _outerImageView.image = nil;
     }];
     
     [[EZMessageCenter getInstance] registerEvent:EZAlbumImageUpdate block:^(id obj){
@@ -1405,8 +1389,6 @@ static int photoCount = 1;
                 EZDEBUG(@"Quit for encounter screenshot");
                 return;
             }
-
-            
             //weakCell.frontImage.image = image;
             CGImageRef cgImage = [[image defaultRepresentation] fullScreenImage];
             NSString* assetURL = [[image valueForProperty:ALAssetPropertyAssetURL] absoluteString];
@@ -1420,10 +1402,21 @@ static int photoCount = 1;
                 //[_assetView addSubview:upperCover];
                 _assetView.contentMode = UIViewContentModeScaleAspectFill;
                 _assetView.clipsToBounds = TRUE;
-                [self.view insertSubview:weakSelf.assetView belowSubview:_albumContainer];
+                //[self.view insertSubview:weakSelf.assetView belowSubview:_albumContainer];
+                CGFloat height = _tableView.contentSize.height;
+                if(self.tableView.contentSize.height < CurrentScreenHeight){
+                    height = CurrentScreenHeight;
+                }
+                [_tableView addSubview:_assetView];
+                _assetView.hidden = YES;
+                _outerImageView = [[UIImageView alloc] initWithFrame:self.view.bounds];
+                _outerImageView.contentMode = UIViewContentModeScaleAspectFill;
+                _outerImageView.clipsToBounds = TRUE;
+                [_outerImageView setY:CurrentScreenHeight];
+                [_albumContainer addSubview:_outerImageView];
             }
             _assetView.image = weakSelf.assetImage;
-            
+            _outerImageView.image = weakSelf.assetImage;
             NSString* oldPhotoURL = [[NSUserDefaults standardUserDefaults] stringForKey:EZOldPhotoAssetURL];
             if(![oldPhotoURL isEqualToString:assetURL]){
                 [[NSUserDefaults standardUserDefaults]  setObject:assetURL forKey:EZOldPhotoAssetURL];
@@ -1437,6 +1430,7 @@ static int photoCount = 1;
         } failure:^(id err){
             EZDEBUG(@"failed to get album:%@", err);
             _assetView.image = nil;
+            _outerImageView.image = nil;
             _asset = nil;
             _assetImage = nil;
         }];
@@ -2678,100 +2672,131 @@ static int photoCount = 1;
 }
 
 
-
-- (void) scrollViewDidScrollOld:(UIScrollView *)scrollView
+#pragma mark - Dragging control.
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
 {
-      //EZDEBUG(@"ViewDidScroll dragging point:%@, size:%@, %f _isScrolling:%i, showShapeCover:%i, animateStarted:%i", NSStringFromCGPoint(scrollView.contentOffset), NSStringFromCGSize(scrollView.contentSize),scrollView.frame.size.height, _isScrolling, _showShapeCover, _animStarted);
-    
-    if(_isScrolling){
-        CGFloat minius = scrollView.contentOffset.y + scrollView.frame.size.height - scrollView.contentSize.height;
-        
-        if(!_showShapeCover && minius > 40 && scrollView.contentSize.height > scrollView.frame.size.height){
-            _showShapeCover = TRUE;
-            //if(!_shapeCover){
-            //    _shapeCover = [[EZUIUtility sharedEZUIUtility] createHoleView];
-                //_shapeCover.backgroundColor = [UIColor blackColor];
-            //    [scrollView addSubview:_shapeCover];
-            //}
-            //_shapeCover.hidden = NO;
-            //_shapeCover.y = scrollView.contentSize.height + 40;
-            //EZDEBUG(@"_shapaCover size:%@", NSStringFromCGRect(_shapeCover.frame));
-            //[scrollView addSubview:_shapeCover];
-        }else if(_showShapeCover && minius > 100){
-            //_prevInsets = scrollView.contentInset;
-            //_animStarted = TRUE;
-            //_showShapeCover = FALSE;
-            //EZDEBUG(@"Will start animation");
-            [self raiseCamera:nil indexPath:nil];
-            /**
-            dispatch_later(0.1, ^(){
-                
-                [scrollView scrollRectToVisible:_shapeCover.frame animated:YES];
-            //[UIView  animateWithDuration:0.5 animations:^(){
-                //scrollView.contentInset = UIEdgeInsetsMake(_prevInsets.top, 0, CurrentScreenHeight + 40, 0);
-                //scrollView.contentOffset = CGPointMake(0, scrollView.contentSize.height + _shapeCover.height + 40);
-                
-                
-            //}
-            //completion:^(BOOL complete){
-            //    EZDEBUG(@"Completed scroll animation");
-                //scrollView.contentInset = _prevInsets;
-            //    _animStarted = false;
-            //}
-                
-             //];
-            
-            });
-             **/
-             
+    //EZDEBUG(@"Begin dragging point:%@, size:%@", NSStringFromCGPoint(scrollView.contentOffset), NSStringFromCGSize(scrollView.contentSize));
+    //_isScrolling = true;
+    if(_assetView.image){
+        [_assetView setY:_tableView.contentSize.height];
+        _assetView.hidden = NO;
+    }
+    _innerFirstTime = false;
+}
+
+- (void) scrollViewDidScroll:(UIScrollView *)scrollView{
+    EZDEBUG(@"Did scroll get called");
+    if(!_raiseAssetCamera && _asset && !_currentUser.filterType){
+        CGFloat exceedY = scrollView.contentOffset.y + CurrentScreenHeight - scrollView.contentSize.height;
+        if(exceedY > 90){
+            _raiseAssetCamera = true;
+            //_tableView.contentInset = UIEdgeInsetsMake(0, 0, exceedY, 0);
+            [UIView animateWithDuration:0.4 animations:^(){
+                //_tableView.contentInset = UIEdgeInsetsMake(0, 0, CurrentScreenHeight, 0);
+                _tableView.contentSize = CGSizeMake(0, _tableView.contentSize.height + CurrentScreenHeight);
+                //_tableView.contentOffset= CGPointMake(0, _tableView.contentSize.height);
+                //_tableView.contentInset = UIEdgeInsetsMake(0, 0, CurrentScreenHeight, 0);
+            } completion:^(BOOL completed){
+                //_tableView.contentOffset = CGPointMake(0, _tableView.contentSize.height);
+                //[self raiseCamera:_asset personID:_currentUser.personID];
+                _innerPicker = [self embedCamera:_asset personID:_currentUser.personID];
+                //[_innerPicker.view setY:_tableView.contentSize.height];
+                [_innerPicker.view setY:_tableView.contentSize.height - CurrentScreenHeight];
+                [_tableView addSubview:_innerPicker.view];
+                [_innerPicker viewWillAppear:YES];
+                [_innerPicker viewDidAppear:YES];
+                _leftCyleButton.hidden = YES;
+                _rightCycleButton.hidden = YES;
+                _innerCameraRaised = YES;
+                _innerFirstTime = YES;
+                __weak EZAlbumTablePage* weakSelf = self;
+                _innerPicker.innerCancelBlock = ^(id obj){
+                    weakSelf.raiseAssetCamera = false;
+                    weakSelf.leftCyleButton.hidden = NO;
+                    weakSelf.rightCycleButton.hidden = NO;
+                    UIView* snapShot = [weakSelf.innerPicker.view snapshotViewAfterScreenUpdates:NO];
+                    [weakSelf.view addSubview:snapShot];
+                    //weakSelf.tableView.contentInset = UIEdgeInsetsZero;
+                    weakSelf.tableView.contentSize = CGSizeMake(0, weakSelf.combinedPhotos.count * CurrentScreenHeight);
+                    [weakSelf.innerPicker.view removeFromSuperview];
+                    weakSelf.innerPicker = nil;
+                    weakSelf.innerCameraRaised = false;
+                    [UIView animateWithDuration:0.2 animations:^(){
+                        snapShot.alpha = 0.0;
+                    } completion:^(BOOL complete){
+                        [snapShot removeFromSuperview];
+                    }];
+                    };
+            }];
         }
-        
+    }else if(_innerCameraRaised && !_innerFirstTime){
+         CGFloat exceedY = scrollView.contentSize.height - scrollView.contentOffset.y;
+        if(exceedY > 20){
+            //[_innerPicker cancelClicked];
+            [_innerPicker embededCancel];
+            _innerPicker.innerCancelBlock(nil);
+        }
     }
 }
 
-
-- (void)scrollViewWillBeginDraggingOld:(UIScrollView *)scrollView
+- (void) scrollViewDidEndDraggingOld:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
 {
-    EZDEBUG(@"Begin dragging point:%@, size:%@", NSStringFromCGPoint(scrollView.contentOffset), NSStringFromCGSize(scrollView.contentSize));
-    _isScrolling = true;
+    EZDEBUG(@"content offset:%f, total height:%f, decelerate:%i", scrollView.contentOffset.y, scrollView.contentSize.height, decelerate);
+    
+    CGFloat exceedY = scrollView.contentOffset.y + CurrentScreenHeight - scrollView.contentSize.height;
+    if(exceedY > 90){
+        if(_asset && !_currentUser.filterType){
+            _raiseAssetCamera = true;
+            
+            [UIView animateWithDuration:0.3 animations:^(){
+                _tableView.contentInset = UIEdgeInsetsMake(0, 0, CurrentScreenHeight, 0);
+                _tableView.contentOffset= CGPointMake(0, _tableView.contentSize.height);
+                //_tableView.contentInset = UIEdgeInsetsMake(0, 0, CurrentScreenHeight, 0);
+            } completion:^(BOOL completed){
+                //[self raiseCamera:_asset personID:_currentUser.personID];
+            }];
+            
+            //dispatch_later(0.2, ^(){
+            //    [self raiseCamera:_asset personID:_currentUser.personID];
+            //});
+            //dispatch_later(0.30, ^(){
+            //    [self raiseCamera:_asset personID:_currentUser.personID];
+            //});
+        }
+    }
+    //if(scrollView.contentOffset.y )
 }
 
-- (void)scrollViewDidEndDraggingOld:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
-    EZDEBUG(@"End dragging point:%@, size:%@, refreshing:%i", NSStringFromCGPoint(scrollView.contentOffset), NSStringFromCGSize(scrollView.contentSize), self.refreshControl.refreshing);
-    _isScrolling = false;
-    /**
-    if(!self.refreshControl.refreshing && scrollView.contentOffset.y < 0){
-        [UIView animateWithDuration:0.3 animations:^(){
-            self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 0, 0);
-        } completion:^(BOOL completed){
-            self.tableView.contentInset = UIEdgeInsetsMake(64, 0, 0, 0);
-        }];
+    [UIView animateWithDuration:0.25 animations:^{
+        [self.tableView refreshCustomScrollIndicatorsWithAlpha:0.0];
+    }];
+    NSInteger pos = _tableView.contentOffset.y/CurrentScreenHeight;
+    if(_combinedPhotos.count > pos){
+        EZDisplayPhoto* dp = [_combinedPhotos objectAtIndex:pos];
+        if(dp.photo.typeUI == kPhotoRequest){
+            _rightCycleButton.hidden = YES;
+        }else{
+            _rightCycleButton.hidden = NO;
+        }
+        if(dp.isFirstTime){
+            dp.isFirstTime = false;
+            if(_currentUser.filterType == kPhotoNewFilter){
+                [_currentUser adjustPendingEventCount:-1];
+            }
+            [self setNoteCount];
+        }
     }
-     **/
-    //if(decelerate) return;
-    //[self scrollViewDidEndDecelerating:scrollView];
+    if(!_raiseAnimation){
+        _assetView.hidden = YES;
+    }
+    //if(_raiseAssetCamera){
+    //    _raiseAssetCamera = false;
+    //    [self raiseCamera:_asset personID:_currentUser.personID];
+    //}
 }
-- (void)scrollViewDidEndDeceleratingOld:(UIScrollView *)scrollView
-{
-    EZDEBUG(@"DidEndDecelerating point:%@, size:%@, refreshing:%i", NSStringFromCGPoint(scrollView.contentOffset), NSStringFromCGSize(scrollView.contentSize), self.refreshControl.refreshing);
-    //_isScrolling = false;
-    if(_showShapeCover){
-        _shapeCover.hidden = TRUE;
-        _showShapeCover = NO;
-        _animStarted = false;
-    }
-    if(scrollView.contentOffset.y == -64){
-        [UIView animateWithDuration:0.3 animations:^(){
-            //self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 0, 0);
-            scrollView.contentOffset = CGPointMake(0, 0);
-        } completion:^(BOOL completed){
-            //self.tableView.contentInset = UIEdgeInsetsMake(64, 0, 0, 0);
-        }];
-    }
-    //UITableView* tableView = (UITableView*)scrollView;
-    //[tableView scrollToRowAtIndexPath:[tableView indexPathForRowAtPoint: CGPointMake(tableView.contentOffset.x, tableView.contentOffset.y+tableView.rowHeight/2)] atScrollPosition:UITableViewScrollPositionTop animated:YES];
-}
+
 
 
 #pragma mark - Transitioning Delegate (Modal)
