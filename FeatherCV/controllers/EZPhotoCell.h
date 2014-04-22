@@ -169,6 +169,8 @@
 //This is great idea.
 - (void) backToOriginSize;
 
++ (UIView*) createWaitView:(NSString*)name;
+
 - (void) adjustCellSize:(CGSize)size;
 
 - (UIView*) createDupContainer:(UIImage*)img;

@@ -51,6 +51,7 @@
 #import "EZHairButton.h"
 #import "EZUpArrow.h"
 #import "EZEnlargedView.h"
+#import "EZPhotoCell.h"
 
 
 //#include <vector>
@@ -2376,7 +2377,7 @@ context:(void *)context
         thumbLocal = [[EZDataUtil getInstance] preloadImage:thumbURL success:nil failed:nil];
     }
     NSString* imageURL = localFull?localFull:thumbLocal;
-    
+    EZDEBUG(@"rotate image get called");
     if(imageURL){
         [self rotateCurrentImage:fileurl2image(imageURL) imageURL:nil blur:!localFull completed:^(id obj){
             _textField.hidden = YES;
@@ -2390,6 +2391,17 @@ context:(void *)context
                 });
             }
         }];
+    }else if(_personID){
+        //UIView* redView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, CurrentScreenHeight)];
+        //redView.backgroundColor = [UIColor redColor];
+        EZPerson* ps = pid2person(_personID);
+        UIView* personWait = [EZPhotoCell createWaitView:ps.name];
+        [self rotatePersonPage:personWait completed:^(id obj){
+         if(completed){
+            dispatch_later(1.0, ^(){
+                completed(nil);
+            });
+         }}];
     }else{
         if(completed){
             completed(nil);
@@ -2492,7 +2504,32 @@ context:(void *)context
      **/
 }
 
-         
+- (void) rotatePersonPage:(UIView*)view completed:(EZEventBlock)block
+{
+    UIView* snapView = [rotateView snapshotViewAfterScreenUpdates:NO];
+    //[rotateContainer addSubview:view];
+    [rotateContainer addSubview:snapView];
+    
+    /**
+    if(image){
+        rotateView.image = image;
+    }else{
+        [rotateView setImageWithURL:str2url(url)];
+    }
+     **/
+    //[rotateContainer addSubview:view belo]
+    
+    
+    roundBackground.alpha = 1.0;
+    [UIView flipTransition:snapView dest:view container:rotateContainer isLeft:YES duration:EZRotateAnimDuration complete:^(id obj){
+        [snapView removeFromSuperview];
+        roundBackground.alpha = 0.0;
+        if(block){
+            block(nil);
+        }
+    }];
+}
+
 
 - (void) rotateCurrentImage:(UIImage*)image imageURL:(NSString*)url blur:(BOOL)blur completed:(EZEventBlock)block
 {

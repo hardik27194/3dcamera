@@ -1523,6 +1523,28 @@
     }];
 }
 
+
+- (void) fillPhotoCount:(NSArray*)persons
+{
+    NSMutableDictionary* photoCountMap = [[NSMutableDictionary alloc] init];
+    for(EZDisplayPhoto* ph in _mainPhotos){
+        for(EZPhoto* matchedPh in ph.photo.photoRelations){
+            //EZPhoto* matchedPh = [ph.photo.photoRelations objectAtIndex:0];
+            EZPerson* ps = pid2person(matchedPh.personID);
+            
+            NSNumber* count = [photoCountMap objectForKey:ps.personID];
+            //if(count){
+            //    count.integerValue += 1;
+            //}
+            [photoCountMap setValue:@(count.integerValue + 1) forKey:ps.personID];
+        }
+    }
+    //[_photoCountMap setValue:@(allPhotos.count) forKey:currentLoginID];
+    for(EZPerson* ps in persons){
+        ps.photoCount = [[photoCountMap objectForKey:ps.personID] integerValue];
+    }
+}
+
 - (BOOL) isWifiAvailable
 {
     return _networkStatus == AFNetworkReachabilityStatusReachableViaWiFi;

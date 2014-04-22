@@ -73,7 +73,7 @@ static int photoCount = 1;
         cell.otherTalk.hidden = YES;
         cell.shotPhoto.hidden = NO;
         cell.shotPhoto.releasedBlock = ^(id obj){
-            [weakSelf raiseCamera:nil personID:_currentUser.personID];
+            [weakSelf raiseCamera:nil indexPath:nil personID:_currentUser.personID];
         };
         
         cell.frontImage.tappedBlock = nil;
@@ -119,10 +119,14 @@ static int photoCount = 1;
     cell.cameraView.hidden = YES;
     cell.waitingInfo.hidden = YES;
     cell.shotPhoto.hidden = YES;
+    cell.gradientView.hidden = NO;
+    
     if(cp.isPlaceHolder){
         cell.andSymbol.hidden = YES;
         cell.frontImage.pageControl.hidden = YES;
-    }else{
+        cell.gradientView.hidden = YES;
+    }
+    else{
     if(cp.photo.isPair){
         cell.andSymbol.hidden = NO;
         cell.frontImage.pageControl.hidden = YES;
@@ -209,6 +213,7 @@ static int photoCount = 1;
             //cell.frontImage.image = nil
             //cell.frontImage.backgroundColor = ClickedColor;
             cell.cameraView.hidden = NO;
+            cell.gradientView.hidden = YES;
             EZEventBlock personGet = ^(EZPerson* ps){
                 weakCell.requestInfo.text =[NSString stringWithFormat:@"\"%@\"发来的照片", ps.name];
             };
@@ -472,19 +477,21 @@ static int photoCount = 1;
     //    curBlock(frontPerson);
     //}
     cell.otherIcon.releasedBlock = ^(id obj){
+        EZPhoto* bp = [cp.photo.photoRelations objectAtIndex:cp.photoPos];
+        EZPerson* ps = pid2person(bp.personID);
         
-        EZPersonDetail* pd = [[EZPersonDetail alloc] initWithPerson:backPerson];
+        EZPersonDetail* pd = [[EZPersonDetail alloc] initWithPerson:ps];
         //pd.modalPresentationStyle = UIModalPresentationPageSheet;
         //pd.transitioningDelegate = weakSelf;
         //pd.modalPresentationStyle = UIModalPresentationCustom;
-        _isPushCamera = false;
+        weakSelf.isPushCamera = false;
         //pd.modalTransitionStyle
         //self.transitioningDelegate
-        _leftCyleButton.hidden = YES;
-        _rightCycleButton.hidden = YES;
+        weakSelf.leftCyleButton.hidden = YES;
+        weakSelf.rightCycleButton.hidden = YES;
         //[self presentViewController:pd animated:YES completion:^(){
         //}];
-        [self.navigationController pushViewController:pd animated:YES];
+        [weakSelf.navigationController pushViewController:pd animated:YES];
         
         /**
         UIView* coverView = [weakCell snapshotViewAfterScreenUpdates:NO];
@@ -508,12 +515,12 @@ static int photoCount = 1;
         EZPersonDetail* pd = [[EZPersonDetail alloc] initWithPerson:frontPerson];
         //pd.transitioningDelegate = weakSelf;
         //pd.modalPresentationStyle = UIModalPresentationCustom;
-        _isPushCamera = false;
-        _leftCyleButton.hidden = YES;
-        _rightCycleButton.hidden = YES;
+        weakSelf.isPushCamera = false;
+        weakSelf.leftCyleButton.hidden = YES;
+        weakSelf.rightCycleButton.hidden = YES;
         //[self presentViewController:pd animated:YES completion:^(){
         //}];
-        [self.navigationController pushViewController:pd animated:YES];
+        [weakSelf.navigationController pushViewController:pd animated:YES];
         /**
         UIView* coverView = [weakCell snapshotViewAfterScreenUpdates:NO];
         [self.view addSubview:coverView];
@@ -1090,6 +1097,7 @@ static int photoCount = 1;
     //if(camera.isFrontCamera){
     //    [camera switchCamera];
     //}
+    __weak EZAlbumTablePage* weakSelf = self;
     _isPushCamera = YES;
     _newlyCreated = 0;
     EZDEBUG(@"before present");
@@ -1117,7 +1125,7 @@ static int photoCount = 1;
             disPhoto.photo.typeUI = kNormalPhoto;
             //[[EZMessageCenter getInstance] postEvent:EZNoteCountChange attached:@(-1)];
             EZDEBUG("after Refresh type:%i, row:%i", disPhoto.photo.typeUI, indexPath.row);
-            [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+            [weakSelf.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
             //[self.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
         };
     }
@@ -2570,7 +2578,7 @@ static int photoCount = 1;
     if(back.type == kPhotoRequest || ([cp.photo.exchangePersonID isNotEmpty] && back==nil)){
         cell.frontImage.image = nil;
         cell.frontImage.backgroundColor = ClickedColor;
-        cell.waitingInfo.text =[NSString stringWithFormat:@"等待\"%@\"的照片", otherPerson.name?otherPerson.name:@"朋友"];
+        cell.waitingInfo.text =[NSString stringWithFormat:@"等待%@的照片", otherPerson.name?otherPerson.name:@"朋友"];
         cell.waitingInfo.hidden = NO;
         cell.otherIcon.hidden = YES;
         cell.otherName.hidden = YES;
@@ -2578,6 +2586,8 @@ static int photoCount = 1;
         cell.ownTalk.hidden = YES;
         cell.authorName.hidden = YES;
         cell.headIcon.hidden = YES;
+        cell.gradientView.hidden = YES;
+        cell.frontImage.pageControl.hidden = YES;
     }else{
         cell.waitingInfo.hidden = YES;
     }

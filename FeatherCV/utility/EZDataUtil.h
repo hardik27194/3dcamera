@@ -326,4 +326,7 @@
 //Will return the array which will have the photo displayed for the firstTime
 - (NSArray*) getFirstTimeArray;
 
+
+- (void) fillPhotoCount:(NSArray*)persons;
+
 @end

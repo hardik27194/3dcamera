@@ -173,12 +173,7 @@
         [_cameraView addSubview:_requestInfo];
         [_requestInfo enableTextWrap];
         
-        _waitingInfo = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 320, 44)];
-        _waitingInfo.font = [UIFont systemFontOfSize:15];
-        [_waitingInfo setTextAlignment:NSTextAlignmentCenter];
-        _waitingInfo.textColor = [UIColor whiteColor];
-        _waitingInfo.center = CGPointMake(CurrentScreenWidth/2.0, CurrentScreenHeight/2.0);
-        _waitingInfo.text = @"等待朋友的照片";
+        _waitingInfo = [EZPhotoCell createWaitingInfo];
         _waitingInfo.hidden = TRUE;
         [_frontImage addSubview:_waitingInfo];
         [_frontImage addSubview:_cameraView];
@@ -220,6 +215,27 @@
     }
     EZDEBUG(@"PhotoCell init completed");
     return self;
+}
+
++ (UILabel*) createWaitingInfo
+{
+    UILabel* waitInfo = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 320, 44)];
+    waitInfo.font = [UIFont systemFontOfSize:15];
+    [waitInfo setTextAlignment:NSTextAlignmentCenter];
+    waitInfo.textColor = [UIColor whiteColor];
+    waitInfo.center = CGPointMake(CurrentScreenWidth/2.0, CurrentScreenHeight/2.0);
+    waitInfo.text = @"等待朋友的照片";
+    return waitInfo;
+}
+
++ (UIView*) createWaitView:(NSString*)name;
+{
+    UIView* waitView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, CurrentScreenHeight)];
+    waitView.backgroundColor = ClickedColor;
+    UILabel* waitInfo = [self createWaitingInfo];
+    waitInfo.text = [NSString stringWithFormat:macroControlInfo(@"等待%@的照片"), name];
+    [waitView addSubview:waitInfo];
+    return waitView;
 }
 
 - (void) setFrontFormat:(BOOL)front

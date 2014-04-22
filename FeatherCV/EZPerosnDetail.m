@@ -139,7 +139,7 @@
     _uploadAvatar.touchStyle = kEZRandomColor;
     _uploadAvatar.enableTouchEffects = TRUE;
 
-    
+    [[EZDataUtil getInstance] fillPhotoCount:@[_person]];
     _titleInfo = [[UILabel alloc] initWithFrame:CGRectMake(0, 169 + startGap, CurrentScreenWidth, 30)];
     _titleInfo.textAlignment = NSTextAlignmentCenter;
     _titleInfo.textColor = [UIColor whiteColor];
