@@ -110,6 +110,8 @@
 
 @property (nonatomic, strong) UIButton* moreButton;
 
+@property (nonatomic, strong) EZEnlargedView* iconButton;
+
 @property (nonatomic, strong) DLCImagePickerController* picker;
 
 //How many photos are taken.
@@ -159,7 +161,8 @@
 
 @property (nonatomic, assign) BOOL innerCameraRaised;
 
-@property (nonatomic, assign) BOOL addBottom;
+//@property (nonatomic, assign) BOOL addBottomView;
+@property (nonatomic, strong) UIView* bottomView;
 
 @property (nonatomic, strong) DLCImagePickerController* innerPicker;
 

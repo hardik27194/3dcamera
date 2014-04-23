@@ -60,7 +60,7 @@ static int photoCount = 1;
     if(isEmpty){
         cell.frontImage.image = nil;
         cell.frontImage.backgroundColor = ClickedColor;
-        cell.requestFixInfo.text = @"我拍故我在";
+        cell.requestFixInfo.text = @"";
         //cell.waitingInfo.text =@"我拍故我在";//[NSString stringWithFormat:@"等待\"%@\"的照片", otherPerson.name?otherPerson.name:@"朋友"];
         cell.waitingInfo.hidden = YES;
         cell.otherIcon.hidden = YES;
@@ -87,6 +87,14 @@ static int photoCount = 1;
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     EZDEBUG(@"cellForRow Called:%i", indexPath.row);
+    
+    /**
+    if(_combinedPhotos.count <= indexPath.row){
+        UITableViewCell* bottomCell = [tableView dequeueReusableCellWithIdentifier:@"BottomCell"];
+        [bottomCell addSubview:_bottomView];
+        return bottomCell;
+    }
+     **/
     static NSString *CellIdentifier = @"PhotoCell";
     EZPhotoCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -714,6 +722,7 @@ static int photoCount = 1;
         [self setNoteCount];
         self.title = currentUser.name;
         [_leftCyleButton setTitle:currentUser.name forState:UIControlStateNormal];
+        _iconButton.hidden = YES;
         _leftCyleButton.titleLabel.font= EZLargeFont;
         CGSize fitSize = [_leftCyleButton.titleLabel sizeThatFits:CGSizeMake(230, 40)];
         CGFloat width = fitSize.width > 230?230:fitSize.width;
@@ -730,6 +739,7 @@ static int photoCount = 1;
     if(currentUser.filterType == kPhotoWaitFilter){
         NSArray* requests = [self getAllWaitRequests];
         _currentUser = currentUser;
+        _iconButton.hidden = YES;
         [self setNoteCount];
         self.title = currentUser.name;
         [_leftCyleButton setTitle:currentUser.name forState:UIControlStateNormal];
@@ -752,8 +762,9 @@ static int photoCount = 1;
             self.title = @"";
             //[[EZMessageCenter getInstance] postEvent:EZNoteCountSet attached:@([self getPendingCount])];
              [self setNoteCount];
+            _iconButton.hidden = NO;
             [(EZHairButton*)_rightCycleButton.innerView setButtonStyle:kShotForAll];
-            [_leftCyleButton setTitle:EZOriginalTitle forState:UIControlStateNormal];
+            [_leftCyleButton setTitle:DefaultEmptyString forState:UIControlStateNormal];
             _leftCyleButton.titleLabel.font = EZTitleSlimFont;
             
             CGSize fitSize = [_leftCyleButton.titleLabel sizeThatFits:CGSizeMake(230, 40)];
@@ -794,6 +805,7 @@ static int photoCount = 1;
         self.title = @""; //currentUser.name;
         _currentUser = currentUser;
         [self setNoteCount];
+        _iconButton.hidden = YES;
         [_leftCyleButton setTitle:currentUser.name forState:UIControlStateNormal];
         _leftCyleButton.titleLabel.font= EZLargeFont;
         CGSize fitSize = [_leftCyleButton.titleLabel sizeThatFits:CGSizeMake(230, 40)];
@@ -1311,6 +1323,7 @@ static int photoCount = 1;
     
     [self.tableView enableCustomScrollIndicatorsWithScrollIndicatorType:JMOScrollIndicatorTypeClassic positions:JMOVerticalScrollIndicatorPositionRight color:[UIColor whiteColor]];
     [self.tableView registerClass:[EZPhotoCell class] forCellReuseIdentifier:@"PhotoCell"];
+    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"BottomCell"];
     [self.view addSubview:_albumContainer];
     
     _refreshControl = [[UIRefreshControl alloc] init];
@@ -1382,6 +1395,8 @@ static int photoCount = 1;
     }];
     
     [[EZMessageCenter getInstance] registerEvent:EZAlbumImageUpdate block:^(id obj){
+        //Turn off the Album update
+        return;
         [[EZDataUtil getInstance] fetchLastImage:^(ALAsset* image){
             ALAssetRepresentation* ap = [image defaultRepresentation];
             EZDEBUG(@"dimension is:%@", NSStringFromCGSize(ap.dimensions));
@@ -2153,6 +2168,19 @@ static int photoCount = 1;
         }];
     };
      **/
+    
+    EZClickImage* imageButton = [[EZClickImage alloc] initWithFrame:CGRectMake(0, 6, 46, 46)];
+
+    _iconButton =  [[EZEnlargedView alloc] initWithFrame:imageButton.frame innerView:imageButton enlargeRatio:EZEnlargeIconRatio];
+    imageButton.contentMode = UIViewContentModeScaleAspectFill;
+    imageButton.image = [UIImage imageNamed:@"feather_icon"];
+    imageButton.userInteractionEnabled = false;
+    [imageButton enableRoundImage];
+    _iconButton.releasedBlock = ^(id obj){
+        [weakSelf titleClicked:nil];
+    };
+    
+    
     EZHairButton* hairButton = [[EZUIUtility sharedEZUIUtility] createShotButton];
     hairButton.userInteractionEnabled = false;
     EZEnlargedView* clickView = [[EZEnlargedView alloc] initWithFrame:hairButton.frame innerView:hairButton enlargeRatio:EZEnlargeIconRatio];
@@ -2189,7 +2217,9 @@ static int photoCount = 1;
     [_leftCyleButton setTitleColor:ClickedColor forState:UIControlStateHighlighted];
     [_leftCyleButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     _leftCyleButton.titleLabel.textAlignment = NSTextAlignmentLeft;
-    [_leftCyleButton setTitle:@"feather" forState:UIControlStateNormal];
+    [_leftCyleButton setTitle:DefaultEmptyString forState:UIControlStateNormal];
+    [_leftCyleButton addSubview:_iconButton];
+    
     //_leftCyleButton.layer.borderColor = [UIColor whiteColor].CGColor;
     //_leftCyleButton.layer.borderWidth = 2;
     //_leftText = [[UILabel alloc] initWithFrame:CGRectMake(0, -5, 120, 46)];
@@ -2379,6 +2409,9 @@ static int photoCount = 1;
 {
     if ([tableView.indexPathsForVisibleRows indexOfObject:indexPath] == NSNotFound)
     {
+        if(indexPath.row >= _combinedPhotos.count){
+            return;
+        }
         EZDEBUG(@"indexPath no more visible:%i", indexPath.row);
         EZPhotoCell* pc  = (EZPhotoCell*)[tableView cellForRowAtIndexPath:indexPath];
         EZDEBUG(@"before release image size:%@", NSStringFromCGSize(pc.frontImage.image.size));
@@ -2630,7 +2663,7 @@ static int photoCount = 1;
         
     
         dispatch_later(0.15, ^(){
-        [UIView flipTransition:snapShot dest:weakCell.frontImage container:weakCell.rotateContainer isLeft:YES duration:EZRotateAnimDuration complete:^(id obj){
+        [UIView flipTransition:snapShot dest:weakCell.frontImage container:weakCell.rotateContainer isLeft:cp.isFront duration:EZRotateAnimDuration complete:^(id obj){
             [snapShot removeFromSuperview];
             EZPerson* person = pid2person(photo.personID);
             EZDEBUG(@"person id:%@, name:%@", photo.personID, person.name);
@@ -2684,51 +2717,47 @@ static int photoCount = 1;
     _innerFirstTime = false;
 }
 
-- (void) scrollViewDidScroll:(UIScrollView *)scrollView{
+- (void) scrollViewDidScrollOld:(UIScrollView *)scrollView{
     EZDEBUG(@"Did scroll get called");
     if(!_raiseAssetCamera && _asset && !_currentUser.filterType){
         CGFloat exceedY = scrollView.contentOffset.y + CurrentScreenHeight - scrollView.contentSize.height;
         if(exceedY > 90){
             _raiseAssetCamera = true;
-            //_tableView.contentInset = UIEdgeInsetsMake(0, 0, exceedY, 0);
-            [UIView animateWithDuration:0.4 animations:^(){
-                //_tableView.contentInset = UIEdgeInsetsMake(0, 0, CurrentScreenHeight, 0);
-                _tableView.contentSize = CGSizeMake(0, _tableView.contentSize.height + CurrentScreenHeight);
-                //_tableView.contentOffset= CGPointMake(0, _tableView.contentSize.height);
-                //_tableView.contentInset = UIEdgeInsetsMake(0, 0, CurrentScreenHeight, 0);
-            } completion:^(BOOL completed){
-                //_tableView.contentOffset = CGPointMake(0, _tableView.contentSize.height);
-                //[self raiseCamera:_asset personID:_currentUser.personID];
-                _innerPicker = [self embedCamera:_asset personID:_currentUser.personID];
-                //[_innerPicker.view setY:_tableView.contentSize.height];
-                [_innerPicker.view setY:_tableView.contentSize.height - CurrentScreenHeight];
-                [_tableView addSubview:_innerPicker.view];
-                [_innerPicker viewWillAppear:YES];
-                [_innerPicker viewDidAppear:YES];
-                _leftCyleButton.hidden = YES;
-                _rightCycleButton.hidden = YES;
+            _innerPicker = [self embedCamera:_asset personID:_currentUser.personID];
+            //[_tableView addSubview:_innerPicker.view];
+            [_innerPicker.view setY:0];
+            [_innerPicker viewWillAppear:YES];
+            [_innerPicker viewDidAppear:YES];
+            _leftCyleButton.hidden = YES;
+            _rightCycleButton.hidden = YES;
+            dispatch_later(0.1, ^(){
                 _innerCameraRaised = YES;
-                _innerFirstTime = YES;
-                __weak EZAlbumTablePage* weakSelf = self;
-                _innerPicker.innerCancelBlock = ^(id obj){
-                    weakSelf.raiseAssetCamera = false;
-                    weakSelf.leftCyleButton.hidden = NO;
-                    weakSelf.rightCycleButton.hidden = NO;
-                    UIView* snapShot = [weakSelf.innerPicker.view snapshotViewAfterScreenUpdates:NO];
-                    [weakSelf.view addSubview:snapShot];
-                    //weakSelf.tableView.contentInset = UIEdgeInsetsZero;
-                    weakSelf.tableView.contentSize = CGSizeMake(0, weakSelf.combinedPhotos.count * CurrentScreenHeight);
-                    [weakSelf.innerPicker.view removeFromSuperview];
-                    weakSelf.innerPicker = nil;
-                    weakSelf.innerCameraRaised = false;
-                    [UIView animateWithDuration:0.2 animations:^(){
-                        snapShot.alpha = 0.0;
-                    } completion:^(BOOL complete){
-                        [snapShot removeFromSuperview];
-                    }];
-                    };
-            }];
+            });
+            _innerFirstTime = YES;
+            _bottomView = _innerPicker.view;
+            __weak EZAlbumTablePage* weakSelf = self;
+            [_tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:_combinedPhotos.count inSection:0]] withRowAnimation:UITableViewRowAnimationBottom];
+            _innerPicker.innerCancelBlock = ^(id obj){
+                weakSelf.raiseAssetCamera = false;
+                weakSelf.leftCyleButton.hidden = NO;
+                weakSelf.rightCycleButton.hidden = NO;
+                //UIView* snapShot = [weakSelf.innerPicker.view snapshotViewAfterScreenUpdates:NO];
+                //[weakSelf.view addSubview:snapShot];
+                //weakSelf.tableView.contentInset = UIEdgeInsetsZero;
+                //weakSelf.tableView.contentSize = CGSizeMake(0, weakSelf.combinedPhotos.count * CurrentScreenHeight);
+                [weakSelf.innerPicker.view removeFromSuperview];
+                weakSelf.innerPicker = nil;
+                weakSelf.innerCameraRaised = false;
+                //[UIView animateWithDuration:0.2 animations:^(){
+                    //snapShot.alpha = 0.0;
+                //} completion:^(BOOL complete){
+                //    [snapShot removeFromSuperview];
+                //}];
+                weakSelf.bottomView = nil;
+                [weakSelf.tableView deleteRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:weakSelf.combinedPhotos.count inSection:0]] withRowAnimation:UITableViewRowAnimationBottom];
+            };
         }
+
     }else if(_innerCameraRaised && !_innerFirstTime){
          CGFloat exceedY = scrollView.contentSize.height - scrollView.contentOffset.y;
         if(exceedY > 20){

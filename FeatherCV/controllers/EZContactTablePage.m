@@ -358,9 +358,12 @@
         cell.headIcon.hidden = YES;
     }
      cell.headIcon.image = nil;
-    if(person.avatar){
+    if(indexPath.row == 0){
+        cell.headIcon.clickImage.image = [UIImage imageNamed:@"feather_icon"];
+    }else if(person.avatar){
         //[cell.headIcon setImageWithURL:str2url(person.avatar)];
         [cell.headIcon.clickImage loadImageURL:person.avatar haveThumb:NO loading:NO];
+    
     }
     cell.headIcon.releasedBlock = ^(id object){
         EZDEBUG(@"Header clicked");

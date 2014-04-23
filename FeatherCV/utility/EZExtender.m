@@ -509,7 +509,10 @@ NSString* doubleString(NSString* str)
 //I use a new method, which will make the transation complete better.
 + (void) flipTransition:(UIView*)src dest:(UIView*)dest container:(UIView*)container isLeft:(BOOL)isLeft duration:(float)duration complete:(EZEventBlock)complete
 {
-    [UIView transitionFromView:src toView:dest duration:duration options:UIViewAnimationOptionTransitionFlipFromLeft|UIViewAnimationOptionCurveEaseOut completion:^(BOOL finished) {
+    
+    UIViewAnimationOptions direction = isLeft?UIViewAnimationOptionTransitionFlipFromLeft:UIViewAnimationOptionTransitionFlipFromRight;
+    
+    [UIView transitionFromView:src toView:dest duration:duration options:direction|UIViewAnimationOptionCurveEaseOut completion:^(BOOL finished) {
         if(complete){
             complete(nil);
         }

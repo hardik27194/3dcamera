@@ -237,6 +237,8 @@
 
 #define EZOldPhotoAssetURL @"EZOldPhotoAssetURL"
 
+#define DefaultEmptyString @"    "
+
 #define EZCenterBigRadius 60.0
 
 #define EZCenterSmallRadius 70.0
