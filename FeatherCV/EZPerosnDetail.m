@@ -90,11 +90,13 @@
     if([currentLoginID isEqualToString:_person.personID]){
         //_quitUser.hidden = NO;
         //_quitButton.hidden = YES;
-        [_quitUser setTitle:@"退出登录" forState:UIControlStateNormal];
+        //[_quitUser setTitle:@"退出登录" forState:UIControlStateNormal];
+        _quitUser.hidden = NO;
+        [_selectUser setTitle:[NSString stringWithFormat:@"%i对照片", [EZDataUtil getInstance].mainPhotos.count] forState:UIControlStateNormal];
+
     }else{
-        //_quitUser.hidden = YES;
-        //_quitButton.hidden = NO;
-        [_quitUser setTitle:[NSString stringWithFormat:@"%i对照片", _person.photoCount] forState:UIControlStateNormal];
+        _quitUser.hidden = YES;
+        [_selectUser setTitle:[NSString stringWithFormat:@"%i对照片", _person.photoCount] forState:UIControlStateNormal];
     }
 }
 
@@ -165,27 +167,45 @@
     **/
     
     
-    _quitUser = [[UIButton alloc] initWithFrame:CGRectMake((CurrentScreenWidth - 246.0)/2.0, 280 + startGap, 246.0, 40.0)];
+    _selectUser = [[UIButton alloc] initWithFrame:CGRectMake((CurrentScreenWidth - 246.0)/2.0, 280 + startGap, 246.0, 40.0)];
+    //[_registerButton enableRoundImage];
+    _selectUser.layer.cornerRadius = _selectUser.height/2.0;
+    _selectUser.backgroundColor =  ButtonWhiteColor;//EZButtonRed;
+    [_selectUser setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [_selectUser.titleLabel setFont:[UIFont systemFontOfSize:13]];
+    [_selectUser setTitle:macroControlInfo(@"Quit Login") forState:UIControlStateNormal];
+    //[_quitUser enableShadow:[UIColor blackColor]];
+    [_selectUser.titleLabel enableShadow:[UIColor blackColor]];
+    [_selectUser addTarget:self action:@selector(selectUser:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:_selectUser];
+    
+    
+    _quitUser = [[UIButton alloc] initWithFrame:CGRectMake((CurrentScreenWidth - 246.0)/2.0, 345.0 + startGap, 246.0, 40.0)];
     //[_registerButton enableRoundImage];
     _quitUser.layer.cornerRadius = _quitUser.height/2.0;
     _quitUser.backgroundColor =  ButtonWhiteColor;//EZButtonRed;
     [_quitUser setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [_quitUser.titleLabel setFont:[UIFont systemFontOfSize:13]];
-    [_quitUser setTitle:macroControlInfo(@"Quit Login") forState:UIControlStateNormal];
+    [_quitUser setTitle:macroControlInfo(@"退出登录") forState:UIControlStateNormal];
     //[_quitUser enableShadow:[UIColor blackColor]];
     [_quitUser.titleLabel enableShadow:[UIColor blackColor]];
     [_quitUser addTarget:self action:@selector(quitClicked:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:_quitUser];
+
     //[self.view addSubview:_quitButton];
     [self.view addSubview:_uploadAvatar];
 	// Do any additional setup after loading the view.
 }
 
 
+- (void) selectUser:(id)obj
+{
+    [[EZMessageCenter getInstance] postEvent:EZSetAlbumUser attached:_person];
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
 - (void) quitClicked:(id)obj
 {
-    if([_person.personID isEqualToString:currentLoginID]){
-    
     [[EZMessageCenter getInstance] postEvent:EZSetAlbumUser attached:currentLoginUser direct:YES];
     NSArray* photos = [[EZDataUtil getInstance] getStoredPhotos];
     EZDEBUG(@"Photos after cleaned:%i", photos.count);
@@ -203,10 +223,7 @@
         }];
     
     } failure:^(id err){} reason:@"请重新登录" isLogin:YES];
-    }else{
-        [[EZMessageCenter getInstance] postEvent:EZSetAlbumUser attached:_person];
-        [self.navigationController popViewControllerAnimated:YES];
-    }
+   
 }
 
 @end

@@ -394,6 +394,7 @@
     if(remoteNote){
         [self handleNotification:remoteNote isLive:NO];
     }
+    [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
 
     //NSString* thumb = url2thumb(@"http://cool.guy/cool.jpg");
     //EZDEBUG(@"The thumb url is:%@", thumb);
@@ -512,6 +513,7 @@
     [[EZDataUtil getInstance] queryNotify];
     [[EZMessageCenter getInstance] postEvent:EZAlbumImageUpdate attached:nil];
     [MobClick beginEvent:EZALStartPeriod label:@"becomeActive"];
+    [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application

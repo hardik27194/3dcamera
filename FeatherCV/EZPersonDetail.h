@@ -25,6 +25,8 @@
 
 @property (nonatomic, strong) EZClickImage* quitButton;
 
+@property (nonatomic, strong) UIButton* selectUser;
+
 @property (nonatomic, strong) UIButton* quitUser;
 
 - (id) initWithPerson:(EZPerson*)person;

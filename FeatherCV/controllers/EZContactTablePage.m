@@ -36,7 +36,7 @@
     self.tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
     self.tableView.delegate = self;
     //self.tableView.backgroundColor = RGBA(255, 255, 255, 128);
-    self.tableView.backgroundColor = RGBA(0, 0, 0, 40);
+    self.tableView.backgroundColor = [UIColor clearColor];//RGBA(0, 0, 0, 40);
     [self.view addSubview:self.tableView];
     _barBackground = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, 64)];
     UILabel* friendTitle = [[UILabel alloc] initWithFrame:CGRectMake(0, 25, CurrentScreenWidth, 30)];
