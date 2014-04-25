@@ -175,7 +175,11 @@ static int photoCount = 1;
         if(weakCell.currentPos == indexPath.row){
             weakCell.otherName.text = person.name;
             //[cell.otherIcon setImageWithURL:str2url(person.avatar)];
-            [weakCell.otherIcon.clickImage loadImageURL:person.avatar haveThumb:NO loading:NO];
+            if([person.avatar isNotEmpty]){
+                [weakCell.otherIcon.clickImage loadImageURL:person.avatar haveThumb:NO loading:NO];
+            }else{
+                weakCell.otherIcon.clickImage.image = nil;
+            }
         }
     };
 

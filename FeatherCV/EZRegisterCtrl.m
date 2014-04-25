@@ -365,10 +365,9 @@
         return;
     }
     
-    if(_uploadAvatar.image == nil){
+    if(![_avatarURL isNotEmpty]){
         [[EZUIUtility sharedEZUIUtility] raiseInfoWindow:@"请上传头像" info:nil];
         return;
-
     }
     
     _registerBlock = ^(id obj){
