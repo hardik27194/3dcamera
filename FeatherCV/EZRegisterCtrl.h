@@ -10,7 +10,7 @@
 
 @class EZClickImage;
 
-@interface EZRegisterCtrl : EZKeyboardController<UIActionSheetDelegate>
+@interface EZRegisterCtrl : EZKeyboardController<UIActionSheetDelegate, UIScrollViewDelegate>
 
 @property (nonatomic, strong) UILabel* titleInfo;
 //@property (nonatomic, strong) UILabel* introduction;
@@ -34,6 +34,10 @@
 
 @property (nonatomic, strong) UIButton* registerButton;
 
+@property (nonatomic, strong) UIButton* sendVerifyCode;
+
+@property (nonatomic, strong) UIButton* confirmCode;
+
 @property (nonatomic, strong) UIView* seperator;
 
 @property (nonatomic, strong) EZClickImage* uploadAvatar;
@@ -43,6 +47,20 @@
 @property (nonatomic, assign) BOOL uploadingAvatar;
 
 @property (nonatomic, strong) EZEventBlock registerBlock;
+
+@property (nonatomic, strong) UIView* originalView;
+
+@property (nonatomic, strong) UIPageControl* pageControl;
+
+@property (nonatomic, strong) UIScrollView* scrollContainer;
+
+@property (nonatomic, strong) UIView* smsView;
+
+
+
+
+//@property (nonatomic, strong) UIPageControl* pageControl;
+
 
 //@property (nonatomic, strong) UIImage* avatarImage;
 

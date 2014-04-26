@@ -331,15 +331,20 @@
 
 - (void) uploadPendingImages:(id)obj
 {
-    [[EZDataUtil getInstance] uploadPendingPhoto];
-    [[EZDataUtil getInstance] queryPendingPerson];
-    //[[EZDataUtil getInstance] storeAll];
-    if([EZDataUtil getInstance].timerBlock){
-        [EZDataUtil getInstance].timerBlock(nil);
-    }
-    [[EZDataUtil getInstance] queryNotify];
-    
     if(currentLoginID){
+        if(![EZDataUtil getInstance].networkAvailable){
+            EZDEBUG(@"quit for network not available");
+            return;
+        }
+        [[EZDataUtil getInstance] uploadPendingPhoto];
+        [[EZDataUtil getInstance] queryPendingPerson];
+        //[[EZDataUtil getInstance] storeAll];
+        if([EZDataUtil getInstance].timerBlock){
+            [EZDataUtil getInstance].timerBlock(nil);
+        }
+        [[EZDataUtil getInstance] queryNotify];
+    
+    
         BOOL uploaded = [[NSUserDefaults standardUserDefaults] boolForKey:EZTokenUploaded];
         if(!uploaded){
             EZDEBUG(@"try to upload token");

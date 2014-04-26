@@ -1402,6 +1402,20 @@
      }];
 }
 
+- (void) requestSmsCode:(NSString*)number success:(EZEventBlock)success failure:(EZEventBlock)failure
+{
+    NSDictionary* payload = @{
+                              @"mobile":number,
+                              @"cmd":@"passcode"
+                              };
+    [EZNetworkUtility postJson:@"person/info" parameters:payload complete:^(id obj){
+        EZDEBUG(@"update preson:%@", obj);
+        if(success){
+            success(obj);
+        }
+    } failblk:failure];
+}
+
 - (void) assetURLToAsset:(NSURL *)url success:(EZEventBlock)success
 {
     ALAssetsLibraryAssetForURLResultBlock resultblock = ^(ALAsset *myasset)

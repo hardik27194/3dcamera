@@ -25,6 +25,10 @@
 @property (nonatomic, assign) BOOL haveDelta;
 
 @property (nonatomic, assign) CGFloat smallGap;
+
+@property (nonatomic, strong) UIActivityIndicatorView* activity;
+
+@property (nonatomic, strong) UIView* coverView;
 //@property (nonatomic, strong) EZEventBlock key
 
 - (void) liftWithBottom:(CGFloat)deltaGap isSmall:(BOOL)small time:(CGFloat)timeval complete:(EZEventBlock)complete;
@@ -33,5 +37,9 @@
 - (UIView*) createWrap:(CGRect)frame;
 
 - (UILabel*) createPlaceHolder:(UITextField*)textField;
+
+- (void) stopActivity;
+
+- (void) startActivity;
 
 @end

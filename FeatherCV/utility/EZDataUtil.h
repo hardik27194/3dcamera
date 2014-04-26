@@ -319,6 +319,8 @@
 
 - (void) loadAllPersons;
 
+- (void) requestSmsCode:(NSString*)number success:(EZEventBlock)success failure:(EZEventBlock)failure;
+
 - (void) addPendingUpload:(EZPhoto*)photo;
 
 - (void) storePendingPhoto;

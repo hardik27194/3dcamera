@@ -70,7 +70,7 @@
     
 }
 
-- (void) setInputField:(UITextField*)textField
+- (void) setInputField:(UITextField*)textField container:(UIView*)container
 {
     textField.textAlignment = NSTextAlignmentCenter;
     textField.textColor = [UIColor whiteColor];
@@ -80,12 +80,230 @@
     textField.delegate = self;
     
     UIView* mobileWrap = [self createWrap:textField.frame];
-    [self.view addSubview:mobileWrap];
-    [self.view addSubview:textField];
+    [container addSubview:mobileWrap];
+    [container addSubview:textField];
     
     
 }
 
+
+- (UIView*) createRegisterView:(CGFloat)startGap
+{
+    UIView* containerView = [[UIView alloc] initWithFrame:CGRectMake(0, 175.0 + startGap, CurrentScreenWidth, CurrentScreenHeight - 175.0 - startGap)];
+    containerView.backgroundColor = [UIColor clearColor];
+    __weak EZRegisterCtrl* weakSelf = self;
+    _uploadAvatar = [[EZClickImage alloc] initWithFrame:CGRectMake((CurrentScreenWidth - 64.0)/2.0, 0, 64.0, 64.0)];
+    UILabel* addTitle = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 64, 20)];
+    addTitle.center = CGPointMake(32, 32);
+    addTitle.textAlignment = NSTextAlignmentCenter;
+    addTitle.textColor = [UIColor whiteColor];
+    addTitle.font = [UIFont systemFontOfSize:12];
+    addTitle.text = @"添加头像";
+    addTitle.center = _uploadAvatar.center;
+    [containerView addSubview:addTitle];
+
+    _uploadAvatar.layer.borderColor = [UIColor whiteColor].CGColor;
+    _uploadAvatar.layer.borderWidth = 1.0;
+    [_uploadAvatar enableRoundImage];
+    _uploadAvatar.pressedBlock = ^(id obj){
+        //[weakSelf uploadAvatar];
+        UIActionSheet* action = [[UIActionSheet alloc] initWithTitle:macroControlInfo(@"Choose Avatar") delegate:weakSelf cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Camera",@"Album", nil];
+        [action showInView:weakSelf.view];
+    };
+    
+    [containerView addSubview:_uploadAvatar];
+    _name = [[UITextField alloc] initWithFrame:CGRectMake((CurrentScreenWidth - 206.0)/2.0, 88.0, 206.0, 40)];
+    [self setInputField:_name container:containerView];
+    _name.keyboardType = UIKeyboardTypeDefault;
+    _namePlaceHolder = [self createPlaceHolder:_name];
+    _namePlaceHolder.text = macroControlInfo(@"Name");
+    [containerView addSubview:_namePlaceHolder];
+    
+    //NSString* deviceName = [[UIDevice currentDevice] name];
+    //if([deviceName isNotEmpty]){
+    //    _name.text = deviceName;
+    //    _namePlaceHolder.hidden = YES;
+    //}
+    
+    
+    /**
+    _mobileField = [[UITextField alloc] initWithFrame:CGRectMake((CurrentScreenWidth - 206.0)/2.0, 131.0, 206.0, 40)];
+    [self setInputField:_mobileField];
+    _mobilePlaceHolder = [self createPlaceHolder:_mobileField];
+    _mobileField.keyboardType = UIKeyboardTypeNumbersAndPunctuation;
+    _mobilePlaceHolder.text = macroControlInfo(@"Mobile Number");
+    [self.view addSubview:_mobilePlaceHolder];
+    **/
+    
+    _passwordField = [[UITextField alloc] initWithFrame:CGRectMake((CurrentScreenWidth - 206.0)/2.0, 148, 206, 40)];
+    [self setInputField:_passwordField container:containerView];
+    _passwordField.returnKeyType = UIReturnKeyJoin;
+    [_passwordField setPlainPassword];
+    _passwordPlaceHolder = [self createPlaceHolder:_passwordField];
+    _passwordPlaceHolder.text = macroControlInfo(@"PassCode");
+    [containerView addSubview:_passwordPlaceHolder];
+    
+    
+    
+    _registerButton = [[UIButton alloc] initWithFrame:CGRectMake((CurrentScreenWidth - 246.0)/2.0, 208.0, 246.0, 40.0)];
+    //[_registerButton enableRoundImage];
+    _registerButton.layer.cornerRadius = _registerButton.height/2.0;
+    _registerButton.backgroundColor = ButtonWhiteColor;//EZButtonGreen;
+    [_registerButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [_registerButton.titleLabel setFont:[UIFont systemFontOfSize:13]];
+    [_registerButton setTitle:macroControlInfo(@"Complete") forState:UIControlStateNormal];
+    [_registerButton addTarget:self action:@selector(registerClicked:) forControlEvents:UIControlEventTouchUpInside];
+    [containerView addSubview:_registerButton];
+    /**
+    _passwordButton = [[UIButton alloc] initWithFrame:CGRectMake(60, 468 + startGap, 100, 40)];//400
+    [_passwordButton setTitle:macroControlInfo(@"Password") forState:UIControlStateNormal];
+    [_passwordButton.titleLabel setFont:[UIFont systemFontOfSize:13]];
+    [_passwordButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [_passwordButton addTarget:self action:@selector(passwordSwitch:) forControlEvents:UIControlEventTouchUpInside];
+    
+    _seperator = [[UIView alloc] initWithFrame:CGRectMake(160, 468 + startGap + 13, 1, 14)];
+    _seperator.backgroundColor = [UIColor whiteColor];
+    //_loginButton = [[UIButton alloc] initWithFrame:CGRectMake(160, 353 + startGap, 100, 40)];
+    
+    _loginButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 211.0, CurrentScreenWidth, 40.0)];//455
+    [_loginButton setTitle:macroControlInfo(@"Login") forState:UIControlStateNormal];
+    [_loginButton.titleLabel setFont:[UIFont systemFontOfSize:13]];
+    [_loginButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [_loginButton addTarget:self action:@selector(registerSwitch:) forControlEvents:UIControlEventTouchUpInside];
+    
+    [containerView addSubview:_loginButton];
+     **/
+    //[containerView addSubview:_seperator];
+    //[containerView addSubview:_passwordButton];
+    return containerView;
+}
+
+- (UIView*) createSmsView:(CGFloat)startGap
+{
+    UIView* containerView = [[UIView alloc] initWithFrame:CGRectMake(0, 180.0 + startGap, CurrentScreenWidth, CurrentScreenHeight - 175.0 - startGap)];
+    containerView.backgroundColor = [UIColor clearColor];
+    __weak EZRegisterCtrl* weakSelf = self;
+    
+     _mobileField = [[UITextField alloc] initWithFrame:CGRectMake((CurrentScreenWidth - 206.0)/2.0, 50, 206.0, 40)];
+     [self setInputField:_mobileField container:containerView];
+     _mobilePlaceHolder = [self createPlaceHolder:_mobileField];
+     _mobileField.keyboardType = UIKeyboardTypeNumbersAndPunctuation;
+     _mobileField.returnKeyType = UIReturnKeyDone;
+     _mobilePlaceHolder.text = macroControlInfo(@"Mobile Number");
+    
+     [containerView addSubview:_mobilePlaceHolder];
+     
+    
+    
+    _sendVerifyCode = [[UIButton alloc] initWithFrame:CGRectMake((CurrentScreenWidth - 246.0)/2.0, 110.0, 246.0, 40.0)];
+    //[_registerButton enableRoundImage];
+    _sendVerifyCode.layer.cornerRadius = _sendVerifyCode.height/2.0;
+    _sendVerifyCode.backgroundColor = ButtonWhiteColor;//EZButtonGreen;
+    [_sendVerifyCode setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [_sendVerifyCode.titleLabel setFont:[UIFont systemFontOfSize:13]];
+    [_sendVerifyCode setTitle:macroControlInfo(@"请求短信验证码") forState:UIControlStateNormal];
+    [_sendVerifyCode addTarget:self action:@selector(sendCode:) forControlEvents:UIControlEventTouchUpInside];
+    [containerView addSubview:_sendVerifyCode];
+
+    _loginButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 170.0, CurrentScreenWidth, 40.0)];//455
+    [_loginButton setTitle:macroControlInfo(@"Login") forState:UIControlStateNormal];
+    [_loginButton.titleLabel setFont:[UIFont systemFontOfSize:11]];
+    [_loginButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    _loginButton.titleLabel.textAlignment = NSTextAlignmentCenter;
+    [_loginButton addTarget:self action:@selector(registerSwitch:) forControlEvents:UIControlEventTouchUpInside];
+    
+    [containerView addSubview:_loginButton];
+
+    
+    /**
+     _passwordField = [[UITextField alloc] initWithFrame:CGRectMake((CurrentScreenWidth - 206.0)/2.0, 170, 206, 40)];
+     [self setInputField:_passwordField container:containerView];
+     _passwordField.returnKeyType = UIReturnKeyDone;
+     _passwordPlaceHolder = [self createPlaceHolder:_passwordField];
+     _passwordPlaceHolder.text = macroControlInfo(@"短信验证码");
+     //_passwordField.delegate = self;
+     [containerView addSubview:_passwordPlaceHolder];
+    
+    
+    _confirmCode = [[UIButton alloc] initWithFrame:CGRectMake((CurrentScreenWidth - 246.0)/2.0, 230.0, 246.0, 40.0)];
+    //[_registerButton enableRoundImage];
+    _confirmCode.layer.cornerRadius = _confirmCode.height/2.0;
+    _confirmCode.backgroundColor = ButtonWhiteColor;//EZButtonGreen;
+    [_confirmCode setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [_confirmCode.titleLabel setFont:[UIFont systemFontOfSize:13]];
+    [_confirmCode setTitle:macroControlInfo(@"确认验证码") forState:UIControlStateNormal];
+    [_confirmCode addTarget:self action:@selector(confirmCode:) forControlEvents:UIControlEventTouchUpInside];
+     **/
+    [containerView addSubview:_confirmCode];
+    /**
+     _passwordButton = [[UIButton alloc] initWithFrame:CGRectMake(60, 468 + startGap, 100, 40)];//400
+     [_passwordButton setTitle:macroControlInfo(@"Password") forState:UIControlStateNormal];
+     [_passwordButton.titleLabel setFont:[UIFont systemFontOfSize:13]];
+     [_passwordButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+     [_passwordButton addTarget:self action:@selector(passwordSwitch:) forControlEvents:UIControlEventTouchUpInside];
+     
+     _seperator = [[UIView alloc] initWithFrame:CGRectMake(160, 468 + startGap + 13, 1, 14)];
+     _seperator.backgroundColor = [UIColor whiteColor];
+     //_loginButton = [[UIButton alloc] initWithFrame:CGRectMake(160, 353 + startGap, 100, 40)];
+     
+     _loginButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 211.0, CurrentScreenWidth, 40.0)];//455
+     [_loginButton setTitle:macroControlInfo(@"Login") forState:UIControlStateNormal];
+     [_loginButton.titleLabel setFont:[UIFont systemFontOfSize:13]];
+     [_loginButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+     [_loginButton addTarget:self action:@selector(registerSwitch:) forControlEvents:UIControlEventTouchUpInside];
+     
+     [containerView addSubview:_loginButton];
+     **/
+    //[containerView addSubview:_seperator];
+    //[containerView addSubview:_passwordButton];
+    return containerView;
+}
+
+
+- (void) switchToNext
+{
+    //[UIView animateWithDuration:0.3 animations:^(){
+        //_smsView.x = -CurrentScreenWidth;
+        //_originalView.x = 0;
+    [_scrollContainer scrollRectToVisible:CGRectMake(CurrentScreenWidth, 0, CurrentScreenWidth, CurrentScreenHeight) animated:YES];
+    //} completion:^(BOOL completed){
+        //UIPageControl*
+        
+    //}];
+}
+
+- (void) sendCode:(id)obj
+{
+    //EZDEBUG(@"Send code get called");
+    if([_mobileField.text isNotEmpty]){
+    [self startActivity];
+    if([_mobileField.text isNotEmpty]){
+        [[EZDataUtil getInstance] requestSmsCode:_mobileField.text success:^(id obj){
+            [self stopActivity];
+            [self switchToNext];
+        } failure:^(id err){
+            [self stopActivity];
+            EZDEBUG(@"The error detail:%@", err);
+        }];
+    }else{
+        EZDEBUG(@"empty mobile field");
+    }
+    }else{
+        [_mobileField becomeFirstResponder];
+    }
+}
+
+- (void) confirmCode:(id)obj
+{
+    EZDEBUG(@"Confirm code get called");
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
+{
+    int pos = scrollView.contentOffset.x/CurrentScreenWidth;
+    EZDEBUG(@"Position %i", pos);
+    _pageControl.currentPage = pos;
+}
 
 - (void)viewDidLoad
 {
@@ -114,11 +332,11 @@
     paragraphStyle.maximumLineHeight = 15.0f;
     paragraphStyle.minimumLineHeight = 15.0f;
     paragraphStyle.alignment = NSTextAlignmentCenter;
-    NSString *content =  @"羽毛 帮你快速收集好友照片。灵感源自中国儿童游戏丢手绢。你拍照的瞬间，一起拍摄的照片会立即出现在背后。"; //macroControlInfo(@"Feather is a flying organ. Imagination can free you from the physical limitation");
+    NSString *content =  EZPurposeInfo; //macroControlInfo(@"Feather is a flying organ. Imagination can free you from the physical limitation");
     NSDictionary *attribute = @{
                                 NSParagraphStyleAttributeName : paragraphStyle,
                                 NSForegroundColorAttributeName: [UIColor whiteColor],
-                                NSFontAttributeName:[UIFont systemFontOfSize:10]
+                                NSFontAttributeName:[UIFont systemFontOfSize:12]
                                 };
     
     //[_introduction enableTextWrap];
@@ -127,85 +345,29 @@
     [self.view addSubview:_introduction];
     _introduction.editable = FALSE;
     
-    _uploadAvatar = [[EZClickImage alloc] initWithFrame:CGRectMake((CurrentScreenWidth - 64.0)/2.0, 175.0 + startGap, 64.0, 64.0)];
-    UILabel* addTitle = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 64, 20)];
-    addTitle.center = CGPointMake(32, 32);
-    addTitle.textAlignment = NSTextAlignmentCenter;
-    addTitle.textColor = [UIColor whiteColor];
-    addTitle.font = [UIFont systemFontOfSize:14];
-    addTitle.text = @"添加头像";
-    addTitle.center = _uploadAvatar.center;
-    [self.view addSubview:addTitle];
-    _uploadAvatar.layer.borderColor = [UIColor whiteColor].CGColor;
-    _uploadAvatar.layer.borderWidth = 1.0;
-    [_uploadAvatar enableRoundImage];
-    _uploadAvatar.pressedBlock = ^(id obj){
-        //[weakSelf uploadAvatar];
-        UIActionSheet* action = [[UIActionSheet alloc] initWithTitle:macroControlInfo(@"Choose Avatar") delegate:weakSelf cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Camera",@"Album", nil];
-        [action showInView:weakSelf.view];
-    };
     
-    [self.view addSubview:_uploadAvatar];
+    _originalView = [self createRegisterView:startGap];
+    _originalView.x = CurrentScreenWidth;
     
-    _name = [[UITextField alloc] initWithFrame:CGRectMake((CurrentScreenWidth - 206.0)/2.0, 253 + startGap, 206.0, 40)];
-    [self setInputField:_name];
-    _name.keyboardType = UIKeyboardTypeDefault;
-    _namePlaceHolder = [self createPlaceHolder:_name];
-    _namePlaceHolder.text = macroControlInfo(@"Name");
-    [self.view addSubview:_namePlaceHolder];
+    _scrollContainer = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, CurrentScreenHeight)];
+    _scrollContainer.backgroundColor = [UIColor clearColor];
+    _scrollContainer.pagingEnabled = YES;
+    _scrollContainer.delegate = self;
     
-    NSString* deviceName = [[UIDevice currentDevice] name];
-    if([deviceName isNotEmpty]){
-        _name.text = deviceName;
-        _namePlaceHolder.hidden = YES;
-    }
+    _scrollContainer.contentSize = CGSizeMake(CurrentScreenWidth* 2, CurrentScreenHeight);
+    _scrollContainer.showsHorizontalScrollIndicator = NO;
+    _scrollContainer.showsVerticalScrollIndicator = NO;
+    [self.view addSubview:_scrollContainer];
     
-    _mobileField = [[UITextField alloc] initWithFrame:CGRectMake((CurrentScreenWidth - 206.0)/2.0, 306.0 + startGap, 206.0, 40)];
-    [self setInputField:_mobileField];
-    _mobilePlaceHolder = [self createPlaceHolder:_mobileField];
-    _mobileField.keyboardType = UIKeyboardTypeNumbersAndPunctuation;
-    _mobilePlaceHolder.text = macroControlInfo(@"Mobile Number");
-    [self.view addSubview:_mobilePlaceHolder];
+    [_scrollContainer addSubview:_originalView];
     
+    _smsView = [self createSmsView:startGap];
+    [_scrollContainer addSubview:_smsView];
+    _pageControl = [[UIPageControl alloc] initWithFrame:CGRectMake(0, CurrentScreenHeight - 30.0, CurrentScreenWidth, 10.0)];
+    [self.view addSubview:_pageControl];
+    _pageControl.numberOfPages = 2;
+    _pageControl.currentPage = 0;
     
-    _passwordField = [[UITextField alloc] initWithFrame:CGRectMake((CurrentScreenWidth - 206.0)/2.0, 360 + startGap, 206, 40)];
-    [self setInputField:_passwordField];
-    _passwordField.returnKeyType = UIReturnKeyJoin;
-    _passwordPlaceHolder = [self createPlaceHolder:_passwordField];
-    _passwordPlaceHolder.text = macroControlInfo(@"Password");
-    [self.view addSubview:_passwordPlaceHolder];
-    
-    
-    
-    _registerButton = [[UIButton alloc] initWithFrame:CGRectMake((CurrentScreenWidth - 246.0)/2.0, 414 + startGap, 246.0, 40.0)];
-    //[_registerButton enableRoundImage];
-    _registerButton.layer.cornerRadius = _registerButton.height/2.0;
-    _registerButton.backgroundColor = ButtonWhiteColor;//EZButtonGreen;
-    [_registerButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    [_registerButton.titleLabel setFont:[UIFont systemFontOfSize:13]];
-    [_registerButton setTitle:macroControlInfo(@"Register") forState:UIControlStateNormal];
-    [_registerButton addTarget:self action:@selector(registerClicked:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:_registerButton];
-    
-    _passwordButton = [[UIButton alloc] initWithFrame:CGRectMake(60, 468 + startGap, 100, 40)];//400
-    [_passwordButton setTitle:macroControlInfo(@"Password") forState:UIControlStateNormal];
-    [_passwordButton.titleLabel setFont:[UIFont systemFontOfSize:13]];
-    [_passwordButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    [_passwordButton addTarget:self action:@selector(passwordSwitch:) forControlEvents:UIControlEventTouchUpInside];
-    
-    _seperator = [[UIView alloc] initWithFrame:CGRectMake(160, 468 + startGap + 13, 1, 14)];
-    _seperator.backgroundColor = [UIColor whiteColor];
-    //_loginButton = [[UIButton alloc] initWithFrame:CGRectMake(160, 353 + startGap, 100, 40)];
-    
-    _loginButton = [[UIButton alloc] initWithFrame:CGRectMake(160, 468 + startGap, 100, 40)];//455
-    [_loginButton setTitle:macroControlInfo(@"Login") forState:UIControlStateNormal];
-    [_loginButton.titleLabel setFont:[UIFont systemFontOfSize:13]];
-    [_loginButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    [_loginButton addTarget:self action:@selector(registerSwitch:) forControlEvents:UIControlEventTouchUpInside];
-    
-    [self.view addSubview:_loginButton];
-    [self.view addSubview:_seperator];
-    [self.view addSubview:_passwordButton];
     /**
      _passwordButton = [[UIButton alloc] initWithFrame:CGRectMake(60, 400 + startGap, 100, 40)];
      [_passwordButton setTitle:macroControlInfo(@"Password") forState:UIControlStateNormal];
@@ -263,16 +425,18 @@
 
 - (BOOL) textFieldShouldReturn:(UITextField *)textField
 {
-    if(![textField.text isEmpty]){
+    if([textField.text isNotEmpty]){
         if(textField == _name){
-            [_mobileField becomeFirstResponder];
-            self.currentFocused = _mobileField;
-            [self liftWithBottom:self.prevKeyboard isSmall:NO time:0.3 complete:nil];
-        }
-        if(textField == _mobileField){
             [_passwordField becomeFirstResponder];
             self.currentFocused = _passwordField;
             [self liftWithBottom:self.prevKeyboard isSmall:NO time:0.3 complete:nil];
+        }
+        if(textField == _mobileField){
+            //[_passwordField becomeFirstResponder];
+            //self.currentFocused = _passwordField;
+            //[self liftWithBottom:self.prevKeyboard isSmall:NO time:0.3 complete:nil];
+            [textField resignFirstResponder];
+            [self sendCode:_mobileField.text];
         }else if(textField == _passwordField){
             //[_password becomeFirstResponder];
             [self startRegister:_name.text mobile:_mobileField.text password:_passwordField.text];
@@ -370,31 +534,21 @@
         return;
     }
     
+    [self startActivity];
+    
     _registerBlock = ^(id obj){
         
         NSString* currentID = [EZDataUtil getInstance].currentPersonID;
         NSDictionary* registerInfo = @{
                                        @"name":name,
                                        @"mobile":mobile,
-                                       @"password":password,
+                                       @"passCode":password,
                                        @"personID":currentID?currentID:@"",
                                        @"avatar":weakSelf.avatarURL?weakSelf.avatarURL:@""
                                        };
         
         
-        UIActivityIndicatorView* activity = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
-        
-        activity.center = weakSelf.view.center;
-        [weakSelf.view addSubview:activity];
-        [activity startAnimating];
-        
-        UIView* coverView = [[UIView alloc] initWithFrame:weakSelf.view.bounds];
-        coverView.backgroundColor = [UIColor clearColor];
-        [weakSelf.view addSubview:coverView];
-        [[EZDataUtil getInstance] registerUser:registerInfo success:^(EZPerson* person){
-            [activity stopAnimating];
-            [activity removeFromSuperview];
-            [coverView removeFromSuperview];
+            [[EZDataUtil getInstance] registerUser:registerInfo success:^(EZPerson* person){
             //[self dismissViewControllerAnimated:YES completion:nil];
             //_registerTitle.text = macroControlInfo(@"Register success");
             //[[EZUIUtility sharedEZUIUtility] raiseInfoWindow:macroControlInfo(@"Register success") info: macroControlInfo(@"Congradulation")];
@@ -403,7 +557,7 @@
             //[[EZDataUtil getInstance] setCurrentLoginPerson:person];
             //[[EZDataUtil]]
             [[EZMessageCenter getInstance] postEvent:EZUserAuthenticated attached:person];
-            
+            [weakSelf startActivity];
             /**
             UIViewController* presenting = weakSelf.presentingViewController;
             
@@ -416,11 +570,18 @@
              **/
             [weakSelf.navigationController dismissViewControllerAnimated:YES completion:nil];
         } error:^(id err){
-            EZDEBUG(@"Register error:%@", err);
-            [activity stopAnimating];
-            [activity removeFromSuperview];
-            [coverView removeFromSuperview];
-            [[EZUIUtility sharedEZUIUtility] raiseInfoWindow:@"注册失败" info:@"请检查后重试"];
+            [weakSelf stopActivity];
+            NSInteger errorCode = err2StatusCode(err);
+            EZDEBUG(@"Register error:%@, errorCode:%i", err, errorCode);
+            NSString* errorMsg = @"请检查后重试";
+            if(errorCode == 406){
+                errorMsg = @"填写手机号";
+            }else if(errorCode == 407){
+                errorMsg = @"短信验证码错";
+            }else if(errorCode == 408){
+                errorMsg = @"该手机已注册";
+            }
+            [[EZUIUtility sharedEZUIUtility] raiseInfoWindow:@"注册失败" info:errorMsg];
         }];
     };
 

@@ -60,6 +60,12 @@ typedef void  (^ IterateOperation)(id obj);
 
 @end
 
+@interface UITextField(EZPrivate)
+
+- (void) setPlainPassword;
+
+@end
+
 @interface UIImageView(EZPrivate)
 
 

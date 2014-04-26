@@ -103,6 +103,17 @@ NSString* doubleString(NSString* str)
 
 @end
 
+@implementation UITextField(EZPrivate)
+
+- (void) setPlainPassword
+{
+    self.autocorrectionType = UITextAutocorrectionTypeNo;
+    self.autocapitalizationType = UITextAutocapitalizationTypeNone;
+    self.spellCheckingType = UITextSpellCheckingTypeNo;
+}
+
+@end
+
 @implementation UIImageView(EZPrivate)
 
 

@@ -105,10 +105,11 @@
     cancelKeyboard.backgroundColor = [UIColor clearColor];//RGBA(128, 0, 0, 128);
     cancelKeyboard.enableTouchEffects = false;
     cancelKeyboard.releasedBlock = ^(id obj){
-        EZDEBUG(@"cancel clicked");
+        EZDEBUG(@"cancel clicked, %@", _currentFocused);
         //weakSelf.hideTextInput = false;
         //[weakSelf.textField resignFirstResponder];
         //[self hideKeyboard:NO];
+        
         [_currentFocused resignFirstResponder];
     };
     _keyboardRaiseHandler = ^(id obj){
@@ -169,7 +170,7 @@
     if(small){
         CGFloat viewY = self.view.frame.origin.y;
         CGFloat relativeDelta = deltaGap + viewY;
-        EZDEBUG(@"small gap get called, old y:%f, gap:%f, relative delta:%f", _prevKeyboard, deltaGap, relativeDelta);
+        //EZDEBUG(@"small gap get called, old y:%f, gap:%f, relative delta:%f", _prevKeyboard, deltaGap, relativeDelta);
         if(relativeDelta > 0){
             relativeDelta = 0;
         }
@@ -182,10 +183,10 @@
                 }
             }];
         }else if(deltaGap < 0.0){
-            CGRect focusFrame = _currentFocused.frame;
+            CGRect focusFrame = [self.view convertRect:_currentFocused.frame fromView:_currentFocused.superview];
             CGFloat leftGap = self.view.height - focusFrame.origin.y - focusFrame.size.height;
             CGFloat delta = leftGap - _prevKeyboard - abs(deltaGap);
-            EZDEBUG(@"Will raise keyboard to:%f, prevKeyboard:%f", delta, _prevKeyboard);
+            //EZDEBUG(@"Will raise keyboard to:%f, prevKeyboard:%f", delta, _prevKeyboard);
             if(delta < 0){
                 [UIView animateWithDuration:timeval delay:0.0 options:UIViewAnimationOptionCurveLinear  animations:^(){
                     [self.view setY:delta - shiftY];
@@ -199,7 +200,7 @@
         }
         
     }else{
-        CGRect focusFrame = _currentFocused.frame;
+        CGRect focusFrame = [self.view convertRect:_currentFocused.frame fromView:_currentFocused.superview];
         CGFloat leftGap = self.view.height - focusFrame.origin.y - focusFrame.size.height;
         
         CGFloat delta = leftGap - deltaGap;
@@ -207,7 +208,7 @@
         if(_haveDelta){
             delta = leftGap - deltaGap - _smallGap;
         }
-        EZDEBUG(@"The focused frame is:%@, leftGap:%f,deltaGap:%f,delta:%f  smallGap:%f, haveDelta:%i", NSStringFromCGRect(focusFrame), leftGap,deltaGap,delta,_smallGap, _haveDelta);
+        //EZDEBUG(@"The focused frame is:%@, leftGap:%f,deltaGap:%f,delta:%f  smallGap:%f, haveDelta:%i", NSStringFromCGRect(focusFrame), leftGap,deltaGap,delta,_smallGap, _haveDelta);
         if(delta < 0){
             //textFieldShouldReturn
             [UIView animateWithDuration:timeval delay:0.0 options:UIViewAnimationOptionCurveLinear  animations:^(){
@@ -253,6 +254,38 @@
      } else return nil;
      **/
     return nil;
+}
+
+
+- (void) startActivity
+{
+    
+    if(!_activity){
+        _activity = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+        
+        _activity.center = self.view.center;
+        [self.view addSubview:_activity];
+    }
+    _activity.hidden = NO;
+    [_activity startAnimating];
+    
+    if(!_coverView){
+        _coverView = [[UIView alloc] initWithFrame:self.view.bounds];
+        _coverView.backgroundColor = [UIColor clearColor];
+        [self.view addSubview:_coverView];
+    }else{
+        [self.view addSubview:_coverView];
+    }
+    //_coverView.hidden = YES;
+}
+
+- (void) stopActivity
+{
+    [_activity stopAnimating];
+    //[activity removeFromSuperview];
+    _activity.hidden = YES;
+    [_coverView removeFromSuperview];
+    
 }
 
 

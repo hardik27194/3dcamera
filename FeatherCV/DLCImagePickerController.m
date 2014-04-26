@@ -304,7 +304,7 @@
     if(stillCamera.isFrontFacing){
         [self.imageView setInputRotation:kGPUImageNoRotation atIndex:0];
     }else{
-        [self.imageView setInputRotation:imageViewRotationMode atIndex:0];
+        [self.imageView setInputRotation:kGPUImageNoRotation atIndex:0];
     }
     [staticPicture processImage];
 }
@@ -3175,9 +3175,10 @@ context:(void *)context
     GPUImageOutput<GPUImageInput> *processUpTo;
     processUpTo = filter;
     if(stillCamera.isFrontFacing){
-        currentFilteredVideoFrame = [processUpTo imageFromCurrentlyProcessedOutputWithOrientation:staticPictureOriginalOrientation];
+        
+        currentFilteredVideoFrame = [processUpTo imageFromCurrentlyProcessedOutputWithOrientation:UIImageOrientationUp];
         //EZDEBUG(@"The current orienation:%i, static orientatin:%i", currentFilteredVideoFrame.imageOrientation, staticPictureOriginalOrientation);
-        currentFilteredVideoFrame = [currentFilteredVideoFrame rotateByOrientation:staticPictureOriginalOrientation];
+        //currentFilteredVideoFrame = [currentFilteredVideoFrame rotateByOrientation:staticPictureOriginalOrientation];
     }else{
         currentFilteredVideoFrame = [processUpTo imageFromCurrentlyProcessedOutputWithOrientation:UIImageOrientationUp];
         
