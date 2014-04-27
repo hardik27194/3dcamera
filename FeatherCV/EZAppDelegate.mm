@@ -68,9 +68,27 @@
 - (void)orientationChanged:(NSNotification *)notification
 {
     EZDEBUG(@"Orientation changed:%i", [UIDevice currentDevice].orientation);
+    _previousOrientation = [UIDevice currentDevice].orientation;
     //[self adjustViewsForOrientation:[[UIApplication sharedApplication] statusBarOrientation]];
     if(([UIDevice currentDevice].orientation ==  UIDeviceOrientationLandscapeLeft || [UIDevice currentDevice].orientation == UIDeviceOrientationLandscapeRight)){
         EZDEBUG(@"Will raise camera");
+        
+        dispatch_later(0.2, ^(){
+            if(_previousOrientation == UIDeviceOrientationLandscapeLeft || _previousOrientation == UIDeviceOrientationLandscapeRight){
+                [[EZMessageCenter getInstance] postEvent:EZPositionHold attached:@(_previousOrientation)];
+            }
+        });
+        //[[EZMessageCenter getInstance] postEvent:EZTriggerCamera attached:nil];
+    }
+    
+    if(([UIDevice currentDevice].orientation ==  UIDeviceOrientationPortrait)){
+        EZDEBUG(@"Back to portrait");
+        
+        dispatch_later(0.2, ^(){
+            if(_previousOrientation == UIDeviceOrientationPortrait){
+                [[EZMessageCenter getInstance] postEvent:EZPositionHold attached:@(_previousOrientation)];
+            }
+        });
         //[[EZMessageCenter getInstance] postEvent:EZTriggerCamera attached:nil];
     }
     

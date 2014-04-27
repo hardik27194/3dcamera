@@ -402,37 +402,53 @@ static int photoCount = 1;
             return;
         }
         longPressed = TRUE;
+        if(weakSelf.scrollBlock){
+            weakSelf.scrollBlock(@(false));
+        }
         
         EZClickImage* fullView = [[EZClickImage alloc] initWithFrame:[UIScreen mainScreen].bounds];
         fullView.contentMode = UIViewContentModeScaleAspectFill;
         fullView.image = weakCell.frontImage.image;
         fullView.enableTouchEffects = NO;
         EZDEBUG(@"Long press called %@", NSStringFromCGRect(fullView.bounds));
-        
+        fullView.tag = 6565;
         fullView.alpha = 0;
         macroHideStatusBar(YES);
-        [TopView addSubview:fullView];
+        [weakCell addSubview:fullView];
         [UIView animateWithDuration:0.3 animations:^(){
             fullView.alpha = 1.0;
+            weakSelf.leftCyleButton.alpha = 0;
+            weakSelf.rightCycleButton.alpha = 0;
         }];
         __weak EZClickImage* weakFull = fullView;
-        fullView.releasedBlock = ^(UIView* obj){
+        EZEventBlock clickBlock = ^(NSNumber* showCycle){
             EZDEBUG(@"dismiss current view");
+            weakSelf.scrollBlock = nil;
             longPressed = false;
             //[obj dismissViewControllerAnimated:YES completion:nil];
             [UIView animateWithDuration:0.3 animations:^(){
                 weakFull.alpha = 0;
+                if(showCycle.boolValue){
+                    weakSelf.leftCyleButton.alpha = 1.0;
+                    weakSelf.rightCycleButton.alpha = 1.0;
+                }
             } completion:^(BOOL completed){
                 EZDEBUG(@"remove fullView:%i",(int)weakFull);
                 [weakFull removeFromSuperview];
-                macroHideStatusBar(NO);
-                CGFloat offsetY = indexPath.row * CurrentScreenHeight;
+                if(showCycle.boolValue){
+                    macroHideStatusBar(NO);
+                }
+                //CGFloat offsetY = indexPath.row * CurrentScreenHeight;
                 //CGPoint offset = weakSelf.tableView.contentOffset;
-                weakSelf.tableView.contentOffset = CGPointMake(0, offsetY);
+                //weakSelf.tableView.contentOffset = CGPointMake(0, offsetY);
             }];
             //[EZDataUtil getInstance].centerButton.alpha = 1.0;
-            
         };
+        fullView.releasedBlock = ^(EZClickImage* obj){
+            clickBlock(@(YES));
+        };
+        
+        weakSelf.scrollBlock = clickBlock;
         //[EZDataUtil getInstance].centerButton.alpha = 0.0;
         
         
@@ -553,6 +569,53 @@ static int photoCount = 1;
 }
 
 
+- (void) setupLongPress:(EZPhotoCell*)weakCell
+{
+    __weak EZAlbumTablePage* weakSelf = self;
+    EZClickImage* fullView = [[EZClickImage alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    fullView.contentMode = UIViewContentModeScaleAspectFill;
+    fullView.image = weakCell.frontImage.image;
+    fullView.enableTouchEffects = NO;
+    EZDEBUG(@"Long press called %@", NSStringFromCGRect(fullView.bounds));
+    fullView.tag = 6565;
+    fullView.alpha = 0;
+    macroHideStatusBar(YES);
+    [weakCell addSubview:fullView];
+    [UIView animateWithDuration:0.3 animations:^(){
+        fullView.alpha = 1.0;
+        weakSelf.leftCyleButton.alpha = 0;
+        weakSelf.rightCycleButton.alpha = 0;
+    }];
+    __weak EZClickImage* weakFull = fullView;
+    EZEventBlock clickBlock = ^(NSNumber* showCycle){
+        EZDEBUG(@"dismiss current view");
+        weakSelf.scrollBlock = nil;
+        //[obj dismissViewControllerAnimated:YES completion:nil];
+        [UIView animateWithDuration:0.3 animations:^(){
+            weakFull.alpha = 0;
+            if(showCycle.boolValue){
+                weakSelf.leftCyleButton.alpha = 1.0;
+                weakSelf.rightCycleButton.alpha = 1.0;
+            }
+        } completion:^(BOOL completed){
+            EZDEBUG(@"remove fullView:%i",(int)weakFull);
+            [weakFull removeFromSuperview];
+            if(showCycle.boolValue){
+                macroHideStatusBar(NO);
+            }
+            //CGFloat offsetY = indexPath.row * CurrentScreenHeight;
+            //CGPoint offset = weakSelf.tableView.contentOffset;
+            //weakSelf.tableView.contentOffset = CGPointMake(0, offsetY);
+        }];
+        //[EZDataUtil getInstance].centerButton.alpha = 1.0;
+    };
+    fullView.releasedBlock = ^(EZClickImage* obj){
+        clickBlock(@(YES));
+    };
+    
+    weakSelf.scrollBlock = clickBlock;
+}
+
 - (DLCImagePickerController*) embedCamera:(NSString*)photo personID:(NSString*)personID
 {
     _newlyCreated = 0;
@@ -649,6 +712,7 @@ static int photoCount = 1;
 
 - (int) getPendingCount
 {
+    
     NSArray* persons = [EZDataUtil getInstance].currentQueryUsers.allValues;
     int totalPending = 0;
     for(EZPerson* person in persons){
@@ -667,9 +731,9 @@ static int photoCount = 1;
 {
     int pendingCount = 0;
     if(_currentUser){
-        pendingCount = _currentUser.pendingEventCount;
+        pendingCount = [[EZDataUtil getInstance] getPendingForPerson:_currentUser.personID filterType:_currentUser.filterType];
     }else{
-        pendingCount = [self getPendingCount];
+        pendingCount = [[EZDataUtil getInstance] getPendingForPerson:nil filterType:0];
     }
     if(pendingCount){
         _numberLabel.alpha = 1;
@@ -1159,7 +1223,7 @@ static int photoCount = 1;
         camera.isPhotoRequest = true;
         camera.refreshTable = ^(id obj){
             //EZDEBUG("Refresh type:%i", photo.typeUI);
-            disPhoto.photo.typeUI = kNormalPhoto;
+            
             //[[EZMessageCenter getInstance] postEvent:EZNoteCountChange attached:@(-1)];
             EZDEBUG("after Refresh type:%i, row:%i", disPhoto.photo.typeUI, indexPath.row);
             [weakSelf.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
@@ -1472,18 +1536,31 @@ static int photoCount = 1;
         [[EZDataUtil getInstance] storeAllPersons:@[person]];
     }];
     
+    [[EZMessageCenter getInstance] registerEvent:EZPositionHold block:^(NSNumber* num){
+        if(num.integerValue == UIDeviceOrientationPortrait){
+            if(weakSelf.scrollBlock){
+                weakSelf.scrollBlock(@(true));
+                weakSelf.scrollBlock = nil;
+            }
+        }else if(num.integerValue == UIDeviceOrientationLandscapeLeft || num.integerValue == UIDeviceOrientationLandscapeRight){
+            [weakSelf presentCurrentCell];
+        }
+    }];
+    
     [[EZMessageCenter getInstance] registerEvent:EZTriggerCamera block:^(id obj){
         //[weakSelf raiseCamera];
         [weakSelf raiseCamera:nil indexPath:nil personID:obj];
     }];
     
     [[EZMessageCenter getInstance] registerEvent:EZNoteCountChange block:^(NSNumber* num){
-        EZDEBUG(@"change notes:%i", num.intValue);
-        if(_currentUser.filterType == kPhotoWaitFilter){
-            _currentUser.pendingEventCount += num.integerValue;
-        }
+        //EZDEBUG(@"change notes:%i", num.intValue);
+        //if(_currentUser.filterType == kPhotoWaitFilter){
+        //    _currentUser.pendingEventCount += num.integerValue;
+        //}
         //[self setNoteCount];
         [self setNoteCount];
+        EZDEBUG(@"change notes The currentUser:%@, type:%i, %@", _currentUser.name, _currentUser.filterType, _numberLabel.text);
+        
     }];
     
     [[EZMessageCenter getInstance] registerEvent:EZNetworkStatus block:^(NSNumber* num){
@@ -1617,6 +1694,36 @@ static int photoCount = 1;
         [weakSelf raiseCamera:nil indexPath:nil];
     };
      **/
+}
+
+//Make sure current view is the topMost.
+- (BOOL) isVisibleController
+{
+    if(EZUIUtility.topMostController == self.navigationController && self.navigationController.visibleViewController == self){
+        return true;
+    }
+    return false;
+}
+
+- (void) presentCurrentCell
+{
+    BOOL isVisible = [self isVisibleController];
+    EZDEBUG(@"Visible status:%i", isVisible);
+    if(isVisible){
+        if(_scrollBlock){
+            _scrollBlock(@(false));
+        }
+        NSArray* indexPaths = [self.tableView indexPathsForVisibleRows];
+        EZDEBUG(@"visible index:%i", indexPaths.count);
+        if(indexPaths.count){
+            NSIndexPath* path = [indexPaths objectAtIndex:0];
+            EZPhotoCell* cell = (EZPhotoCell*)[self.tableView cellForRowAtIndexPath:path];
+            [self setupLongPress:cell];
+        }
+        
+    }
+    
+    //NSArray* cells = [self.tableView visibleCells];
 }
 
 -(void)setupContentViewControllerAnimatorProperties {
@@ -2719,6 +2826,13 @@ static int photoCount = 1;
         _assetView.hidden = NO;
     }
     _innerFirstTime = false;
+}
+
+- (void) scrollViewDidScroll:(UIScrollView*)scrollView{
+    if(_scrollBlock){
+        _scrollBlock(@(true));
+        _scrollBlock = nil;
+    }
 }
 
 - (void) scrollViewDidScrollOld:(UIScrollView *)scrollView{

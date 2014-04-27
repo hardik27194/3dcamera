@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <AssetsLibrary/AssetsLibrary.h>
+#import <UIKit/UIResponder.h>
 #import "GPUImage.h"
 #import "DLCBlurOverlayView.h"
 #import "EZSoundEffect.h"
@@ -265,6 +266,8 @@ typedef enum {
 
 @property (nonatomic, strong) UITextField* textField;
 @property (nonatomic, strong) UILabel* textPlaceHolder;
+
+@property (nonatomic, strong) UIView* textInputRegion;
 
 @property (nonatomic, strong) EZDisplayPhoto* disPhoto;
 

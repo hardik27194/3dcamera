@@ -152,11 +152,12 @@
     personNew.filterType = kPhotoNewFilter;
     personNew.joined = YES;
     
+    /**
     EZPerson* personWait = [[EZPerson alloc] init];
     personWait.name = @"待拍摄";
     personWait.joined = YES;
     personWait.filterType = kPhotoWaitFilter;
-    
+    **/
     
     EZDEBUG(@"AllPhotos count:%i", allPhotos.count);
     for(EZDisplayPhoto* ph in allPhotos){
@@ -167,16 +168,11 @@
         for(EZPhoto* matchedPh in ph.photo.photoRelations){
         //EZPhoto* matchedPh = [ph.photo.photoRelations objectAtIndex:0];
         EZPerson* ps = pid2person(matchedPh.personID);
-        if(ph.photo.type == kPhotoRequest){
-            personWait.photoCount += 1;
-            personWait.pendingEventCount += 1;
-        }else
-        if(matchedPh.type == kPhotoRequest){
-            personWait.photoCount += 1;
-            personWait.pendingEventCount += 1;
+        if(ph.photo.typeUI == kPhotoRequest){
+            personNew.photoCount += 1;
+            personNew.pendingEventCount += 1;
         }
         
-
         if(!ps.personID){
             continue;
         }
@@ -199,7 +195,7 @@
     [_contacts addObjectsFromArray:arrs];
     
     [_contacts insertObject:personNew atIndex:1];
-    [_contacts insertObject:personWait atIndex:2];
+    //[_contacts insertObject:personWait atIndex:2];
     __weak EZContactTablePage* weakSelf = self;
     EZDEBUG(@"Stored person count:%i, arrs:%i", _contacts.count, arrs.count);
     if(![EZDataUtil getInstance].contacts.count){

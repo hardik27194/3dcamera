@@ -128,6 +128,8 @@
 
 #define EZUploadedMobile @"EZUploadedMobile"
 
+#define EZPositionHold @"EZPositionHold"
+
 #define EZPurposeInfo @"按下快门\n捕获他(她)的照片。"
 
 #define err2StatusCode(error) [[[error userInfo] objectForKey:AFNetworkingOperationFailingURLResponseErrorKey] statusCode]

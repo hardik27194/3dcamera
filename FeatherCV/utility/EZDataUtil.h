@@ -331,4 +331,6 @@
 
 - (void) fillPhotoCount:(NSArray*)persons;
 
+- (int) getPendingForPerson:(NSString*)personID filterType:(int)filterType;
+
 @end

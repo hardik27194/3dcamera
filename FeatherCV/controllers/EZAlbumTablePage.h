@@ -169,6 +169,8 @@
 @property (nonatomic, assign) BOOL innerFirstTime;
 
 @property (nonatomic, assign) int newMessageCount;
+
+@property (nonatomic, strong) EZEventBlock scrollBlock;
 //@property (nonatomic, strong) NSMutableArray* unhandledNotes;
 
 - (void) storeCurrent;

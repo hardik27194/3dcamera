@@ -175,7 +175,7 @@
     
     //Why do like this?
     //So that I could have the functionality
-    UIView* textInputRegion;
+    
     UIButton* cancelText;
     CGFloat toolRegionY;
     
@@ -205,7 +205,9 @@
     //disPhoto,
     //blurOverlayView,
     outputJPEGQuality,
+    textInputRegion,
     requestedImageSize;
+
 
 
 - (EZColorBrighter*) createRedEnhanceFilter
@@ -1113,7 +1115,7 @@ context:(void *)context
             [weakSelf liftWithBottom:smallGap time:0.3 complete:nil];
         }else{
             //weakSelf.toolBarRegion.hidden = TRUE;
-            [weakSelf.view addSubview:cancelKeyboard];
+            [weakSelf.view insertSubview:cancelKeyboard  belowSubview:weakSelf.textInputRegion];
             [weakSelf liftWithBottom:-keyFrame.size.height time:0.3 complete:nil];
         }
         //[EZDataUtil getInstance].centerButton.alpha = 0.0;
@@ -1216,12 +1218,14 @@ context:(void *)context
     };
     //[signText enableShadow:[UIColor blackColor]];
     _textField = [[UITextField alloc] initWithFrame:CGRectMake(50, 5, 310, 44)];
-    _textField.font = [UIFont systemFontOfSize:17];
+    _textField.font = [UIFont systemFontOfSize:13];
     //_textField.placeholder = macroControlInfo(@"Say something");
     
     _textField.delegate = self;
-    _textField.returnKeyType = UIReturnKeySend;
+    _textField.returnKeyType = UIReturnKeyDone;
     _textField.keyboardAppearance = UIKeyboardAppearanceLight;
+    [_textField addTarget:self action:@selector(onValueChange:) forControlEvents:UIControlEventEditingChanged];
+    //_textField.allowsEditingTextAttributes
     
     _textPlaceHolder = [[UILabel alloc] initWithFrame:_textField.frame];
     [_textPlaceHolder setTextColor:[UIColor whiteColor]];
@@ -1258,12 +1262,24 @@ context:(void *)context
     //}
 }
 
+
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
 {
-    if(textField.text.length < 20){
-        return true;
+    //EZDEBUG(@"should Change:%i", textField.text.length);
+    //if(textField.text.length < 18){
+    return true;
+    //}
+    //return false;
+}
+
+- (IBAction)onValueChange:(id)sender
+{
+    EZDEBUG(@"Value change:%i", _textField.text.length);
+    if(_textField.text.length > 25){
+        dispatch_later(0.1,^(){
+            _textField.text = [_textField.text substringToIndex:25];
+        });
     }
-    return false;
 }
 
 
@@ -2885,6 +2901,7 @@ context:(void *)context
     [ps adjustPendingEventCount:-1];
     //[ps save];
     //ps.photoCount += 1;
+    _disPhoto.photo.typeUI = kNormalPhoto;
     [[EZMessageCenter getInstance] postEvent:EZNoteCountChange attached:@(-1)];
     //[[EZDataUtil getInstance] storeAllPersons:@[ps]];
     __block BOOL executedFlag = false;
@@ -3529,14 +3546,7 @@ context:(void *)context
                     EZDEBUG(@"Expose clicked");
                     [device setExposurePointOfInterest:pointOfInterest];
                     [device setExposureMode:AVCaptureExposureModeContinuousAutoExposure];
-                    //[device setExposureMode:AVCaptureExposureModeAutoExpose];
-                    //
-                    //dispatch_later(0.2, ^(){
-                    //    NSError *err;
-                    //    if ([device lockForConfiguration:&err]) {
-                    //        [device setExposureMode:AVCaptureExposureModeLocked];
-                    //    }
-                    //});
+                   
                 }
             }
             [device unlockForConfiguration];

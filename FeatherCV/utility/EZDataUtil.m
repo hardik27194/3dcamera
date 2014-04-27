@@ -327,7 +327,7 @@
     //[_nonsplitted addObjectsFromArray:[EZDataUtil getInstance].mainNonSplits];
     for(EZDisplayPhoto* dp in srcArr){
         //EZPhoto* otherSide = dp.photo.photoRelations.count?[dp.photo.photoRelations objectAtIndex:0]:nil;
-        if(dp.isFirstTime){
+        if(dp.isFirstTime || dp.photo.typeUI == kPhotoRequest){
             [res addObject:dp];
         }
     }
@@ -1535,6 +1535,44 @@
                 failure(error);
             }
     }];
+}
+
+
+//Return pending count for person
+- (BOOL) isPersonInList:(NSArray*)photos pid:(NSString*)personID
+{
+    for(EZPhoto* ph in photos){
+        if([ph.personID isEqualToString:personID]){
+            return true;
+        }
+    }
+    return false;
+}
+
+- (int) getPendingForPerson:(NSString*)personID filterType:(int)filterType
+{
+    int res = 0;
+    for(EZDisplayPhoto* ph in _mainPhotos){
+        if(ph.photo.typeUI == kPhotoRequest){
+            if(!personID || filterType){
+                res ++;
+            }else if(personID){
+                if([self isPersonInList:ph.photo.photoRelations pid:personID]){
+                    res ++;
+                }
+            }
+        }else if(ph.isFirstTime){
+            if(!personID || filterType){
+                res ++;
+            }else if(personID){
+                if([self isPersonInList:ph.photo.photoRelations pid:personID]){
+                    res ++;
+                }
+            }
+        }
+        
+    }
+    return res;
 }
 
 

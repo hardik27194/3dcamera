@@ -76,6 +76,8 @@
 		1874D9D71867F57E005743FC /* EZSaturationFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 1874D9D61867F57E005743FC /* EZSaturationFilter.m */; };
 		1874D9DD18699386005743FC /* header_2.png in Resources */ = {isa = PBXBuildFile; fileRef = 1874D9DB18699385005743FC /* header_2.png */; };
 		1874D9DE18699386005743FC /* header_1.png in Resources */ = {isa = PBXBuildFile; fileRef = 1874D9DC18699386005743FC /* header_1.png */; };
+		1879BE23190BB1B60084FB27 /* EZCopyableLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 1879BE22190BB1B60084FB27 /* EZCopyableLabel.m */; };
+		1879BE28190BB8830084FB27 /* EZLimitTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 1879BE27190BB8830084FB27 /* EZLimitTextField.m */; };
 		18A36FD9184C7F820022F0A8 /* smile_face.png in Resources */ = {isa = PBXBuildFile; fileRef = 18A36FD8184C7F820022F0A8 /* smile_face.png */; };
 		18A36FEF1855C1DB0022F0A8 /* DLCImagePickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A36FEC1855C1DB0022F0A8 /* DLCImagePickerController.m */; };
 		18A36FF01855C1DB0022F0A8 /* DLCBlurOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A36FEE1855C1DB0022F0A8 /* DLCBlurOverlayView.m */; };
@@ -437,6 +439,10 @@
 		1874D9D61867F57E005743FC /* EZSaturationFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZSaturationFilter.m; sourceTree = "<group>"; };
 		1874D9DB18699385005743FC /* header_2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = header_2.png; sourceTree = "<group>"; };
 		1874D9DC18699386005743FC /* header_1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = header_1.png; sourceTree = "<group>"; };
+		1879BE21190BB1B60084FB27 /* EZCopyableLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZCopyableLabel.h; sourceTree = "<group>"; };
+		1879BE22190BB1B60084FB27 /* EZCopyableLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZCopyableLabel.m; sourceTree = "<group>"; };
+		1879BE26190BB8830084FB27 /* EZLimitTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZLimitTextField.h; sourceTree = "<group>"; };
+		1879BE27190BB8830084FB27 /* EZLimitTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZLimitTextField.m; sourceTree = "<group>"; };
 		18A36FD8184C7F820022F0A8 /* smile_face.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = smile_face.png; sourceTree = "<group>"; };
 		18A36FEB1855C1DB0022F0A8 /* DLCImagePickerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DLCImagePickerController.h; sourceTree = "<group>"; };
 		18A36FEC1855C1DB0022F0A8 /* DLCImagePickerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DLCImagePickerController.m; sourceTree = "<group>"; };
@@ -1220,6 +1226,10 @@
 				185CE25E18FFAE760037947A /* EZPageControl.m */,
 				185CE268190299D20037947A /* EZEnlargedView.h */,
 				185CE269190299D30037947A /* EZEnlargedView.m */,
+				1879BE21190BB1B60084FB27 /* EZCopyableLabel.h */,
+				1879BE22190BB1B60084FB27 /* EZCopyableLabel.m */,
+				1879BE26190BB8830084FB27 /* EZLimitTextField.h */,
+				1879BE27190BB8830084FB27 /* EZLimitTextField.m */,
 			);
 			path = utility;
 			sourceTree = "<group>";
@@ -1656,6 +1666,7 @@
 				18E3477B183DFAA400C9D89D /* EZExtender.m in Sources */,
 				184ADD7418C4B40D00367527 /* EZAvatarView.m in Sources */,
 				18FA529E188CD04D00C91D18 /* EZColorBrighter.m in Sources */,
+				1879BE23190BB1B60084FB27 /* EZCopyableLabel.m in Sources */,
 				18F58B52186EC0D1006CB966 /* ILTranslucentView.m in Sources */,
 				1823DA4018DA9ABA00E6E8B3 /* EZNote.m in Sources */,
 				1866ADB418979C7400DB46E2 /* EZModalRaiseAnimation.m in Sources */,
@@ -1741,6 +1752,7 @@
 				18E34737183DFA5800C9D89D /* EZTransitionLayout.m in Sources */,
 				18E34788183DFAA400C9D89D /* EZImageFileCache.m in Sources */,
 				18E746EE18A4A26A0023967B /* AFSecurityPolicy.m in Sources */,
+				1879BE28190BB8830084FB27 /* EZLimitTextField.m in Sources */,
 				181903EE187FD4E5001FC370 /* EZHomeBiBlur.m in Sources */,
 				18E746EA18A4A26A0023967B /* AFHTTPRequestOperation.m in Sources */,
 				184DBE7718BB476F00239F0F /* EZSimpleClick.m in Sources */,
