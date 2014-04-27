@@ -84,6 +84,17 @@ static int photoCount = 1;
 
 }
 
+- (int) findPhotoByID:(NSString*)photoID photos:(NSArray*)photos
+{
+    for(int i = 0 ; i < photos.count; i ++){
+        EZDisplayPhoto* dp = [photos objectAtIndex:i];
+        if([dp.photo.photoID isEqualToString:photoID]){
+            return i;
+        }
+    }
+    return -1;
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     EZDEBUG(@"cellForRow Called:%i", indexPath.row);
@@ -471,6 +482,39 @@ static int photoCount = 1;
     cell.moreButton.releasedBlock = ^(id obj){
         //NSString* someText = self.textView.text;
         EZDEBUG(@"more clicked");
+        
+        UIActionSheet* actionSheet = [[UIActionSheet alloc] initWithTitle:@"删除照片" delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:@"确认" otherButtonTitles:nil];
+        [actionSheet showInView:self.view];
+        _actionBlock = ^(NSNumber* btnIndex){
+            //if(btnIndex.integerValue == 0)
+            EZDEBUG(@"btn index:%i", btnIndex.integerValue);
+            if(btnIndex.integerValue != 0){
+                return;
+            }
+            weakCell.activityView.hidden = NO;
+            [weakCell.activityView startAnimating];
+            [[EZDataUtil getInstance] deletePhoto:cp.photo success:^(id obj){
+                [weakCell.activityView stopAnimating];
+                weakCell.activityView.hidden = YES;
+                if(weakCell.currentPos == indexPath.row && weakSelf.combinedPhotos.count > indexPath.row){
+                    //[weakSelf.combinedPhotos removeObjectAtIndex:indexPath.row];
+                    int pos = [weakSelf findPhotoByID:cp.photo.photoID photos:weakSelf.combinedPhotos];
+                    if(pos != indexPath.row){
+                        return;
+                    }
+                    [[EZDataUtil getInstance] deleteImageFile:cp.photo];
+                    [[EZDataUtil getInstance] deleteImageFiles:cp.photo.photoRelations];
+                    [weakSelf.combinedPhotos removeObjectAtIndex:pos];
+                    [[EZDataUtil getInstance] removeLocalPhoto:cp.photo.photoID];
+                    [weakSelf.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+                    [[EZMessageCenter getInstance] postEvent:EZNoteCountChange attached:nil];
+                }
+            } failure:^(id err){
+                [[EZUIUtility sharedEZUIUtility] raiseInfoWindow:@"删除失败" info:@"请稍后重试"];
+                [weakCell.activityView stopAnimating];
+                weakCell.activityView.hidden = YES;
+            }];
+        };
         //NSArray* dataToShare = @[@"我爱老哈哈"];  // ...or whatever pieces of data you want to share.
         //NSString *textToShare = self.navigationItem.title;
         //NSArray *itemsToShare = @[@"", [imagesArray objectAtIndex:afImgViewer.currentImage]];
@@ -1195,6 +1239,10 @@ static int photoCount = 1;
 - (void) raiseCamera:(EZDisplayPhoto*)disPhoto indexPath:(NSIndexPath*)indexPath personID:(NSString*)personID
 {
     
+    if(self.navigationController.visibleViewController != self){
+        EZDEBUG(@"Quit for navigation not ready");
+        return;
+    }
     //if(camera.isFrontCamera){
     //    [camera switchCamera];
     //}
@@ -1234,14 +1282,19 @@ static int photoCount = 1;
     //[self presentViewController:camera animated:TRUE completion:^(){
     //    EZDEBUG(@"Presentation completed");
     //}];
-    [self.navigationController pushViewController:camera animated:YES];
     
+    [self.navigationController pushViewController:camera animated:YES];
     
 }
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
 {
-    EZDEBUG(@"button clicked:%i", buttonIndex);
+    //EZDEBUG(@"button clicked:%i", buttonIndex);
+   
+    if(_actionBlock){
+        _actionBlock(@(buttonIndex));
+    }
+    /**
     if(buttonIndex == 0){
         //_picker = [[DLCImagePickerController alloc] initWithFront:YES];
         _picker.frontFacing = true;
@@ -1253,6 +1306,7 @@ static int photoCount = 1;
         [self raiseCamera:nil indexPath:nil];
     }
     _picker = nil;
+     **/
 }
 
 - (void) pickPhotoType:(id)sender
@@ -1608,7 +1662,10 @@ static int photoCount = 1;
                 _rightCycleButton.hidden = YES;
                 [self.navigationController pushViewController:pd animated:YES];
             }
-        }else if([EZNoteFriendAdd isEqualToString:note.type]){
+        }else if([@"deleted" isEqualToString:note.type]){
+            [self processDeleteNote:note];
+        }
+        else if([EZNoteFriendAdd isEqualToString:note.type]){
             
         }else if([EZNoteFriendKick isEqualToString:note.type]){
             
@@ -1696,6 +1753,38 @@ static int photoCount = 1;
      **/
 }
 
+
+- (void) processDeleteNote:(EZNote*)note
+{
+    NSString* deletedID = note.deletedID;
+    int prevPos = [[EZDataUtil getInstance] removeOtherPhoto:deletedID array:[EZDataUtil getInstance].mainPhotos store:YES];
+    
+    NSString* srcID = note.sourcePid;
+    
+    
+    int pos = [self findPhotoByID:srcID photos:_combinedPhotos];
+    EZDEBUG(@"deleted notes:%@, %@, pos:%i, pos now:%i", srcID, deletedID, prevPos, pos);
+    if(pos >= 0){
+        EZDisplayPhoto* dp = [_combinedPhotos objectAtIndex:pos];
+        if(dp.photo.type == kPhotoRequest){
+            [_combinedPhotos removeObjectAtIndex:pos];
+            [self.tableView deleteRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:pos inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
+        }else{
+            EZDEBUG(@"found dp:%@, relation count:%i", dp.photo.photoID, dp.photo.photoRelations.count);
+            for(int i = 0; i < dp.photo.photoRelations.count; i++){
+                EZPhoto* photo = [dp.photo.photoRelations objectAtIndex:i];
+                if([photo.photoID isEqualToString:deletedID]){
+                    dp.photo.photoRelations = [[NSMutableArray alloc] initWithArray:dp.photo.photoRelations];
+                    [(NSMutableArray*)dp.photo.photoRelations removeObjectAtIndex:i];
+                }
+            }
+            EZDEBUG(@"Will reload photo");
+            [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:pos inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
+
+        }
+        
+    }
+}
 //Make sure current view is the topMost.
 - (BOOL) isVisibleController
 {

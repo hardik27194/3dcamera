@@ -48,6 +48,10 @@
 
 @property (nonatomic, strong) EZPerson* senderPerson;
 
+@property (nonatomic, strong) NSString* sourcePid;
+
+@property (nonatomic, strong) NSString* deletedID;
+
 - (void) fromJson:(NSDictionary*)dict;
 
 @end

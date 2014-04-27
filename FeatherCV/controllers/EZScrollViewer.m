@@ -74,7 +74,7 @@
 
 - (void) setImageWithURL:(NSURL*)url
 {
-    //[_imageView setImageWithURL:url];
+    [_imageView setImageWithURL:url];
 }
 
 - (UIImageView*) createImageView:(CGRect)frame
@@ -127,6 +127,7 @@
     for(UIImageView* imgView in _imageViews){
         [imgView removeFromSuperview];
     }
+    [_imageViews removeAllObjects];
     _imageView = nil;
     //if(!_imageView)
     //_imageView = [self createImageView:CGRectMake(0, 0, CurrentScreenWidth, CurrentScreenHeight)];

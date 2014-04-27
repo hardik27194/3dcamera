@@ -334,6 +334,77 @@
     return res;
 }
 
+
+- (int) removeOtherPhoto:(NSString*)photoID array:(NSMutableArray*)arr store:(BOOL)store
+{
+    for(int i = 0; i < arr.count; i ++){
+        EZDisplayPhoto* dp = [arr objectAtIndex:i];
+        for(int j = 0; j < dp.photo.photoRelations.count; j++){
+            EZPhoto* otherPt = [dp.photo.photoRelations objectAtIndex:j];
+            if([otherPt.photoID isEqualToString:photoID]){
+                //pos = i;
+                EZDEBUG(@"removed object:%@", photoID);
+                if(dp.photo.type == kPhotoRequest){
+                    [arr removeObjectAtIndex:i];
+                    if(store){
+                        if(dp.photo.localPhoto){
+                            [[EZCoreAccessor getClientAccessor]remove:dp.photo.localPhoto];
+                             [[EZCoreAccessor getClientAccessor] saveContext];
+                        }
+                    }
+                }else{
+                    dp.photo.photoRelations = [[NSMutableArray alloc] initWithArray:dp.photo.photoRelations];
+                    [(NSMutableArray*)dp.photo.photoRelations removeObjectAtIndex:j];
+                    if(store){
+                        [[EZDataUtil getInstance] storeAllPhotos:@[dp.photo]];
+                        //[_mainPhotos removeObjectAtIndex:i];
+                    }
+                }
+                return i;
+            }
+        }
+    }
+    return -1;
+}
+
+- (void) deleteImageFiles:(NSArray *)photos
+{
+    for(EZPhoto* ph in photos){
+        [self deleteImageFile:ph];
+    }
+}
+
+- (void) deleteImageFile:(EZPhoto *)photo
+{
+    EZDownloadHolder* holder =  [_downloadedImages objectForKey:photo.screenURL];
+    if(holder.downloaded){
+        NSString* fullPath = url2fullpath(holder.downloaded);
+        [EZFileUtil deleteFile:fullPath];
+        holder.downloaded = nil;
+    }
+    if(photo.assetURL && [EZFileUtil isFileExist:photo.assetURL isURL:NO]){
+        [EZFileUtil deleteFile:photo.assetURL];
+    }
+    
+    
+}
+
+- (void) removeLocalPhoto:(NSString*)photoID
+{
+    //int pos = -1;
+    for(int i = 0; i < _mainPhotos.count; i ++){
+        EZDisplayPhoto* dp = [_mainPhotos objectAtIndex:i];
+        if([dp.photo.photoID isEqualToString:photoID]){
+            //pos = i;
+            EZDEBUG(@"removed object:%@", photoID);
+            [dp.photo.localPhoto.managedObjectContext deleteObject:dp.photo.localPhoto];
+            [[EZCoreAccessor getClientAccessor]saveContext];
+            [_mainPhotos removeObjectAtIndex:i];
+            break;
+        }
+    }
+}
+
 //
 - (void) queryPhotos:(int)page pageSize:(int)pageSize otherID:(NSString *)otherID success:(EZEventBlock)success failure:(EZEventBlock)failure
 {

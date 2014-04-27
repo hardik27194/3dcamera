@@ -279,6 +279,24 @@
     //_coverView.hidden = YES;
 }
 
+- (void)timerTick:(NSTimer *)timer
+{
+    // Timers are not guaranteed to tick at the nominal rate specified, so this isn't technically accurate.
+    // However, this is just an example to demonstrate how to stop some ongoing activity, so we can live with that inaccuracy.
+    //self.timerLabel.text = [NSString stringWithFormat:@"%02.0f:%02.0f:%04.1f", hours, minutes, seconds];
+    //_sendVerifyCode.enabled = NO
+    _counter ++;
+    if(_counter > 60){
+        [_timer invalidate];
+        _sendVerifyCode.enabled = YES;
+        [_sendVerifyCode setTitle:macroControlInfo(@"请求短信验证码") forState:UIControlStateNormal];
+    }else{
+        [_sendVerifyCode setTitle:[NSString stringWithFormat:@"%i秒后重发",_counter] forState:UIControlStateNormal];
+    }
+    
+}
+
+
 - (void) stopActivity
 {
     [_activity stopAnimating];

@@ -29,10 +29,17 @@
 @property (nonatomic, strong) UIActivityIndicatorView* activity;
 
 @property (nonatomic, strong) UIView* coverView;
+
+@property (nonatomic, assign) NSInteger counter;
+
+@property (nonatomic, assign) NSTimer *timer;
+
+@property (nonatomic, strong) UIButton* sendVerifyCode;
 //@property (nonatomic, strong) EZEventBlock key
 
 - (void) liftWithBottom:(CGFloat)deltaGap isSmall:(BOOL)small time:(CGFloat)timeval complete:(EZEventBlock)complete;
 
+- (void)timerTick:(NSTimer *)timer;
 
 - (UIView*) createWrap:(CGRect)frame;
 

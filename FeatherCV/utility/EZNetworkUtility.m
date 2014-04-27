@@ -640,12 +640,12 @@ static EZNetworkUtility* instance;
     AFHTTPRequestOperation *operation =
     [manager HTTPRequestOperationWithRequest:request
                                      success:^(AFHTTPRequestOperation *operation, id responseObject) {
-                                         NSLog(@"Success %@", responseObject);
+                                         //NSLog(@"Success %@", responseObject);
                                          if(completed){
                                              completed(responseObject);
                                          }
                                      } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-                                         NSLog(@"Failure %@", error.description);
+                                         //NSLog(@"Failure %@", error.description);
                                          if(errorBlk){
                                              errorBlk(error);
                                          }

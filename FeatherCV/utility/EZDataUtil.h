@@ -247,7 +247,15 @@
 
 - (void) queryPhotos:(int)page pageSize:(int)pageSize otherID:(NSString*)otherID success:(EZEventBlock)success failure:(EZEventBlock)failure;
 
+- (void) removeLocalPhoto:(NSString*)photoID;
+
+- (int) removeOtherPhoto:(NSString*)photoID array:(NSMutableArray*)arr store:(BOOL)store;
+
 - (void) cleanAllLoginInfo;
+
+- (void) deleteImageFiles:(NSArray *)photos;
+
+- (void) deleteImageFile:(EZPhoto*)photo;
 
 //Will check if any new photo in the album.
 //I will use the filename as hash?

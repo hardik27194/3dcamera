@@ -17,14 +17,27 @@
         self.opaque = NO;
         self.backgroundColor = [UIColor clearColor];
         _fillColor = [UIColor whiteColor];
-        self.enableTouchEffects = false;
+        self.enableTouchEffects = YES;
+        //self.pressedColor = ClickedColor;
         //[self enableShadow:[UIColor blackColor]];
         
     }
     return self;
 }
 
+- (void) hideColor
+{
+    dispatch_later(0.2, ^(){
+        _fillColor = [UIColor whiteColor];
+        [self setNeedsDisplay];
+    });
+}
 
+- (void) changeColor
+{
+    _fillColor = ClickedColor;
+    [self setNeedsDisplay];
+}
 // Only override drawRect: if you perform custom drawing.
 // An empty implementation adversely affects performance during animation.
 - (void)drawRect:(CGRect)rect

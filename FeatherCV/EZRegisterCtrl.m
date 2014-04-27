@@ -194,7 +194,7 @@
      [containerView addSubview:_mobilePlaceHolder];
      
     
-    
+    UIButton* _sendVerifyCode = nil;
     _sendVerifyCode = [[UIButton alloc] initWithFrame:CGRectMake((CurrentScreenWidth - 246.0)/2.0, 110.0, 246.0, 40.0)];
     //[_registerButton enableRoundImage];
     _sendVerifyCode.layer.cornerRadius = _sendVerifyCode.height/2.0;
@@ -204,7 +204,7 @@
     [_sendVerifyCode setTitle:macroControlInfo(@"请求短信验证码") forState:UIControlStateNormal];
     [_sendVerifyCode addTarget:self action:@selector(sendCode:) forControlEvents:UIControlEventTouchUpInside];
     [containerView addSubview:_sendVerifyCode];
-
+    self.sendVerifyCode = _sendVerifyCode;
     _loginButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 170.0, CurrentScreenWidth, 40.0)];//455
     [_loginButton setTitle:macroControlInfo(@"Login") forState:UIControlStateNormal];
     [_loginButton.titleLabel setFont:[UIFont systemFontOfSize:11]];
@@ -275,12 +275,16 @@
 - (void) sendCode:(id)obj
 {
     //EZDEBUG(@"Send code get called");
+    __weak EZRegisterCtrl* weakSelf = self;
     if([_mobileField.text isNotEmpty]){
     [self startActivity];
     if([_mobileField.text isNotEmpty]){
         [[EZDataUtil getInstance] requestSmsCode:_mobileField.text success:^(id obj){
-            [self stopActivity];
-            [self switchToNext];
+            [weakSelf stopActivity];
+            [weakSelf switchToNext];
+            weakSelf.timer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(timerTick:) userInfo:nil repeats:YES];
+            weakSelf.counter = 0;
+            weakSelf.sendVerifyCode.enabled = NO;
         } failure:^(id err){
             [self stopActivity];
             EZDEBUG(@"The error detail:%@", err);

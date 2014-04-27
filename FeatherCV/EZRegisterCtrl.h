@@ -34,7 +34,7 @@
 
 @property (nonatomic, strong) UIButton* registerButton;
 
-@property (nonatomic, strong) UIButton* sendVerifyCode;
+
 
 @property (nonatomic, strong) UIButton* confirmCode;
 

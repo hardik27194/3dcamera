@@ -2326,6 +2326,7 @@ context:(void *)context
         
         EZDEBUG(@"Will try to capture from the stream");
         UIImage* img = [orgFiler imageFromCurrentlyProcessedOutput];
+        //[stillCamera stopCameraCapture];
         completion(img, nil);
         EZDEBUG(@"Capture without stream:%@", NSStringFromCGSize(img.size));
     } else {
@@ -3378,6 +3379,8 @@ context:(void *)context
     //    EZDEBUG(@"DLCCamera Will get dismissed");
     //}];
     //[EZDataUtil getInstance].pauseUpload = false;
+    [self removeAllTargets];
+    stillCamera = nil;
     [UIView animateWithDuration:0.2 animations:^(){
         _quitCrossButton.transform = CGAffineTransformIdentity;
         //_quitCrossButton.alpha = 0;
@@ -3691,8 +3694,7 @@ context:(void *)context
 
 -(void) dealloc {
     EZDEBUG(@"DLC dealloced");
-    [self removeAllTargets];
-    stillCamera = nil;
+    
     cropFilter = nil;
     filter = nil;
     blurFilter = nil;

@@ -19,7 +19,8 @@
     _photoID = [dict objectForKey:@"photoID"];
     _otherID = [dict objectForKey:@"otherID"];
     _like = [[dict objectForKey:@"like"] boolValue];
-
+    _deletedID = [dict objectForKey:@"deletedID"];
+    _sourcePid = [dict objectForKey:@"sourcePid"];
     //This is the source photoID
     _srcID = [dict objectForKey:@"srcID"];
     _matchedID = [dict objectForKey:@"matchedID"];

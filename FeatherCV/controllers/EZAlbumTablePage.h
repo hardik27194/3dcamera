@@ -171,6 +171,8 @@
 @property (nonatomic, assign) int newMessageCount;
 
 @property (nonatomic, strong) EZEventBlock scrollBlock;
+
+@property (nonatomic, strong) EZEventBlock actionBlock;
 //@property (nonatomic, strong) NSMutableArray* unhandledNotes;
 
 - (void) storeCurrent;

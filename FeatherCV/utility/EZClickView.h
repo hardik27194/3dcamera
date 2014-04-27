@@ -50,6 +50,9 @@ typedef enum {
 
 - (void) unpressed;
 
+- (void) hideColor;
+
+
 - (void) changeColor;
 
 @end

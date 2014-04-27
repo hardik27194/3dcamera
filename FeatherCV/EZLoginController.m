@@ -82,7 +82,7 @@
     _mobilePlaceHolder.text = macroControlInfo(@"Mobile Number");
     [self.view addSubview:_mobilePlaceHolder];
     
-    
+    UIButton* _sendVerifyCode;
     _sendVerifyCode = [[UIButton alloc] initWithFrame:CGRectMake((CurrentScreenWidth - 246.0)/2.0, 250.0 + startGap, 246.0, 40.0)];
     //[_registerButton enableRoundImage];
     _sendVerifyCode.layer.cornerRadius = _sendVerifyCode.height/2.0;
@@ -92,7 +92,7 @@
     [_sendVerifyCode setTitle:macroControlInfo(@"请求短信验证码") forState:UIControlStateNormal];
     [_sendVerifyCode addTarget:self action:@selector(sendCode:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:_sendVerifyCode];
-    
+    self.sendVerifyCode = _sendVerifyCode;
     
     _passwordField = [[UITextField alloc] initWithFrame:CGRectMake((CurrentScreenWidth - 206.0)/2.0, 310.0 + startGap, 206, 40)];
     
@@ -139,14 +139,19 @@
 - (void) sendCode:(id)obj
 {
     //EZDEBUG(@"Send code get called");
+    __weak EZLoginController* weakSelf = self;
     if([_mobileField.text isNotEmpty]){
         [self startActivity];
         if([_mobileField.text isNotEmpty]){
             [[EZDataUtil getInstance] requestSmsCode:_mobileField.text success:^(id obj){
-                [self stopActivity];
+                [weakSelf stopActivity];
                 //[self switchToNext];
+                weakSelf.timer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(timerTick:) userInfo:nil repeats:YES];
+                weakSelf.counter = 0;
+                weakSelf.sendVerifyCode.enabled = NO;
+
             } failure:^(id err){
-                [self stopActivity];
+                [weakSelf stopActivity];
                 EZDEBUG(@"The error detail:%@", err);
             }];
         }else{
@@ -167,6 +172,7 @@
 {
     EZDEBUG(@"password switch get called");
 }
+
 
 
 
