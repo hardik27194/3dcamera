@@ -240,11 +240,16 @@
 
 - (void) setFrontFormat:(BOOL)front
 {
-    CGFloat otherAlpha = 0.6;
+    CGFloat otherAlpha = 1.0;
     CGFloat ownAlpha = 1.0;
+    UIColor* otherColor = ClickedColor;
+    UIColor* ownColor = [UIColor whiteColor];
+    ;
     if(!front){
-        otherAlpha = 1.0;
-        ownAlpha = 0.6;
+        //otherAlpha = 1.0;
+        //ownAlpha = 0.6;
+        otherColor = [UIColor whiteColor];
+        ownColor = ClickedColor;
         [_ownTalk disableShadow];
         [_authorName disableShadow];
         [_headIcon disableShadow];
@@ -263,11 +268,12 @@
     }
     
     //_otherIcon.alpha = otherAlpha;
-    _otherName.alpha = otherAlpha;
-    _otherTalk.alpha = otherAlpha;
-    
-    _ownTalk.alpha = ownAlpha;
-    _authorName.alpha = ownAlpha;
+    //_otherName.alpha = otherAlpha;
+    //_otherTalk.alpha = otherAlpha;
+    _otherName.textColor = otherColor;
+    _authorName.textColor = ownColor;
+    //_ownTalk.alpha = ownAlpha;
+    //_authorName.alpha = ownAlpha;
     //_headIcon.alpha = ownAlpha;
 }
 

@@ -99,8 +99,10 @@
     int addCount = photos.count - 2;
     if(addCount > 0){
         _pageControl.width = 24 + 16 * addCount;
-    }else{
+    }else if(photos.count > 1){
         _pageControl.width = 24;
+    }else{
+        _pageControl.width = 12;
     }
     _photos = photos;
     for(UIImageView* imgView in _imageViews){
@@ -115,6 +117,7 @@
         [_scrollView addSubview:imgView];
         [_imageViews addObject:imgView];
     }
+    EZDEBUG(@"pos:%i, total count:%i", pos, _imageViews.count);
     _imageView = [_imageViews objectAtIndex:pos];
     EZDEBUG(@"end set photoss");
 }
@@ -155,6 +158,7 @@
     if(front){
         _scrollView.contentOffset = CGPointMake(0, 0);
         _scrollView.contentSize = CGSizeMake(CurrentScreenWidth, CurrentScreenHeight);
+        EZDEBUG(@"_imageViews Count:%i, currentPos:%i", _imageViews.count, _currentPos);
         _imageView = [_imageViews objectAtIndex:0];
         //_pageControl.hidden = YES;
     }else{

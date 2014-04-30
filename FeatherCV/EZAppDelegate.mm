@@ -83,12 +83,13 @@
     
     if(([UIDevice currentDevice].orientation ==  UIDeviceOrientationPortrait)){
         EZDEBUG(@"Back to portrait");
-        
+        /**
         dispatch_later(0.2, ^(){
             if(_previousOrientation == UIDeviceOrientationPortrait){
                 [[EZMessageCenter getInstance] postEvent:EZPositionHold attached:@(_previousOrientation)];
             }
         });
+         **/
         //[[EZMessageCenter getInstance] postEvent:EZTriggerCamera attached:nil];
     }
     

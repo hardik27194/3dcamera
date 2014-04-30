@@ -66,7 +66,7 @@ typedef enum {
 
 //If this is a place hold or not.
 //Mean I am loading the photo.
-@property (nonatomic, assign) BOOL isPlaceHolder;
+//@property (nonatomic, assign) BOOL isPlaceHolder;
 
 @property (nonatomic, assign) BOOL isLoading;
 
