@@ -146,7 +146,7 @@
             [[EZDataUtil getInstance] requestSmsCode:_mobileField.text success:^(id obj){
                 [weakSelf stopActivity];
                 //[self switchToNext];
-                weakSelf.timer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(timerTick:) userInfo:nil repeats:YES];
+                weakSelf.timer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:weakSelf selector:@selector(timerTick:) userInfo:nil repeats:YES];
                 weakSelf.counter = 0;
                 weakSelf.sendVerifyCode.enabled = NO;
 

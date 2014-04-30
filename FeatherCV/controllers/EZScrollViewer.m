@@ -105,17 +105,21 @@
         _pageControl.width = 12;
     }
     _photos = photos;
-    for(UIImageView* imgView in _imageViews){
-        [imgView removeFromSuperview];
-    }
-    
-    [_imageViews removeAllObjects];
     _scrollView.contentSize = CGSizeMake(CurrentScreenWidth*count, CurrentScreenHeight);
     _scrollView.contentOffset = CGPointMake(CurrentScreenWidth * pos, 0);
-    for(int i = 0; i < count; i++){
-        UIImageView* imgView = [self createImageView:CGRectMake(CurrentScreenWidth * i, 0, CurrentScreenWidth, CurrentScreenHeight)];
-        [_scrollView addSubview:imgView];
-        [_imageViews addObject:imgView];
+    
+    if(count > _imageViews.count){
+        for(int i = _imageViews.count; i < count; i++){
+            UIImageView* imgView = [self createImageView:CGRectMake(CurrentScreenWidth * i, 0, CurrentScreenWidth, CurrentScreenHeight)];
+            [_scrollView addSubview:imgView];
+            [_imageViews addObject:imgView];
+        }
+    }else{
+        for(int i = count; i < _imageViews.count; i++){
+            UIImageView* imgView = [_imageViews objectAtIndex:i];
+            [imgView removeFromSuperview];
+            [_imageViews removeObjectAtIndex:i];
+        }
     }
     EZDEBUG(@"pos:%i, total count:%i", pos, _imageViews.count);
     _imageView = [_imageViews objectAtIndex:pos];
@@ -127,17 +131,15 @@
 {
     _scrollView.contentSize = CGSizeMake(CurrentScreenWidth, CurrentScreenHeight);
     _scrollView.contentOffset = CGPointMake(0, 0);
-    for(UIImageView* imgView in _imageViews){
+    for(int i = 1; i < _imageViews.count; i ++){
+        UIImageView* imgView = [_imageViews objectAtIndex:i];
         [imgView removeFromSuperview];
+        [_imageViews removeObjectAtIndex:i];
     }
-    [_imageViews removeAllObjects];
-    _imageView = nil;
-    //if(!_imageView)
-    //_imageView = [self createImageView:CGRectMake(0, 0, CurrentScreenWidth, CurrentScreenHeight)];
-    //else
-    //_imageView.image = nil;
-    //[_scrollView addSubview:_imageView];
-    //_imageViews = @[_scrollView];
+    
+    //[_imageViews removeAllObjects];
+    _imageView = [_imageViews objectAtIndex:0];
+    _imageView.image = nil;
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView

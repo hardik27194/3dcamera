@@ -2199,19 +2199,6 @@ static int photoCount = 1;
     [self.tableView reloadData];
 }
 
-- (int) findPlaceHolder
-{
-    //int res = -1;
-    for(int i = 0; i < _combinedPhotos.count; i++){
-        EZDisplayPhoto* dp = [_combinedPhotos objectAtIndex:i];
-        if(dp.isPlaceHolder){
-            return i;
-        }
-    }
-    return -1;
-}
-
-
 //Return true if it is update
 //Return false if it is add
 - (BOOL) fillCombinePhotos:(EZPhoto*)photo
