@@ -47,6 +47,8 @@ typedef enum {
 //Whether I am turning the image or not
 @property (nonatomic, assign) BOOL isTurning;
 
+@property (nonatomic, assign) BOOL isPlaceHolder;
+
 //Once this one get displayed, I will disappear.
 @property (nonatomic, assign) BOOL isFirstTime;
 

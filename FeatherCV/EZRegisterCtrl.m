@@ -25,6 +25,11 @@
     return [self initWithNibName:nil bundle:nil];
 }
 
+- (void) dealloc
+{
+    EZDEBUG(@"register dealloc");
+}
+
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     EZDEBUG(@"init called");
@@ -286,7 +291,7 @@
             weakSelf.counter = 0;
             weakSelf.sendVerifyCode.enabled = NO;
         } failure:^(id err){
-            [self stopActivity];
+            [weakSelf stopActivity];
             EZDEBUG(@"The error detail:%@", err);
         }];
     }else{
@@ -372,6 +377,17 @@
     _pageControl.numberOfPages = 2;
     _pageControl.currentPage = 0;
     
+    
+    //__weak EZRegisterCtrl* weakSelf = self;
+   /**
+    EZClickView* quitView = [[EZClickView alloc] initWithFrame:CGRectMake(100, 0, 100, 100)];
+    quitView.backgroundColor = [UIColor whiteColor];
+    quitView.releasedBlock = ^(id obj){
+        EZDEBUG(@"quit clicked");
+        [weakSelf.navigationController dismissViewControllerAnimated:YES completion:nil];
+    };
+    [self.view addSubview:quitView];
+   **/
     /**
      _passwordButton = [[UIButton alloc] initWithFrame:CGRectMake(60, 400 + startGap, 100, 40)];
      [_passwordButton setTitle:macroControlInfo(@"Password") forState:UIControlStateNormal];

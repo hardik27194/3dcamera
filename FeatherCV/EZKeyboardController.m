@@ -31,7 +31,10 @@
 {
     [super viewDidLoad];
     [self setupKeyboard];
-    EZDEBUG(@"navigation delegate:%i", (int)self.navigationController);
+    
+    EZDEBUG(@"updated navigation delegate:%i", (int)self.navigationController);
+    
+    
     self.navigationController.delegate = self;
     self.navigationController.transitioningDelegate = self;
     
@@ -56,7 +59,8 @@
 {
     [super viewWillAppear:animated];
     //[[EZKeyboadUtility getInstance] add]
-    [super viewWillAppear:animated];
+    //[super viewWillAppear:animated];
+    //__weak EZKeyboardController* weakSelf = self;
     [[EZMessageCenter getInstance] registerEvent:EventKeyboardWillRaise block:_keyboardRaiseHandler];
     [[EZMessageCenter getInstance] registerEvent:EventKeyboardWillHide block:_keyboardHideHandler];
     
@@ -65,6 +69,9 @@
 - (void) viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
+    __weak EZKeyboardController* weakSelf = self;
+    //weakSelf.navigationController.delegate = nil;
+    //weakSelf.navigationController.transitioningDelegate = nil;
     [[EZMessageCenter getInstance] unregisterEvent:EventKeyboardWillRaise forObject:_keyboardRaiseHandler];
     [[EZMessageCenter getInstance] unregisterEvent:EventKeyboardWillHide forObject:_keyboardHideHandler];
 }
@@ -105,7 +112,7 @@
     cancelKeyboard.backgroundColor = [UIColor clearColor];//RGBA(128, 0, 0, 128);
     cancelKeyboard.enableTouchEffects = false;
     cancelKeyboard.releasedBlock = ^(id obj){
-        EZDEBUG(@"cancel clicked, %@", _currentFocused);
+        EZDEBUG(@"cancel clicked, %@", weakSelf.currentFocused);
         //weakSelf.hideTextInput = false;
         //[weakSelf.textField resignFirstResponder];
         //[self hideKeyboard:NO];

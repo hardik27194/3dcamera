@@ -7,7 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "EZKeyboardController.h"
 
-@interface EZDummyPage : UIViewController
+@interface EZDummyPage : EZKeyboardController
 
 @end

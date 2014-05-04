@@ -37,6 +37,9 @@
 #import "UIImageView+AFNetworking.h"
 #import "EZCoreAccessor.h"
 #import "EZNote.h"
+#import "EZDummyPage.h"
+#import "EZLoginController.h"
+#import "EZRegisterCtrl.h"
 
 
 @implementation EZAppDelegate
@@ -459,6 +462,16 @@
             [[EZMessageCenter getInstance] postEvent:EZNoteCountSet attached:nil];
         } failure:nil];
     }
+    
+    /**
+    dispatch_later(0.1, ^(){
+        EZRegisterCtrl* login = [[EZRegisterCtrl alloc] init];
+        UINavigationController* navi = [[UINavigationController alloc] initWithRootViewController:login];
+        [navi setNavigationBarHidden:YES animated:NO];
+        UIViewController* presenter = [EZUIUtility topMostController];
+        [presenter presentViewController:navi animated:YES completion:nil];
+    });
+     **/
     //[[EZAnimationUtil sharedEZAnimationUtil] addAnimation:self];
     
     [self setupAppearance];

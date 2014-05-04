@@ -749,6 +749,11 @@
     _quitCrossButton.enableTouchEffects = false;
    
     _quitCrossButton.releasedBlock = ^(id obj){
+        EZDEBUG(@"quit Cross button called:%i", weakSelf.cameraSetupDone);
+        if(!weakSelf.cameraSetupDone){
+            EZDEBUG(@"Camera not ready yet");
+            return;
+        }
         [MobClick event:EZALCameraCancel label:@"cross"];
         [weakSelf cancelClicked:nil];
     };
@@ -782,6 +787,7 @@
 {
     [EZUIUtility sharedEZUIUtility].cameraRaised = true;
     [super viewDidLoad];
+    
     //self.navigationItem.rightBarButtonItem =
     //Stop all the upload
     //[EZDataUtil getInstance].pauseUpload = TRUE;
@@ -831,9 +837,16 @@
     orgFocusSize = self.focusView.frame.size;
     
     __weak DLCImagePickerController* weakSelf = self;
+    
+    [[EZMessageCenter getInstance] registerEvent:EZCameraIsReady block:^(id obj){
+        //EZDEBUG(@"Camera is ready get called is main:%i", [NSThread isMainThread]);
+        weakSelf.cameraSetupDone = YES;
+    } once:YES];
     faceCovered = ^(NSNumber* status){
         [weakSelf coverStatusChange:status.intValue];
     };
+    
+    
     //self.blurOverlayView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     //self.blurOverlayView.alpha = 0;
     //[self.imageView addSubview:self.blurOverlayView];
@@ -1573,17 +1586,22 @@ context:(void *)context
     _quitFaceDetection = true;
     _senseRotate = false;
     [stillCamera stopCameraCapture];
+    //EZDEBUG(@"after stop camera");
     macroHideStatusBar(NO);
+    EZDEBUG(@"before remove targets");
     [self removeAllTargets];
+    EZDEBUG(@"remove all target");
     //[_quitCrossButton removeFromSuperview];
-    [[EZMotionUtility getInstance] unregisterHandler:@"CameraMotion"];
-    [[EZUIUtility sharedEZUIUtility] enableProximate:NO];
+    //[[EZMotionUtility getInstance] unregisterHandler:@"CameraMotion"];
+    //[[EZUIUtility sharedEZUIUtility] enableProximate:NO];
     _isVisible = false;
     [_backButton removeFromSuperview];
     [[EZMessageCenter getInstance] unregisterEvent:EZFaceCovered forObject:faceCovered];
     [[EZMessageCenter getInstance] unregisterEvent:EventKeyboardWillRaise forObject:keyboardRaiseHandler];
     [[EZMessageCenter getInstance] unregisterEvent:EventKeyboardWillHide forObject:keyboardHideHandler];
+    EZDEBUG(@"before hide keyboard");
     [self hideKeyboard:YES complete:nil];
+    EZDEBUG(@"becomeInvisible done");
     //[[UIApplication sharedApplication] setStatusBarHidden:false];
     //[EZDataUtil getInstance].centerButton.releasedBlock = _oldReleaseBlock;
     //[EZDataUtil getInstance].centerButton.pressedBlock = _oldPressBlock;
@@ -1624,6 +1642,7 @@ context:(void *)context
             EZDEBUG(@"Setup the camera for auto focus");
             runOnMainQueueWithoutDeadlocking(^{
                 [self setupUIAfterCamera];
+                //_cameraSetupDone = YES;
             });
             
             [self prepareFilter];

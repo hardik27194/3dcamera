@@ -64,6 +64,12 @@
     return self;
 }
 
+
+- (void) dealloc
+{
+    EZDEBUG(@"person detail dealloc");
+}
+
 - (void) viewWillDisappear:(BOOL)animated
 {
     if(![_person.personID isEqualToString:currentLoginID]){

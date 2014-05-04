@@ -7,6 +7,7 @@
 //
 
 #import "EZDummyPage.h"
+#import "EZClickView.h"
 
 @interface EZDummyPage ()
 
@@ -26,7 +27,23 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    __weak EZDummyPage* weakSelf = self;
+    self.view.backgroundColor = [UIColor redColor];
+    EZClickView* clickView = [[EZClickView alloc] initWithFrame:CGRectMake(100, 200, 100, 100)];
+    clickView.backgroundColor = [UIColor whiteColor];
+    clickView.releasedBlock = ^(id obj){
+        EZDEBUG(@"release get clicked");
+        [weakSelf.navigationController dismissViewControllerAnimated:YES completion:nil];
+    };
+    
+    [self.view addSubview:clickView];
 	// Do any additional setup after loading the view.
+}
+
+- (void) dealloc
+{
+    EZDEBUG(@"dealloc dummy page");
 }
 
 - (void)didReceiveMemoryWarning

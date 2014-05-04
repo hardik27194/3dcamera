@@ -107,6 +107,8 @@ typedef enum {
 @property (nonatomic, weak) IBOutlet UILabel* blueGapText;
 @property (nonatomic, weak) IBOutlet UIButton *photoCaptureButton;
 @property (nonatomic, strong) UILabel* instrTitle;
+@property (nonatomic, assign) BOOL cameraSetupDone;
+
 
 @property (nonatomic, strong) EZEventBlock innerCancelBlock;
 

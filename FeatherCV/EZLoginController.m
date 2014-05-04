@@ -29,6 +29,8 @@
 }
 
 
+
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -131,6 +133,7 @@
     //[self.view addSubview:_registerButton];
     [self.view addSubview:_passwordButton];
     [self.view addSubview:_loginButton];
+    
     //[self.view addSubview:_seperator];
     //[self setupKeyboard];
 	// Do any additional setup after loading the view.
@@ -174,6 +177,10 @@
 }
 
 
+- (void) dealloc
+{
+    EZDEBUG(@"dealloc login");
+}
 
 
 - (void) registerSwitch:(id)obj
@@ -181,8 +188,8 @@
     EZDEBUG(@"switch to register called %@", self.presentingViewController);
     //[self dismissViewControllerAnimated:YES completion:nil];
     if(self.navigationController.viewControllers.count > 1){
-        [self.navigationController popViewControllerAnimated:YES];
         EZDEBUG(@"Already presented in register");
+        [self.navigationController popViewControllerAnimated:YES];
     }else{
         //[self dismissViewControllerAnimated:NO completion:^(){
         EZRegisterCtrl* registerCtrl = [[EZRegisterCtrl alloc] init];
