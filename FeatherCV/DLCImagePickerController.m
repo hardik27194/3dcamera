@@ -809,7 +809,7 @@
     self.wantsFullScreenLayout = YES;
     _pageTurn = [[EZSoundEffect alloc] initWithSoundNamed:@"page_turn.aiff"];
     _shotReady = [[EZSoundEffect alloc] initWithSoundNamed:@"shot_voice.aiff"];
-    _shotVoice = [[EZSoundEffect alloc] initWithSoundNamed:@"shot.wav"];
+    _shotVoice = [[EZSoundEffect alloc] initWithSoundNamed:@"shot_new.wav"];
     
     bigSharpenFilter = [[EZSkinSharpen alloc] init];
     bigSharpenFilter.sharpenSize = 3.2;
@@ -2741,10 +2741,10 @@ context:(void *)context
 
 - (void) showErrorInfo:(NSString*)info
 {
-    UILabel* failureMsg = [[UILabel alloc] initWithFrame:CGRectMake(0, 20, CurrentScreenWidth, 44)];
+    UILabel* failureMsg = [[UILabel alloc] initWithFrame:CGRectMake(0, 20, CurrentScreenWidth, 20)];
     failureMsg.textAlignment = NSTextAlignmentCenter;
     failureMsg.textColor = [UIColor whiteColor];
-    failureMsg.font = [UIFont boldSystemFontOfSize:16];
+    failureMsg.font = [UIFont systemFontOfSize:12];
     failureMsg.text = info;
     [self.view addSubview:failureMsg];
 }
@@ -3070,10 +3070,20 @@ context:(void *)context
         return;
     }
     
+   
+    
+    
     EZDEBUG(@"take photo isStatic:%i",isStatic);
     __weak DLCImagePickerController* weakSelf = self;
     [self.photoCaptureButton setEnabled:NO];
     if (!isStatic) {
+        uint64_t diskSpace = [EZFileUtil getFreeSpace];
+        //EZDEBUG(@"disSpace:%llul", diskSpace);
+        if(diskSpace < miniDiskSpace){
+            //[[EZUIUtility sharedEZUIUtility] raiseInfoWindow:macroControlInfo(@"存储空间已满") info:macroControlInfo]
+            [weakSelf showErrorInfo:macroControlInfo(@"存储空间已满")];
+            return;
+        }
         _upArrow.hidden = NO;
         [(EZHairButton*)_quitCrossButton.innerView setButtonStyle:kShotHappen];
         _uploadStatus = kInitialUploading;

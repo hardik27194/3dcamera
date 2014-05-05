@@ -178,6 +178,7 @@ static EZNetworkUtility* instance;
     NSString* fileName = fileNames.count > 0?[fileNames objectAtIndex:fileNames.count - 1]:fullPath;
     // 2. Create an `NSMutableURLRequest`.
     [serializer setValue:[EZDataUtil getInstance].currentPersonID forHTTPHeaderField:EZSessionHeader];
+    [serializer setValue:EZProductFlag forKey:EZProductionHeader];
     NSMutableURLRequest *request =
     [serializer multipartFormRequestWithMethod:@"POST" URLString:baseUploadURL
                                     parameters:parameters
@@ -579,6 +580,8 @@ static EZNetworkUtility* instance;
 {
     //[self getJson:url complete:complete failblk:block callbackQueue:nil];
     [[EZFeatherAPIClient sharedClient].requestSerializer setValue:[EZDataUtil getInstance].currentPersonID forHTTPHeaderField:EZSessionHeader];
+    [[EZFeatherAPIClient sharedClient].requestSerializer setValue:EZProductFlag forKey:EZProductionHeader];
+
     EZDEBUG(@"The absolute url is:%@", url);
     [[EZFeatherAPIClient sharedClient] GET:url parameters:nil success:^(NSURLSessionDataTask * __unused task, id JSON) {
         if (complete) {
@@ -596,6 +599,8 @@ static EZNetworkUtility* instance;
 + (void) getJson:(NSString*)url parameters:(id)dicts complete:(EZEventBlock)complete failblk:(EZEventBlock)block
 {
     [[EZFeatherAPIClient sharedClient].requestSerializer setValue:[EZDataUtil getInstance].currentPersonID forHTTPHeaderField:EZSessionHeader];
+    
+    [[EZFeatherAPIClient sharedClient].requestSerializer setValue:EZProductFlag forKey:EZProductionHeader];
     [[EZFeatherAPIClient sharedClient] GET:url parameters:dicts success:^(NSURLSessionDataTask * __unused task, id JSON) {
         if(complete){
             complete(JSON);
@@ -611,6 +616,8 @@ static EZNetworkUtility* instance;
 + (void) postJson:(NSString*)url parameters:(id)dicts complete:(EZEventBlock)complete failblk:(EZEventBlock)block
 {
     [[EZFeatherAPIClient sharedClient].requestSerializer setValue:[EZDataUtil getInstance].currentPersonID forHTTPHeaderField:EZSessionHeader];
+    [[EZFeatherAPIClient sharedClient].requestSerializer setValue:EZProductFlag forKey:EZProductionHeader];
+
     [[EZFeatherAPIClient sharedClient] POST:url parameters:dicts success:^(NSURLSessionDataTask * __unused task, id JSON) {
         if(complete){
             complete(JSON);
@@ -629,6 +636,8 @@ static EZNetworkUtility* instance;
     
     AFJSONRequestSerializer* serializer = [AFJSONRequestSerializer serializer];
     [serializer setValue:[EZDataUtil getInstance].currentPersonID forHTTPHeaderField:EZSessionHeader];
+    [serializer setValue:EZProductFlag forKey:EZProductionHeader];
+
     NSMutableURLRequest* request = [serializer requestWithMethod:@"POST" URLString:[NSString stringWithFormat:@"%@%@", baseServiceURL, url] parameters:params error:nil];
     
     //[[EZFeatherAPIClient sharedClient] ]

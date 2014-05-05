@@ -78,6 +78,7 @@
 		1874D9DE18699386005743FC /* header_1.png in Resources */ = {isa = PBXBuildFile; fileRef = 1874D9DC18699386005743FC /* header_1.png */; };
 		1879BE23190BB1B60084FB27 /* EZCopyableLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 1879BE22190BB1B60084FB27 /* EZCopyableLabel.m */; };
 		1879BE28190BB8830084FB27 /* EZLimitTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 1879BE27190BB8830084FB27 /* EZLimitTextField.m */; };
+		1879BE331915DD650084FB27 /* shot_new.wav in Resources */ = {isa = PBXBuildFile; fileRef = 1879BE321915DD650084FB27 /* shot_new.wav */; };
 		18A36FD9184C7F820022F0A8 /* smile_face.png in Resources */ = {isa = PBXBuildFile; fileRef = 18A36FD8184C7F820022F0A8 /* smile_face.png */; };
 		18A36FEF1855C1DB0022F0A8 /* DLCImagePickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A36FEC1855C1DB0022F0A8 /* DLCImagePickerController.m */; };
 		18A36FF01855C1DB0022F0A8 /* DLCBlurOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A36FEE1855C1DB0022F0A8 /* DLCBlurOverlayView.m */; };
@@ -263,7 +264,7 @@
 		18E746FC18A4BBBC0023967B /* EZFeatherAPIClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E746FB18A4BBBC0023967B /* EZFeatherAPIClient.m */; };
 		18E746FF18AC704F0023967B /* EZBarRegion.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E746FE18AC704E0023967B /* EZBarRegion.m */; };
 		18F58B49186D5F9C006CB966 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18F58B48186D5F9C006CB966 /* ImageIO.framework */; };
-		18F58B4D186D8824006CB966 /* shot.wav in Resources */ = {isa = PBXBuildFile; fileRef = 18F58B4C186D8824006CB966 /* shot.wav */; };
+		18F58B4D186D8824006CB966 /* shot2.wav in Resources */ = {isa = PBXBuildFile; fileRef = 18F58B4C186D8824006CB966 /* shot2.wav */; };
 		18F58B52186EC0D1006CB966 /* ILTranslucentView.m in Sources */ = {isa = PBXBuildFile; fileRef = 18F58B51186EC0D1006CB966 /* ILTranslucentView.m */; };
 		18F58B57187130E0006CB966 /* UIView+Shadow.m in Sources */ = {isa = PBXBuildFile; fileRef = 18F58B56187130E0006CB966 /* UIView+Shadow.m */; };
 		18F58B5A18716C19006CB966 /* EZGradientLayerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 18F58B5918716C19006CB966 /* EZGradientLayerView.m */; };
@@ -443,6 +444,7 @@
 		1879BE22190BB1B60084FB27 /* EZCopyableLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZCopyableLabel.m; sourceTree = "<group>"; };
 		1879BE26190BB8830084FB27 /* EZLimitTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZLimitTextField.h; sourceTree = "<group>"; };
 		1879BE27190BB8830084FB27 /* EZLimitTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZLimitTextField.m; sourceTree = "<group>"; };
+		1879BE321915DD650084FB27 /* shot_new.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = shot_new.wav; sourceTree = "<group>"; };
 		18A36FD8184C7F820022F0A8 /* smile_face.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = smile_face.png; sourceTree = "<group>"; };
 		18A36FEB1855C1DB0022F0A8 /* DLCImagePickerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DLCImagePickerController.h; sourceTree = "<group>"; };
 		18A36FEC1855C1DB0022F0A8 /* DLCImagePickerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DLCImagePickerController.m; sourceTree = "<group>"; };
@@ -713,7 +715,7 @@
 		18E746FD18AC704E0023967B /* EZBarRegion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZBarRegion.h; sourceTree = "<group>"; };
 		18E746FE18AC704E0023967B /* EZBarRegion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZBarRegion.m; sourceTree = "<group>"; };
 		18F58B48186D5F9C006CB966 /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
-		18F58B4C186D8824006CB966 /* shot.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = shot.wav; sourceTree = "<group>"; };
+		18F58B4C186D8824006CB966 /* shot2.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = shot2.wav; sourceTree = "<group>"; };
 		18F58B50186EC0D1006CB966 /* ILTranslucentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ILTranslucentView.h; sourceTree = "<group>"; };
 		18F58B51186EC0D1006CB966 /* ILTranslucentView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ILTranslucentView.m; sourceTree = "<group>"; };
 		18F58B55187130E0006CB966 /* UIView+Shadow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+Shadow.h"; sourceTree = "<group>"; };
@@ -960,7 +962,8 @@
 		18C0E7691861A07200D694CE /* sound_effects */ = {
 			isa = PBXGroup;
 			children = (
-				18F58B4C186D8824006CB966 /* shot.wav */,
+				1879BE321915DD650084FB27 /* shot_new.wav */,
+				18F58B4C186D8824006CB966 /* shot2.wav */,
 				18512A321861BE6300282264 /* shot_voice.aiff */,
 				18C0E76A1861A08700D694CE /* page_turn.aiff */,
 			);
@@ -1523,7 +1526,7 @@
 			files = (
 				18E3481E183F02D600C9D89D /* haarcascade_mcs_leftear.xml in Resources */,
 				18A3702A1855C2A40022F0A8 /* flash.png in Resources */,
-				18F58B4D186D8824006CB966 /* shot.wav in Resources */,
+				18F58B4D186D8824006CB966 /* shot2.wav in Resources */,
 				18A370211855C2A40022F0A8 /* close@2x.png in Resources */,
 				18A3702F1855C2A40022F0A8 /* camera-button@2x.png in Resources */,
 				18A3701D1855C2A40022F0A8 /* library.png in Resources */,
@@ -1551,6 +1554,7 @@
 				1874D9DE18699386005743FC /* header_1.png in Resources */,
 				18A3701C1855C2A40022F0A8 /* library@2x.png in Resources */,
 				18A370321855C2A40022F0A8 /* filter-close.png in Resources */,
+				1879BE331915DD650084FB27 /* shot_new.wav in Resources */,
 				18F58B6E18719071006CB966 /* border_ceil.png in Resources */,
 				18E3481A183F02D600C9D89D /* haarcascade_lefteye_2splits.xml in Resources */,
 				18A370351855C2A40022F0A8 /* filter-open@2x.png in Resources */,
@@ -1859,8 +1863,8 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "Apple Development IOS Push Services: com.enjoyzhi.Feathers";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development IOS Push Services: com.enjoyzhi.Feathers";
+				CODE_SIGN_IDENTITY = "Apple Production IOS Push Services: com.enjoyzhi.FeathersApp";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Production IOS Push Services: com.enjoyzhi.FeathersApp";
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -1900,8 +1904,8 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "Apple Development IOS Push Services: com.enjoyzhi.Feathers";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development IOS Push Services: com.enjoyzhi.Feathers";
+				CODE_SIGN_IDENTITY = "Apple Production IOS Push Services: com.enjoyzhi.FeathersApp";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Production IOS Push Services: com.enjoyzhi.FeathersApp";
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;

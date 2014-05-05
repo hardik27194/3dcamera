@@ -42,6 +42,7 @@ static EZLRUMap* imageCaches;
 
 + (UIImage*) combineImages:(NSArray*)imgs size:(CGSize)size orientation:(UIImageOrientation)orientation;
 
++ (uint64_t) getFreeSpace;
 
 + (NSString*) saveImageToCacheWithName:(UIImage*)img filename:(NSString*)filename;
 + (NSString*) saveImageToCache:(UIImage*)img;

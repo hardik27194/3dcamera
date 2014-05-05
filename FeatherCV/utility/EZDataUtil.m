@@ -1851,7 +1851,7 @@
             ++_uploadingTasks;
             //bool haveConversation = photo.conversations.count;
             [[EZDataUtil getInstance] uploadPhotoInfo:@[photo] success:^(id info){
-                EZDEBUG(@"Update photo info:%@", info);
+                EZDEBUG(@"Update photo info:%@, date:%@", info, isoDateFormat(photo.createdTime));
                 NSString* photoID = [info objectAtIndex:0];
                 //photo.conversationUploaded = haveConversation;
                 EZDEBUG(@"Recieved photoID:%@, currnet photoID:%@", photoID, photo.photoID);
