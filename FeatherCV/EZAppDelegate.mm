@@ -372,7 +372,7 @@
             EZDEBUG(@"try to upload token");
             NSString* token = [[NSUserDefaults standardUserDefaults] stringForKey:DeviceTokenKey];
             if(token){
-                [[EZDataUtil getInstance] updatePerson:@{@"pushToken":token} success:^(id obj){
+                [[EZDataUtil getInstance] updatePerson:@{@"pushToken":token, @"prodFlag":EZProductFlag} success:^(id obj){
                     EZDEBUG(@"upload the token success:%@", currentLoginID);
                     [[NSUserDefaults standardUserDefaults] setBool:true forKey:EZTokenUploaded];
                 } failure:^(id err){

@@ -45,3 +45,5 @@
 "Complete" = "Complete";
 
 "PassCode" = "Sms authentication Code";
+
+"请求短信验证码" = "Request SMS Code";

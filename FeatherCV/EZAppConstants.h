@@ -139,19 +139,19 @@
 //If there are production user,
 //Then will send to production push server.
 //If not we will send to sandbox server
-#define EZProductFlag @"1"
+#define EZProductFlag @"0"
 
 //#define inviteMessageURL @"http://www.enjoyxue.com:8080/"
 
 //#define baseUploadURL @"http://172.13.0.127:8080/upload"
 //#define baseUploadURL @"http://10.0.1.6:8080/upload"
-//#define baseUploadURL @"http://www.enjoyxue.com:8080/upload"
-#define baseUploadURL @"http://192.168.1.101:8080/upload"
+#define baseUploadURL @"http://www.enjoyxue.com:8080/upload"
+//#define baseUploadURL @"http://192.168.1.101:8080/upload"
 
 //#define baseServiceURL @"http://172.13.0.127:8080/"
 //#define baseServiceURL @"http://10.0.1.6:8080/"
-//#define baseServiceURL @"http://www.enjoyxue.com:8080/"
-#define baseServiceURL @"http://192.168.1.101:8080/"
+#define baseServiceURL @"http://www.enjoyxue.com:8080/"
+//#define baseServiceURL @"http://192.168.1.101:8080/"
 
 #define EZButtonGreen RGBCOLOR(56, 216, 116)
 
