@@ -65,10 +65,10 @@
         //_inviteButton.text = @"邀请";
         //_inviteButton.textColor = [UIColor whiteColor];
         //_inviteButton.titleLabel.text = @"邀请";
-        [_inviteButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         [_inviteButton setTitleColor:ClickedColor forState:UIControlStateHighlighted];
+        [_inviteButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         [_inviteButton setTitle:@"邀请" forState:UIControlStateNormal];
-        [_inviteButton setTitle:@"邀请" forState:UIControlStateHighlighted];
+        //[_inviteButton setTitle:@"邀请" forState:UIControlStateHighlighted];
         [_inviteButton addTarget:self action:@selector(inviteClicked:) forControlEvents:UIControlEventTouchUpInside];
         //[_inviteButton enableShadow:[UIColor blackColor]];
                 //[_inviteButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
@@ -94,11 +94,11 @@
 
 - (void) inviteClicked:(id)obj
 {
-    dispatch_later(0.15, ^(){
+    //dispatch_later(0.1, ^(){
     if(_inviteClicked){
         _inviteClicked(self);
     }
-    });
+    //});
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated

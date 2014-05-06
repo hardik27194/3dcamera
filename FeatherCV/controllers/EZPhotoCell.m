@@ -75,7 +75,7 @@
         [_otherSliverLine enableRoundImage];
         //[self.container addSubview:_otherSliverLine];
         
-        _otherIcon = [[EZEnlargedView alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 300 - startPos, smallIconRadius, smallIconRadius) enlargeRatio:EZEnlargeIconRatio];
+        _otherIcon = [[EZEnlargedView alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 305 - startPos, smallIconRadius, smallIconRadius) enlargeRatio:EZEnlargeIconRatio];
         //_otherIcon.backgroundColor = randBack(nil);
         [_otherIcon enableRoundImage];
         [_otherIcon enableTouchEffects];
@@ -86,17 +86,19 @@
         //_otherIcon.layer.borderWidth = 1.0;
         
         
-        _otherName = [[UILabel alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 265 - startPos, 300, 30)];
+        _otherName = [[UILabel alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 270 - startPos, 300, 30)];
         [_otherName setTextColor:[UIColor whiteColor]];
         _otherName.font = [UIFont boldSystemFontOfSize:13];
         //[_otherName enableShadow:[UIColor blackColor]];
         [self.container addSubview:_otherName];
         
-        _otherTalk = [[UILabel alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 250 - startPos, 300, 30)];
+        _otherTalk = [[UILabel alloc] initWithFrame:CGRectMake(7, CurrentScreenHeight - 245 - startPos, 300, 19)];
         [_otherTalk setTextColor:[UIColor whiteColor]];
         _otherTalk.font = [UIFont systemFontOfSize:13];
         //[_otherTalk enableShadow:[UIColor blackColor]];
         [_otherTalk enableTextWrap];
+        _otherTalk.textAlignment = NSTextAlignmentCenter;
+        _otherTalk.layer.cornerRadius = 4;
         [self.container addSubview:_otherTalk];
 
         _andSymbol = [[UILabel alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 225 - startPos, 20, 20)];
@@ -126,11 +128,13 @@
         [self.container addSubview:_authorName];
 
         
-        _ownTalk = [[UILabel alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 148 - startPos, 300, 30)];
+        _ownTalk = [[UILabel alloc] initWithFrame:CGRectMake(7, CurrentScreenHeight - 138 - startPos, 300, 19)];
         [_ownTalk setTextColor:[UIColor whiteColor]];
         _ownTalk.font = [UIFont systemFontOfSize:13];
         [_ownTalk enableShadow:[UIColor blackColor]];
+        _ownTalk.textAlignment = NSTextAlignmentCenter;
         [_ownTalk enableTextWrap];
+        _ownTalk.layer.cornerRadius = 4;
         [self.container addSubview:_ownTalk];
         
         _likeButton = [[EZClickView alloc] initWithFrame:CGRectMake(255, CurrentScreenHeight - 105, 45,45)]; //[[EZCenterButton alloc] initWithFrame:CGRectMake(255, 23, 60,60) cycleRadius:21 lineWidth:2];
@@ -240,16 +244,16 @@
 
 - (void) setFrontFormat:(BOOL)front
 {
-    CGFloat otherAlpha = 1.0;
+    CGFloat otherAlpha = 0.48;
     CGFloat ownAlpha = 1.0;
-    UIColor* otherColor = ClickedColor;
-    UIColor* ownColor = [UIColor whiteColor];
+    UIColor* otherColor = [UIColor clearColor];
+    UIColor* ownColor = ClickedColor;
     ;
     if(!front){
-        //otherAlpha = 1.0;
-        //ownAlpha = 0.6;
-        otherColor = [UIColor whiteColor];
-        ownColor = ClickedColor;
+        otherAlpha = 1.0;
+        ownAlpha = 0.48;
+        otherColor = ClickedColor;
+        ownColor = [UIColor clearColor];
         [_ownTalk disableShadow];
         [_authorName disableShadow];
         [_headIcon disableShadow];
@@ -267,13 +271,30 @@
         [_frontImage setFront:YES];
     }
     
-    //_otherIcon.alpha = otherAlpha;
-    //_otherName.alpha = otherAlpha;
-    //_otherTalk.alpha = otherAlpha;
-    _otherName.textColor = otherColor;
-    _authorName.textColor = ownColor;
-    //_ownTalk.alpha = ownAlpha;
-    //_authorName.alpha = ownAlpha;
+    _otherIcon.alpha = otherAlpha;
+    _otherName.alpha = otherAlpha;
+    _otherTalk.alpha = otherAlpha;
+
+    _ownTalk.alpha = ownAlpha;
+    _authorName.alpha = ownAlpha;
+    _headIcon.alpha = ownAlpha;
+    
+    if([_otherTalk.text isNotEmpty]){
+        CGSize actualSize = [_otherTalk sizeThatFits:CGSizeMake(200, _otherTalk.height)];
+        _otherTalk.width = actualSize.width + 6;
+        _otherTalk.backgroundColor = otherColor;
+        
+    }else{
+        _otherTalk.backgroundColor = [UIColor clearColor];
+    }
+    
+    if([_ownTalk.text isNotEmpty]){
+        CGSize actualSize = [_ownTalk sizeThatFits:CGSizeMake(200, _ownTalk.height)];
+        _ownTalk.width = actualSize.width + 6;
+        _ownTalk.backgroundColor = ownColor;
+    }else{
+        _ownTalk.backgroundColor = [UIColor clearColor];
+    }
     //_headIcon.alpha = ownAlpha;
 }
 

@@ -139,6 +139,8 @@ static int photoCount = 1;
     cell.waitingInfo.hidden = YES;
     cell.shotPhoto.hidden = YES;
     cell.gradientView.hidden = NO;
+    //cell.otherTalk.backgroundColor = [UIColor clearColor];
+    //cell.ownTalk.backgroundColor = [UIColor clearColor];
     
     if(cp.isPlaceHolder){
         cell.andSymbol.hidden = YES;
@@ -203,6 +205,7 @@ static int photoCount = 1;
         weakCell.frontImage.pageControl.currentPage = posNum.intValue;
         weakCell.otherTalk.text = [backPt getConversation];
         pid2personCall(backPt.personID, otherBlock);
+        [weakCell setFrontFormat:false];
     };
     
     /**
@@ -226,6 +229,7 @@ static int photoCount = 1;
      **/
     
     EZDEBUG(@"Will display front image type:%i", myPhoto.typeUI);
+    [self displayChat:cell ownerPhoto:myPhoto otherPhoto:switchPhoto];
     if(cp.isFront){
         [cell setFrontFormat:true];
         //cell.authorName.textColor = [UIColor whiteColor];
@@ -365,7 +369,7 @@ static int photoCount = 1;
             }];
         }
     };
-    [self displayChat:cell ownerPhoto:myPhoto otherPhoto:switchPhoto];
+    
     
     //__block NSString* staticFile = nil;
     cell.frontImage.tappedBlock = ^(id obj){
@@ -1983,9 +1987,13 @@ static int photoCount = 1;
         }
         [_combinedPhotos addObject:disPhoto];
                 //[_nonsplitted addObject:note.srcPhoto];
-        [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:_combinedPhotos.count - 1 inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
-        if(triggerByNotes){
-            [weakSelf scrollToBottom:NO];
+        if(_combinedPhotos.count){
+            [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:_combinedPhotos.count - 1 inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
+            if(triggerByNotes){
+                [weakSelf scrollToBottom:NO];
+            }
+        }else{
+            [self.tableView reloadData];
         }
         return;
         

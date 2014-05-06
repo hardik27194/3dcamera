@@ -2824,7 +2824,7 @@ context:(void *)context
                 [[EZMessageCenter getInstance]postEvent:EZTakePicture attached:_disPhoto];
             }];
         }else{
-            [weakSelf showErrorInfo:macroControlInfo(@"Network not available")];
+            //[weakSelf showErrorInfo:macroControlInfo(@"Network not available")];
             [[EZMessageCenter getInstance]postEvent:EZTakePicture attached:weakSelf.disPhoto];
             dispatch_later(0.8,
                            ^(){
@@ -2845,7 +2845,7 @@ context:(void *)context
         weakSelf.progressView.hidden = YES;
         //[[EZUIUtility sharedEZUIUtility] raiseInfoWindow:@"上传失败" info:@"羽毛正在重试"];
         //[weakSelf changePhoto];
-        [weakSelf showErrorInfo:macroControlInfo(@"Network not available")];
+        //[weakSelf showErrorInfo:macroControlInfo(@"Network not available")];
         //[weakSelf addChatInfo:weakSelf.shotPhoto];
         dispatch_later(1.0, ^(){
             [weakSelf innerCancel:YES];
@@ -2938,7 +2938,7 @@ context:(void *)context
                 [weakSelf innerCancel:YES];
             }];
         }else{
-            [weakSelf showErrorInfo:macroControlInfo(@"Network not available")];
+            //[weakSelf showErrorInfo:macroControlInfo(@"Network not available")];
             dispatch_later(0.8,
             ^(){
                 [weakSelf innerCancel:YES];

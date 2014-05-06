@@ -130,7 +130,7 @@
 
 #define EZPositionHold @"EZPositionHold"
 
-#define EZPurposeInfo @"按下快门\n捕获他(她)的照片。"
+#define EZPurposeInfo macroControlInfo(@"按下快门\n捕获他(她)的照片。")
 
 #define miniDiskSpace  500000
 
@@ -139,7 +139,7 @@
 //If there are production user,
 //Then will send to production push server.
 //If not we will send to sandbox server
-#define EZProductFlag @"0"
+#define EZProductFlag @"1"
 
 //#define inviteMessageURL @"http://www.enjoyxue.com:8080/"
 
@@ -227,6 +227,10 @@
 #define EZALContactPage @"EZALContactPage"
 
 #define EZALCameraShot @"EZALCameraShot"
+
+#define EZInviteFriend @"EZInviteFriend"
+
+#define EZInviteFriend @"EZInviteFriendResult"
 
 #define EZAlbumImageUpdate @"EZAlbumImageUpdate"
 

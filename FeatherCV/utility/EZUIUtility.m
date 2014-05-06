@@ -13,6 +13,7 @@
 #import <MessageUI/MessageUI.h>
 #import "EZClickImage.h"
 #import "EZHairButton.h"
+#import "EZDataUtil.h"
 
 #define ColorTransparent 80
 @implementation EZUIUtility
@@ -56,19 +57,27 @@ SINGLETON_FOR_CLASS(EZUIUtility)
 
 - (void) sendMessge:(NSString *)phone content:(NSString *)content presenter:(UIViewController*)presenter completed:(EZEventBlock)completed
 {
+    
+    //dispatch_later(0.15, (^(){
+        [MobClick event:EZInviteFriend label:currentLoginID];
     MFMessageComposeViewController *controller = [[MFMessageComposeViewController alloc] init];
     if([MFMessageComposeViewController canSendText])
     {
+        
         _messageCompletion = completed;
         controller.body = content;
         controller.recipients = [NSArray arrayWithObjects:phone, nil];
         controller.messageComposeDelegate = self;
         [presenter presentViewController:controller animated:YES completion:nil];
     }
+    //}));
 }
+                   
 
 - (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result
 {
+    
+    [MobClick event:EZInviteFriend label:[NSString stringWithFormat:@"%@,%i", currentLoginID, result]];
     EZDEBUG(@"Finish message compose:%i", result);
     [controller dismissViewControllerAnimated:YES completion:nil];
     if(_completed){

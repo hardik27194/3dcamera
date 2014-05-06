@@ -14,7 +14,7 @@
 "Cancel-Text" = "Cancel";
 "Self shot cancelled" = "Self shot cancelled";
 
-"%@, this app is cool" = "%@, this app is cool";
+"%@, this app is cool" = "%@, this app is cool, join us http://www.enjoyxue.com:8080/store";
 
 "Sign up" = "Sign up";
 
@@ -47,3 +47,7 @@
 "PassCode" = "Sms authentication Code";
 
 "请求短信验证码" = "Request SMS Code";
+
+"按下快门\n捕获他(她)的照片。" = "Click the Shoot button\nCapture the photo from him(her)";
+
+"Login failure" = "Login failure";

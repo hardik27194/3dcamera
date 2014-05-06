@@ -102,7 +102,7 @@
     }else if(photos.count > 1){
         _pageControl.width = 24;
     }else{
-        _pageControl.width = 12;
+        _pageControl.width = 6;
     }
     _photos = photos;
     _scrollView.contentSize = CGSizeMake(CurrentScreenWidth*count, CurrentScreenHeight);

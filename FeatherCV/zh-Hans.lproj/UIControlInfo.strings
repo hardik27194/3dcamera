@@ -13,7 +13,7 @@
 "Say something" = "说几句......";
 "Cancel-Text" = "取消";
 "Self shot cancelled" = "自拍已取消";
-"%@, this app is cool" = "%@, 我正在玩羽毛相机，你也来试试";
+"%@, this app is cool" = "%@, 我正在玩羽毛相机，你也来试试, http://www.enjoyxue.com:8080/store";
 "Register" = "注册";
 "Login" = "登录";
 
@@ -48,3 +48,10 @@
 "Complete" = "完成";
 
 "PassCode" = "短信验证码";
+
+"Login failure" = "登录失败";
+
+"发送" =  "发送";
+"回复" = "回复";
+
+"按下快门\n捕获他(她)的照片。" = "按下快门\n捕获他(她)的照片。";
