@@ -28,6 +28,8 @@
 
 @property (nonatomic, strong) EZEventBlock scrollBlock;
 
+@property (nonatomic, strong) EZEventBlock scrollBeginBlock;
+
 @property (nonatomic, assign) BOOL isFront;
 
 //@property (nonatomic, assign) BOOL isSingle;

@@ -142,6 +142,8 @@
 
 @property (nonatomic, strong) EZClickImage* shotPhoto;
 
+//@property (nonatomic, strong) UIPageControl* pageControl;
+
 
 @property (nonatomic, strong) UIView* firstTimeView;
 //@property (nonatomic, strong) EZChatUnit* chatUnit;

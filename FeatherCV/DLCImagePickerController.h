@@ -17,6 +17,7 @@
 
 @class EZClickImage;
 @class EZHairButton;
+@class EZShapeButton;
 
 typedef enum {
     kNormalMode,
@@ -123,7 +124,7 @@ typedef enum {
 
 @property (nonatomic, strong) EZEventBlock quitBlock;
 @property (nonatomic, strong) UIButton *cancelButton;
-@property (nonatomic, strong) UIButton *configButton;
+@property (nonatomic, strong) EZShapeButton *configButton;
 
 @property (nonatomic, weak) IBOutlet UIButton *cameraToggleButton;
 @property (nonatomic, weak) IBOutlet UIButton *blurToggleButton;

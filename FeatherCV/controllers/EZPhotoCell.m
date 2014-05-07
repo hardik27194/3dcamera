@@ -99,6 +99,7 @@
         [_otherTalk enableTextWrap];
         _otherTalk.textAlignment = NSTextAlignmentCenter;
         _otherTalk.layer.cornerRadius = 4;
+        _otherTalk.clipsToBounds = true;
         [self.container addSubview:_otherTalk];
 
         _andSymbol = [[UILabel alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 225 - startPos, 20, 20)];
@@ -135,6 +136,7 @@
         _ownTalk.textAlignment = NSTextAlignmentCenter;
         [_ownTalk enableTextWrap];
         _ownTalk.layer.cornerRadius = 4;
+        _ownTalk.clipsToBounds = true;
         [self.container addSubview:_ownTalk];
         
         _likeButton = [[EZClickView alloc] initWithFrame:CGRectMake(255, CurrentScreenHeight - 105, 45,45)]; //[[EZCenterButton alloc] initWithFrame:CGRectMake(255, 23, 60,60) cycleRadius:21 lineWidth:2];
@@ -212,6 +214,7 @@
         //_firstTimeView = [[EZUIUtility sharedEZUIUtility] createNumberLabel];
         //[_firstTimeView setPosition:CGPointMake(30, 70)];
         //[self.contentView addSubview:_firstTimeView];
+        [self.contentView addSubview:_frontImage.pageControl];
         [self.contentView addSubview:_moreButton];
         //weakCell.activityView = ai;
 
@@ -261,6 +264,7 @@
         [_otherTalk enableShadow:[UIColor blackColor]];
         [_otherName enableShadow:[UIColor blackColor]];
         [_frontImage setFront:NO];
+        //_frontImage.pageControl.hidden = NO;
     }else{
         [_otherName disableShadow];
         [_otherTalk disableShadow];

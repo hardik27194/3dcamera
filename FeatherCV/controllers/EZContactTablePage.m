@@ -333,13 +333,15 @@
     //cell.headIcon.backgroundColor = randBack(nil);
     
     cell.clickRegion.releasedBlock = ^(id object){
-        EZDEBUG(@"region clicked");
+        //EZDEBUG(@"region clicked");
         //[[EZMessageCenter getInstance]postEvent:EZScreenSlide attached:@(1)];
         EZPerson* person = [weakSelf.contacts objectAtIndex:indexPath.row];
-        EZDEBUG(@"Person name:%@, %@", person.name, person.personID);
+        //EZDEBUG(@"Person name:%@, %@", person.name, person.personID);
         if(person.joined){
             [weakSelf.navigationController popViewControllerAnimated:YES];
             [[EZMessageCenter getInstance] postEvent:EZSetAlbumUser attached:person];
+        }else{
+            [[EZUIUtility sharedEZUIUtility] sendMessge:person.mobile content:[NSString stringWithFormat: macroControlInfo(@"%@, this app is cool"), person.name] presenter:weakSelf completed:nil];
         }
     };
     if(person.joined){

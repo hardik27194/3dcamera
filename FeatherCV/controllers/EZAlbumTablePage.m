@@ -139,21 +139,31 @@ static int photoCount = 1;
     cell.waitingInfo.hidden = YES;
     cell.shotPhoto.hidden = YES;
     cell.gradientView.hidden = NO;
+    cell.moreButton.hidden = NO;
+    cell.frontImage.pageControl.hidden = YES;
+    cell.requestInfo.hidden = YES;
     //cell.otherTalk.backgroundColor = [UIColor clearColor];
     //cell.ownTalk.backgroundColor = [UIColor clearColor];
-    
     if(cp.isPlaceHolder){
         cell.andSymbol.hidden = YES;
-        cell.frontImage.pageControl.hidden = YES;
+        //cell.frontImage.pageControl.hidden = YES;
         cell.gradientView.hidden = YES;
+        cell.moreButton.hidden = YES;
+        
     }
     else{
-        if(cp.photo.isPair){
+        if(cp.photo.isPair || cp.isFront){
             cell.andSymbol.hidden = NO;
-            cell.frontImage.pageControl.hidden = YES;
-        }else{
+            //cell.frontImage.pageControl.hidden = YES;
+        }else if(cp.isFront){
             cell.andSymbol.hidden = YES;
-            cell.frontImage.pageControl.hidden = NO;
+            //cell.frontImage.pageControl.hidden = YES;
+        }
+        else{
+            cell.andSymbol.hidden = YES;
+            if(cp.photo.photoRelations.count > 1){
+                cell.frontImage.pageControl.hidden = NO;
+            }
         }
         [cell.frontImage setPhotos:cp.photo.photoRelations position:cp.photoPos];
     }
@@ -170,7 +180,7 @@ static int photoCount = 1;
         cp.photo.photoRelations = nil;
     EZPhoto* switchPhoto = [cp.photo.photoRelations objectAtIndex:cp.photoPos];
     EZDEBUG(@"pos2");
-    cell.photoDate.text = formatRelativeTime(myPhoto.createdTime);
+    //cell.photoDate.text = formatRelativeTime(myPhoto.createdTime);
     // Configure the cell...
     //[cell displayImage:[myPhoto getLocalImage]];
     [[cell viewWithTag:animateCoverViewTag] removeFromSuperview];
@@ -198,14 +208,39 @@ static int photoCount = 1;
     
     
     cell.frontImage.scrollBlock = ^(NSNumber* posNum){
-        EZDEBUG(@"scroll position:%i", posNum.intValue);
+        //EZDEBUG(@"scroll position:%i", posNum.intValue);
         cp.photoPos = posNum.integerValue;
         EZPhoto* backPt = [cp.photo.photoRelations objectAtIndex:cp.photoPos];
         [weakSelf loadImage:weakCell url:backPt.screenURL retry:0 path:indexPath position:cp.photoPos];
         weakCell.frontImage.pageControl.currentPage = posNum.intValue;
         weakCell.otherTalk.text = [backPt getConversation];
+        if(![weakCell.otherTalk.text isNotEmpty]){
+            weakCell.otherTalk.text =formatRelativeTime(backPt.createdTime);
+        }
         pid2personCall(backPt.personID, otherBlock);
         [weakCell setFrontFormat:false];
+    };
+    
+    cell.frontImage.scrollBeginBlock = ^(NSNumber* posNum){
+        if(cp.isFront){
+            return;
+        }
+        EZDEBUG(@"scroll begin:%i", posNum.integerValue);
+        int minus = posNum.integerValue - 1;
+        int plus = posNum.integerValue + 1;
+        if(minus >= 0){
+            EZPhoto* backPt = [cp.photo.photoRelations objectAtIndex:minus];
+            //[weakSelf loadImage:weakCell url:backPt.screenURL retry:0 path:indexPath position:minus];
+            UIImageView* imageView = [weakCell.frontImage.imageViews objectAtIndex:minus];
+            [imageView loadImageURL:backPt.screenURL haveThumb:YES loading:NO];
+        }
+        
+        if(plus < cp.photo.photoRelations.count){
+            EZPhoto* backPt = [cp.photo.photoRelations objectAtIndex:plus];
+            //[weakSelf loadImage:weakCell url:backPt.screenURL retry:0 path:indexPath position:plus];
+             UIImageView* imageView = [weakCell.frontImage.imageViews objectAtIndex:plus];
+            [imageView loadImageURL:backPt.screenURL haveThumb:YES loading:NO];
+        }
     };
     
     /**
@@ -242,6 +277,7 @@ static int photoCount = 1;
             cell.cameraView.hidden = NO;
             cell.gradientView.hidden = YES;
             EZEventBlock personGet = ^(EZPerson* ps){
+                weakCell.requestInfo.hidden = NO;
                 weakCell.requestInfo.text =[NSString stringWithFormat:@"\"%@\"发来的照片", ps.name];
             };
             EZPerson* otherPerson = pid2personCall(switchPhoto.personID, personGet);
@@ -518,7 +554,7 @@ static int photoCount = 1;
                     [[EZMessageCenter getInstance] postEvent:EZNoteCountChange attached:nil];
                 }
             } failure:^(id err){
-                [[EZUIUtility sharedEZUIUtility] raiseInfoWindow:@"删除失败" info:@"请稍后重试"];
+                [[EZUIUtility sharedEZUIUtility] raiseInfoWindow:macroControlInfo(@"删除失败") info:macroControlInfo(@"请稍后重试")];
                 [weakCell.activityView stopAnimating];
                 weakCell.activityView.hidden = YES;
             }];
@@ -1883,13 +1919,19 @@ static int photoCount = 1;
         disPhoto.isFront = NO;
         disPhoto.photo.photoRelations = @[note.matchedPhoto];
         disPhoto.isFirstTime = YES;
+        //disPhoto.photo.createdTime = note.createdTime;//note.srcPhoto.createdTime;
         [[EZDataUtil getInstance] storeAllPhotos:@[disPhoto.photo]];
-        if(triggerByNote){
+        //if(triggerByNote){
             //EZPerson* ps = pid2person(note.matchedPhoto.personID);
+            //NSIndexPath* visible = [[weakSelf.tableView visibleCells] objectAtIndex:0];
+        
+        if(triggerByNote){
             [self setCurrentUser:currentLoginUser readyBlock:^(id obj){
                 [weakSelf.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:pos inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
             }];
         }
+        
+        //}
         return;
     }
     
@@ -1910,7 +1952,8 @@ static int photoCount = 1;
     //[_combinedPhotos addObject:disPhoto];
     //preloadimage(note.matchedPhoto.screenURL);
     //[[EZDataUtil getInstance] preloadImage:note.matchedPhoto.screenURL success:^(id sender) {
-    if(triggerByNote){
+    NSIndexPath* visible = [[weakSelf.tableView indexPathsForVisibleRows] objectAtIndex:0];
+    if(triggerByNote || visible.row == pos){
         [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:pos  inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
     }
     //} failed:^(id obj){}];
@@ -2732,14 +2775,20 @@ static int photoCount = 1;
         NSDictionary* conversation = [ownp.conversations objectAtIndex:0];
         cell.ownTalk.text = [conversation objectForKey:@"text"];
     }else{
-        cell.ownTalk.text = @"";
+        //cell.ownTalk.text = @"";
+        cell.ownTalk.text = formatRelativeTime(ownp.createdTime);
     }
     
     if(otherp.conversations.count){
         NSDictionary* conversation = [otherp.conversations objectAtIndex:0];
         cell.otherTalk.text = [conversation objectForKey:@"text"];
     }else{
-        cell.otherTalk.text = @"";
+        //cell.otherTalk.text = @"";
+        if(otherp.typeUI){
+            cell.otherTalk.text = @"";
+        }else{
+            cell.otherTalk.text =formatRelativeTime(otherp.createdTime);
+        }
     }
 }
 

@@ -1348,6 +1348,7 @@
         ps.isQuerying = true;
         [_currentQueryUsers setObject:ps forKey:personID];
     }
+    EZDEBUG(@"person querying is:%i, personID:%@", ps.isQuerying, personID);
     if(ps.isQuerying){
         [_pendingUserQuery addObject:personID];
         NSMutableArray* queryCalls = [_pendingPersonCall objectForKey:personID];

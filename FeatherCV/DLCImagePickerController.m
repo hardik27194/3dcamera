@@ -52,6 +52,7 @@
 #import "EZUpArrow.h"
 #import "EZEnlargedView.h"
 #import "EZPhotoCell.h"
+#import "EZShapeButton.h"
 
 
 //#include <vector>
@@ -225,8 +226,12 @@
     return res;
 }
 
-
 -(void) prepareStaticFilter:(EZFaceResultObj*)fobj image:(UIImage*)img{
+    [staticPicture addTarget:filter];
+    [filter addTarget:self.imageView];
+}
+
+-(void) prepareStaticFilterOld:(EZFaceResultObj*)fobj image:(UIImage*)img{
     _detectFace = false;
     
     CGFloat dark = 100;//[self getISOSpeedRating];
@@ -471,6 +476,9 @@
 {
     [[EZDataUtil getInstance] exchangeWithPerson:_personID photoID:_shotPhoto.photoID success:^(EZPhoto* pt){
         EZDEBUG("Find prematched photo:%@, srcID:%@, uploaded flag:%i", pt.screenURL, pt.srcPhotoID, pt.uploaded);
+        if(_personID){
+            pt.createdTime = [NSDate date];
+        }
         //Mean this user get used once, will adjust it's sequence
         [[EZDataUtil getInstance] adjustActivity:pt.personID];
         //UIImageView* uw = [UIImageView new];
@@ -779,7 +787,7 @@
 {
     [self.photoCaptureButton setTitleColor:RGBCOLOR(43, 43, 43) forState:UIControlStateNormal];
     [self.cancelButton setTitleColor:RGBCOLOR(43, 43, 43) forState:UIControlStateNormal];
-    [self.configButton setTitleColor:RGBCOLOR(43, 43, 43) forState:UIControlStateNormal];
+    //[self.configButton setTitleColor:RGBCOLOR(43, 43, 43) forState:UIControlStateNormal];
 }
 
 
@@ -1358,10 +1366,13 @@ context:(void *)context
     //cancelButton.center = CGPointMake(5+30, 80 - 35);
     //cancelButton.hidden = NO;
     
-    _configButton = [[UIButton alloc] initWithFrame:CGRectMake(320 - 60 - 5, bound.size.height - 44 - 10, 60, 44)];
-    [_configButton setTitle:@"设置" forState:UIControlStateNormal];
-    [_configButton addTarget:self action:@selector(configClicked:) forControlEvents:UIControlEventTouchUpInside];
-    _configButton.center = CGPointMake(315 - 30 - 5, 80 - 35);
+    _configButton = [[EZShapeButton alloc] initWithFrame:CGRectMake(320 - 60 - 5, bound.size.height - 44 - 10, 60, 44)];
+    //[_configButton setTitle:@"设置" forState:UIControlStateNormal];
+    //[_configButton addTarget:self action:@selector(configClicked:) forControlEvents:UIControlEventTouchUpInside];
+    _configButton.pressedBlock = ^(id obj){
+        [weakSelf configClicked:nil];
+    };
+    _configButton.center = CGPointMake(315 - 30 - 5, 80 - 40);
     
     _toolBarRegion = [[UIView alloc] initWithFrame:CGRectMake(0, bound.size.height - 80, 320, 80)];
     _toolBarRegion.backgroundColor = [UIColor clearColor];//[UIColor blackColor];
@@ -1877,10 +1888,13 @@ context:(void *)context
     
     [tongFilter setRgbCompositeControlPoints:liveTongSetting];
     [stillCamera addTarget:orgFiler];
+    /**
     [orgFiler addTarget:redEnhanceFilter];
     [redEnhanceFilter addTarget:hueFilter];
     [hueFilter addTarget:tongFilter];
     [tongFilter addTarget:filter];
+    **/
+    [orgFiler addTarget:filter];
     [filter addTarget:self.imageView];
     EZDEBUG(@"complete prepare live");
     [filter prepareForImageCapture];
@@ -3131,6 +3145,7 @@ context:(void *)context
                 if(!_isPhotoRequest){
                     [self confirmUpload:progressStart];
                 }else{
+                    _shotPhoto.createdTime = [NSDate date];
                     [self confirmPhotoRequest:progressStart];
                 }
             }
@@ -3377,7 +3392,7 @@ context:(void *)context
         [self.cancelButton setTitle:@"重拍" forState:UIControlStateNormal];
         [_upperCancel setTitle:@"重拍" forState:UIControlStateNormal];
         //[self.photoCaptureButton setTitle:@"保存" forState:UIControlStateNormal];
-        [self.configButton setTitle:@"保存" forState:UIControlStateNormal];
+        //[self.configButton setTitle:@"保存" forState:UIControlStateNormal];
         [self.photoCaptureButton setEnabled:YES];
         self.configButton.hidden = YES;
     }else{
@@ -3386,7 +3401,7 @@ context:(void *)context
         //self.cancelButton.hidden = TRUE;
         //[self.photoCaptureButton setTitle:@"按这里拍摄" forState:UIControlStateNormal];
         //self.configButton.hidden = NO;
-        [self.configButton setTitle:@"设置" forState:UIControlStateNormal];
+        //[self.configButton setTitle:@"设置" forState:UIControlStateNormal];
         [self.photoCaptureButton setEnabled:YES];
         self.configButton.hidden = NO;
     }

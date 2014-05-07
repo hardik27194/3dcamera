@@ -39,7 +39,7 @@
     [self addGestureRecognizer:tap];
     [self addGestureRecognizer:longPress];
     [self addSubview:_scrollView];
-    [self addSubview:_pageControl];
+    //[self addSubview:_pageControl];
     return self;
 }
 
@@ -158,6 +158,15 @@
     }
 }
 
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
+{
+    NSInteger pos = _scrollView.contentOffset.x / CurrentScreenWidth;
+    EZDEBUG(@"double position:%i", pos);
+    if(_scrollBeginBlock){
+        _scrollBeginBlock(@(pos));
+    }
+}
+
 - (void) setFront:(BOOL)front
 {
     _isFront = front;
@@ -166,12 +175,19 @@
         _scrollView.contentSize = CGSizeMake(CurrentScreenWidth, CurrentScreenHeight);
         EZDEBUG(@"_imageViews Count:%i, currentPos:%i", _imageViews.count, _currentPos);
         _imageView = [_imageViews objectAtIndex:0];
+        //if(!_imageViews.count){
+        _pageControl.hidden = YES;
+        //}
         //_pageControl.hidden = YES;
     }else{
         _scrollView.contentSize = CGSizeMake(CurrentScreenWidth * (_photos.count?_photos.count:1), CurrentScreenHeight);
         _scrollView.contentOffset = CGPointMake(CurrentScreenWidth * _currentPos, 0);
         _imageView = [_imageViews objectAtIndex:_currentPos];
         //_pageControl.hidden = NO;
+        //_pageControl.hidden = NO;
+        if(_imageViews.count > 1){
+            _pageControl.hidden = NO;
+        }
     }
 }
 

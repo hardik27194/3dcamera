@@ -55,12 +55,42 @@ SINGLETON_FOR_CLASS(EZUIUtility)
     return gradientView;
 }
 
+- (void) quitClicked:(id)obj
+{
+    EZDEBUG(@"quitClicked");
+    //[MobClick event:EZInviteFriend label:[NSString stringWithFormat:@"%@,quit", currentLoginID]];
+    if(_messageQuit){
+        _messageQuit(nil);
+        _messageQuit = nil;
+    }
+    
+}
+
 - (void) sendMessge:(NSString *)phone content:(NSString *)content presenter:(UIViewController*)presenter completed:(EZEventBlock)completed
 {
     
+    __weak EZUIUtility* weakSelf = self;
     //dispatch_later(0.15, (^(){
         [MobClick event:EZInviteFriend label:currentLoginID];
     MFMessageComposeViewController *controller = [[MFMessageComposeViewController alloc] init];
+    
+    UIView* brand = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, 64)];
+    brand.backgroundColor = [UIColor whiteColor];
+    UIButton* quitButton = [[UIButton alloc] initWithFrame:CGRectMake(CurrentScreenWidth - 50, 20, 44, 50)];
+    [quitButton setTitle:@"退出" forState:UIControlStateNormal];
+    [quitButton.titleLabel setFont:[UIFont systemFontOfSize:16]];
+    [quitButton setTitleColor:EZAppleBlue forState:UIControlStateNormal];
+    [quitButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
+    [brand addSubview:quitButton];
+    [quitButton addTarget:self action:@selector(quitClicked:) forControlEvents:UIControlEventTouchUpInside];
+    [controller.view addSubview:brand];
+    _messageQuit = ^(id obj){
+        [weakSelf messageComposeViewController:controller didFinishWithResult:0];
+    };
+    //[controller.view insertSubview:brand atIndex:0];
+    //controller.view.backgroundColor = [UIColor blueColor];
+    //UIBarButtonItem* barItem
+    //controller.navigationItem.rightBarButtonItem. = [UIColor redColor];
     if([MFMessageComposeViewController canSendText])
     {
         
@@ -69,6 +99,8 @@ SINGLETON_FOR_CLASS(EZUIUtility)
         controller.recipients = [NSArray arrayWithObjects:phone, nil];
         controller.messageComposeDelegate = self;
         [presenter presentViewController:controller animated:YES completion:nil];
+
+        controller.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:quitButton];
     }
     //}));
 }

@@ -104,6 +104,8 @@
 
 #define defaultDarkColor RGBCOLOR(40, 40, 40)
 
+#define EZAppleBlue RGBCOLOR(14, 143, 247)
+
 #define darkTextColor RGBCOLOR(80, 80, 80)
 
 #define lightTextColor  RGBCOLOR(140, 140, 140)
@@ -139,7 +141,7 @@
 //If there are production user,
 //Then will send to production push server.
 //If not we will send to sandbox server
-#define EZProductFlag @"1"
+#define EZProductFlag @"0"
 
 //#define inviteMessageURL @"http://www.enjoyxue.com:8080/"
 

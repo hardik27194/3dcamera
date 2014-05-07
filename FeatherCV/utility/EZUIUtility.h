@@ -30,6 +30,8 @@
 
 @property (nonatomic, strong) EZEventBlock messageCompletion;
 
+@property (nonatomic, strong) EZEventBlock messageQuit;
+
 @property (nonatomic, strong) NSMutableArray* showMenuItems;
 
 @property (nonatomic, weak) UIWindow* mainWindow;
