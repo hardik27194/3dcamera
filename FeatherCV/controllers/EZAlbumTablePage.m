@@ -110,7 +110,7 @@ static int photoCount = 1;
     EZPhotoCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
-    
+    [[cell.rotateContainer viewWithTag:2012] removeFromSuperview];
     EZDisplayPhoto* cp = nil;
     if(_combinedPhotos.count){
         cp = [_combinedPhotos objectAtIndex:indexPath.row];
@@ -626,37 +626,61 @@ static int photoCount = 1;
     }
     }
     **/
-    /**
+    EZDEBUG(@"Will decelerate:%i", decelerate);
+    _previousGap = fabsf(_scrollBeginPos - self.tableView.contentOffset.y);
+    
+    dispatch_later(0.05, ^(){
     if(_rotateCell){
-        CGFloat delta = fabsf(_scrollBeginPos - self.tableView.contentOffset.y)/CurrentScreenHeight;
-        EZDEBUG(@"end dragging delta:%f", delta);
+        CGFloat curentGap = fabsf(_scrollBeginPos - self.tableView.contentOffset.y);
+        CGFloat delta = curentGap/CurrentScreenHeight;
+        EZDEBUG(@"end dragging delta:%f, prevGap:%f, currentGap:%f", delta, _previousGap, curentGap);
+        EZPhotoCell* pcell = _rotateCell;
         if(delta > 0.5){
-            
             [UIView animateWithDuration:0.3 animations:^(){
                 //CGFloat delta = fabsf(_scrollBeginPos - self.tableView.contentOffset.y)/CurrentScreenHeight;
-                CATransform3D trans = CATransform3DRotate(CATransform3DIdentity, M_PI, 0.0, 1.0, 0.0);
-                trans.m34 = 1/3000.0;
-                _rotateCell.frontImage.layer.transform = trans;
+                //CATransform3D trans = CATransform3DRotate(CATransform3DIdentity, M_PI, 0.0, 1.0, 0.0);
+                //trans.m34 = 1/3000.0;
+                pcell.frontImage.layer.transform = CATransform3DIdentity;
             } completion:^(BOOL completion){
-                [[_rotateCell.frontImage viewWithTag:2012] removeFromSuperview];
+                [[pcell.rotateContainer viewWithTag:2012] removeFromSuperview];
+                //[[pcell.rotateContainer viewWithTag:2012] removeFromSuperview];
             }];
-        }else{
+        }else if(curentGap > _previousGap){
+            [UIView animateWithDuration:0.15 animations:^(){
+                //CGFloat delta = fabsf(_scrollBeginPos - self.tableView.contentOffset.y)/CurrentScreenHeight;
+                CATransform3D trans = CATransform3DRotate(CATransform3DIdentity, M_PI/2.0, 0.0, 1.0, 0.0);
+                trans.m34 = 1/3000.0;
+                //_rotateCell.frontImage.layer.transform = CATransform3DIdentity;
+                [pcell.rotateContainer viewWithTag:2012].layer.transform = trans;
+            } completion:^(BOOL completion){
+                [[pcell.rotateContainer viewWithTag:2012] removeFromSuperview];
+                //[[pcell.rotateContainer viewWithTag:2012] removeFromSuperview];
+                [UIView animateWithDuration:0.15 animations:^(){
+                    pcell.frontImage.layer.transform = CATransform3DIdentity;
+                } completion:^(BOOL completion){
+                }];
+            }];
+        }
+        else{
             EZDisplayPhoto* dp = [_combinedPhotos objectAtIndex:_rotateIndex.row];
             
             EZPhoto* backPhoto = nil;
             if(dp.photoPos < dp.photo.photoRelations.count){
                 backPhoto = [dp.photo.photoRelations objectAtIndex:dp.photoPos];
             }
-            [self switchImage:_rotateCell displayPhoto:dp front:dp.photo back:backPhoto animate:NO path:_rotateIndex position:dp.photoPos];
+            dp.isFront = false;
+            [self switchImage:pcell displayPhoto:dp front:dp.photo back:backPhoto animate:NO path:_rotateIndex position:dp.photoPos];
+            
             [UIView animateWithDuration:0.3 animations:^(){
-                _rotateCell.frontImage.layer.transform = CATransform3DIdentity;
+                [pcell.rotateContainer viewWithTag:2012].layer.transform = CATransform3DIdentity;
             } completion:^(BOOL finished) {
-                [[_rotateCell.frontImage viewWithTag:2012] removeFromSuperview];
+                pcell.frontImage.layer.transform = CATransform3DIdentity;
+                [[pcell.rotateContainer viewWithTag:2012] removeFromSuperview];
             }];
         }
         _rotateCell = nil;
-    }
-     **/
+    }});
+
 }
 
 
@@ -2097,8 +2121,16 @@ static int photoCount = 1;
    
     EZDisplayPhoto* disPhoto = [matchedArrs objectAtIndex:pos];
     EZPhoto* orgin = disPhoto.photo;
+    
+    for(EZPhoto* pt in orgin.photoRelations){
+        if([pt.photoID isEqualToString:note.matchedPhoto.photoID]){
+            EZDEBUG(@"photo id already existed");
+            return;
+        }
+    }
     NSMutableArray* ma = [[NSMutableArray alloc] initWithArray:orgin.photoRelations];
     [ma addObject:note.matchedPhoto];
+    
     orgin.photoRelations = ma;
     [[EZDataUtil getInstance] storeAllPhotos:@[orgin]];
  
@@ -2940,10 +2972,6 @@ static int photoCount = 1;
             [snapShot removeFromSuperview];
             EZPerson* person = pid2person(photo.personID);
             EZDEBUG(@"person id:%@, name:%@", photo.personID, person.name);
-            //[self setChatInfo:weakCell displayPhoto:photo person:person];
-            //[weakCell.headIcon setImageWithURL:str2url(person.avatar)];
-            //weakCell.authorName.text = person.name;
-            //EZDEBUG(@"rotation completed:%i", (int)[snapShot superview]);
         }];}
        );
     }else{
@@ -2993,7 +3021,7 @@ static int photoCount = 1;
     _innerFirstTime = false;
     
     //int pos = self.tableView.contentOffset.y / CurrentScreenHeight;
-    /**
+    
     NSIndexPath* visiblePath = [self.tableView.indexPathsForVisibleRows objectAtIndex:0];
     if(visiblePath.row < _combinedPhotos.count){
         EZDisplayPhoto* dp = [_combinedPhotos objectAtIndex:visiblePath.row];
@@ -3003,15 +3031,20 @@ static int photoCount = 1;
             _rotateCell = (EZPhotoCell*)[self.tableView cellForRowAtIndexPath:visiblePath];
             UIView* snapShot = [_rotateCell.frontImage snapshotViewAfterScreenUpdates:NO];
             snapShot.tag = 2012;
+            snapShot.layer.zPosition = 3000;
             [_rotateCell.rotateContainer addSubview:snapShot];
             EZPhoto* backPhoto = nil;
             if(dp.photo.photoRelations.count > dp.photoPos){
                 backPhoto = [dp.photo.photoRelations objectAtIndex:dp.photoPos];
             }
             [self switchImage:_rotateCell displayPhoto:dp front:dp.photo back:backPhoto animate:NO path:visiblePath position:dp.photoPos];
+            
+            //CGFloat delta = fabsf(_scrollBeginPos - self.tableView.contentOffset.y)/CurrentScreenHeight;
+            CATransform3D trans = CATransform3DRotate(CATransform3DIdentity, M_PI/2.0, 0.0, 1.0, 0.0);
+            trans.m34 = 1/3000.0;
+            _rotateCell.frontImage.layer.transform = trans;
         }
     }
-    **/
 }
 
 
@@ -3028,12 +3061,18 @@ static int photoCount = 1;
         trans.m34 = 1/3000.0;
         
         //[UIView animateWithDuration:0.2 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(){
+        [_rotateCell.rotateContainer viewWithTag:2012].layer.transform = trans;
         if(delta > 0.5){
-            [_rotateCell.frontImage viewWithTag:2012].hidden = YES;
+            [_rotateCell.rotateContainer viewWithTag:2012].hidden = YES;
+            CGFloat gapAngle = ((1.0 - delta)/0.5) * M_PI_2;
+            
+            CATransform3D frontTrans = CATransform3DRotate(CATransform3DIdentity, gapAngle, 0.0, 1.0, 0.0);
+            trans.m34 = 1/3000.0;
+            _rotateCell.frontImage.layer.transform = frontTrans;
         }else{
-            [_rotateCell.frontImage viewWithTag:2012].hidden = NO;
+            [_rotateCell.rotateContainer viewWithTag:2012].hidden = NO;
         }
-        _rotateCell.frontImage.layer.transform = trans;
+        
         //} completion:^(BOOL complete){
         //    [UIView animateWithDuration:0.2 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^(){
         //        weakCell.container.layer.transform = CATransform3DIdentity;

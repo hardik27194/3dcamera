@@ -179,6 +179,8 @@
 @property (nonatomic, strong) EZPhotoCell* rotateCell;
 @property (nonatomic, strong) NSIndexPath* rotateIndex;
 
+@property (nonatomic, assign) CGFloat previousGap;
+
 //@property (nonatomic, strong) NSMutableArray* unhandledNotes;
 
 - (void) storeCurrent;
