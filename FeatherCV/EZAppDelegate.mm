@@ -358,8 +358,12 @@
             EZDEBUG(@"quit for network not available");
             return;
         }
+        _queryCount ++;
         [[EZDataUtil getInstance] uploadPendingPhoto];
         [[EZDataUtil getInstance] queryPendingPerson];
+        //if((_queryCount % 5) == 0){
+        [[EZDataUtil getInstance] removeExpiredPhotos];
+        //}
         //[[EZDataUtil getInstance] storeAll];
         if([EZDataUtil getInstance].timerBlock){
             [EZDataUtil getInstance].timerBlock(nil);
@@ -560,7 +564,7 @@
     //[MobClick event:EZALStartPeriod label:@"end"];
     [MobClick endEvent:EZALStartPeriod label:@"terminate"];
     //[[EZDataUtil getInstance] storePendingPhoto];
-    [self saveContext];
+    //[self saveContext];
 }
 
 - (void)saveContext

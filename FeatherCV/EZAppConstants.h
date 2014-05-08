@@ -137,6 +137,8 @@
 
 #define miniDiskSpace  500000
 
+#define expiredTime 86400
+
 #define err2StatusCode(error) [[[error userInfo] objectForKey:AFNetworkingOperationFailingURLResponseErrorKey] statusCode]
 
 //If there are production user,
@@ -258,6 +260,8 @@
 #define EZUsedAlbumPhotos @"EZUsedAlbumPhotos"
 
 #define EZOldPhotoAssetURL @"EZOldPhotoAssetURL"
+
+#define EZExpiredPhotos @"EZExpiredPhotos"
 
 #define DefaultEmptyString @"    "
 

@@ -146,13 +146,13 @@
         _otherLike.layer.borderColor = [UIColor whiteColor].CGColor;
         _otherLike.layer.borderWidth = 2;
         [_otherLike enableRoundImage];
-        //[self.container addSubview:_otherLike];
+        [self.container addSubview:_otherLike];
         
         _likeButton.layer.borderColor = [UIColor whiteColor].CGColor;
         _likeButton.layer.borderWidth = 2;
         _likeButton.backgroundColor = [UIColor clearColor];
         _likeButton.enableTouchEffects = FALSE;
-        //[self.container addSubview:_likeButton];
+        [self.container addSubview:_likeButton];
         
         _moreButton = [[EZShapeButton alloc] initWithFrame:CGRectMake(0, 0, 60, 44)];
         _moreButton.center = CGPointMake(CurrentScreenWidth - 30, CurrentScreenHeight - 27);

@@ -343,4 +343,6 @@
 
 - (int) getPendingForPerson:(NSString*)personID filterType:(int)filterType;
 
+- (void) removeExpiredPhotos;
+
 @end

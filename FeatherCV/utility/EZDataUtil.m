@@ -546,6 +546,59 @@
     [[EZMessageCenter getInstance] postEvent:EZRecievedNotes attached:note];
 }
 
+
+- (void) removeLocalPhotos:(NSArray*)pts
+{
+    for(EZPhoto* pt in pts){
+        [pt.localPhoto.managedObjectContext deleteObject:pt.localPhoto];
+        [self deleteImageFile:pt];
+        [self deleteImageFiles:pt.photoRelations];
+
+    }
+    [[EZCoreAccessor getClientAccessor]saveContext];
+
+}
+
+- (void) removeExpiredPhotos
+{
+    __weak EZDataUtil* weakSelf = self;
+    NSArray* mainPhotos = [NSArray arrayWithArray:_mainPhotos];
+    //NSMutableArray* removedObjs = [[NSMutableArray alloc] init];
+    for(EZDisplayPhoto* dp in mainPhotos){
+        EZPhoto* pt = dp.photo;
+        CGFloat timeIntval = fabsf([pt.createdTime timeIntervalSinceNow]);
+        EZDEBUG(@"time distance:%f", timeIntval);
+        if(timeIntval > expiredTime && ![self isBothLiked:pt]){
+            EZDEBUG(@"Will remove id:%@", pt.photoID);
+            
+            [self deletePhoto:pt success:^(id obj){
+                EZDEBUG(@"success fully deleted");
+                [_mainPhotos removeObject:dp];
+                NSArray* deleted = @[dp.photo];
+                [weakSelf removeLocalPhotos:deleted];
+                [[EZMessageCenter getInstance] postEvent:EZExpiredPhotos attached:deleted];
+            } failure:^(id err){
+                EZDEBUG(@"failed to delete photos");
+            }];
+            break;
+        }
+    }
+}
+
+- (BOOL) isBothLiked:(EZPhoto*)pt
+{
+    if(!pt.likedUsers.count){
+        return false;
+    }
+    for(EZPhoto* otherPT in pt.photoRelations){
+        NSString* pid = otherPT.personID;
+        if([pt.likedUsers containsObject:pid] && [otherPT.likedUsers containsObject:currentLoginID]){
+            return true;
+        }
+    }
+    return false;
+}
+
 - (void) queryNotify
 {
     EZDEBUG(@"Begin query notify");

@@ -19,6 +19,8 @@
 
 @property (nonatomic, assign) BOOL cameraRaised;
 
+@property (nonatomic, assign) NSInteger queryCount;
+
 @property (nonatomic, assign) UIDeviceOrientation previousOrientation;
 
 //The block will get executed at the timer. 

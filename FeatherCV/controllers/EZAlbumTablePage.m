@@ -1654,6 +1654,30 @@ static int photoCount = 1;
         [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:_combinedPhotos.count-1 inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
     }];
     
+    [[EZMessageCenter getInstance] registerEvent:EZExpiredPhotos block:^(NSArray* arr){
+        EZDEBUG(@"deleted count:%i", arr.count);
+        NSMutableArray* deletedPath = [[NSMutableArray alloc] init];
+        for(EZPhoto* pt in arr){
+            //int j = 0;
+            for(int i = 0, j = 0; i < _combinedPhotos.count; i++, j++){
+                EZDisplayPhoto* dp = [_combinedPhotos objectAtIndex:i];
+                if([dp.photo.photoID isEqualToString:pt.photoID]){
+                    [_combinedPhotos removeObjectAtIndex:i];
+                    --i;
+                    [deletedPath addObject:[NSIndexPath indexPathForRow:j inSection:0]];
+                }
+            }
+        }
+        if(deletedPath.count > 0){
+            //[self.tableView deleteRowsAtIndexPaths:deletedPath withRowAnimation:UITableViewRowAnimationFade];
+            if(deletedPath.count == 1){
+                [self.tableView deleteRowsAtIndexPaths:deletedPath withRowAnimation:UITableViewRowAnimationFade];
+            }else{
+                [self.tableView reloadData];
+            }
+        }
+    }];
+    
     [[EZMessageCenter getInstance] registerEvent:EZSetAlbumUser block:^(EZPerson* person){
         [self setCurrentUser:person readyBlock:nil];
     }];
