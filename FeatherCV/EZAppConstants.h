@@ -58,7 +58,8 @@
 
 #define macroControlInfo(keyName) NSLocalizedStringFromTable(keyName, @"UIControlInfo", nil)
 
-#define formatRelativeTime(time) [[EZDataUtil getInstance].timeFormatter stringFromDate:time]
+//#define formatRelativeTime(time) [[EZDataUtil getInstance].timeFormatter stringFromDate:time]
+#define formatRelativeTime(time) [[EZDataUtil getInstance] getTimeString:time]
 
 #define BlurBackground RGBA(240, 240, 240, 128)
 

@@ -211,7 +211,10 @@ static int photoCount = 1;
         //EZDEBUG(@"scroll position:%i", posNum.intValue);
         cp.photoPos = posNum.integerValue;
         EZPhoto* backPt = [cp.photo.photoRelations objectAtIndex:cp.photoPos];
+        weakCell.rotateCount ++;
         [weakSelf loadImage:weakCell url:backPt.screenURL retry:0 path:indexPath position:cp.photoPos];
+        //UIImageView* imageView = [weakCell.frontImage.imageViews objectAtIndex:cp.photoPos];
+        //[imageView loadImageURL:backPt.screenURL haveThumb:YES loading:NO];
         weakCell.frontImage.pageControl.currentPage = posNum.intValue;
         weakCell.otherTalk.text = [backPt getConversation];
         if(![weakCell.otherTalk.text isNotEmpty]){
@@ -228,6 +231,7 @@ static int photoCount = 1;
         EZDEBUG(@"scroll begin:%i", posNum.integerValue);
         int minus = posNum.integerValue - 1;
         int plus = posNum.integerValue + 1;
+        weakCell.rotateCount ++;
         if(minus >= 0){
             EZPhoto* backPt = [cp.photo.photoRelations objectAtIndex:minus];
             //[weakSelf loadImage:weakCell url:backPt.screenURL retry:0 path:indexPath position:minus];
@@ -242,26 +246,6 @@ static int photoCount = 1;
             [imageView loadImageURL:backPt.screenURL haveThumb:YES loading:NO];
         }
     };
-    
-    /**
-     if(cp.isFirstTime){
-     
-     cp.isFirstTime = NO;
-     //cell.firstTimeView.hidden = NO;
-     EZPerson* person = pid2person(switchPhoto.personID);
-     EZDEBUG(@"name:%@, pendingCount:%i, photoID:%@", person.name, person.pendingEventCount, cp.photo.photoID);
-     //person.pendingEventCount -= 1;
-     [person adjustPendingEventCount:-1];
-     //[person save];
-     //[[EZMessageCenter getInstance] postEvent:EZNoteCountChange attached:@(-1)];
-     if(_currentUser.filterType == kPhotoNewFilter){
-     [_currentUser adjustPendingEventCount:-1];
-     [self setNoteCount];
-     }
-     }else{
-     cell.firstTimeView.hidden = YES;
-     }
-     **/
     
     EZDEBUG(@"Will display front image type:%i", myPhoto.typeUI);
     [self displayChat:cell ownerPhoto:myPhoto otherPhoto:switchPhoto];
@@ -329,12 +313,8 @@ static int photoCount = 1;
     
     EZDEBUG(@"upload status is:%i, photo relation count:%i, object Pointer:%i", myPhoto.updateStatus, myPhoto.photoRelations.count, (int)myPhoto);
     _progressBar.hidden = YES;
-    
-    //Simplfy the condition
-    //As long as I have no matched photo
-    //I will monitoring the event
     if(!myPhoto.photoRelations.count && !(myPhoto.type == 1)){
-        EZDEBUG(@"Will register upload success");
+        //EZDEBUG(@"Will register upload success");
         myPhoto.progress = ^(NSNumber* number){
             if(cell.currentPos == indexPath.row){
                 if(number){
@@ -347,7 +327,6 @@ static int photoCount = 1;
         
         myPhoto.uploadSuccess = ^(EZPhoto* returned){
             EZDEBUG(@"upload success, photoRelation:%i", returned.photoRelations.count);
-            
             if(cell.currentPos == indexPath.row){
                 //[_progressBar setProgress:1.0 animated:YES];
                 EZDEBUG(@"Will rotate the photo");
@@ -458,8 +437,10 @@ static int photoCount = 1;
         }
         
         EZClickImage* fullView = [[EZClickImage alloc] initWithFrame:[UIScreen mainScreen].bounds];
-        fullView.contentMode = UIViewContentModeScaleAspectFill;
-        fullView.image = weakCell.frontImage.image;
+        //fullView.contentMode = UIViewContentModeScaleAspectFill;
+        //fullView.image = weakCell.frontImage.image;
+        UIView* snapShot = [weakCell.frontImage snapshotViewAfterScreenUpdates:NO];
+        [fullView addSubview:snapShot];
         fullView.enableTouchEffects = NO;
         EZDEBUG(@"Long press called %@", NSStringFromCGRect(fullView.bounds));
         fullView.tag = 6565;
@@ -628,6 +609,7 @@ static int photoCount = 1;
 
 - (void) scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
 {
+    /**
     NSArray* paths = self.tableView.indexPathsForVisibleRows;
     if(_combinedPhotos.count){
     for(NSIndexPath* path in paths){
@@ -643,14 +625,49 @@ static int photoCount = 1;
         }
     }
     }
+    **/
+    /**
+    if(_rotateCell){
+        CGFloat delta = fabsf(_scrollBeginPos - self.tableView.contentOffset.y)/CurrentScreenHeight;
+        EZDEBUG(@"end dragging delta:%f", delta);
+        if(delta > 0.5){
+            
+            [UIView animateWithDuration:0.3 animations:^(){
+                //CGFloat delta = fabsf(_scrollBeginPos - self.tableView.contentOffset.y)/CurrentScreenHeight;
+                CATransform3D trans = CATransform3DRotate(CATransform3DIdentity, M_PI, 0.0, 1.0, 0.0);
+                trans.m34 = 1/3000.0;
+                _rotateCell.frontImage.layer.transform = trans;
+            } completion:^(BOOL completion){
+                [[_rotateCell.frontImage viewWithTag:2012] removeFromSuperview];
+            }];
+        }else{
+            EZDisplayPhoto* dp = [_combinedPhotos objectAtIndex:_rotateIndex.row];
+            
+            EZPhoto* backPhoto = nil;
+            if(dp.photoPos < dp.photo.photoRelations.count){
+                backPhoto = [dp.photo.photoRelations objectAtIndex:dp.photoPos];
+            }
+            [self switchImage:_rotateCell displayPhoto:dp front:dp.photo back:backPhoto animate:NO path:_rotateIndex position:dp.photoPos];
+            [UIView animateWithDuration:0.3 animations:^(){
+                _rotateCell.frontImage.layer.transform = CATransform3DIdentity;
+            } completion:^(BOOL finished) {
+                [[_rotateCell.frontImage viewWithTag:2012] removeFromSuperview];
+            }];
+        }
+        _rotateCell = nil;
+    }
+     **/
 }
+
+
 
 - (void) setupLongPress:(EZPhotoCell*)weakCell
 {
     __weak EZAlbumTablePage* weakSelf = self;
     EZClickImage* fullView = [[EZClickImage alloc] initWithFrame:[UIScreen mainScreen].bounds];
     fullView.contentMode = UIViewContentModeScaleAspectFill;
-    fullView.image = weakCell.frontImage.image;
+    //fullView.image = weakCell.frontImage.image;
+    [fullView addSubview:[weakCell.frontImage snapshotViewAfterScreenUpdates:NO]];
     fullView.enableTouchEffects = NO;
     EZDEBUG(@"Long press called %@", NSStringFromCGRect(fullView.bounds));
     fullView.tag = 6565;
@@ -2697,6 +2714,7 @@ static int photoCount = 1;
     if([EZFileUtil isFileExist:assetURL isURL:NO]){
         EZDEBUG("File exist");
         [weakCell.frontImage setImage:[photo getScreenImage]];
+        
     }else{
         EZDEBUG(@"file not exist load from url:%@", photo.screenURL);
         [self loadImage:weakCell url:photo.screenURL retry:2 path:path position:0];
@@ -2716,6 +2734,7 @@ static int photoCount = 1;
     
     int rotateCount = weakCell.rotateCount;
     //EZDEBUG(@"image loading start");
+    UIImageView* imageView = [weakCell.frontImage.imageViews objectAtIndex:position];
     [[EZDataUtil getInstance] serialLoad:secondURL fullOk:^(NSString* localURL){
         //EZDEBUG(@"image loaded full:%i, url:%@", loaded, localURL);
         if(weakCell.currentPos != path.row || rotateCount != weakCell.rotateCount){
@@ -2727,12 +2746,13 @@ static int photoCount = 1;
         if(!loaded){
             loaded = true;
             //[weakCell.frontImage setImageWithURL:str2url(fullURL)];
-            weakCell.frontImage.image = fileurl2image(localURL);
+            //weakCell.frontImage.image = fileurl2image(localURL);
+            imageView.image = fileurl2image(localURL);
         }else{
             UIView* snapShot = [weakCell.frontImage snapshotViewAfterScreenUpdates:NO];
             [weakCell.frontImage addSubview:snapShot];
             //[weakCell setImageWithURL:str2url(localURL)];
-            weakCell.frontImage.image = fileurl2image(localURL);
+            imageView.image = fileurl2image(localURL);
             [UIView animateWithDuration:0.3 animations:^(){
                 snapShot.alpha = 0;
             } completion:^(BOOL completed){
@@ -2750,7 +2770,7 @@ static int photoCount = 1;
                 [ai startAnimating];
             }
             UIImage* blurred = [fileurl2image(localURL) createBlurImage:15.0];
-            weakCell.frontImage.image = blurred;
+            imageView.image = blurred;
         }
     } pending:^(id obj){
         //[weakCell.frontImage addSubview:ai];
@@ -2876,9 +2896,18 @@ static int photoCount = 1;
     //}
     weakCell.rotateCount += 1;
     if(animate){
-        UIView* snapShot = [weakCell.frontImage snapshotViewAfterScreenUpdates:YES];
-        snapShot.frame = weakCell.frontImage.frame;
+        UIView* snapShot = [weakCell.rotateContainer snapshotViewAfterScreenUpdates:NO];
+        //snapShot.backgroundColor = [UIColor redColor];
+        //snapShot.frame = weakCell.frontImage.frame;
+        //snapShot.backgroundColor = RGBA(255, 128, 128, 128);
+        snapShot.layer.zPosition = 3000;
         [weakCell.rotateContainer addSubview:snapShot];
+        
+        //UIView* view = [[UIView alloc] initWithFrame:CGRectMake(100, 100, 200, 200)];
+        //view.backgroundColor = [UIColor redColor];
+        //[view addSubview:snapShot];
+        //[TopView addSubview:snapShot];
+        
         
         weakCell.frontImage.image = nil;
         if(cp.isFront){
@@ -2905,7 +2934,6 @@ static int photoCount = 1;
             [self loadFrontImage:weakCell photo:front file:front.assetURL path:path];
         }
         
-        
     
         dispatch_later(0.15, ^(){
         [UIView flipTransition:snapShot dest:weakCell.frontImage container:weakCell.rotateContainer isLeft:cp.isFront duration:EZRotateAnimDuration complete:^(id obj){
@@ -2922,8 +2950,9 @@ static int photoCount = 1;
         weakCell.frontImage.image = nil;
         if(cp.isFront){
             photo = back;
+            [weakCell setFrontFormat:false];
             [self setWaitingInfo:weakCell displayPhoto:cp back:back];
-            if(back.type == kPhotoRequest){
+            if(back.type == kPhotoRequest || ([cp.photo.exchangePersonID isNotEmpty] && back == nil)){
                 //weakCell.frontImage.image = [UIImage imageNamed:@"background.png"];
             }
             else if(photo == nil){
@@ -2936,6 +2965,8 @@ static int photoCount = 1;
             }
         }else{
             photo = front;
+            [weakCell setFrontFormat:true];
+            weakCell.waitingInfo.hidden = YES;
             //[weakCell.frontImage setImage:[front getScreenImage]];
             [self loadFrontImage:weakCell photo:front file:front.assetURL path:path];
         }
@@ -2960,14 +2991,59 @@ static int photoCount = 1;
         _assetView.hidden = NO;
     }
     _innerFirstTime = false;
+    
+    //int pos = self.tableView.contentOffset.y / CurrentScreenHeight;
+    /**
+    NSIndexPath* visiblePath = [self.tableView.indexPathsForVisibleRows objectAtIndex:0];
+    if(visiblePath.row < _combinedPhotos.count){
+        EZDisplayPhoto* dp = [_combinedPhotos objectAtIndex:visiblePath.row];
+        if(dp.isFront){
+            _rotateIndex = visiblePath;
+            _scrollBeginPos = self.tableView.contentOffset.y;
+            _rotateCell = (EZPhotoCell*)[self.tableView cellForRowAtIndexPath:visiblePath];
+            UIView* snapShot = [_rotateCell.frontImage snapshotViewAfterScreenUpdates:NO];
+            snapShot.tag = 2012;
+            [_rotateCell.rotateContainer addSubview:snapShot];
+            EZPhoto* backPhoto = nil;
+            if(dp.photo.photoRelations.count > dp.photoPos){
+                backPhoto = [dp.photo.photoRelations objectAtIndex:dp.photoPos];
+            }
+            [self switchImage:_rotateCell displayPhoto:dp front:dp.photo back:backPhoto animate:NO path:visiblePath position:dp.photoPos];
+        }
+    }
+    **/
 }
 
+
+
 - (void) scrollViewDidScroll:(UIScrollView*)scrollView{
+    EZDEBUG(@"did scroll get called");
     if(_scrollBlock){
         _scrollBlock(@(true));
         _scrollBlock = nil;
     }
+    if(_rotateCell){
+        CGFloat delta = fabsf(_scrollBeginPos - self.tableView.contentOffset.y)/CurrentScreenHeight;
+        CATransform3D trans = CATransform3DRotate(CATransform3DIdentity, M_PI*delta, 0.0, 1.0, 0.0);
+        trans.m34 = 1/3000.0;
+        
+        //[UIView animateWithDuration:0.2 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(){
+        if(delta > 0.5){
+            [_rotateCell.frontImage viewWithTag:2012].hidden = YES;
+        }else{
+            [_rotateCell.frontImage viewWithTag:2012].hidden = NO;
+        }
+        _rotateCell.frontImage.layer.transform = trans;
+        //} completion:^(BOOL complete){
+        //    [UIView animateWithDuration:0.2 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^(){
+        //        weakCell.container.layer.transform = CATransform3DIdentity;
+        //    } completion:nil];
+        //}];
+
+    }
 }
+
+
 
 - (void) scrollViewDidScrollOld:(UIScrollView *)scrollView{
     EZDEBUG(@"Did scroll get called");

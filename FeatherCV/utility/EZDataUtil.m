@@ -555,6 +555,11 @@
         EZDEBUG(@"pause notification for shot");
         return;
     }
+    
+    if(!_mainPhotos.count){
+        EZDEBUG(@"quit for not have photos yet");
+        return;
+    }
     if(_isQueryingNotes){
         EZDEBUG(@"querying note quit");
         return;
@@ -1332,6 +1337,64 @@
         [ps copyValue:person];
     }
     return ps;
+}
+
+- (NSString*) getTimeString:(NSDate*) date
+{
+    if(!date){
+        return @"";
+    }
+    CGFloat seconds = abs([date timeIntervalSinceNow]);
+    EZDEBUG(@"seconds:%f, %@", seconds, date);
+    if(seconds < 300){
+        return @"现在";
+    }else{
+        NSUInteger unitFlags = NSDayCalendarUnit|NSMonthCalendarUnit|NSYearCalendarUnit;
+        NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
+        NSDateComponents *components = [calendar components:unitFlags fromDate:date toDate:[NSDate date] options:0];
+        NSInteger day = [components day];
+        //NSInteger week = [components week];
+        //NSCalendar *gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
+        //NSDateComponents *dateComponents = [gregorian components:NSHourCalendarUnit|NSCalendarUnitDay|NSCal fromDate:date];
+        //NSInteger hour = [dateComponents hour];
+        NSInteger year = [components year];
+        NSInteger month = [components month];
+        
+        EZDEBUG(@"year/month/day: %i, %i, %i", year, month, day);
+        if(year){
+            if(year < 2){
+                return macroControlInfo(@"去年");
+            }else if(year < 3){
+                return macroControlInfo(@"前年");
+            }else{
+                return [NSString stringWithFormat:macroControlInfo(@"%i年前"), year];
+            }
+        }else if(month){
+            return [NSString stringWithFormat:macroControlInfo(@"%i月前"), month];
+        }else if(day){
+            if(day == 1){
+                return @"昨天";
+            }else if(day == 2){
+                return @"前天";
+            }else if(day < 7){
+                return [NSString stringWithFormat:macroControlInfo(@"%i天前"),day];
+            }
+            NSInteger weekNum = day/7;
+            return [NSString stringWithFormat:macroControlInfo(@"%i周前"), weekNum];
+        }
+        calendar = [NSCalendar currentCalendar];
+        components = [calendar components:(NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:date];
+        NSInteger hour = [components hour];
+        //NSInteger minute = [components minute];
+        EZDEBUG(@"hours of the day:%i", hour);
+        if(hour < 12){
+            return @"上午";
+        }else if(hour < 19){
+            return @"下午";
+        }else{
+            return @"晚上";
+        }
+    }
 }
 
 //Get the person object

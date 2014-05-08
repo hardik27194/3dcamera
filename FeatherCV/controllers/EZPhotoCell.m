@@ -183,7 +183,7 @@
         _waitingInfo.hidden = TRUE;
         [_frontImage addSubview:_waitingInfo];
         [_frontImage addSubview:_cameraView];
-        
+        _frontImage.layer.zPosition = 2000;
         [self.contentView addSubview:_container];
         //[self.contentView addSubview:_toolRegion];
         //[self.contentView addSubview:_feedbackRegion];

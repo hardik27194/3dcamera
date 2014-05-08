@@ -2410,7 +2410,8 @@ context:(void *)context
             flashMode = @"闪光灯:打开";
         }
     
-    UIActionSheet* actionSheet = [[UIActionSheet alloc] initWithTitle:@"相机设置" delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:nil otherButtonTitles:@"翻转摄像头",flashMode,(_disableFaceBeautify?@"打开美化":@"关闭美化"), nil];
+    //(_disableFaceBeautify?@"打开美化":@"关闭美化")
+    UIActionSheet* actionSheet = [[UIActionSheet alloc] initWithTitle:@"相机设置" delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:nil otherButtonTitles:@"翻转摄像头",flashMode, nil];
         [actionSheet showInView:self.view];
     
 }

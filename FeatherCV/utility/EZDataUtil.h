@@ -269,6 +269,8 @@
 //So I will use this method to pervent this from happening
 - (void) loadAlbumPhoto:(int)start limit:(int)limit success:(EZEventBlock)success failure:(EZEventBlock)failure;
 
+- (NSString*) getTimeString:(NSDate*) date;
+
 
 //All the album photo will get loaded as EZDisplayPhoto,
 //Then I will try to load the photo from server side see what's the current status of the photo.

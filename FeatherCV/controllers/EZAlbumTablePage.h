@@ -22,6 +22,7 @@
 @class EZPerson;
 @class EZTrianglerView;
 @class EZEnlargedView;
+@class EZPhotoCell;
 @interface EZAlbumTablePage : UIViewController<DLCImagePickerDelegate, UINavigationControllerDelegate, UIViewControllerTransitioningDelegate, UIActionSheetDelegate, UIAlertViewDelegate, UITableViewDelegate, UITableViewDataSource>
 
 @property (nonatomic, strong) NSMutableArray* combinedPhotos;
@@ -173,6 +174,11 @@
 @property (nonatomic, strong) EZEventBlock scrollBlock;
 
 @property (nonatomic, strong) EZEventBlock actionBlock;
+
+@property (nonatomic, assign) CGFloat scrollBeginPos;
+@property (nonatomic, strong) EZPhotoCell* rotateCell;
+@property (nonatomic, strong) NSIndexPath* rotateIndex;
+
 //@property (nonatomic, strong) NSMutableArray* unhandledNotes;
 
 - (void) storeCurrent;
