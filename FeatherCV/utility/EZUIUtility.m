@@ -25,6 +25,12 @@ SINGLETON_FOR_CLASS(EZUIUtility)
     self = [super init];
     _cameraRaised = false;
     _colors = @[RGBA(255, 0, 0, ColorTransparent), RGBA(127, 127, 0, ColorTransparent), RGBA(127, 0, 127, ColorTransparent), RGBA(0, 255, 0, ColorTransparent), RGBA(0, 0, 255, ColorTransparent)];
+    
+    _fullHeart = [UIImage imageNamed:@"heart_full"];
+    _emptyHeart = [UIImage imageNamed:@"heart_empty"];
+    _leftHeart = [UIImage imageNamed:@"heart_left"];
+    _rightHeart = [UIImage imageNamed:@"heart_right"];
+    _pressedHeart = [UIImage imageNamed:@"heart_pressed"];
     return self;
 }
 

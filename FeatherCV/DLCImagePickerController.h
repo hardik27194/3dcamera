@@ -6,6 +6,7 @@
 //  Copyright (c) 2012 Dmitri Cherniak. All rights reserved.
 //
 
+#include <CoreLocation/CLLocation.h>
 #import <Foundation/Foundation.h>
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <UIKit/UIResponder.h>
@@ -109,6 +110,7 @@ typedef enum {
 @property (nonatomic, weak) IBOutlet UIButton *photoCaptureButton;
 @property (nonatomic, strong) UILabel* instrTitle;
 @property (nonatomic, assign) BOOL cameraSetupDone;
+@property (nonatomic, strong) CLLocation* location;
 
 
 @property (nonatomic, strong) EZEventBlock innerCancelBlock;

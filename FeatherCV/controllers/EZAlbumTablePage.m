@@ -95,6 +95,23 @@ static int photoCount = 1;
     return -1;
 }
 
+- (void) setHeart:(EZPhoto*)forward back:(EZPhoto*)back cell:(EZPhotoCell*)cell
+{
+    if([back.likedUsers containsObject:currentLoginID] && [forward.likedUsers containsObject:back.personID]){
+        //cell.likeButton.backgroundColor = RGBA(255, 0, 0, 64);
+        //likedByMe = true;
+        [cell.likeButton setImage:FullHeartImage forState:UIControlStateNormal];
+        //[cell.likeButton setImage:LeftHeartImage forState:UIControlStateNormal];
+    }else if([back.likedUsers containsObject:currentLoginID]){
+        [cell.likeButton setImage:LeftHeartImage forState:UIControlStateNormal];
+    }else if([forward.likedUsers containsObject:back.personID]){
+        [cell.likeButton setImage:RightHeartImage forState:UIControlStateNormal];
+    }else{
+        [cell.likeButton setImage:EmptyHeartImage forState:UIControlStateNormal];
+
+    }
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     EZDEBUG(@"cellForRow Called:%i", indexPath.row);
@@ -222,6 +239,7 @@ static int photoCount = 1;
         }
         pid2personCall(backPt.personID, otherBlock);
         [weakCell setFrontFormat:false];
+        [self setHeart:myPhoto back:backPt cell:weakCell];
     };
     
     cell.frontImage.scrollBeginBlock = ^(NSNumber* posNum){
@@ -341,46 +359,36 @@ static int photoCount = 1;
         };
         
     }
+
+    [self setHeart:myPhoto back:switchPhoto cell:cell];
     
-    //EZDEBUG(@"likedUser:%@, otherID:%@", myPhoto.liked)
-    //cell.otherLike.backgroundColor = [UIColor clearColor];
-    cell.likeButton.backgroundColor = [UIColor clearColor];
-    if([switchPhoto.likedUsers containsObject:currentLoginID]){
-        cell.likeButton.backgroundColor = RGBA(255, 0, 0, 64);
-    }
-    //switchPhoto.likedUsers
-    cell.otherLike.backgroundColor = [UIColor clearColor];
-    EZDEBUG(@"myself likedUsers:%@, liked other:%@", myPhoto.likedUsers, switchPhoto.likedUsers);
-    if([myPhoto.likedUsers containsObject:switchPhoto.personID]){
-        cell.otherLike.backgroundColor = RGBA(0, 255, 0, 64);
-    }
-    
-    
-    cell.likeButton.releasedBlock = ^(EZClickView* obj){
+    cell.buttonClicked = ^(EZClickView* obj){
         EZDEBUG(@"Liked clicked");
-        if(switchPhoto){
-            BOOL liked = [switchPhoto.likedUsers containsObject:currentLoginID];
-            EZDEBUG(@"photoID:%@, liked:%i, personID:%@", switchPhoto.photoID, liked, switchPhoto.personID);
+        if(!myPhoto.photoRelations.count){
+            return;
+        }
+        EZPhoto* otherPhoto = [myPhoto.photoRelations objectAtIndex:cp.photoPos];
+        if(otherPhoto){
+            BOOL liked = [otherPhoto.likedUsers containsObject:currentLoginID];
+            EZDEBUG(@"photoID:%@, liked:%i, personID:%@", otherPhoto.photoID, liked, otherPhoto.personID);
             liked = !liked;
-            UIColor* oldColor = obj.backgroundColor;
-            obj.backgroundColor = RGBA(0, 0, 0, 60);
-            obj.userInteractionEnabled = NO;
-            [[EZDataUtil getInstance] likedPhoto:switchPhoto.photoID ownPhotoID:myPhoto.photoID like:liked success:^(id success){
+            //UIColor* oldColor = obj.backgroundColor;
+            //obj.backgroundColor = RGBA(0, 0, 0, 60);
+            weakCell.likeButton.userInteractionEnabled = NO;
+            [[EZDataUtil getInstance] likedPhoto:otherPhoto.photoID ownPhotoID:myPhoto.photoID like:liked success:^(id success){
                 EZDEBUG(@"Liked successfully");
-                obj.userInteractionEnabled = YES;
                 if(liked){
-                    switchPhoto.likedUsers = @[currentLoginID];
-                    weakCell.likeButton.backgroundColor = RGBA(255, 0, 0, 64);
+                    otherPhoto.likedUsers = @[currentLoginID];
                 }else{
-                    switchPhoto.likedUsers = nil;
-                    weakCell.likeButton.backgroundColor = [UIColor clearColor];
-                    
+                    otherPhoto.likedUsers = nil;
                 }
+                [self setHeart:myPhoto back:otherPhoto cell:weakCell];
                 [[EZDataUtil getInstance] storeAllPhotos:@[myPhoto]];
+                weakCell.likeButton.userInteractionEnabled = YES;
             } failure:^(id err){
-                obj.userInteractionEnabled = YES;
-                obj.backgroundColor = oldColor;
-                EZDEBUG(@"Encounter like errors:%@", err);
+                //obj.userInteractionEnabled = YES;
+                //obj.backgroundColor = oldColor;
+                //EZDEBUG(@"Encounter like errors:%@", err);
             }];
         }
     };
@@ -2212,9 +2220,32 @@ static int photoCount = 1;
     return res;
 }
 
-- (void) addLike:(EZNote*)note
+- (void) setLocalLike:(EZNote*)note
 {
     NSArray* matchedArrs = [[NSArray alloc] initWithArray:_combinedPhotos];
+    for (int i = 0; i < matchedArrs.count; i++) {
+        EZPhoto* ph = ((EZDisplayPhoto*)[matchedArrs objectAtIndex:i]).photo;
+        if([ph.photoID isEqualToString:note.photoID]){
+            EZDEBUG(@"like operation:%@, like:%i", note.photoID, note.like);
+            if(note.like){
+                if(![ph.likedUsers containsObject:note.otherID]){
+                    [ph.likedUsers addObject:note.otherID];
+                }
+            }else{
+                //if([ph.likedUsers containsObject:note.otherID]){
+                [ph.likedUsers removeObject:note.otherID];
+                //}
+            }
+            [[EZDataUtil getInstance] storeAllPhotos:@[ph]];
+            [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:i inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
+            break;
+        }
+    }
+}
+
+- (void) addLike:(EZNote*)note
+{
+    NSArray* matchedArrs = [[NSArray alloc] initWithArray:[EZDataUtil getInstance].mainPhotos];
     for (int i = 0; i < matchedArrs.count; i++) {
         EZPhoto* ph = ((EZDisplayPhoto*)[matchedArrs objectAtIndex:i]).photo;
         if([ph.photoID isEqualToString:note.photoID]){
@@ -2229,10 +2260,12 @@ static int photoCount = 1;
                         //}
                     }
                     [[EZDataUtil getInstance] storeAllPhotos:@[ph]];
-                    [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:i inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
+                    if(!_currentUser){
+                        [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:i inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
+                    }else{
+                        [self setLocalLike:note];
+                    }
                     break;
-                //}
-            //}
         }
     }
 

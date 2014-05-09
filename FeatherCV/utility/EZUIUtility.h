@@ -41,6 +41,16 @@
 
 @property (nonatomic, strong) NSArray* colors;
 
+@property (nonatomic, strong) UIImage* fullHeart;
+
+@property (nonatomic, strong) UIImage* emptyHeart;
+
+@property (nonatomic, strong) UIImage* leftHeart;
+
+@property (nonatomic, strong) UIImage* rightHeart;
+
+@property (nonatomic, strong) UIImage* pressedHeart;
+
 //This method will get called by the EZClickView.
 //If pass nil mean pick color randomly.
 - (UIColor*) getBackgroundColor:(UIColor*)color;

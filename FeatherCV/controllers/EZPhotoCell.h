@@ -100,7 +100,7 @@
 
 @property (nonatomic, strong) UITextView* photoWord;
 
-@property (nonatomic, strong) EZClickView* likeButton;
+@property (nonatomic, strong) UIButton* likeButton;
 //You can talk as you like.
 @property (nonatomic, strong) EZClickImage* talkButton;
 
@@ -152,6 +152,8 @@
 @property (nonatomic, assign) NSInteger rotateCount;
 
 @property (nonatomic, strong) UIView* gradientView;
+
+@property (nonatomic, strong) EZEventBlock buttonClicked;
 //- (void) adjust
 
 - (void) displayPhoto:(NSString*)photo;

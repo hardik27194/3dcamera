@@ -135,6 +135,17 @@
 
 #define EZPurposeInfo macroControlInfo(@"按下快门\n捕获他(她)的照片。")
 
+#define FullHeartImage [EZUIUtility sharedEZUIUtility].fullHeart
+
+#define EmptyHeartImage [EZUIUtility sharedEZUIUtility].emptyHeart
+
+#define PressedHeartImage [EZUIUtility sharedEZUIUtility].pressedHeart
+
+#define LeftHeartImage [EZUIUtility sharedEZUIUtility].leftHeart
+
+#define RightHeartImage [EZUIUtility sharedEZUIUtility].rightHeart
+
+
 #define miniDiskSpace  500000
 
 #define expiredTime 86400

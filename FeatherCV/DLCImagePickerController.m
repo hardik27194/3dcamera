@@ -53,6 +53,7 @@
 #import "EZEnlargedView.h"
 #import "EZPhotoCell.h"
 #import "EZShapeButton.h"
+#import "EZGeoUtility.h"
 
 
 //#include <vector>
@@ -854,7 +855,11 @@
         [weakSelf coverStatusChange:status.intValue];
     };
     
-    
+    //Will ask for the location
+    [[EZGeoUtility getInstance] findCurrentLocation:^(CLLocation* location){
+        EZDEBUG(@"location %f, %f, %f", location.coordinate.latitude, location.coordinate.longitude, location.altitude);
+        weakSelf.location = location;
+    } once:YES];
     //self.blurOverlayView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     //self.blurOverlayView.alpha = 0;
     //[self.imageView addSubview:self.blurOverlayView];
@@ -3281,6 +3286,9 @@ context:(void *)context
     ep.assetURL = storedURL;
     ep.isLocal = true;
     ep.createdTime = [NSDate date];
+    ep.longitude = _location.coordinate.longitude;
+    ep.latitude = _location.coordinate.latitude;
+    ep.altitude = _location.altitude;
     //displayPhoto.photo = ep;
     //displayPhoto.photo.personID = currentLoginUser.personID;
     //EZDEBUG(@"Before size");
