@@ -106,6 +106,35 @@
     }
 }
 
+- (void) textFieldDidEndEditing:(UITextField *)textField
+{
+    [textField resignFirstResponder];
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField
+{
+    EZDEBUG(@"update name");
+    [self updateName];
+    [textField resignFirstResponder];
+    return true;
+}
+
+- (void) updateName
+{
+    if([_titleInfo.text isNotEmpty]){
+        UIActivityIndicatorView* activity = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+        [activity startAnimating];
+        activity.center = self.view.center;
+        [self.view addSubview:activity];
+        [[EZDataUtil getInstance] updatePerson:@{@"name":_titleInfo.text} success:^(id obj){
+            [activity stopAnimating];
+            [activity removeFromSuperview];
+            _person.name = _titleInfo.text;
+        } failure:^(id obj){
+            [[EZUIUtility sharedEZUIUtility] raiseInfoWindow:macroControlInfo(@"Failed to update name") info:macroControlInfo(@"Please try it later")];
+        }];
+    }
+}
 
 - (void)viewDidLoad
 {
@@ -148,13 +177,15 @@
     _uploadAvatar.enableTouchEffects = TRUE;
 
     [[EZDataUtil getInstance] fillPhotoCount:@[_person]];
-    _titleInfo = [[UILabel alloc] initWithFrame:CGRectMake(0, 169 + startGap, CurrentScreenWidth, 30)];
+    _titleInfo = [[UITextField alloc] initWithFrame:CGRectMake(0, 169 + startGap, CurrentScreenWidth, 30)];
     _titleInfo.textAlignment = NSTextAlignmentCenter;
     _titleInfo.textColor = [UIColor whiteColor];
     _titleInfo.font = [UIFont systemFontOfSize:25];
     _titleInfo.text = @"昵称";
+    _titleInfo.returnKeyType = UIReturnKeyDone;
+    _titleInfo.userInteractionEnabled = [currentLoginID isEqualToString:weakSelf.person.personID];
     [self.view addSubview:_titleInfo];
-    
+    _titleInfo.delegate = self;
     _mobile = [[UILabel alloc] initWithFrame:CGRectMake(0, 215 + startGap, CurrentScreenWidth, 30)];
     _mobile.textAlignment = NSTextAlignmentCenter;
     _mobile.textColor = [UIColor whiteColor];

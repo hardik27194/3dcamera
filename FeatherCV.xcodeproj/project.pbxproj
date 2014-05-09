@@ -73,12 +73,12 @@
 		1866ADC71898F0DB00DB46E2 /* LFGlassView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1866ADC41898F0DB00DB46E2 /* LFGlassView.m */; };
 		1866ADCA189F9F5900DB46E2 /* EZSkinMaskFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 1866ADC9189F9F5900DB46E2 /* EZSkinMaskFilter.m */; };
 		1866ADCD189FA21400DB46E2 /* EZFiveInputFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 1866ADCC189FA21400DB46E2 /* EZFiveInputFilter.m */; };
+		186EE566191C88B500212BF9 /* shot_low.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 186EE565191C88B500212BF9 /* shot_low.aiff */; };
 		1874D9D71867F57E005743FC /* EZSaturationFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 1874D9D61867F57E005743FC /* EZSaturationFilter.m */; };
 		1874D9DD18699386005743FC /* header_2.png in Resources */ = {isa = PBXBuildFile; fileRef = 1874D9DB18699385005743FC /* header_2.png */; };
 		1874D9DE18699386005743FC /* header_1.png in Resources */ = {isa = PBXBuildFile; fileRef = 1874D9DC18699386005743FC /* header_1.png */; };
 		1879BE23190BB1B60084FB27 /* EZCopyableLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 1879BE22190BB1B60084FB27 /* EZCopyableLabel.m */; };
 		1879BE28190BB8830084FB27 /* EZLimitTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 1879BE27190BB8830084FB27 /* EZLimitTextField.m */; };
-		1879BE331915DD650084FB27 /* shot_new.wav in Resources */ = {isa = PBXBuildFile; fileRef = 1879BE321915DD650084FB27 /* shot_new.wav */; };
 		18A36FD9184C7F820022F0A8 /* smile_face.png in Resources */ = {isa = PBXBuildFile; fileRef = 18A36FD8184C7F820022F0A8 /* smile_face.png */; };
 		18A36FEF1855C1DB0022F0A8 /* DLCImagePickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A36FEC1855C1DB0022F0A8 /* DLCImagePickerController.m */; };
 		18A36FF01855C1DB0022F0A8 /* DLCBlurOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A36FEE1855C1DB0022F0A8 /* DLCBlurOverlayView.m */; };
@@ -264,7 +264,6 @@
 		18E746FC18A4BBBC0023967B /* EZFeatherAPIClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E746FB18A4BBBC0023967B /* EZFeatherAPIClient.m */; };
 		18E746FF18AC704F0023967B /* EZBarRegion.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E746FE18AC704E0023967B /* EZBarRegion.m */; };
 		18F58B49186D5F9C006CB966 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18F58B48186D5F9C006CB966 /* ImageIO.framework */; };
-		18F58B4D186D8824006CB966 /* shot2.wav in Resources */ = {isa = PBXBuildFile; fileRef = 18F58B4C186D8824006CB966 /* shot2.wav */; };
 		18F58B52186EC0D1006CB966 /* ILTranslucentView.m in Sources */ = {isa = PBXBuildFile; fileRef = 18F58B51186EC0D1006CB966 /* ILTranslucentView.m */; };
 		18F58B57187130E0006CB966 /* UIView+Shadow.m in Sources */ = {isa = PBXBuildFile; fileRef = 18F58B56187130E0006CB966 /* UIView+Shadow.m */; };
 		18F58B5A18716C19006CB966 /* EZGradientLayerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 18F58B5918716C19006CB966 /* EZGradientLayerView.m */; };
@@ -436,6 +435,7 @@
 		1866ADC9189F9F5900DB46E2 /* EZSkinMaskFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZSkinMaskFilter.m; sourceTree = "<group>"; };
 		1866ADCB189FA21400DB46E2 /* EZFiveInputFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZFiveInputFilter.h; sourceTree = "<group>"; };
 		1866ADCC189FA21400DB46E2 /* EZFiveInputFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZFiveInputFilter.m; sourceTree = "<group>"; };
+		186EE565191C88B500212BF9 /* shot_low.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = shot_low.aiff; sourceTree = "<group>"; };
 		1874D9D51867F57E005743FC /* EZSaturationFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZSaturationFilter.h; sourceTree = "<group>"; };
 		1874D9D61867F57E005743FC /* EZSaturationFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZSaturationFilter.m; sourceTree = "<group>"; };
 		1874D9DB18699385005743FC /* header_2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = header_2.png; sourceTree = "<group>"; };
@@ -444,7 +444,6 @@
 		1879BE22190BB1B60084FB27 /* EZCopyableLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZCopyableLabel.m; sourceTree = "<group>"; };
 		1879BE26190BB8830084FB27 /* EZLimitTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZLimitTextField.h; sourceTree = "<group>"; };
 		1879BE27190BB8830084FB27 /* EZLimitTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZLimitTextField.m; sourceTree = "<group>"; };
-		1879BE321915DD650084FB27 /* shot_new.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = shot_new.wav; sourceTree = "<group>"; };
 		18A36FD8184C7F820022F0A8 /* smile_face.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = smile_face.png; sourceTree = "<group>"; };
 		18A36FEB1855C1DB0022F0A8 /* DLCImagePickerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DLCImagePickerController.h; sourceTree = "<group>"; };
 		18A36FEC1855C1DB0022F0A8 /* DLCImagePickerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DLCImagePickerController.m; sourceTree = "<group>"; };
@@ -715,7 +714,6 @@
 		18E746FD18AC704E0023967B /* EZBarRegion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZBarRegion.h; sourceTree = "<group>"; };
 		18E746FE18AC704E0023967B /* EZBarRegion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZBarRegion.m; sourceTree = "<group>"; };
 		18F58B48186D5F9C006CB966 /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
-		18F58B4C186D8824006CB966 /* shot2.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = shot2.wav; sourceTree = "<group>"; };
 		18F58B50186EC0D1006CB966 /* ILTranslucentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ILTranslucentView.h; sourceTree = "<group>"; };
 		18F58B51186EC0D1006CB966 /* ILTranslucentView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ILTranslucentView.m; sourceTree = "<group>"; };
 		18F58B55187130E0006CB966 /* UIView+Shadow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+Shadow.h"; sourceTree = "<group>"; };
@@ -962,9 +960,8 @@
 		18C0E7691861A07200D694CE /* sound_effects */ = {
 			isa = PBXGroup;
 			children = (
-				1879BE321915DD650084FB27 /* shot_new.wav */,
-				18F58B4C186D8824006CB966 /* shot2.wav */,
 				18512A321861BE6300282264 /* shot_voice.aiff */,
+				186EE565191C88B500212BF9 /* shot_low.aiff */,
 				18C0E76A1861A08700D694CE /* page_turn.aiff */,
 			);
 			path = sound_effects;
@@ -1526,7 +1523,6 @@
 			files = (
 				18E3481E183F02D600C9D89D /* haarcascade_mcs_leftear.xml in Resources */,
 				18A3702A1855C2A40022F0A8 /* flash.png in Resources */,
-				18F58B4D186D8824006CB966 /* shot2.wav in Resources */,
 				18A370211855C2A40022F0A8 /* close@2x.png in Resources */,
 				18A3702F1855C2A40022F0A8 /* camera-button@2x.png in Resources */,
 				18A3701D1855C2A40022F0A8 /* library.png in Resources */,
@@ -1554,7 +1550,6 @@
 				1874D9DE18699386005743FC /* header_1.png in Resources */,
 				18A3701C1855C2A40022F0A8 /* library@2x.png in Resources */,
 				18A370321855C2A40022F0A8 /* filter-close.png in Resources */,
-				1879BE331915DD650084FB27 /* shot_new.wav in Resources */,
 				18F58B6E18719071006CB966 /* border_ceil.png in Resources */,
 				18E3481A183F02D600C9D89D /* haarcascade_lefteye_2splits.xml in Resources */,
 				18A370351855C2A40022F0A8 /* filter-open@2x.png in Resources */,
@@ -1565,6 +1560,7 @@
 				18E34832183F052400C9D89D /* yue_1.JPG in Resources */,
 				18A370311855C2A40022F0A8 /* camera-icon@2x.png in Resources */,
 				18E346FD183DF9C400C9D89D /* default-like-btn-pressed@2x.png in Resources */,
+				186EE566191C88B500212BF9 /* shot_low.aiff in Resources */,
 				18E3482E183F044700C9D89D /* test.JPG in Resources */,
 				18A370251855C2A40022F0A8 /* front-camera@2x.png in Resources */,
 				18F58B5F1871750F006CB966 /* gradient_border.png in Resources */,

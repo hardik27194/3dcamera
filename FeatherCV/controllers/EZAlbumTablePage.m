@@ -3074,7 +3074,7 @@ static int photoCount = 1;
 
 
 - (void) scrollViewDidScroll:(UIScrollView*)scrollView{
-    EZDEBUG(@"did scroll get called");
+    //EZDEBUG(@"did scroll get called");
     if(_scrollBlock){
         _scrollBlock(@(true));
         _scrollBlock = nil;

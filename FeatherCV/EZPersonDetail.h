@@ -11,9 +11,9 @@
 
 @class EZClickImage;
 @class EZPerson;
-@interface EZPersonDetail : UIViewController<UIActionSheetDelegate>
+@interface EZPersonDetail : UIViewController<UIActionSheetDelegate, UITextFieldDelegate>
 
-@property (nonatomic, strong) UILabel* titleInfo;
+@property (nonatomic, strong) UITextField* titleInfo;
 
 @property (nonatomic, strong) UILabel* mobile;
 

@@ -817,7 +817,7 @@
     self.wantsFullScreenLayout = YES;
     _pageTurn = [[EZSoundEffect alloc] initWithSoundNamed:@"page_turn.aiff"];
     _shotReady = [[EZSoundEffect alloc] initWithSoundNamed:@"shot_voice.aiff"];
-    _shotVoice = [[EZSoundEffect alloc] initWithSoundNamed:@"shot_new.wav"];
+    _shotVoice = [[EZSoundEffect alloc] initWithSoundNamed:@"shot_low.aiff"];
     
     bigSharpenFilter = [[EZSkinSharpen alloc] init];
     bigSharpenFilter.sharpenSize = 3.2;
