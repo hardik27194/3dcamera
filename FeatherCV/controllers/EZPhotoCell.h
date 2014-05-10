@@ -116,6 +116,10 @@
 
 @property (nonatomic, strong) UIView* otherSliverLine;
 
+@property (nonatomic, strong) UIView* leftHalf;
+
+@property (nonatomic, strong) UIView* rightHalf;
+
 //Used to record the status of the photo cell, so when I turn I knew which one is on the front.
 @property (nonatomic, assign) BOOL isFrontImage;
 

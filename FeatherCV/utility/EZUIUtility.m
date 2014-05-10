@@ -295,6 +295,50 @@ SINGLETON_FOR_CLASS(EZUIUtility)
     return clickView;
 }
 
+- (UIButton*) createHeartButton:(EZFilterType)filterType
+{
+    UIButton* _likeButton =  [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 80, 80)]; //[[EZClickView alloc] initWithFrame:CGRectMake(255, CurrentScreenHeight - 105, 45,45)]; //[[EZCenterButton alloc] initWithFrame:CGRectMake(255, 23, 60,60) cycleRadius:21 lineWidth:2];
+    //_likeButton.backgroundColor = [UIColor redColor];
+    _likeButton.backgroundColor = [UIColor clearColor];
+    //[_likeButton setImage:EmptyHeartImage forState:UIControlStateNormal];
+    //[_likeButton setImage:PressedHeartImage forState:UIControlStateHighlighted];
+    [_likeButton setTitle:EZHeartSymbol forState:UIControlStateNormal];
+    _likeButton.titleLabel.font = [UIFont boldSystemFontOfSize:30];
+    [_likeButton setTitleColor:EZEmptyColor forState:UIControlStateNormal];
+    //[_likeButton setTitleColor:ClickedColor forState:UIControlStateHighlighted];
+    //[_likeButton enableRoundImage];
+    //[_likeButton addTarget:self action:@selector(buttonClick:) forControlEvents:UIControlEventTouchUpInside];
+    
+    UIView* _leftHalf = [[UIView alloc] initWithFrame:CGRectMake(-14, -14, 40, 80)];
+    UILabel* leftLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 80, 80)];
+    leftLabel.font = [UIFont boldSystemFontOfSize:30];
+    leftLabel.textAlignment = NSTextAlignmentCenter;
+    leftLabel.textColor = ClickedColor;
+    leftLabel.text = EZHeartSymbol;
+    [_leftHalf addSubview:leftLabel];
+    _leftHalf.clipsToBounds = YES;
+    [_likeButton addSubview:_leftHalf];
+    _leftHalf.userInteractionEnabled = NO;
+    
+    UIView* _rightHalf = [[UIView alloc] initWithFrame:CGRectMake(26, -14, 40, 80)];
+    UILabel* rightLabel = [[UILabel alloc] initWithFrame:CGRectMake(-40, 0, 80, 80)];
+    rightLabel.font = [UIFont boldSystemFontOfSize:30];
+    rightLabel.textAlignment = NSTextAlignmentCenter;
+    rightLabel.textColor = ClickedColor;
+    rightLabel.text = EZHeartSymbol;
+    [_rightHalf addSubview:rightLabel];
+    _rightHalf.clipsToBounds = YES;
+    _rightHalf.userInteractionEnabled = NO;
+    [_likeButton addSubview:_rightHalf];
+    if(filterType == kPhotoOtherLike){
+        _leftHalf.hidden = YES;
+    }else if(filterType == kPhotoOwnLike){
+        _rightHalf.hidden = YES;
+    }
+    
+    return _likeButton;
+}
+
 
 - (EZClickImage*) createLargeShotButton
 {

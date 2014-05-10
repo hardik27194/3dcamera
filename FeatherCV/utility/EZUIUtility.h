@@ -75,6 +75,8 @@
 
 - (EZHairButton*) createShotButton;
 
+- (UIButton*) createHeartButton:(EZFilterType)filterType;
+
 - (EZClickImage*) createLargeShotButton;
 
 - (EZClickImage*) createBackShotButton;

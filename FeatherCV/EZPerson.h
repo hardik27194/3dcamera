@@ -9,11 +9,6 @@
 #import <Foundation/Foundation.h>
 #import "LocalPersons.h"
 
-typedef enum {
-    kPersonFilter,
-    kPhotoWaitFilter,
-    kPhotoNewFilter
-}EZFilterType;
 
 @interface EZPerson : NSObject
 

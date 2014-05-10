@@ -27,6 +27,14 @@
 
 - (void) buttonClick:(id)obj
 {
+    EZDEBUG(@"like clicked");
+    [UIView animateWithDuration:0.2 animations:^(){
+        _likeButton.transform = CGAffineTransformMakeScale(1.3, 1.3);
+    } completion:^(BOOL completed){
+        [UIView animateWithDuration:0.3 animations:^(){
+            _likeButton.transform = CGAffineTransformIdentity;
+        }];
+    }];
     if(_buttonClicked){
         _buttonClicked(nil);
     }
@@ -145,14 +153,39 @@
         _ownTalk.clipsToBounds = true;
         [self.container addSubview:_ownTalk];
         
-        _likeButton =  [[UIButton alloc] initWithFrame:CGRectMake(255, CurrentScreenHeight - 220 - startPos, 60, 60)]; //[[EZClickView alloc] initWithFrame:CGRectMake(255, CurrentScreenHeight - 105, 45,45)]; //[[EZCenterButton alloc] initWithFrame:CGRectMake(255, 23, 60,60) cycleRadius:21 lineWidth:2];
+        _likeButton =  [[UIButton alloc] initWithFrame:CGRectMake(249, CurrentScreenHeight - 220 - startPos, 80, 80)]; //[[EZClickView alloc] initWithFrame:CGRectMake(255, CurrentScreenHeight - 105, 45,45)]; //[[EZCenterButton alloc] initWithFrame:CGRectMake(255, 23, 60,60) cycleRadius:21 lineWidth:2];
         //_likeButton.backgroundColor = [UIColor redColor];
         _likeButton.backgroundColor = [UIColor clearColor];
-        [_likeButton setImage:EmptyHeartImage forState:UIControlStateNormal];
-        [_likeButton setImage:PressedHeartImage forState:UIControlStateHighlighted];
+        //[_likeButton setImage:EmptyHeartImage forState:UIControlStateNormal];
+        //[_likeButton setImage:PressedHeartImage forState:UIControlStateHighlighted];
+        [_likeButton setTitle:EZHeartSymbol forState:UIControlStateNormal];
+        _likeButton.titleLabel.font = [UIFont boldSystemFontOfSize:40];
+        [_likeButton setTitleColor:EZEmptyColor forState:UIControlStateNormal];
+        //[_likeButton setTitleColor:ClickedColor forState:UIControlStateHighlighted];
         //[_likeButton enableRoundImage];
         [_likeButton addTarget:self action:@selector(buttonClick:) forControlEvents:UIControlEventTouchUpInside];
         
+        _leftHalf = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 40, 80)];
+        UILabel* leftLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 80, 80)];
+        leftLabel.font = [UIFont boldSystemFontOfSize:40];
+        leftLabel.textAlignment = NSTextAlignmentCenter;
+        leftLabel.textColor = ClickedColor;
+        leftLabel.text = EZHeartSymbol;
+        [_leftHalf addSubview:leftLabel];
+        _leftHalf.clipsToBounds = YES;
+        [_likeButton addSubview:_leftHalf];
+        _leftHalf.userInteractionEnabled = NO;
+        
+        _rightHalf = [[UIView alloc] initWithFrame:CGRectMake(40, 0, 40, 80)];
+        UILabel* rightLabel = [[UILabel alloc] initWithFrame:CGRectMake(-40, 0, 80, 80)];
+        rightLabel.font = [UIFont boldSystemFontOfSize:40];
+        rightLabel.textAlignment = NSTextAlignmentCenter;
+        rightLabel.textColor = ClickedColor;
+        rightLabel.text = EZHeartSymbol;
+        [_rightHalf addSubview:rightLabel];
+        _rightHalf.clipsToBounds = YES;
+        _rightHalf.userInteractionEnabled = NO;
+        [_likeButton addSubview:_rightHalf];
         //_otherLike = [[EZClickView alloc] initWithFrame:CGRectMake(255, CurrentScreenHeight - 105, 45, 45)];
         //_otherLike.layer.borderColor = [UIColor whiteColor].CGColor;
         //_otherLike.layer.borderWidth = 2;

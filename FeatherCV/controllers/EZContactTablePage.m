@@ -43,7 +43,7 @@
     friendTitle.font = EZTitleFontCN;
     friendTitle.textAlignment = NSTextAlignmentCenter;
     friendTitle.textColor = [UIColor whiteColor];
-    friendTitle.text = @"朋友";
+    friendTitle.text = macroControlInfo(@"朋友");
     _barBackground.backgroundColor = RGBA(0, 0, 0, 60);
     [_barBackground addSubview:friendTitle];
     //_barBackground.hidden = YES;
@@ -148,9 +148,24 @@
    
     NSArray* allPhotos = [NSArray arrayWithArray:[EZDataUtil getInstance].mainPhotos];
     EZPerson* personNew = [[EZPerson alloc] init];
-    personNew.name = @"新照片";
+    personNew.name = macroControlInfo(@"新照片");
     personNew.filterType = kPhotoNewFilter;
     personNew.joined = YES;
+    
+    EZPerson* personBothLike = [[EZPerson alloc] init];
+    personBothLike.name = macroControlInfo(@"都喜欢的照片");
+    personBothLike.filterType = kPhotoAllLike;
+    personBothLike.joined = YES;
+    
+    EZPerson* personOtherLike = [[EZPerson alloc] init];
+    personOtherLike.name = macroControlInfo(@"对方喜欢");
+    personOtherLike.filterType = kPhotoOtherLike;
+    personOtherLike.joined = YES;
+    
+    EZPerson* personOwnLike = [[EZPerson alloc] init];
+    personOwnLike.name =  macroControlInfo(@"我喜欢的照片");
+    personOwnLike.filterType = kPhotoOwnLike;
+    personOwnLike.joined = YES;
     
     /**
     EZPerson* personWait = [[EZPerson alloc] init];
@@ -165,12 +180,34 @@
             personNew.photoCount += 1;
             personNew.pendingEventCount += 1;
         }
+        
+        BOOL bothAdded = false;
+        BOOL otherAdded = false;
+        BOOL ownAdded = false;
         for(EZPhoto* matchedPh in ph.photo.photoRelations){
         //EZPhoto* matchedPh = [ph.photo.photoRelations objectAtIndex:0];
         EZPerson* ps = pid2person(matchedPh.personID);
         if(ph.photo.typeUI == kPhotoRequest){
             personNew.photoCount += 1;
             personNew.pendingEventCount += 1;
+        }
+        if([ph.photo.likedUsers containsObject:matchedPh.personID] && [matchedPh.likedUsers containsObject:currentLoginID]){
+                //if(ph.photo.re)
+            if(!bothAdded){
+                bothAdded = true;
+                personBothLike.photoCount += 1;
+            }
+            
+        }else if([ph.photo.likedUsers containsObject:matchedPh.personID]){
+            if(!otherAdded){
+                otherAdded = true;
+                personOtherLike.photoCount += 1;
+            }
+        }else if([matchedPh.likedUsers containsObject:currentLoginID]){
+            if(!ownAdded){
+                ownAdded = true;
+                personOwnLike.photoCount += 1;
+            }
         }
         
         if(!ps.personID){
@@ -195,6 +232,9 @@
     [_contacts addObjectsFromArray:arrs];
     
     [_contacts insertObject:personNew atIndex:1];
+    [_contacts insertObject:personBothLike atIndex:2];
+    [_contacts insertObject:personOtherLike atIndex:3];
+    [_contacts insertObject:personOwnLike atIndex:4];
     //[_contacts insertObject:personWait atIndex:2];
     __weak EZContactTablePage* weakSelf = self;
     EZDEBUG(@"Stored person count:%i, arrs:%i", _contacts.count, arrs.count);
@@ -323,6 +363,7 @@
     }
     
     //[(UIImageView*)cell.headIcon setImageWithURL:str2url(person.avatar)];
+    [[cell.contentView viewWithTag:2014] removeFromSuperview];
     if(person.filterType){
         cell.headIcon.hidden = YES;
         cell.headIcon.userInteractionEnabled = false;
@@ -373,6 +414,17 @@
     };
     
     [cell fitLine];
+    
+    if(person.filterType){
+        //cell.headIcon.hidden = YES;
+        //cell.headIcon.userInteractionEnabled = false;
+        if(person.filterType != kPhotoNewFilter){
+            UIButton* btn = [[EZUIUtility sharedEZUIUtility] createHeartButton:person.filterType];
+            btn.frame = cell.headIcon.frame;
+            btn.tag = 2014;
+            [cell.contentView addSubview:btn];
+        }
+    }
     EZDEBUG(@"I will show the person:%@, pos:%i", person.name, indexPath.row);
     return cell;
 }

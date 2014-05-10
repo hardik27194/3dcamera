@@ -75,6 +75,8 @@
 
 #define shaderSkinColor vec3(0.73,0.73,0.51)
 
+#define EZHeartSymbol @"♡"
+
 //The purpose of this even is to setup the Current Album user, so that user could load
 //The photo shared with this user
 #define EZSetAlbumUser @"EZSetAlbumUser"
@@ -174,6 +176,13 @@
 #define EZButtonRed RGBCOLOR(216, 116, 56)
 
 #define ClickedColor RGBCOLOR(61, 191, 216)
+
+#define EZEmptyColor RGBA(255,255,255,120)//[UIColor whiteColor]
+#define EZOwnColor RGBCOLOR(101, 247, 231)
+#define EZOtherColor RGBCOLOR(247, 231, 101)
+#define EZAllLikeColor RGBCOLOR(61, 191, 216)
+
+
 
 #define reachableDomain @"www.google.com"
 
@@ -285,6 +294,16 @@
 #define EZOuterCycleRadius  15.0
 
 #define EZInnerCycleRadius 22.0
+
+typedef enum {
+    kPersonFilter,
+    kPhotoWaitFilter,
+    kPhotoNewFilter,
+    kPhotoAllLike,
+    kPhotoOtherLike,
+    kPhotoOwnLike
+}EZFilterType;
+
 
 
 #define AllResizeMask UIViewAutoresizingFlexibleBottomMargin|UIViewAutoresizingFlexibleTopMargin|UIViewAutoresizingFlexibleLeftMargin|UIViewAutoresizingFlexibleRightMargin|UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight

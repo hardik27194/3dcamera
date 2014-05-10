@@ -100,15 +100,28 @@ static int photoCount = 1;
     if([back.likedUsers containsObject:currentLoginID] && [forward.likedUsers containsObject:back.personID]){
         //cell.likeButton.backgroundColor = RGBA(255, 0, 0, 64);
         //likedByMe = true;
-        [cell.likeButton setImage:FullHeartImage forState:UIControlStateNormal];
+        //[cell.likeButton setImage:FullHeartImage forState:UIControlStateNormal];
+        //[cell.likeButton setTitleColor:EZAllLikeColor forState:UIControlStateNormal];
+        cell.leftHalf.hidden = NO;
+        cell.rightHalf.hidden = NO;
         //[cell.likeButton setImage:LeftHeartImage forState:UIControlStateNormal];
     }else if([back.likedUsers containsObject:currentLoginID]){
-        [cell.likeButton setImage:LeftHeartImage forState:UIControlStateNormal];
+        //[cell.likeButton setImage:LeftHeartImage forState:UIControlStateNormal];
+        //[cell.likeButton setTitleColor:EZOwnColor forState:UIControlStateNormal];
+        cell.leftHalf.hidden = NO;
+        cell.rightHalf.hidden = YES;
+        
     }else if([forward.likedUsers containsObject:back.personID]){
-        [cell.likeButton setImage:RightHeartImage forState:UIControlStateNormal];
+        
+        //[cell.likeButton setImage:RightHeartImage forState:UIControlStateNormal];
+        //[cell.likeButton setTitleColor:EZOtherColor forState:UIControlStateNormal];
+        cell.leftHalf.hidden = YES;
+        cell.rightHalf.hidden = NO;
     }else{
-        [cell.likeButton setImage:EmptyHeartImage forState:UIControlStateNormal];
-
+        //[cell.likeButton setImage:EmptyHeartImage forState:UIControlStateNormal];
+        //[cell.likeButton setTitleColor:EZEmptyColor forState:UIControlStateNormal];
+        cell.leftHalf.hidden = YES;
+        cell.rightHalf.hidden = YES;
     }
 }
 
@@ -205,7 +218,7 @@ static int photoCount = 1;
     __weak EZAlbumTablePage* weakSelf = self;
     __weak EZPhotoCell* weakCell = cell;
     
-    
+    cell.likeButton.userInteractionEnabled = YES;
     if(cp.isPlaceHolder){
         EZDEBUG(@"Encounter empty");
         [self setEmptyInfo:cell isEmpty:YES];
@@ -899,6 +912,67 @@ static int photoCount = 1;
     return res;
 }
 
+- (NSArray*) getHeartType:(EZFilterType)filterType
+{
+    NSMutableArray* res = [[NSMutableArray alloc] init];
+    
+    NSArray* storedPhoto = [EZDataUtil getInstance].mainPhotos;
+    
+    EZDEBUG(@"Person All stored photos:%i", storedPhoto.count);
+    for(EZDisplayPhoto* dp in storedPhoto){
+        //EZPhoto* ph = nil;
+        EZDisplayPhoto* newDP = nil;
+        for(int i = 0; i < dp.photo.photoRelations.count; i++){
+            EZPhoto* ph = [dp.photo.photoRelations objectAtIndex:i];
+            
+            BOOL otherLike = [dp.photo.likedUsers containsObject:ph.personID];
+            BOOL ownLike = [ph.likedUsers containsObject:currentLoginID];
+            if(otherLike || ownLike){
+                //if(dp.photo.photoRelations.count > 0){
+                if(!newDP){
+                    newDP = [self wrapPhoto:ph];
+                    newDP.photoPos = 0;
+                    newDP.photo = dp.photo.copy;
+                    newDP.photo.photoRelations = [[NSMutableArray alloc] init];
+                }
+                
+                if(filterType == kPhotoOwnLike){
+                    if(!otherLike && ownLike){
+                        [newDP.photo.photoRelations addObject:ph];
+                    }
+                }else if(filterType == kPhotoOtherLike){
+                    if(otherLike && !ownLike){
+                        [newDP.photo.photoRelations addObject:ph];
+                    }
+                }else if(filterType == kPhotoAllLike){
+                    if(otherLike && ownLike){
+                        [newDP.photo.photoRelations addObject:ph];
+                    }
+                }
+            }
+        }
+        if(newDP.photo.photoRelations.count){
+            [res addObject:newDP];
+        }
+    }
+    return res;
+}
+
+- (void) setTitleFormat:(EZPerson*)currentUser
+{
+    _currentUser = currentUser;
+    self.title = currentUser.name;
+    [self setNoteCount];
+    [_leftCyleButton setTitle:currentUser.name forState:UIControlStateNormal];
+    _iconButton.hidden = YES;
+    _leftCyleButton.titleLabel.font= EZLargeFont;
+    CGSize fitSize = [_leftCyleButton.titleLabel sizeThatFits:CGSizeMake(230, 40)];
+    CGFloat width = fitSize.width > 230?230:fitSize.width;
+    EZDEBUG(@"like fit size for string:%@, size:%f, width:%f", currentUser.name, fitSize.width, width);
+    [_leftCyleButton setWidth:width + 2];
+    [_signRegion setX:width + 10];
+}
+
 - (void) setCurrentUser:(EZPerson *)currentUser readyBlock:(EZEventBlock)readyBlock
 {
     EZDEBUG(@"Will change the user from:%@ to %@", _currentUser, currentUser);
@@ -908,21 +982,17 @@ static int photoCount = 1;
         _assetView.hidden = NO;
     }
     
-    if(currentUser.filterType == kPhotoNewFilter){
-        _currentUser = currentUser;
-        //_numberLabel.alpha = 1;
-        //_numberLabel.text = int2str(currentUser.photoCount);
-        [self setNoteCount];
-        self.title = currentUser.name;
-        [_leftCyleButton setTitle:currentUser.name forState:UIControlStateNormal];
-        _iconButton.hidden = YES;
-        _leftCyleButton.titleLabel.font= EZLargeFont;
-        CGSize fitSize = [_leftCyleButton.titleLabel sizeThatFits:CGSizeMake(230, 40)];
-        CGFloat width = fitSize.width > 230?230:fitSize.width;
-        EZDEBUG(@"fit size for string:%@, size:%f, width:%f", currentUser.name, fitSize.width, width);
-        //[_leftText setWidth:fitSize.width];
-        [_leftCyleButton setWidth:width + 2];
-        [_signRegion setX:width + 10];
+    if(currentUser.filterType == kPhotoAllLike || currentUser.filterType == kPhotoOwnLike || currentUser.filterType == kPhotoOtherLike){
+        
+        [self setTitleFormat:currentUser];
+        [_combinedPhotos removeAllObjects];
+        [_combinedPhotos addObjectsFromArray:[self getHeartType:currentUser.filterType]];
+        EZDEBUG(@"filter type:%i, photoCount:%i", currentUser.filterType, _combinedPhotos.count);
+        [_tableView reloadData];
+        [self scrollToBottom:NO];
+        
+    }else if(currentUser.filterType == kPhotoNewFilter){
+        [self setTitleFormat:currentUser];
         [_combinedPhotos removeAllObjects];
         [_combinedPhotos addObjectsFromArray:[[EZDataUtil getInstance] getFirstTimeArray]];
         [_tableView reloadData];
@@ -931,18 +1001,7 @@ static int photoCount = 1;
     }else
     if(currentUser.filterType == kPhotoWaitFilter){
         NSArray* requests = [self getAllWaitRequests];
-        _currentUser = currentUser;
-        _iconButton.hidden = YES;
-        [self setNoteCount];
-        self.title = currentUser.name;
-        [_leftCyleButton setTitle:currentUser.name forState:UIControlStateNormal];
-        _leftCyleButton.titleLabel.font= EZLargeFont;
-        CGSize fitSize = [_leftCyleButton.titleLabel sizeThatFits:CGSizeMake(230, 40)];
-        CGFloat width = fitSize.width > 230?230:fitSize.width;
-        EZDEBUG(@"fit size for string:%@, size:%f, width:%f", currentUser.name, fitSize.width, width);
-        //[_leftText setWidth:fitSize.width];
-        [_leftCyleButton setWidth:width + 2];
-        [_signRegion setX:width + 10];
+        [self setTitleFormat:currentUser];
         [_combinedPhotos removeAllObjects];
         [_combinedPhotos addObjectsFromArray:requests];
         [_tableView reloadData];
@@ -3082,7 +3141,7 @@ static int photoCount = 1;
     NSIndexPath* visiblePath = [self.tableView.indexPathsForVisibleRows objectAtIndex:0];
     if(visiblePath.row < _combinedPhotos.count){
         EZDisplayPhoto* dp = [_combinedPhotos objectAtIndex:visiblePath.row];
-        if(dp.isFront){
+        if(dp.isFront && dp.photo.typeUI != kPhotoRequest){
             _rotateIndex = visiblePath;
             _scrollBeginPos = self.tableView.contentOffset.y;
             _rotateCell = (EZPhotoCell*)[self.tableView cellForRowAtIndexPath:visiblePath];
@@ -3115,7 +3174,7 @@ static int photoCount = 1;
     if(_rotateCell){
         CGFloat delta = fabsf(_scrollBeginPos - self.tableView.contentOffset.y)/CurrentScreenHeight;
         CATransform3D trans = CATransform3DRotate(CATransform3DIdentity, M_PI*delta, 0.0, 1.0, 0.0);
-        trans.m34 = 1/3000.0;
+        trans.m34 = 1/1000.0;
         
         //[UIView animateWithDuration:0.2 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(){
         [_rotateCell.rotateContainer viewWithTag:2012].layer.transform = trans;
@@ -3124,7 +3183,7 @@ static int photoCount = 1;
             CGFloat gapAngle = ((1.0 - delta)/0.5) * M_PI_2;
             
             CATransform3D frontTrans = CATransform3DRotate(CATransform3DIdentity, gapAngle, 0.0, 1.0, 0.0);
-            trans.m34 = 1/3000.0;
+            trans.m34 = 1/1000.0;
             _rotateCell.frontImage.layer.transform = frontTrans;
         }else{
             [_rotateCell.rotateContainer viewWithTag:2012].hidden = NO;
