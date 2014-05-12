@@ -629,8 +629,18 @@ static EZNetworkUtility* instance;
     }];
 }
 
++ (void) postParameterAsJson:(NSString*)url parameters:(id)params complete:(EZEventBlock)complete failblk:(EZEventBlock)block
+{
+    [self postParameterAsJson:url parameters:params complete:complete failblk:block isBackground:NO];
+}
+/**
+ dispatch_queue_t backgroundQueue = dispatch_queue_create("com.name.bgqueue", NULL);
+ AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
+ operation.successCallbackQueue = backgroundQueue;
+ **/
 
-+ (void) postParameterAsJson:(NSString *)url parameters:(id)params complete:(EZEventBlock)completed failblk:(EZEventBlock)errorBlk
+
++ (void) postParameterAsJson:(NSString *)url parameters:(id)params complete:(EZEventBlock)completed failblk:(EZEventBlock)errorBlk isBackground:(BOOL)background
 {
     //NSMutableURLRequest* request =
     
@@ -650,6 +660,7 @@ static EZNetworkUtility* instance;
     [manager HTTPRequestOperationWithRequest:request
                                      success:^(AFHTTPRequestOperation *operation, id responseObject) {
                                          //NSLog(@"Success %@", responseObject);
+                                         //EZDEBUG(@"post success");
                                          if(completed){
                                              completed(responseObject);
                                          }
@@ -659,6 +670,12 @@ static EZNetworkUtility* instance;
                                              errorBlk(error);
                                          }
                                      }];
+    
+    if(background){
+         dispatch_queue_t backgroundQueue = dispatch_queue_create("com.name.bgqueue", NULL);
+         //AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
+         operation.completionQueue = backgroundQueue;
+    }
     [operation start];
 }
 

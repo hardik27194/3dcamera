@@ -19,8 +19,7 @@
 
 + (void) postJson:(NSString*)url parameters:(id)dicts complete:(EZEventBlock)complete failblk:(EZEventBlock)block;
 
-//Will post the
-+ (void) postParameterAsJson:(NSString*)url parameters:(id)params complete:(EZEventBlock)complete failblk:(EZEventBlock)block;
+
 
 + (void) getJson:(NSString*)url complete:(EZEventBlock)complete failblk:(EZEventBlock)block;
 
@@ -102,4 +101,16 @@
 
 @property (nonatomic, assign) BOOL isPauseRequest;
 
+@property (nonatomic, strong) dispatch_queue_t backgroundQueue;
+
+
+//Will post the
++ (void) postParameterAsJson:(NSString*)url parameters:(id)params complete:(EZEventBlock)complete failblk:(EZEventBlock)block;
+
++ (void) postParameterAsJson:(NSString*)url parameters:(id)params complete:(EZEventBlock)complete failblk:(EZEventBlock)block isBackground:(BOOL)background;
+/**
+dispatch_queue_t backgroundQueue = dispatch_queue_create("com.name.bgqueue", NULL);
+AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
+operation.successCallbackQueue = backgroundQueue;
+**/
 @end

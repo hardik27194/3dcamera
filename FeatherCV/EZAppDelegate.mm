@@ -362,7 +362,7 @@
         [[EZDataUtil getInstance] uploadPendingPhoto];
         [[EZDataUtil getInstance] queryPendingPerson];
         //if((_queryCount % 5) == 0){
-        //[[EZDataUtil getInstance] removeExpiredPhotos];
+        [[EZDataUtil getInstance] removeExpiredPhotos];
         //}
         //[[EZDataUtil getInstance] storeAll];
         if([EZDataUtil getInstance].timerBlock){

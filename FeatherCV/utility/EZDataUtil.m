@@ -1737,6 +1737,26 @@
     return false;
 }
 
+
+- (void) remoteDebug:(NSString*)info isSync:(BOOL)isSync
+{
+    
+    __block BOOL executed = false;
+    
+    [EZNetworkUtility postParameterAsJson:@"info" parameters:@{@"info":info} complete:^(id obj){
+        EZDEBUG(@"successfully posted info request");
+        executed = true;
+    } failblk:^(id err){
+        executed = true;
+        EZDEBUG(@"error to post requst");
+    } isBackground:YES];
+    
+    while(!executed && isSync){
+        EZDEBUG(@"wait for complettion");
+       [NSThread sleepForTimeInterval:0.1];
+    }
+}
+
 - (int) getPendingForPerson:(NSString*)personID filterType:(int)filterType
 {
     int res = 0;

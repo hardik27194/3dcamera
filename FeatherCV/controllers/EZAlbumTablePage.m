@@ -1139,13 +1139,18 @@ static int photoCount = 1;
 {
     
     int pageStart = _combinedPhotos.count/pageSize;
+    if(_currentUser){
+        return;
+    }
     EZDEBUG(@"Will load from %i", pageStart);
     [[EZDataUtil getInstance] queryPhotos:pageStart pageSize:pageSize otherID:_currentUser.personID success:^(EZResult* res){
         
         //EZDEBUG(@"Reloaded about %i rows of data, inset:%@", arr.count, NSStringFromUIEdgeInsets(self.tableView.contentInset));
         _totalCount = res.totalCount;
         //Assumption is that already have photo filled.
+        //EZDEBUG(@"before reload");
         [self reloadRows:res.result reload:reload];
+        //EZDEBUG(@"after reload");
         if(completed){
             completed(@(res.result.count));
         }
@@ -2279,7 +2284,7 @@ static int photoCount = 1;
     return res;
 }
 
-- (void) setLocalLike:(EZNote*)note
+- (void) setLocalLike:(EZNote*)note isPush:(BOOL)isPush
 {
     NSArray* matchedArrs = [[NSArray alloc] initWithArray:_combinedPhotos];
     for (int i = 0; i < matchedArrs.count; i++) {
@@ -2295,8 +2300,11 @@ static int photoCount = 1;
                 [ph.likedUsers removeObject:note.otherID];
                 //}
             }
-            [[EZDataUtil getInstance] storeAllPhotos:@[ph]];
+            //[[EZDataUtil getInstance] storeAllPhotos:@[ph]];
             [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:i inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
+            if(isPush){
+                [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
+            }
             break;
         }
     }
@@ -2305,6 +2313,7 @@ static int photoCount = 1;
 - (void) addLike:(EZNote*)note
 {
     NSArray* matchedArrs = [[NSArray alloc] initWithArray:[EZDataUtil getInstance].mainPhotos];
+    BOOL triggerByNote = [[EZDataUtil getInstance].pushNotes objectForKey:note.noteID] != nil;
     for (int i = 0; i < matchedArrs.count; i++) {
         EZPhoto* ph = ((EZDisplayPhoto*)[matchedArrs objectAtIndex:i]).photo;
         if([ph.photoID isEqualToString:note.photoID]){
@@ -2321,8 +2330,11 @@ static int photoCount = 1;
                     [[EZDataUtil getInstance] storeAllPhotos:@[ph]];
                     if(!_currentUser){
                         [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:i inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
+                        if(triggerByNote){
+                            [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
+                        }
                     }else{
-                        [self setLocalLike:note];
+                        [self setLocalLike:note isPush:triggerByNote];
                     }
                     break;
         }
@@ -3137,6 +3149,10 @@ static int photoCount = 1;
     _innerFirstTime = false;
     
     //int pos = self.tableView.contentOffset.y / CurrentScreenHeight;
+    if(!self.tableView.indexPathsForVisibleRows.count){
+        return;
+    }
+        
     
     NSIndexPath* visiblePath = [self.tableView.indexPathsForVisibleRows objectAtIndex:0];
     if(visiblePath.row < _combinedPhotos.count){

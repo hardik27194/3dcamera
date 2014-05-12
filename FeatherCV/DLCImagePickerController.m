@@ -3097,6 +3097,7 @@ context:(void *)context
     __weak DLCImagePickerController* weakSelf = self;
     [self.photoCaptureButton setEnabled:NO];
     if (!isStatic) {
+        //[[EZDataUtil getInstance] remoteDebug:@"before get free space" isSync:YES];
         uint64_t diskSpace = [EZFileUtil getFreeSpace];
         //EZDEBUG(@"disSpace:%llul", diskSpace);
         if(diskSpace < miniDiskSpace){
@@ -3104,6 +3105,7 @@ context:(void *)context
             [weakSelf showErrorInfo:macroControlInfo(@"存储空间已满")];
             return;
         }
+        //[[EZDataUtil getInstance] remoteDebug:[NSString stringWithFormat: @"after get free space:%llu", diskSpace] isSync:YES];
         _upArrow.hidden = NO;
         [(EZHairButton*)_quitCrossButton.innerView setButtonStyle:kShotHappen];
         _uploadStatus = kInitialUploading;
@@ -3124,13 +3126,10 @@ context:(void *)context
         _captureComplete = ^(id obj){
             EZDEBUG(@"photo captured, we will upload, specified person:%@, isPhotoRequest:%i", weakSelf.personID, weakSelf.isPhotoRequest);
             weakSelf.uploadStatus = kUploading;
-            //if(!weakSelf.isPhotoRequest){
-                //if(weakSelf.shotPhoto.photoRelations.count){
-            //    [weakSelf saveCapturedImage:progressStart];
-                //}
-            //}
+            //[[EZDataUtil getInstance] remoteDebug:@"capture completed" isSync:YES];
         };
         [self prepareForCapture];
+        //[[EZDataUtil getInstance] remoteDebug:@"prepare for capture is ready" isSync:YES];
         [MobClick event:EZALCameraShot label:[NSString stringWithFormat:@"%@,%i", _personID?@"request":@"person", _isPhotoRequest]];
     }else{
         //Mean the upload started, at least mean the photo already stored.
@@ -3148,6 +3147,7 @@ context:(void *)context
             if(!_isUploading){
                 //[_leftBarButton setTitle:macroControlInfo(@"Return")];
                 _isUploading = true;
+                //[[EZDataUtil getInstance] remoteDebug:@"will upload" isSync:YES];
                 if(!_isPhotoRequest){
                     [self confirmUpload:progressStart];
                 }else{

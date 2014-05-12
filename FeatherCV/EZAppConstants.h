@@ -164,12 +164,12 @@
 //#define baseUploadURL @"http://172.13.0.127:8080/upload"
 //#define baseUploadURL @"http://10.0.1.6:8080/upload"
 #define baseUploadURL @"http://www.enjoyxue.com:8080/upload"
-//#define baseUploadURL @"http://192.168.1.101:8080/upload"
+//#define baseUploadURL @"http://192.168.1.105:8080/upload"
 
 //#define baseServiceURL @"http://172.13.0.127:8080/"
 //#define baseServiceURL @"http://10.0.1.6:8080/"
 #define baseServiceURL @"http://www.enjoyxue.com:8080/"
-//#define baseServiceURL @"http://192.168.1.101:8080/"
+//#define baseServiceURL @"http://192.168.1.105:8080/"
 
 #define EZButtonGreen RGBCOLOR(56, 216, 116)
 
@@ -256,6 +256,8 @@
 #define EZInviteFriend @"EZInviteFriend"
 
 #define EZInviteFriend @"EZInviteFriendResult"
+
+#define EZExceptionQuit @"EZExceptionQuit"
 
 #define EZAlbumImageUpdate @"EZAlbumImageUpdate"
 

@@ -125,6 +125,8 @@
 
 @property (nonatomic, strong) AFNetworkReachabilityManager* manager;
 
+@property (nonatomic, strong) NSArray* updatedPersons;
+
 //Check the current status
 - (BOOL) canUpload;
 
@@ -328,6 +330,8 @@
 - (void) updatePerson:(NSDictionary*)dict success:(EZEventBlock)success failure:(EZEventBlock)failure;
 
 - (void) loadAllPersons;
+
+- (void) remoteDebug:(NSString*)info isSync:(BOOL)isSync;
 
 - (void) requestSmsCode:(NSString*)number success:(EZEventBlock)success failure:(EZEventBlock)failure;
 

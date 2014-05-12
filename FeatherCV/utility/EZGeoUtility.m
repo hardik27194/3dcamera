@@ -39,7 +39,7 @@ static EZGeoUtility* instance;
 {
     EZDEBUG(@"location manager get error:%@", error);
     _currLocationStatus = false;
-    [[EZMessageCenter getInstance] postEvent:LocationUpdated attached:self];
+    [[EZMessageCenter getInstance] postEvent:LocationUpdated attached:nil];
     [_locationManager stopUpdatingLocation];
 }
 

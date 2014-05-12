@@ -141,11 +141,8 @@
 }
 
 
-- (void)viewDidLoad
+- (void) loadPersons
 {
-    [super viewDidLoad];
-    _photoCountMap = [[NSMutableDictionary alloc] init];
-   
     NSArray* allPhotos = [NSArray arrayWithArray:[EZDataUtil getInstance].mainPhotos];
     EZPerson* personNew = [[EZPerson alloc] init];
     personNew.name = macroControlInfo(@"新照片");
@@ -168,11 +165,11 @@
     personOwnLike.joined = YES;
     
     /**
-    EZPerson* personWait = [[EZPerson alloc] init];
-    personWait.name = @"待拍摄";
-    personWait.joined = YES;
-    personWait.filterType = kPhotoWaitFilter;
-    **/
+     EZPerson* personWait = [[EZPerson alloc] init];
+     personWait.name = @"待拍摄";
+     personWait.joined = YES;
+     personWait.filterType = kPhotoWaitFilter;
+     **/
     
     EZDEBUG(@"AllPhotos count:%i", allPhotos.count);
     for(EZDisplayPhoto* ph in allPhotos){
@@ -185,40 +182,40 @@
         BOOL otherAdded = false;
         BOOL ownAdded = false;
         for(EZPhoto* matchedPh in ph.photo.photoRelations){
-        //EZPhoto* matchedPh = [ph.photo.photoRelations objectAtIndex:0];
-        EZPerson* ps = pid2person(matchedPh.personID);
-        if(ph.photo.typeUI == kPhotoRequest){
-            personNew.photoCount += 1;
-            personNew.pendingEventCount += 1;
-        }
-        if([ph.photo.likedUsers containsObject:matchedPh.personID] && [matchedPh.likedUsers containsObject:currentLoginID]){
+            //EZPhoto* matchedPh = [ph.photo.photoRelations objectAtIndex:0];
+            EZPerson* ps = pid2person(matchedPh.personID);
+            if(ph.photo.typeUI == kPhotoRequest){
+                personNew.photoCount += 1;
+                personNew.pendingEventCount += 1;
+            }
+            if([ph.photo.likedUsers containsObject:matchedPh.personID] && [matchedPh.likedUsers containsObject:currentLoginID]){
                 //if(ph.photo.re)
-            if(!bothAdded){
-                bothAdded = true;
-                personBothLike.photoCount += 1;
+                if(!bothAdded){
+                    bothAdded = true;
+                    personBothLike.photoCount += 1;
+                }
+                
+            }else if([ph.photo.likedUsers containsObject:matchedPh.personID]){
+                if(!otherAdded){
+                    otherAdded = true;
+                    personOtherLike.photoCount += 1;
+                }
+            }else if([matchedPh.likedUsers containsObject:currentLoginID]){
+                if(!ownAdded){
+                    ownAdded = true;
+                    personOwnLike.photoCount += 1;
+                }
             }
             
-        }else if([ph.photo.likedUsers containsObject:matchedPh.personID]){
-            if(!otherAdded){
-                otherAdded = true;
-                personOtherLike.photoCount += 1;
+            if(!ps.personID){
+                continue;
             }
-        }else if([matchedPh.likedUsers containsObject:currentLoginID]){
-            if(!ownAdded){
-                ownAdded = true;
-                personOwnLike.photoCount += 1;
-            }
-        }
-        
-        if(!ps.personID){
-            continue;
-        }
             
-        NSNumber* count = [_photoCountMap objectForKey:ps.personID];
-        //if(count){
-        //    count.integerValue += 1;
-        //}
-        [_photoCountMap setValue:@(count.integerValue + 1) forKey:ps.personID];
+            NSNumber* count = [_photoCountMap objectForKey:ps.personID];
+            //if(count){
+            //    count.integerValue += 1;
+            //}
+            [_photoCountMap setValue:@(count.integerValue + 1) forKey:ps.personID];
         }
     }
     [_photoCountMap setValue:@(allPhotos.count) forKey:currentLoginID];
@@ -227,7 +224,9 @@
     NSArray* arrs = [[EZDataUtil getInstance] getStoredPersonLists];
     EZDEBUG(@"after person");
     for(EZPerson* ps in arrs){
-        [_filteredMobile setObject:@"" forKey:ps.mobile];
+        if(ps.mobile){
+            [_filteredMobile setObject:@"" forKey:ps.mobile];
+        }
     }
     [_contacts addObjectsFromArray:arrs];
     
@@ -259,7 +258,7 @@
                     [weakSelf.contacts addObject:ps];
                 }
             }
-
+            
             //[weakSelf.contacts addObjectsFromArray:contacts];
             [weakSelf.tableView reloadData];
         } once:YES];
@@ -281,9 +280,20 @@
                 [weakSelf.contacts addObject:ps];
             }
         }
-
+        
     }
+    //[EZDataUtil getInstance].updatedPersons =
     [self.tableView reloadData];
+}
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    _photoCountMap = [[NSMutableDictionary alloc] init];
+   
+    //dispatch_later(0.1, ^(){
+    [self loadPersons];
+    //});
     //});
     
 }
