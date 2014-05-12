@@ -255,7 +255,7 @@
 
 #define EZInviteFriend @"EZInviteFriend"
 
-#define EZInviteFriend @"EZInviteFriendResult"
+#define EZInviteFriendResult @"EZInviteFriendResult"
 
 #define EZExceptionQuit @"EZExceptionQuit"
 
