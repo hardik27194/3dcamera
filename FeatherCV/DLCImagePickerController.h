@@ -15,10 +15,12 @@
 #import "EZSoundEffect.h"
 #import "EZFaceResultObj.h"
 #import "EZSharpenGaussianNormal.h"
+#import "EZMotionRecorder.h"
 
 @class EZClickImage;
 @class EZHairButton;
 @class EZShapeButton;
+@class EZMotionImage;
 
 typedef enum {
     kNormalMode,
@@ -111,7 +113,8 @@ typedef enum {
 @property (nonatomic, strong) UILabel* instrTitle;
 @property (nonatomic, assign) BOOL cameraSetupDone;
 @property (nonatomic, strong) CLLocation* location;
-
+@property (nonatomic, strong) EZMotionRecorder* motionRecorder;
+@property (nonatomic, strong) EZMotionImage* motionImage;
 
 @property (nonatomic, strong) EZEventBlock innerCancelBlock;
 

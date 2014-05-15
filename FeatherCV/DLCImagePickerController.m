@@ -54,6 +54,8 @@
 #import "EZPhotoCell.h"
 #import "EZShapeButton.h"
 #import "EZGeoUtility.h"
+#import "EZMotionRecorder.h"
+#import "EZMotionImage.h"
 
 
 //#include <vector>
@@ -64,6 +66,7 @@
 
 #define EZTextRegionPosY (CurrentScreenHeight - 150)
 
+/**
 @interface EZMotionRecord : NSObject 
 
 @property (nonatomic, strong) CMAttitude* attitude;
@@ -76,7 +79,7 @@
 
 @implementation EZMotionRecord
 @end
-
+**/
 
 #define liveTongSetting @[pointValue(0.0, 0.0), pointValue(0.125, 0.125), pointValue(0.25, 0.24), pointValue(0.5, 0.525), pointValue(0.75, 0.770), pointValue(1.0, 1.0)]
 
@@ -227,12 +230,12 @@
     return res;
 }
 
--(void) prepareStaticFilter:(EZFaceResultObj*)fobj image:(UIImage*)img{
+-(void) prepareStaticFilterNew:(EZFaceResultObj*)fobj image:(UIImage*)img{
     [staticPicture addTarget:filter];
     [filter addTarget:self.imageView];
 }
 
--(void) prepareStaticFilterOld:(EZFaceResultObj*)fobj image:(UIImage*)img{
+-(void) prepareStaticFilter:(EZFaceResultObj*)fobj image:(UIImage*)img{
     _detectFace = false;
     
     CGFloat dark = 100;//[self getISOSpeedRating];
@@ -476,10 +479,10 @@
 - (void) startPreFetch:(EZPhoto*)localPhoto imageSuccess:(EZEventBlock)imageSuccess
 {
     [[EZDataUtil getInstance] exchangeWithPerson:_personID photoID:_shotPhoto.photoID success:^(EZPhoto* pt){
-        EZDEBUG("Find prematched photo:%@, srcID:%@, uploaded flag:%i", pt.screenURL, pt.srcPhotoID, pt.uploaded);
-        if(_personID){
-            pt.createdTime = [NSDate date];
-        }
+        EZDEBUG("Find prematched photo:%@, srcID:%@, uploaded flag:%i,time:%@", pt.screenURL, pt.srcPhotoID, pt.uploaded, pt.createdTime);
+        //if(_personID){
+        //    pt.createdTime = [NSDate date];
+        //}
         //Mean this user get used once, will adjust it's sequence
         [[EZDataUtil getInstance] adjustActivity:pt.personID];
         //UIImageView* uw = [UIImageView new];
@@ -745,9 +748,9 @@
     bu.userInteractionEnabled = false;
     _quitCrossButton = [[EZEnlargedView alloc] initWithFrame:bu.frame innerView:bu enlargeRatio:EZEnlargeIconRatio];
     
-    if(_assetImage){
-        _quitCrossButton.hidden = YES;
-    }
+    //if(_assetImage){
+    //    _quitCrossButton.hidden = YES;
+    //}
     [bu setButtonStyle:kShotScreen];
     [TopView addSubview:_quitCrossButton];
     [UIView animateWithDuration:0.2 animations:^(){
@@ -759,7 +762,7 @@
    
     _quitCrossButton.releasedBlock = ^(id obj){
         EZDEBUG(@"quit Cross button called:%i", weakSelf.cameraSetupDone);
-        if(!weakSelf.cameraSetupDone){
+        if(!weakSelf.cameraSetupDone && !weakSelf.assetImage){
             EZDEBUG(@"Camera not ready yet");
             return;
         }
@@ -1419,10 +1422,45 @@ context:(void *)context
     _upArrow.hidden = YES;
     _shotButton.pressedBlock = ^(EZCenterButton* obj){
         [obj animateButton:0.3 lineWidth:13 completed:^(id obj){
-        [weakSelf takePhoto:nil];
+            if(!weakSelf.motionRecorder){
+                [weakSelf takePhoto:nil];
+            }else{
+                [weakSelf.motionRecorder stop];
+                [[weakSelf.shotButton viewWithTag:2014] removeFromSuperview];
+                NSArray* sortedMotion = [weakSelf.motionRecorder getSortedImages];
+                EZDEBUG(@"motion image size:%i", sortedMotion.count);
+                UIImageView* motionView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 160, 284)];
+                motionView.contentMode = UIViewContentModeScaleAspectFill;
+                [TopView addSubview:motionView];
+                weakSelf.motionImage = [[EZMotionImage alloc] init];
+                weakSelf.motionImage.motionImages = sortedMotion;
+                weakSelf.motionImage.container = motionView;
+                [weakSelf.motionImage play];
+                weakSelf.motionRecorder = nil;
+            }
         }];
     };
-    
+   /**
+    _shotButton.longPressBlock = ^(id obj){
+        if(weakSelf.motionRecorder){
+            EZDEBUG(@"motion Recorder are going on");
+            return;
+        }
+        //EZDEBUG(@"will creat")
+        weakSelf.motionRecorder = [[EZMotionRecorder alloc] init];
+        UIView* recordView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 30, 30)];
+        recordView.layer.cornerRadius = 3;
+        recordView.backgroundColor = [UIColor redColor];
+        recordView.clipsToBounds = YES;
+        recordView.center = CGPointMake(weakSelf.shotButton.width/2.0, weakSelf.shotButton.height/2.0);
+        recordView.tag = 2014;
+        [weakSelf.shotButton addSubview:recordView];
+        [weakSelf.motionRecorder start];
+        dispatch_later(0.1, ^(){
+            [weakSelf captureMotionImage];
+        });
+    };
+    **/
     _upArrow.center = CGPointMake(_shotButton.bounds.size.width/2.0, _shotButton.bounds.size.height/2.0);
     [_shotButton addSubview:_upArrow];
     [self.view addSubview:_shotButton];
@@ -1431,6 +1469,17 @@ context:(void *)context
 }
 
 
+- (void) captureMotionImage
+{
+    __weak DLCImagePickerController* weakSelf = self;
+    if(_motionRecorder){
+        EZDEBUG(@"start add image");
+        [_motionRecorder addImage:orgFiler.blackFilter.imageFromCurrentlyProcessedOutput];
+        dispatch_later(0.1, ^(){
+            [weakSelf captureMotionImage];
+        });
+    }
+}
 
 
 - (void) viewWillLayoutSubviews
@@ -2933,12 +2982,13 @@ context:(void *)context
     [self addChatInfo:weakSelf.shotPhoto];
     //weakSelf.shotPhoto.type = kNormalPhoto;
     
-    EZDEBUG(@"Photo requst Current photo converstaion:%@", _shotPhoto.conversations);
-
-    EZPhoto* otherPhoto = [_disPhoto.photo.photoRelations objectAtIndex:0];
-    EZPerson* ps = pid2person(otherPhoto.personID);
-    //ps.pendingEventCount -= 1;
-    [ps adjustPendingEventCount:-1];
+    EZDEBUG(@"Photo requst converstaion:%@, photoRelations:%i", _shotPhoto.conversations, _disPhoto.photo.photoRelations.count);
+    if(_disPhoto.photo.photoRelations.count){
+        EZPhoto* otherPhoto = [_disPhoto.photo.photoRelations objectAtIndex:0];
+        EZPerson* ps = pid2person(otherPhoto.personID);
+        //ps.pendingEventCount -= 1;
+        [ps adjustPendingEventCount:-1];
+    }
     //[ps save];
     //ps.photoCount += 1;
     _disPhoto.photo.typeUI = kNormalPhoto;
@@ -3463,6 +3513,14 @@ context:(void *)context
     EZDEBUG(@"Cancel clicked get called, static:%i, takingPhoto:%i, photoRequest:%i", isStatic, _isUploading, _isPhotoRequest);
     [MobClick event:EZALCameraCancel label:@"click"];
     EZPhoto* currentPhoto = _shotPhoto;
+    if(_assetImage){
+        [self innerCancel:YES];
+        if(!_isPhotoRequest){
+            currentPhoto.deleted = true;
+            [self cancelAll:currentPhoto];
+        }
+    }
+    else
     if(isStatic){
         //_hideTextInput = TRUE;
         //[self stopRotateImage:nil];

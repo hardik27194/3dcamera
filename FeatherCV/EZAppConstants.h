@@ -97,7 +97,7 @@
 
 #define EZOrangeColor RGBCOLOR(255, 81, 57)
 
-#define VinesGray RGBCOLOR(210, 220, 220)
+#define VinesGray RGBCOLOR(180, 190, 190)
 
 #define CellBackground [UIColor blueColor]
 
@@ -157,7 +157,7 @@
 //If there are production user,
 //Then will send to production push server.
 //If not we will send to sandbox server
-#define EZProductFlag @"0"
+#define EZProductFlag @"1"
 
 //#define inviteMessageURL @"http://www.enjoyxue.com:8080/"
 

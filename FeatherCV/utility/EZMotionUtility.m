@@ -47,7 +47,7 @@ static EZMotionUtility* instance;
 - (void) registerHandler:(EZEventBlock)handler key:(NSString*)key type:(EZMotionType)type
 {
     NSMutableArray* updateList = [_updateStatus objectForKey:@(type)];
-    //EZDEBUG(@"type:%i, list size:%i", type, _updateStatus.count);
+    EZDEBUG(@"type:%i, list size:%i", type, _updateStatus.count);
     if(!updateList){
         updateList = [[NSMutableArray alloc] init];
         [_updateStatus setObject:updateList forKey:@(type)];

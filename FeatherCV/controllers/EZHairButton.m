@@ -22,10 +22,10 @@
         [self enableRoundImage];
         self.enableTouchEffects = YES;
         
-        _horizon = [[UIView alloc] initWithFrame:CGRectMake(30, 30, 31, 1)];
+        _horizon = [[UIView alloc] initWithFrame:CGRectMake(30, 30, 31, 2)];
         _horizon.backgroundColor = ClickedColor;// [UIColor whiteColor];
         
-        _vertical = [[UIView alloc] initWithFrame:CGRectMake(30, 30, 1, 31)];
+        _vertical = [[UIView alloc] initWithFrame:CGRectMake(30, 30, 2, 31)];
         _vertical.backgroundColor = ClickedColor; //[UIColor whiteColor];
         
         _horizon.center = CGPointMake(23, 23);

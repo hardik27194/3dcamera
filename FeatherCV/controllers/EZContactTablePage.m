@@ -150,7 +150,7 @@
     personNew.joined = YES;
     
     EZPerson* personBothLike = [[EZPerson alloc] init];
-    personBothLike.name = macroControlInfo(@"都喜欢的照片");
+    personBothLike.name = macroControlInfo(@"都喜欢");
     personBothLike.filterType = kPhotoAllLike;
     personBothLike.joined = YES;
     
@@ -160,7 +160,7 @@
     personOtherLike.joined = YES;
     
     EZPerson* personOwnLike = [[EZPerson alloc] init];
-    personOwnLike.name =  macroControlInfo(@"我喜欢的照片");
+    personOwnLike.name =  macroControlInfo(@"我喜欢");
     personOwnLike.filterType = kPhotoOwnLike;
     personOwnLike.joined = YES;
     

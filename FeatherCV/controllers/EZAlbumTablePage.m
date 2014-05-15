@@ -40,6 +40,8 @@
 #import "UIScrollView+ScrollIndicator.h"
 #import "EZScrollViewer.h"
 #import "EZEnlargedView.h"
+#import "EZMotionImage.h"
+#import "EZMotionRecord.h"
 
 
 
@@ -47,6 +49,8 @@
 
 static int photoCount = 1;
 @interface EZAlbumTablePage ()
+
+@property (nonatomic, strong) EZMotionImage* mi;
 
 @end
 
@@ -162,9 +166,9 @@ static int photoCount = 1;
     cell.headIcon.hidden = NO;
     cell.ownTalk.hidden = NO;
     cell.frontImage.image = nil;
-    cell.frontImage.backgroundColor = ClickedColor;
-    cell.activityView.hidden = YES;
     //cell.frontImage.backgroundColor = VinesGray;
+    cell.activityView.hidden = YES;
+    cell.frontImage.backgroundColor = VinesGray;
     cell.cameraView.hidden = YES;
     cell.waitingInfo.hidden = YES;
     cell.shotPhoto.hidden = YES;
@@ -193,13 +197,16 @@ static int photoCount = 1;
             cell.andSymbol.hidden = YES;
             if(cp.photo.photoRelations.count > 1){
                 cell.frontImage.pageControl.hidden = NO;
+                //cell.frontImage.pageControl.currentPage = cp.photoPos;
             }
         }
         [cell.frontImage setPhotos:cp.photo.photoRelations position:cp.photoPos];
     }
     //[cell.frontImage cleanAllPhotos];
     //[cell.frontImage setPhotos:cp.photo.photoRelations currentPos:cp.photoPos];
-    _rightCycleButton.hidden = NO;
+    if([self isVisibleController]){
+        _rightCycleButton.hidden = NO;
+    }
     //This is for later update purpose. great, let's get whole thing up and run.
     cell.currentPos = indexPath.row;
     
@@ -302,7 +309,7 @@ static int photoCount = 1;
             
             weakSelf.rightCycleButton.hidden = YES;
             cell.shotPhoto.hidden = NO;
-            cell.frontImage.backgroundColor = ClickedColor;
+            //cell.frontImage.backgroundColor = ClickedColor;
             cell.otherIcon.hidden = YES;
             cell.otherName.hidden = YES;
             cell.otherTalk.hidden = YES;
@@ -380,6 +387,9 @@ static int photoCount = 1;
         if(!myPhoto.photoRelations.count){
             return;
         }
+        if(cp.photoPos > myPhoto.photoRelations.count){
+            return;
+        }
         EZPhoto* otherPhoto = [myPhoto.photoRelations objectAtIndex:cp.photoPos];
         if(otherPhoto){
             BOOL liked = [otherPhoto.likedUsers containsObject:currentLoginID];
@@ -388,20 +398,25 @@ static int photoCount = 1;
             //UIColor* oldColor = obj.backgroundColor;
             //obj.backgroundColor = RGBA(0, 0, 0, 60);
             weakCell.likeButton.userInteractionEnabled = NO;
+            EZDEBUG(@"start like");
+            if(liked){
+                otherPhoto.likedUsers = @[currentLoginID];
+            }else{
+                otherPhoto.likedUsers = nil;
+            }
+            [self setHeart:myPhoto back:otherPhoto cell:weakCell];
+
             [[EZDataUtil getInstance] likedPhoto:otherPhoto.photoID ownPhotoID:myPhoto.photoID like:liked success:^(id success){
                 EZDEBUG(@"Liked successfully");
-                if(liked){
-                    otherPhoto.likedUsers = @[currentLoginID];
-                }else{
-                    otherPhoto.likedUsers = nil;
-                }
-                [self setHeart:myPhoto back:otherPhoto cell:weakCell];
                 [[EZDataUtil getInstance] storeAllPhotos:@[myPhoto]];
                 weakCell.likeButton.userInteractionEnabled = YES;
             } failure:^(id err){
-                //obj.userInteractionEnabled = YES;
+                weakCell.likeButton.userInteractionEnabled = YES;
                 //obj.backgroundColor = oldColor;
                 //EZDEBUG(@"Encounter like errors:%@", err);
+                otherPhoto.likedUsers = nil;
+                [self setHeart:myPhoto back:otherPhoto cell:weakCell];
+                
             }];
         }
     };
@@ -422,7 +437,7 @@ static int photoCount = 1;
         if(myPhoto.typeUI != kPhotoRequest){
             EZPhoto* swPhoto = [myPhoto.photoRelations objectAtIndex:cp.photoPos];
             //swPhoto.screenURL = @"http://192.168.1.102:8080/broken/49497";
-            EZDEBUG(@"my photoID:%@, otherID:%@, otherPerson:%@, other photo upload:%i, other screenURL:%@, status content:%i, match:%i, update:%i", myPhoto.photoID,swPhoto.photoID, swPhoto.personID, swPhoto.uploaded, swPhoto.screenURL, myPhoto.contentStatus, myPhoto.exchangeStatus, myPhoto.updateStatus);
+            EZDEBUG(@"my photoID:%@, otherID:%@, otherPerson:%@, other photo upload:%i, other screenURL:%@, status content:%i, match:%i, update:%i, createTime:%@", myPhoto.photoID,swPhoto.photoID, swPhoto.personID, swPhoto.uploaded, swPhoto.screenURL, myPhoto.contentStatus, myPhoto.exchangeStatus, myPhoto.updateStatus, swPhoto.createdTime);
             //NSString* localURL = [[EZDataUtil getInstance] lo]
             //if(swPhoto){
             [weakSelf switchImage:weakCell displayPhoto:cp front:myPhoto back:swPhoto animate:YES path:indexPath position:cp.photoPos];
@@ -771,7 +786,7 @@ static int photoCount = 1;
     //if(pers)
     camera.personID = personID;
 
-    camera.view.frame = self.view.bounds;
+    //camera.view.frame = self.view.bounds;
     return camera;
 }
 
@@ -958,11 +973,15 @@ static int photoCount = 1;
     return res;
 }
 
-- (void) setTitleFormat:(EZPerson*)currentUser
+- (void) setTitleFormat:(EZPerson*)currentUser isHeartSelector:(BOOL)heartSelector
 {
     _currentUser = currentUser;
     self.title = currentUser.name;
-    [self setNoteCount];
+    if(heartSelector){
+        _numberLabel.alpha = 0;
+    }else{
+        [self setNoteCount];
+    }
     [_leftCyleButton setTitle:currentUser.name forState:UIControlStateNormal];
     _iconButton.hidden = YES;
     _leftCyleButton.titleLabel.font= EZLargeFont;
@@ -984,7 +1003,7 @@ static int photoCount = 1;
     
     if(currentUser.filterType == kPhotoAllLike || currentUser.filterType == kPhotoOwnLike || currentUser.filterType == kPhotoOtherLike){
         
-        [self setTitleFormat:currentUser];
+        [self setTitleFormat:currentUser isHeartSelector:YES];
         [_combinedPhotos removeAllObjects];
         [_combinedPhotos addObjectsFromArray:[self getHeartType:currentUser.filterType]];
         EZDEBUG(@"filter type:%i, photoCount:%i", currentUser.filterType, _combinedPhotos.count);
@@ -992,7 +1011,7 @@ static int photoCount = 1;
         [self scrollToBottom:NO];
         
     }else if(currentUser.filterType == kPhotoNewFilter){
-        [self setTitleFormat:currentUser];
+        [self setTitleFormat:currentUser isHeartSelector:NO];
         [_combinedPhotos removeAllObjects];
         [_combinedPhotos addObjectsFromArray:[[EZDataUtil getInstance] getFirstTimeArray]];
         [_tableView reloadData];
@@ -1001,7 +1020,7 @@ static int photoCount = 1;
     }else
     if(currentUser.filterType == kPhotoWaitFilter){
         NSArray* requests = [self getAllWaitRequests];
-        [self setTitleFormat:currentUser];
+        [self setTitleFormat:currentUser isHeartSelector:NO];
         [_combinedPhotos removeAllObjects];
         [_combinedPhotos addObjectsFromArray:requests];
         [_tableView reloadData];
@@ -1140,6 +1159,7 @@ static int photoCount = 1;
     
     int pageStart = _combinedPhotos.count/pageSize;
     if(_currentUser){
+        completed(nil);
         return;
     }
     EZDEBUG(@"Will load from %i", pageStart);
@@ -1418,8 +1438,12 @@ static int photoCount = 1;
             //EZDEBUG("Refresh type:%i", photo.typeUI);
             
             //[[EZMessageCenter getInstance] postEvent:EZNoteCountChange attached:@(-1)];
-            EZDEBUG("after Refresh type:%i, row:%i", disPhoto.photo.typeUI, indexPath.row);
-            [weakSelf.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+            
+            NSInteger pos = [weakSelf.combinedPhotos indexOfObject:disPhoto];
+            EZDEBUG("after Refresh type:%i, row:%i, updated row:%i", disPhoto.photo.typeUI, indexPath.row, pos);
+            if(pos != NSNotFound){
+                [weakSelf.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:pos inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
+            }
             //[self.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
         };
     }
@@ -1571,7 +1595,64 @@ static int photoCount = 1;
     self.pushBehavior.active = YES;
 }
 
+- (void) test3DPlay
+{
+    UIImageView* centralImage = [[UIImageView alloc]initWithFrame:CGRectMake(30, 30, 160, 284)];
+    centralImage.contentMode = UIViewContentModeScaleAspectFill;
+    [TopView addSubview:centralImage];
+    
+    _mi = [[EZMotionImage alloc] init];
+    EZMotionRecord* mrO = [[EZMotionRecord alloc] init];
+    mrO.image = [UIImage imageNamed:@"hou_1.JPG"];
+    mrO.deltaY = 0.0;
+    
+    EZMotionRecord* mrOne = [[EZMotionRecord alloc] init];
+    mrOne.image = [UIImage imageNamed:@"yue_1.JPG"];
+    mrOne.deltaY = -0.3;
+    
+    EZMotionRecord* mr2 = [[EZMotionRecord alloc] init];
+    mr2.image = [UIImage imageNamed:@"tian_1.JPG"];
+    mr2.deltaY = 0.3;
+    
+    _mi.motionImages = @[mrO, mrOne, mrO, mr2];
+    _mi.container = centralImage;
+    [_mi play];
 
+}
+
+- (void) setupAlbumImage
+{
+    if(!_assetView){
+        _assetView = [[UIImageView alloc] initWithFrame:self.view.bounds];
+        //UIView* upperCover = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, CurrentScreenHeight/2.0)];
+        //upperCover.backgroundColor = ClickedColor;
+        //[_assetView addSubview:upperCover];
+        _assetView.contentMode = UIViewContentModeScaleAspectFill;
+        _assetView.clipsToBounds = TRUE;
+        //[self.view insertSubview:weakSelf.assetView belowSubview:_albumContainer];
+        CGFloat height = _tableView.contentSize.height;
+        if(self.tableView.contentSize.height < CurrentScreenHeight){
+            height = CurrentScreenHeight;
+        }
+        [_tableView addSubview:_assetView];
+        _assetView.hidden = YES;
+        _outerImageView = [[UIImageView alloc] initWithFrame:self.view.bounds];
+        _outerImageView.contentMode = UIViewContentModeScaleAspectFill;
+        _outerImageView.clipsToBounds = TRUE;
+        [_outerImageView setY:CurrentScreenHeight];
+        [_albumContainer addSubview:_outerImageView];
+    }
+    _assetView.image = _assetImage;
+    _outerImageView.image = _assetImage;
+    NSString* oldPhotoURL = [[NSUserDefaults standardUserDefaults] stringForKey:EZOldPhotoAssetURL];
+    if(![oldPhotoURL isEqualToString:_asset]){
+        [[NSUserDefaults standardUserDefaults]  setObject:_asset forKey:EZOldPhotoAssetURL];
+        [self triggerFallAnim];
+        dispatch_later(1.5, ^(){
+            [self triggerFallAnim];
+        });
+    }
+}
 
 - (void)viewDidLoad
 {
@@ -1608,7 +1689,7 @@ static int photoCount = 1;
     self.extendedLayoutIncludesOpaqueBars=NO;
     self.automaticallyAdjustsScrollViewInsets=NO;
     //self.edgesForExtendedLayout = UIRectEdgeAll;
-    self.tableView.backgroundColor = [UIColor clearColor]; //VinesGray;
+    self.tableView.backgroundColor = VinesGray;
     //self.tableView.backgroundColor = VinesGray; //[UIColor blackColor];
     //self.tableView.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"featherPage"]];
     //[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
@@ -1663,7 +1744,7 @@ static int photoCount = 1;
     
     [[EZMessageCenter getInstance] registerEvent:EZAlbumImageUpdate block:^(id obj){
         //Turn off the Album update
-        return;
+        //return;
         [[EZDataUtil getInstance] fetchLastImage:^(ALAsset* image){
             ALAssetRepresentation* ap = [image defaultRepresentation];
             EZDEBUG(@"dimension is:%@", NSStringFromCGSize(ap.dimensions));
@@ -1677,37 +1758,7 @@ static int photoCount = 1;
             weakSelf.assetImage =[UIImage imageWithCGImage:cgImage scale:1.0 orientation:UIImageOrientationUp];
             EZDEBUG(@"Get image from album, size:%@", NSStringFromCGSize(weakSelf.assetImage.size));
             weakSelf.asset = assetURL;
-            if(!_assetView){
-                _assetView = [[UIImageView alloc] initWithFrame:self.view.bounds];
-                //UIView* upperCover = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, CurrentScreenHeight/2.0)];
-                //upperCover.backgroundColor = ClickedColor;
-                //[_assetView addSubview:upperCover];
-                _assetView.contentMode = UIViewContentModeScaleAspectFill;
-                _assetView.clipsToBounds = TRUE;
-                //[self.view insertSubview:weakSelf.assetView belowSubview:_albumContainer];
-                CGFloat height = _tableView.contentSize.height;
-                if(self.tableView.contentSize.height < CurrentScreenHeight){
-                    height = CurrentScreenHeight;
-                }
-                [_tableView addSubview:_assetView];
-                _assetView.hidden = YES;
-                _outerImageView = [[UIImageView alloc] initWithFrame:self.view.bounds];
-                _outerImageView.contentMode = UIViewContentModeScaleAspectFill;
-                _outerImageView.clipsToBounds = TRUE;
-                [_outerImageView setY:CurrentScreenHeight];
-                [_albumContainer addSubview:_outerImageView];
-            }
-            _assetView.image = weakSelf.assetImage;
-            _outerImageView.image = weakSelf.assetImage;
-            NSString* oldPhotoURL = [[NSUserDefaults standardUserDefaults] stringForKey:EZOldPhotoAssetURL];
-            if(![oldPhotoURL isEqualToString:assetURL]){
-                [[NSUserDefaults standardUserDefaults]  setObject:assetURL forKey:EZOldPhotoAssetURL];
-                [self triggerFallAnim];
-                dispatch_later(1.5, ^(){
-                    [self triggerFallAnim];
-                });
-            }
-
+            //[self setupAlbumImage];
             //[weakSelf raiseCamera:assetURL personID:nil];
         } failure:^(id err){
             EZDEBUG(@"failed to get album:%@", err);
@@ -1743,7 +1794,31 @@ static int photoCount = 1;
         if(deletedPath.count > 0){
             //[self.tableView deleteRowsAtIndexPaths:deletedPath withRowAnimation:UITableViewRowAnimationFade];
             if(deletedPath.count == 1){
-                [self.tableView deleteRowsAtIndexPaths:deletedPath withRowAnimation:UITableViewRowAnimationFade];
+                NSArray* visible = [self.tableView indexPathsForVisibleRows];
+                NSIndexPath* targetIdx = [deletedPath objectAtIndex:0];
+                if(visible.count){
+                    NSIndexPath* idxPath = [visible objectAtIndex:0];
+                    if(idxPath.row == targetIdx.row || idxPath.row < targetIdx.row){
+                        if(_combinedPhotos.count > 0){
+                            [weakSelf.tableView deleteRowsAtIndexPaths:deletedPath withRowAnimation:UITableViewRowAnimationFade];
+                        }else{
+                            [weakSelf.tableView reloadData];
+                        }
+                    }else{
+                        EZDEBUG(@"Will delete the view now:%i, %i", idxPath.row, targetIdx.row);
+                        //EZPhotoCell* pc = (EZPhotoCell*)[weakSelf.tableView cellForRowAtIndexPath:idxPath];
+                        UIView* snapView = [TopView snapshotViewAfterScreenUpdates:NO];//[[UIView alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, CurrentScreenHeight)];//[pc snapshotViewAfterScreenUpdates:NO];
+                        //snapView.backgroundColor = [UIColor redColor];
+                        [TopView addSubview:snapView];
+                        [weakSelf.tableView deleteRowsAtIndexPaths:deletedPath withRowAnimation:NO];
+                        [weakSelf.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:idxPath.row - 1 inSection:0]] withRowAnimation:NO];
+                        [weakSelf.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:idxPath.row - 1 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
+                        dispatch_later(0.5, ^(){
+                            [snapView removeFromSuperview];
+                        });
+                    }
+                }
+                
             }else{
                 [self.tableView reloadData];
             }
@@ -1907,9 +1982,9 @@ static int photoCount = 1;
     [self.view addSubview:_networkStatus];
     _networkStatus.hidden = YES;
     
-    dispatch_later(0.3, ^(){
+    dispatch_later(0.3, (^(){
         [self scrollToBottom:NO];
-    });
+    }));
     
     /**
     EZClickImage* bigClickButton = [[EZUIUtility sharedEZUIUtility] createBackShotButton];
@@ -2312,6 +2387,7 @@ static int photoCount = 1;
 
 - (void) addLike:(EZNote*)note
 {
+    __weak EZAlbumTablePage* weakSelf = self;
     NSArray* matchedArrs = [[NSArray alloc] initWithArray:[EZDataUtil getInstance].mainPhotos];
     BOOL triggerByNote = [[EZDataUtil getInstance].pushNotes objectForKey:note.noteID] != nil;
     for (int i = 0; i < matchedArrs.count; i++) {
@@ -2331,10 +2407,19 @@ static int photoCount = 1;
                     if(!_currentUser){
                         [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:i inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
                         if(triggerByNote){
-                            [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
+                            [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
                         }
                     }else{
-                        [self setLocalLike:note isPush:triggerByNote];
+                        //[self setLocalLike:note isPush:triggerByNote];
+                        if(triggerByNote){
+                            EZDEBUG(@"will show the like");
+                            //if(![self isVisibleController]){
+                            [self.navigationController popToViewController:self animated:NO];
+                            [self setCurrentUser:currentLoginUser readyBlock:^(id sender){
+                                [weakSelf.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
+                            }];
+                            //}
+                        }
                     }
                     break;
         }
@@ -2612,6 +2697,13 @@ static int photoCount = 1;
     [EZDataUtil getInstance].barBackground = statusBarBackground;
     //[EZDataUtil getInstance].centerButton = clickView;
     _rightCycleButton = clickView;
+    
+    _rightCycleButton.longPressBlock = ^(id obj){
+        EZDEBUG(@"long pressed get called");
+        if(weakSelf.asset){
+            [weakSelf popAlbumSender];
+        }
+    };
     
     [[EZMessageCenter getInstance] registerEvent:EZShowShotButton block:^(EZEventBlock blk){
         EZDEBUG(@"Show the shot button");
@@ -2895,6 +2987,7 @@ static int photoCount = 1;
     int rotateCount = weakCell.rotateCount;
     //EZDEBUG(@"image loading start");
     UIImageView* imageView = [weakCell.frontImage.imageViews objectAtIndex:position];
+    imageView.image = nil;
     [[EZDataUtil getInstance] serialLoad:secondURL fullOk:^(NSString* localURL){
         //EZDEBUG(@"image loaded full:%i, url:%@", loaded, localURL);
         if(weakCell.currentPos != path.row || rotateCount != weakCell.rotateCount){
@@ -3029,7 +3122,7 @@ static int photoCount = 1;
     EZPerson* otherPerson = pid2person(back.personID);
     if(back.type == kPhotoRequest || ([cp.photo.exchangePersonID isNotEmpty] && back==nil)){
         cell.frontImage.image = nil;
-        cell.frontImage.backgroundColor = ClickedColor;
+        //cell.frontImage.backgroundColor = ClickedColor;
         cell.waitingInfo.text =[NSString stringWithFormat:@"等待%@的照片", otherPerson.name?otherPerson.name:@"朋友"];
         cell.waitingInfo.hidden = NO;
         cell.otherIcon.hidden = YES;
@@ -3055,6 +3148,8 @@ static int photoCount = 1;
     //    return;
     //}
     weakCell.rotateCount += 1;
+    weakCell.activityView.hidden = YES;
+    [weakCell.activityView stopAnimating];
     if(animate){
         UIView* snapShot = [weakCell.rotateContainer snapshotViewAfterScreenUpdates:NO];
         //snapShot.backgroundColor = [UIColor redColor];
@@ -3069,7 +3164,7 @@ static int photoCount = 1;
         //[TopView addSubview:snapShot];
         
         
-        weakCell.frontImage.image = nil;
+        //weakCell.frontImage.image = nil;
         if(cp.isFront){
             photo = back;
             [weakCell setFrontFormat:false];
@@ -3215,46 +3310,53 @@ static int photoCount = 1;
 }
 
 
+- (void) popAlbumSender
+{
+    _raiseAssetCamera = true;
+    DLCImagePickerController* picker = [self embedCamera:_asset personID:_currentUser.personID];
+    //[_tableView addSubview:_innerPicker.view];
+    //[_innerPicker.view setY:0];
+    //[_innerPicker viewWillAppear:YES];
+    //[_innerPicker viewDidAppear:YES];
+    //_leftCyleButton.hidden = YES;
+    //_rightCycleButton.hidden = YES;
+    //dispatch_later(0.1, ^(){
+    _innerCameraRaised = YES;
+    //});
+    _innerFirstTime = YES;
+    //_bottomView = _innerPicker.view;
+    __weak EZAlbumTablePage* weakSelf = self;
+    //[_tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:_combinedPhotos.count inSection:0]] withRowAnimation:UITableViewRowAnimationBottom];
+    picker.innerCancelBlock = ^(id obj){
+        weakSelf.raiseAssetCamera = false;
+        //weakSelf.leftCyleButton.hidden = NO;
+        //weakSelf.rightCycleButton.hidden = NO;
+        //UIView* snapShot = [weakSelf.innerPicker.view snapshotViewAfterScreenUpdates:NO];
+        //[weakSelf.view addSubview:snapShot];
+        //weakSelf.tableView.contentInset = UIEdgeInsetsZero;
+        //weakSelf.tableView.contentSize = CGSizeMake(0, weakSelf.combinedPhotos.count * CurrentScreenHeight);
+        //[weakSelf.innerPicker.view removeFromSuperview];
+        //weakSelf.innerPicker = nil;
+        //weakSelf.innerCameraRaised = false;
+        //[UIView animateWithDuration:0.2 animations:^(){
+        //snapShot.alpha = 0.0;
+        //} completion:^(BOOL complete){
+        //    [snapShot removeFromSuperview];
+        //}];
+        //weakSelf.bottomView = nil;
+    };
+    _isPushCamera = YES;
+    [self.navigationController pushViewController:picker animated:YES];
+}
+
 
 - (void) scrollViewDidScrollOld:(UIScrollView *)scrollView{
     EZDEBUG(@"Did scroll get called");
     if(!_raiseAssetCamera && _asset && !_currentUser.filterType){
         CGFloat exceedY = scrollView.contentOffset.y + CurrentScreenHeight - scrollView.contentSize.height;
         if(exceedY > 90){
-            _raiseAssetCamera = true;
-            _innerPicker = [self embedCamera:_asset personID:_currentUser.personID];
-            //[_tableView addSubview:_innerPicker.view];
-            [_innerPicker.view setY:0];
-            [_innerPicker viewWillAppear:YES];
-            [_innerPicker viewDidAppear:YES];
-            _leftCyleButton.hidden = YES;
-            _rightCycleButton.hidden = YES;
-            dispatch_later(0.1, ^(){
-                _innerCameraRaised = YES;
-            });
-            _innerFirstTime = YES;
-            _bottomView = _innerPicker.view;
-            __weak EZAlbumTablePage* weakSelf = self;
-            [_tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:_combinedPhotos.count inSection:0]] withRowAnimation:UITableViewRowAnimationBottom];
-            _innerPicker.innerCancelBlock = ^(id obj){
-                weakSelf.raiseAssetCamera = false;
-                weakSelf.leftCyleButton.hidden = NO;
-                weakSelf.rightCycleButton.hidden = NO;
-                //UIView* snapShot = [weakSelf.innerPicker.view snapshotViewAfterScreenUpdates:NO];
-                //[weakSelf.view addSubview:snapShot];
-                //weakSelf.tableView.contentInset = UIEdgeInsetsZero;
-                //weakSelf.tableView.contentSize = CGSizeMake(0, weakSelf.combinedPhotos.count * CurrentScreenHeight);
-                [weakSelf.innerPicker.view removeFromSuperview];
-                weakSelf.innerPicker = nil;
-                weakSelf.innerCameraRaised = false;
-                //[UIView animateWithDuration:0.2 animations:^(){
-                    //snapShot.alpha = 0.0;
-                //} completion:^(BOOL complete){
-                //    [snapShot removeFromSuperview];
-                //}];
-                weakSelf.bottomView = nil;
-                [weakSelf.tableView deleteRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:weakSelf.combinedPhotos.count inSection:0]] withRowAnimation:UITableViewRowAnimationBottom];
-            };
+            
+            
         }
 
     }else if(_innerCameraRaised && !_innerFirstTime){

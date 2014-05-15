@@ -380,7 +380,7 @@
     frontImage.imageView.backgroundColor = ClickedColor;
     frontImage.imageView.clipsToBounds = true;
     //frontImage.clipsToBounds = true;
-    frontImage.backgroundColor = ClickedColor;
+    frontImage.backgroundColor = VinesGray;
     //[frontImage enableRoundImage];
     return frontImage;
 }

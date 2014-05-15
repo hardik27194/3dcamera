@@ -45,7 +45,17 @@
     //[EZTestSuites testSoundEffects];
     //[self testImageProcess];
     //[self testImageStore];
+    //[self testIndexOfObject];
    
+}
+
++ (void) testIndexOfObject
+{
+    NSArray* objects = @[@"1",@"2",@"3"];
+    NSInteger obj1Pos = [objects indexOfObject:@"1"];
+    NSInteger objNone = [objects indexOfObject:@"4"];
+    EZDEBUG(@"obj1Pos:%i, none:%i, notFound:%i", obj1Pos, objNone, objNone == NSNotFound);
+    //assert(false);
 }
 
 + (void) testPersonQuery

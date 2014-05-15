@@ -19,7 +19,8 @@
 		return nil;
     }
     _finalFilter = [[GPUImageFilter alloc] init];
-    _blackFilter = [[EZBlackAndCropFilter alloc] initWithCropRegion:CGRectMake(0.0, 0.0, 1.0, 1.0)];
+    //_blackFilter = [[EZBlackAndCropFilter alloc] initWithCropRegion:CGRectMake(0.0, 0.0, 1.0, 1.0)];
+    _blackFilter = [[GPUImageFilter alloc] init];
     [self addFilter:_finalFilter];
     [self addFilter:_blackFilter];
     //[self addFilter:_smallBlurFilter];
