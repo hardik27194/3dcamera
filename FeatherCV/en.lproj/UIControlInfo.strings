@@ -50,4 +50,50 @@
 
 "按下快门\n捕获他(她)的照片。" = "Click the Shoot button\nCapture the photo from him(her)";
 
-"Login failure" = "Login failure";
+"Login Failure" = "Login Failure";
+
+"朋友" = "Friends";
+
+"新照片" = "New Photos";
+
+"都喜欢" = "Like By Both";
+
+"对方喜欢" = "Like By Friend";
+
+"我喜欢" = "Like By Me";
+
+"我的所有照片" = "All My Photos";
+
+"%@发来的照片" = "Photo from %@";
+
+"拍摄后翻看" = "Shoot to flip";
+
+"等待%@的照片" = "Waiting For %@'s Photo";
+
+"添加头像" = "Add Avatar";
+
+"%i秒后重发" = "Resend after %i seconds";
+
+"%i对照片" = "%i photo pairs";
+
+"退出登录" = "Logout";
+
+"退出" = "Back";
+
+"重拍" = "Re-shoot";
+
+"相机设置" = "Configure";
+
+"翻转摄像头" = "Switch Camera";
+
+"闪光灯:打开" = "Flash light:On";
+"闪光灯:自动" = "Flash light:Auto";
+"闪光灯:关闭" = "Flash light:Off";
+"取消" = "Cancel";
+
+"删除照片" = "Delete Photo";
+"确认删除" = "Confirm Deletion";
+
+
+
+

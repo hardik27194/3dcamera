@@ -83,7 +83,7 @@ SINGLETON_FOR_CLASS(EZUIUtility)
     UIView* brand = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, 64)];
     brand.backgroundColor = [UIColor whiteColor];
     UIButton* quitButton = [[UIButton alloc] initWithFrame:CGRectMake(CurrentScreenWidth - 50, 20, 44, 50)];
-    [quitButton setTitle:@"退出" forState:UIControlStateNormal];
+    [quitButton setTitle:macroControlInfo(@"退出") forState:UIControlStateNormal];
     [quitButton.titleLabel setFont:[UIFont systemFontOfSize:16]];
     [quitButton setTitleColor:EZAppleBlue forState:UIControlStateNormal];
     [quitButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];

@@ -103,7 +103,7 @@
     addTitle.textAlignment = NSTextAlignmentCenter;
     addTitle.textColor = [UIColor whiteColor];
     addTitle.font = [UIFont systemFontOfSize:12];
-    addTitle.text = @"添加头像";
+    addTitle.text = macroControlInfo(@"添加头像");
     addTitle.center = _uploadAvatar.center;
     [containerView addSubview:addTitle];
 

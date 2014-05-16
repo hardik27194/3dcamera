@@ -186,14 +186,10 @@ static int photoCount = 1;
         
     }
     else{
-        if(cp.photo.isPair || cp.isFront){
+        if(cp.photo.isPair){
             cell.andSymbol.hidden = NO;
             //cell.frontImage.pageControl.hidden = YES;
-        }else if(cp.isFront){
-            cell.andSymbol.hidden = YES;
-            //cell.frontImage.pageControl.hidden = YES;
-        }
-        else{
+        }else{
             cell.andSymbol.hidden = YES;
             if(cp.photo.photoRelations.count > 1){
                 cell.frontImage.pageControl.hidden = NO;
@@ -216,7 +212,7 @@ static int photoCount = 1;
     if(!cp.photo.photoRelations.count)
         cp.photo.photoRelations = nil;
     EZPhoto* switchPhoto = [cp.photo.photoRelations objectAtIndex:cp.photoPos];
-    EZDEBUG(@"pos2");
+    //EZDEBUG(@"pos2");
     //cell.photoDate.text = formatRelativeTime(myPhoto.createdTime);
     // Configure the cell...
     //[cell displayImage:[myPhoto getLocalImage]];
@@ -300,19 +296,19 @@ static int photoCount = 1;
             cell.gradientView.hidden = YES;
             EZEventBlock personGet = ^(EZPerson* ps){
                 weakCell.requestInfo.hidden = NO;
-                weakCell.requestInfo.text =[NSString stringWithFormat:@"\"%@\"发来的照片", ps.name];
+                weakCell.requestInfo.text =[NSString stringWithFormat:macroControlInfo(@"%@发来的照片"), ps.name];
             };
             EZPerson* otherPerson = pid2personCall(switchPhoto.personID, personGet);
-            weakCell.requestFixInfo.text = @"拍摄后翻看";
+            weakCell.requestFixInfo.text = macroControlInfo(@"拍摄后翻看");
             if(!otherPerson)
                 weakCell.requestInfo.text = @"";
             
             weakSelf.rightCycleButton.hidden = YES;
             cell.shotPhoto.hidden = NO;
             //cell.frontImage.backgroundColor = ClickedColor;
-            cell.otherIcon.hidden = YES;
-            cell.otherName.hidden = YES;
-            cell.otherTalk.hidden = YES;
+            cell.otherIcon.hidden = NO;
+            cell.otherName.hidden = NO;
+            cell.otherTalk.hidden = NO;
             cell.andSymbol.hidden = YES;
             cell.authorName.hidden = YES;
             cell.headIcon.hidden = YES;
@@ -384,7 +380,7 @@ static int photoCount = 1;
     
     cell.buttonClicked = ^(EZClickView* obj){
         EZDEBUG(@"Liked clicked");
-        if(!myPhoto.photoRelations.count){
+        if(!myPhoto.photoRelations.count || myPhoto.typeUI == kPhotoRequest || switchPhoto.typeUI == kPhotoRequest){
             return;
         }
         if(cp.photoPos > myPhoto.photoRelations.count){
@@ -540,7 +536,7 @@ static int photoCount = 1;
         //NSString* someText = self.textView.text;
         EZDEBUG(@"more clicked");
         
-        UIActionSheet* actionSheet = [[UIActionSheet alloc] initWithTitle:@"删除照片" delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:@"确认删除" otherButtonTitles:nil];
+        UIActionSheet* actionSheet = [[UIActionSheet alloc] initWithTitle:macroControlInfo(@"删除照片") delegate:self cancelButtonTitle:macroControlInfo(@"取消") destructiveButtonTitle:macroControlInfo(@"确认删除") otherButtonTitles:nil];
         [actionSheet showInView:self.view];
         _actionBlock = ^(NSNumber* btnIndex){
             //if(btnIndex.integerValue == 0)
@@ -2779,7 +2775,9 @@ static int photoCount = 1;
     //dispatch_later(0.3, ^(){
     //[weakSelf.leftText setTextColor:[UIColor whiteColor]];
     //});
-    [self showMenu:nil];
+    if(self.navigationController.viewControllers.count == 1){
+        [self showMenu:nil];
+    }
 
 }
 
@@ -3123,7 +3121,7 @@ static int photoCount = 1;
     if(back.type == kPhotoRequest || ([cp.photo.exchangePersonID isNotEmpty] && back==nil)){
         cell.frontImage.image = nil;
         //cell.frontImage.backgroundColor = ClickedColor;
-        cell.waitingInfo.text =[NSString stringWithFormat:@"等待%@的照片", otherPerson.name?otherPerson.name:@"朋友"];
+        cell.waitingInfo.text =[NSString stringWithFormat:macroControlInfo(@"等待%@的照片"), otherPerson.name?otherPerson.name:@"朋友"];
         cell.waitingInfo.hidden = NO;
         cell.otherIcon.hidden = YES;
         cell.otherName.hidden = YES;
@@ -3171,9 +3169,10 @@ static int photoCount = 1;
             [self setWaitingInfo:weakCell displayPhoto:cp back:back];
             if(back.type == kPhotoRequest || ([cp.photo.exchangePersonID isNotEmpty] && back == nil)){
                 //weakCell.frontImage.image = [UIImage imageNamed:@"background.png"];
+                weakCell.frontImage.image = nil;
                 EZDEBUG(@"waiting for response");
             }else if(photo == nil){
-                //weakCell.frontImage.image = nil;
+                weakCell.frontImage.image = nil;
                 //[[EZUIUtility sharedEZUIUtility] showErrorInfo:macroControlInfo(@"Network not available") delay:1.0 view:self.view];
                 
             }

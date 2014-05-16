@@ -98,11 +98,11 @@
         //_quitButton.hidden = YES;
         //[_quitUser setTitle:@"退出登录" forState:UIControlStateNormal];
         _quitUser.hidden = NO;
-        [_selectUser setTitle:[NSString stringWithFormat:@"%i对照片", [EZDataUtil getInstance].mainPhotos.count] forState:UIControlStateNormal];
+        [_selectUser setTitle:[NSString stringWithFormat:macroControlInfo(@"%i对照片"), [EZDataUtil getInstance].mainPhotos.count] forState:UIControlStateNormal];
 
     }else{
         _quitUser.hidden = YES;
-        [_selectUser setTitle:[NSString stringWithFormat:@"%i对照片", _person.photoCount] forState:UIControlStateNormal];
+        [_selectUser setTitle:[NSString stringWithFormat:macroControlInfo(@"%i对照片"), _person.photoCount] forState:UIControlStateNormal];
     }
 }
 

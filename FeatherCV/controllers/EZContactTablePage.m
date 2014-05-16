@@ -346,7 +346,7 @@
     
     EZPerson* person = [_contacts objectAtIndex:indexPath.row];
     if(indexPath.row == 0){
-        cell.name.text = @"我的所有照片";
+        cell.name.text = macroControlInfo(@"我的所有照片");
         EZDEBUG(@"current user id:%@, this id:%@", currentLoginID, person.personID);
     }else{
         cell.name.text = person.name;

@@ -729,7 +729,7 @@
         //if(fit.width > 60){
         _backButton.width = fit.width;
         
-        _instrTitle = [[UILabel alloc] initWithFrame:CGRectMake(3, -4, 30, 12)];
+        _instrTitle = [[UILabel alloc] initWithFrame:CGRectMake(3, -4, 80, 12)];
         _instrTitle.font = [UIFont boldSystemFontOfSize:10];
         _instrTitle.textAlignment = NSTextAlignmentLeft;
         _instrTitle.textColor = [UIColor whiteColor];
@@ -2457,15 +2457,15 @@ context:(void *)context
     //redEnhanceFilter.brightMode = !redEnhanceFilter.brightMode;
     EZDEBUG(@"Current bright Mode:%i", redEnhanceFilter.brightMode);
     [staticPicture processImage];
-        NSString* flashMode = @"闪光灯:自动";
+        NSString* flashMode = macroControlInfo(@"闪光灯:自动");
         if(_flashMode == 0){
-            flashMode = @"闪光灯:关闭";
+            flashMode = macroControlInfo(@"闪光灯:关闭");
         }else if(_flashMode == 1){
-            flashMode = @"闪光灯:打开";
+            flashMode =macroControlInfo(@"闪光灯:打开");
         }
     
     //(_disableFaceBeautify?@"打开美化":@"关闭美化")
-    UIActionSheet* actionSheet = [[UIActionSheet alloc] initWithTitle:@"相机设置" delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:nil otherButtonTitles:@"翻转摄像头",flashMode, nil];
+    UIActionSheet* actionSheet = [[UIActionSheet alloc] initWithTitle:macroControlInfo(@"相机设置") delegate:self cancelButtonTitle:macroControlInfo(@"取消") destructiveButtonTitle:nil otherButtonTitles:macroControlInfo(@"翻转摄像头"),flashMode, nil];
         [actionSheet showInView:self.view];
     
 }
@@ -3448,15 +3448,15 @@ context:(void *)context
     EZDEBUG(@"The button status:%i", staticFlag);
     if(staticFlag){
         //self.cancelButton.hidden = FALSE;
-        [self.cancelButton setTitle:@"重拍" forState:UIControlStateNormal];
-        [_upperCancel setTitle:@"重拍" forState:UIControlStateNormal];
+        [self.cancelButton setTitle:macroControlInfo(@"重拍") forState:UIControlStateNormal];
+        [_upperCancel setTitle:macroControlInfo(@"重拍") forState:UIControlStateNormal];
         //[self.photoCaptureButton setTitle:@"保存" forState:UIControlStateNormal];
         //[self.configButton setTitle:@"保存" forState:UIControlStateNormal];
         [self.photoCaptureButton setEnabled:YES];
         self.configButton.hidden = YES;
     }else{
-        [self.cancelButton setTitle:@"退出" forState:UIControlStateNormal];
-        [_upperCancel setTitle:@"退出" forState:UIControlStateNormal];
+        [self.cancelButton setTitle:macroControlInfo(@"退出") forState:UIControlStateNormal];
+        [_upperCancel setTitle:macroControlInfo(@"退出") forState:UIControlStateNormal];
         //self.cancelButton.hidden = TRUE;
         //[self.photoCaptureButton setTitle:@"按这里拍摄" forState:UIControlStateNormal];
         //self.configButton.hidden = NO;

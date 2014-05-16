@@ -298,7 +298,7 @@
         _sendVerifyCode.enabled = YES;
         [_sendVerifyCode setTitle:macroControlInfo(@"请求短信验证码") forState:UIControlStateNormal];
     }else{
-        [_sendVerifyCode setTitle:[NSString stringWithFormat:@"%i秒后重发",(60 - _counter)] forState:UIControlStateNormal];
+        [_sendVerifyCode setTitle:[NSString stringWithFormat:macroControlInfo(@"%i秒后重发"),(60 - _counter)] forState:UIControlStateNormal];
     }
     
 }

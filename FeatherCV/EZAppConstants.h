@@ -63,7 +63,7 @@
 
 #define BlurBackground RGBA(240, 240, 240, 128)
 
-#define ButtonWhiteColor RGBA(230, 230, 230, 200)
+#define ButtonWhiteColor RGBA(230, 230, 230, 225)
 
 #define NaviBarBlack RGBACOLOR(0, 0, 0, 60)
 
@@ -157,7 +157,7 @@
 //If there are production user,
 //Then will send to production push server.
 //If not we will send to sandbox server
-#define EZProductFlag @"1"
+#define EZProductFlag @"2"
 
 //#define inviteMessageURL @"http://www.enjoyxue.com:8080/"
 
