@@ -30,6 +30,7 @@
 		1823DA3D18D6F07500E6E8B3 /* background.png in Resources */ = {isa = PBXBuildFile; fileRef = 1823DA3C18D6F07500E6E8B3 /* background.png */; };
 		1823DA4018DA9ABA00E6E8B3 /* EZNote.m in Sources */ = {isa = PBXBuildFile; fileRef = 1823DA3F18DA9AB900E6E8B3 /* EZNote.m */; };
 		1823DA4318E3CCFE00E6E8B3 /* EZPerosnDetail.m in Sources */ = {isa = PBXBuildFile; fileRef = 1823DA4218E3CCFE00E6E8B3 /* EZPerosnDetail.m */; };
+		18290CBF19276C1A00676423 /* shot_new.caf in Resources */ = {isa = PBXBuildFile; fileRef = 18290CBE19276C1A00676423 /* shot_new.caf */; };
 		182A55091862C735003D4A01 /* libGPUImage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 182A55041862C71A003D4A01 /* libGPUImage.a */; };
 		182A550D18643141003D4A01 /* EZFaceBlurFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 182A550C18643140003D4A01 /* EZFaceBlurFilter.m */; };
 		182A551018645374003D4A01 /* EZFaceBlurFilter2.m in Sources */ = {isa = PBXBuildFile; fileRef = 182A550F18645374003D4A01 /* EZFaceBlurFilter2.m */; };
@@ -364,6 +365,7 @@
 		1823DA3F18DA9AB900E6E8B3 /* EZNote.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZNote.m; sourceTree = "<group>"; };
 		1823DA4118E3CCFD00E6E8B3 /* EZPersonDetail.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZPersonDetail.h; sourceTree = "<group>"; };
 		1823DA4218E3CCFE00E6E8B3 /* EZPerosnDetail.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZPerosnDetail.m; sourceTree = "<group>"; };
+		18290CBE19276C1A00676423 /* shot_new.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = shot_new.caf; sourceTree = "<group>"; };
 		182A54FD1862C717003D4A01 /* GPUImage.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GPUImage.xcodeproj; path = ../../Documents/open_source/GPUImageCV/framework/GPUImage.xcodeproj; sourceTree = "<group>"; };
 		182A550B18643140003D4A01 /* EZFaceBlurFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZFaceBlurFilter.h; sourceTree = "<group>"; };
 		182A550C18643140003D4A01 /* EZFaceBlurFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZFaceBlurFilter.m; sourceTree = "<group>"; };
@@ -1033,6 +1035,7 @@
 		18E34685183DF54400C9D89D /* FeatherCV */ = {
 			isa = PBXGroup;
 			children = (
+				18290CBE19276C1A00676423 /* shot_new.caf */,
 				185CE262190123DF0037947A /* umeng */,
 				181608DD18B7333E00DD5995 /* login */,
 				18E746C518A4A26A0023967B /* afnetwork */,
@@ -1602,6 +1605,7 @@
 				184DBE7C18BC909000239F0F /* UIControlInfo.strings in Resources */,
 				18E346FE183DF9C400C9D89D /* default-like-btn@2x.png in Resources */,
 				18E346FC183DF9C400C9D89D /* add_friend@2x.png in Resources */,
+				18290CBF19276C1A00676423 /* shot_new.caf in Resources */,
 				18E34700183DF9C400C9D89D /* talk-btn@2x.png in Resources */,
 				18A370391855C2A40022F0A8 /* micro_carbon@2x.png in Resources */,
 				18A370261855C2A40022F0A8 /* flash-auto.png in Resources */,
@@ -1897,8 +1901,8 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Distribution: Tian Xie (FA67K5H8WD)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Tian Xie (FA67K5H8WD)";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Tian Xie (GC586ZT7D3)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Tian Xie (GC586ZT7D3)";
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -1916,7 +1920,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = YES;
-				PROVISIONING_PROFILE = "F1922F8E-7FBE-46FE-83FD-CA8563B34B8A";
+				PROVISIONING_PROFILE = "B2BA335C-FAFE-4FCC-A543-F0D24F595114";
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
@@ -1938,8 +1942,8 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Distribution: Tian Xie (FA67K5H8WD)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Tian Xie (FA67K5H8WD)";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Tian Xie (GC586ZT7D3)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Tian Xie (GC586ZT7D3)";
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -1951,7 +1955,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = YES;
-				PROVISIONING_PROFILE = "F1922F8E-7FBE-46FE-83FD-CA8563B34B8A";
+				PROVISIONING_PROFILE = "B2BA335C-FAFE-4FCC-A543-F0D24F595114";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -1963,8 +1967,8 @@
 				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Distribution: Tian Xie (FA67K5H8WD)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Tian Xie (FA67K5H8WD)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Tian Xie (GC586ZT7D3)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					/Users/apple/Dropbox/FeatherCV,
@@ -1982,7 +1986,7 @@
 					"$(PROJECT_DIR)/FeatherCV",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "F1922F8E-7FBE-46FE-83FD-CA8563B34B8A";
+				PROVISIONING_PROFILE = "B2BA335C-FAFE-4FCC-A543-F0D24F595114";
 				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};
@@ -1994,8 +1998,8 @@
 				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Distribution: Tian Xie (FA67K5H8WD)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Tian Xie (FA67K5H8WD)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Tian Xie (GC586ZT7D3)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					/Users/apple/Dropbox/FeatherCV,
@@ -2013,7 +2017,7 @@
 					"$(PROJECT_DIR)/FeatherCV",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "F1922F8E-7FBE-46FE-83FD-CA8563B34B8A";
+				PROVISIONING_PROFILE = "B2BA335C-FAFE-4FCC-A543-F0D24F595114";
 				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};

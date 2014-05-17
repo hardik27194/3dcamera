@@ -1400,7 +1400,7 @@
     CGFloat seconds = abs([date timeIntervalSinceNow]);
     EZDEBUG(@"seconds:%f, %@", seconds, date);
     if(seconds < 300){
-        return @"现在";
+        return macroControlInfo(@"现在");
     }else{
         NSUInteger unitFlags = NSDayCalendarUnit|NSMonthCalendarUnit|NSYearCalendarUnit;
         NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
@@ -1426,9 +1426,9 @@
             return [NSString stringWithFormat:macroControlInfo(@"%i月前"), month];
         }else if(day){
             if(day == 1){
-                return @"昨天";
+                return macroControlInfo(@"昨天");
             }else if(day == 2){
-                return @"前天";
+                return macroControlInfo(@"前天");
             }else if(day < 7){
                 return [NSString stringWithFormat:macroControlInfo(@"%i天前"),day];
             }
@@ -1441,11 +1441,11 @@
         //NSInteger minute = [components minute];
         EZDEBUG(@"hours of the day:%i", hour);
         if(hour < 12){
-            return @"上午";
+            return macroControlInfo(@"上午");
         }else if(hour < 19){
-            return @"下午";
+            return macroControlInfo(@"下午");
         }else{
-            return @"晚上";
+            return macroControlInfo(@"晚上");
         }
     }
 }

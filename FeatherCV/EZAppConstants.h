@@ -157,7 +157,7 @@
 //If there are production user,
 //Then will send to production push server.
 //If not we will send to sandbox server
-#define EZProductFlag @"2"
+#define EZProductFlag @"0"
 
 //#define inviteMessageURL @"http://www.enjoyxue.com:8080/"
 

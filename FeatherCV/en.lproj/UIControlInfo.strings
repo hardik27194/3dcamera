@@ -94,6 +94,18 @@
 "删除照片" = "Delete Photo";
 "确认删除" = "Confirm Deletion";
 
+"现在" = "Now";
+"去年" = "Last Year";
+"前年" = "2 Years ago";
+"%i年前" = "%i Years ago";
+"%i月前" = "%i Months ago";
+"昨天" = "Yesterday";
+"前天" = "The day before yesterday";
+"%i天前" = "%i days ago";
+"%i周前" = "%i weeks ago";
+"上午" = "Morning";
+"下午" = "Afternoon";
+"晚上" = "Night";
 
 
 
