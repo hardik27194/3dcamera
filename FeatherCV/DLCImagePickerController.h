@@ -274,6 +274,7 @@ typedef enum {
 
 @property (nonatomic, strong) UITextField* textField;
 @property (nonatomic, strong) UILabel* textPlaceHolder;
+@property (nonatomic, strong) UILabel* textReminder;
 
 @property (nonatomic, strong) UIView* textInputRegion;
 

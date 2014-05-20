@@ -21,7 +21,9 @@ int main(int argc, char * argv[])
 
     }
     @catch (NSException *exception) {
-        EZDEBUG(@"Encounter exception:%@, %@", exception, [exception callStackSymbols]);
+        NSString *version = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
+
+        EZDEBUG(@"Version:%@,Encounter exception:%@, %@",version, exception, [exception callStackSymbols]);
         [MobClick event:EZExceptionQuit label:exception.name];
         [[EZDataUtil getInstance]remoteDebug:[NSString stringWithFormat:@"exception:%@,%@", exception, [exception callStackSymbols]] isSync:YES];
     }

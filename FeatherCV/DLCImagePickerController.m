@@ -528,6 +528,7 @@
         if(_personID){
             _shotPhoto.isPair = true;
         }
+        _shotPhoto.createdTime = [NSDate date];
         [self startPreFetch:localPhoto imageSuccess:nil];
     }
     //if(_assetImage){
@@ -761,6 +762,7 @@
     _quitCrossButton.enableTouchEffects = false;
    
     _quitCrossButton.releasedBlock = ^(id obj){
+        //[weakSelf hideTextInput];
         EZDEBUG(@"quit Cross button called:%i", weakSelf.cameraSetupDone);
         if(!weakSelf.cameraSetupDone && !weakSelf.assetImage){
             EZDEBUG(@"Camera not ready yet");
@@ -1168,20 +1170,18 @@ context:(void *)context
 - (void) hideKeyboard:(BOOL)hideTextRegion complete:(EZEventBlock)complete
 {
     
+    EZDEBUG(@"hideTextRegion:%i", hideTextRegion);
     [UIView animateWithDuration:0.4  animations:^(){
-        if(hideTextRegion){
+        //if(hideTextRegion){
             //[EZDataUtil getInstance].centerButton.y = _centerButtonY;
-            [self showTextField:NO];
-        }else{
+        [self showTextField:!hideTextRegion];
+        //}else{
             //[EZDataUtil getInstance].centerButton.y = _centerButtonY - textInputRegion.frame.size.height;
-        }
+        //}
         //self.view.y = 0;
-        textInputRegion.y = EZTextRegionPosY;
+        //textInputRegion.y = EZTextRegionPosY;
     } completion:^(BOOL completed){
         //_toolBarRegion.hidden = FALSE;
-        if(hideTextRegion){
-            //[self showTextField:NO];
-        }
         if(complete){
             complete(nil);
         }
@@ -1301,12 +1301,41 @@ context:(void *)context
     //return false;
 }
 
+- (void) showLimitChar:(NSInteger)charLeft
+{
+    if(charLeft < 0){
+        charLeft = 0;
+    }
+    
+    if(!_textReminder){
+        _textReminder = [[UILabel alloc] initWithFrame:CGRectMake(0, 140, CurrentScreenWidth, 40)];
+        _textReminder.textAlignment = NSTextAlignmentCenter;
+        _textReminder.textColor = [UIColor whiteColor];
+        _textReminder.font = [UIFont boldSystemFontOfSize:18]; //EZRemindFontCN;
+        [_textReminder enableShadow:[UIColor blackColor]];
+        [self.view addSubview:_textReminder];
+    }
+    _textReminder.alpha = 1.0;
+    _textReminder.text = [NSString stringWithFormat:macroControlInfo(@"还可以输入%i字"), charLeft];
+    [UIView animateWithDuration:2.0 animations:^(){
+        _textReminder.alpha = 0.0;
+    }];
+    
+}
+
 - (IBAction)onValueChange:(id)sender
 {
     EZDEBUG(@"Value change:%i", _textField.text.length);
-    if(_textField.text.length > 25){
+    
+    if((EZCharLimit - _textField.text.length) < 10){
+        [self showLimitChar:(EZCharLimit - _textField.text.length)];
+    }else{
+        _textReminder.alpha = 0.0;
+    }
+    
+    if(_textField.text.length > EZCharLimit){
         dispatch_later(0.1,^(){
-            _textField.text = [_textField.text substringToIndex:25];
+            _textField.text = [_textField.text substringToIndex:EZCharLimit];
         });
     }
 }
@@ -3197,6 +3226,7 @@ context:(void *)context
             if(!_isUploading){
                 //[_leftBarButton setTitle:macroControlInfo(@"Return")];
                 _isUploading = true;
+                _quitCrossButton.hidden = YES;
                 //[[EZDataUtil getInstance] remoteDebug:@"will upload" isSync:YES];
                 if(!_isPhotoRequest){
                     [self confirmUpload:progressStart];
@@ -3540,7 +3570,8 @@ context:(void *)context
             currentPhoto.deleted = true;
             [self cancelAll:currentPhoto];
         }
-        
+        _hideTextInput = YES;
+        [_textField resignFirstResponder];
         [self showTextField:false];
         //self.hideTextInput
         //_shotPhoto = [[EZPhoto alloc] init];

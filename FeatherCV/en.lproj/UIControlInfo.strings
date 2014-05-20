@@ -100,12 +100,18 @@
 "%i年前" = "%i Years ago";
 "%i月前" = "%i Months ago";
 "昨天" = "Yesterday";
-"前天" = "The day before yesterday";
+"前天" = "2 days ago";
 "%i天前" = "%i days ago";
 "%i周前" = "%i weeks ago";
 "上午" = "Morning";
 "下午" = "Afternoon";
-"晚上" = "Night";
+"晚上" = "Evening";
 
+
+"请检查后重试" = "Check and retry";
+"填写手机号" = "Please fill mobile";
+"短信验证码错" = "SMS authentication failed";
+"该手机已注册" = "Mobile already registered";
+"注册失败" = "Register failed";
 
 

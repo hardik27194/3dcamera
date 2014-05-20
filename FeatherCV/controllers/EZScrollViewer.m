@@ -113,18 +113,11 @@
     }
     [_imageViews removeAllObjects];    
     //if(count > _imageViews.count){
-        for(int i = 0; i < count; i++){
+    for(int i = 0; i < count; i++){
             UIImageView* imgView = [self createImageView:CGRectMake(CurrentScreenWidth * i, 0, CurrentScreenWidth, CurrentScreenHeight)];
             [_scrollView addSubview:imgView];
             [_imageViews addObject:imgView];
-        }
-    //}else if(count < _imageViews.count){
-    //    for(int i = count; i < _imageViews.count; i++){
-    //        UIImageView* imgView = [_imageViews objectAtIndex:i];
-    //        [imgView removeFromSuperview];
-    //        [_imageViews removeObjectAtIndex:i];
-    //    }
-    //}
+    }
     EZDEBUG(@"pos:%i, total count:%i", pos, _imageViews.count);
     _imageView = [_imageViews objectAtIndex:pos];
     EZDEBUG(@"end set photoss");
@@ -142,7 +135,9 @@
     }
     
     //[_imageViews removeAllObjects];
-    _imageView = [_imageViews objectAtIndex:0];
+    if(_imageViews.count){
+        _imageView = [_imageViews objectAtIndex:0];
+    }
     _imageView.image = nil;
 }
 

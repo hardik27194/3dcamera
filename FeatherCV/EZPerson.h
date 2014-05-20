@@ -56,6 +56,9 @@
 
 @property (nonatomic, strong) LocalPersons* localPerson;
 
+@property (nonatomic, strong) NSDate* lastUpdate;
+
+
 
 //Will be use to remind how many pending event on this user.
 @property (nonatomic, assign) int pendingEventCount;

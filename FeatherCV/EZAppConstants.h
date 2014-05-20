@@ -18,6 +18,9 @@
 #define  EZTitleSlimFont [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:40]
 #define  EZTitleFontCN [UIFont fontWithName:@"STHeitiSC-Light" size:20]
 
+#define  EZRemindFontCN [UIFont fontWithName:@"STHeitiSC-Light" size:18]
+
+
 #define  EZOriginalTitle  @"feather"
 
 #define EZStatusBarBackgroundColor [UIColor blackColor]
@@ -135,6 +138,8 @@
 
 #define EZPositionHold @"EZPositionHold"
 
+#define EZDeleteOtherPhoto @"EZDeleteOtherPhoto"
+
 #define EZPurposeInfo macroControlInfo(@"按下快门\n捕获他(她)的照片。")
 
 #define FullHeartImage [EZUIUtility sharedEZUIUtility].fullHeart
@@ -152,12 +157,14 @@
 
 #define expiredTime 86400
 
+#define personTimeout 900
+
 #define err2StatusCode(error) [[[error userInfo] objectForKey:AFNetworkingOperationFailingURLResponseErrorKey] statusCode]
 
 //If there are production user,
 //Then will send to production push server.
 //If not we will send to sandbox server
-#define EZProductFlag @"0"
+#define EZProductFlag @"1"
 
 //#define inviteMessageURL @"http://www.enjoyxue.com:8080/"
 
@@ -285,6 +292,8 @@
 
 #define EZExpiredPhotos @"EZExpiredPhotos"
 
+#define EZNotFirstTime @"EZNotFirstTime"
+
 #define DefaultEmptyString @"    "
 
 #define EZCenterBigRadius 60.0
@@ -296,6 +305,8 @@
 #define EZOuterCycleRadius  15.0
 
 #define EZInnerCycleRadius 22.0
+
+#define EZCharLimit 25
 
 typedef enum {
     kPersonFilter,

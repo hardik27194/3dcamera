@@ -564,7 +564,8 @@
                                        @"mobile":mobile,
                                        @"passCode":password,
                                        @"personID":currentID?currentID:@"",
-                                       @"avatar":weakSelf.avatarURL?weakSelf.avatarURL:@""
+                                       @"avatar":weakSelf.avatarURL?weakSelf.avatarURL:@"",
+                                       @"prodFlag":EZProductFlag
                                        };
         
         
@@ -588,20 +589,23 @@
                 }
             }];
              **/
-            [weakSelf.navigationController dismissViewControllerAnimated:YES completion:nil];
+            
+            [weakSelf.navigationController dismissViewControllerAnimated:YES completion:^(){
+                [[EZMessageCenter getInstance] postEvent:EZAlbumImageUpdate attached:nil];
+            }];
         } error:^(id err){
             [weakSelf stopActivity];
             NSInteger errorCode = err2StatusCode(err);
             EZDEBUG(@"Register error:%@, errorCode:%i", err, errorCode);
-            NSString* errorMsg = @"请检查后重试";
+            NSString* errorMsg = macroControlInfo(@"请检查后重试");
             if(errorCode == 406){
-                errorMsg = @"填写手机号";
+                errorMsg = macroControlInfo(@"填写手机号");
             }else if(errorCode == 407){
-                errorMsg = @"短信验证码错";
+                errorMsg = macroControlInfo(@"短信验证码错");
             }else if(errorCode == 408){
-                errorMsg = @"该手机已注册";
+                errorMsg = macroControlInfo(@"该手机已注册");
             }
-            [[EZUIUtility sharedEZUIUtility] raiseInfoWindow:@"注册失败" info:errorMsg];
+            [[EZUIUtility sharedEZUIUtility] raiseInfoWindow:macroControlInfo(@"注册失败") info:errorMsg];
         }];
     };
 

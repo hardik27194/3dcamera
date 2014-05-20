@@ -553,6 +553,57 @@
     
 }
 
+
+- (void) setupCell:(EZDisplayPhoto *)cp
+{
+    EZDEBUG(@"pos1");
+    EZPhotoCell* cell = self;
+    cell.backgroundColor = VinesGray;
+    cell.headIcon.image = nil;
+    cell.otherIcon.image = nil;
+    cell.authorName.text = nil;
+    cell.otherName.text = nil;
+    cell.otherName.hidden = NO;
+    cell.otherIcon.hidden = NO;
+    cell.andSymbol.hidden = NO;
+    cell.otherTalk.hidden = NO;
+    cell.authorName.hidden = NO;
+    cell.headIcon.hidden = NO;
+    cell.ownTalk.hidden = NO;
+    cell.frontImage.image = nil;
+    //cell.frontImage.backgroundColor = VinesGray;
+    cell.activityView.hidden = YES;
+    cell.frontImage.backgroundColor = VinesGray;
+    cell.cameraView.hidden = YES;
+    cell.waitingInfo.hidden = YES;
+    cell.shotPhoto.hidden = YES;
+    cell.gradientView.hidden = NO;
+    cell.moreButton.hidden = NO;
+    cell.frontImage.pageControl.hidden = YES;
+    cell.requestInfo.hidden = YES;
+    //cell.otherTalk.backgroundColor = [UIColor clearColor];
+    //cell.ownTalk.backgroundColor = [UIColor clearColor];
+    if(cp.isPlaceHolder){
+        cell.andSymbol.hidden = YES;
+        //cell.frontImage.pageControl.hidden = YES;
+        cell.gradientView.hidden = YES;
+        cell.moreButton.hidden = YES;
+        
+    }
+    else{
+        if(cp.photo.isPair){
+            cell.andSymbol.hidden = NO;
+            //cell.frontImage.pageControl.hidden = YES;
+        }else{
+            cell.andSymbol.hidden = YES;
+            if(cp.photo.photoRelations.count > 1){
+                cell.frontImage.pageControl.hidden = NO;
+                //cell.frontImage.pageControl.currentPage = cp.photoPos;
+            }
+        }
+        [cell.frontImage setPhotos:cp.photo.photoRelations position:cp.photoPos];
+    }
+}
 /*
 // Only override drawRect: if you perform custom drawing.
 // An empty implementation adversely affects performance during animation.

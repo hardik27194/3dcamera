@@ -187,6 +187,8 @@
 
 - (void) setFrontFormat:(BOOL)front;
 
+- (void) setupCell:(EZDisplayPhoto*)dp;
+
 - (id) init;
 
 @end

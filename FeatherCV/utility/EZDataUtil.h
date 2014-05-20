@@ -28,6 +28,8 @@
 
 + (EZDataUtil*) getInstance;
 
+@property (nonatomic, strong) NSMutableDictionary* personPhotoCount;
+
 @property (nonatomic, assign) int queryingCount;
 
 @property (nonatomic, assign) BOOL isQueryingNotes;
@@ -148,6 +150,7 @@
 //Will load data for user
 - (void) loadFriends:(EZEventBlock)success failure:(EZEventBlock)failure;
 
+- (NSMutableDictionary*) calculatePersonPhotoCount;
 
 //The purpose is to remove all the photos after login.
 //Leave person when user login.
@@ -186,6 +189,8 @@
 
 
 - (void) deletePhoto:(EZPhoto *)photoInfo success:(EZEventBlock)success failure:(EZEventBlock)failure;
+
+- (void) disbandPhoto:(EZPhoto *)photoInfo success:(EZEventBlock)success failure:(EZEventBlock)failure;
 //This method will enable the user to upload all it's contacts information to the server.
 //The server will get the uploaded information and return a list which update the current user information.
 //What, I should do?

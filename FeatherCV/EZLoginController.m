@@ -231,6 +231,7 @@
     coverView.backgroundColor = [UIColor clearColor];
     [self.view addSubview:coverView];
     [[EZDataUtil getInstance] loginUser:loginInfo success:^(EZPerson* person){
+        [[EZMessageCenter getInstance] postEvent:EZAlbumImageUpdate attached:nil];
         [activity stopAnimating];
         [activity removeFromSuperview];
         [coverView removeFromSuperview];

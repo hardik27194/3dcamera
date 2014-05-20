@@ -152,52 +152,11 @@ static int photoCount = 1;
         cp = [[EZDisplayPhoto alloc] init];
         cp.isPlaceHolder = TRUE;
     }
-    EZDEBUG(@"pos1");
-    cell.backgroundColor = VinesGray;
-    cell.headIcon.image = nil;
-    cell.otherIcon.image = nil;
-    cell.authorName.text = nil;
-    cell.otherName.text = nil;
-    cell.otherName.hidden = NO;
-    cell.otherIcon.hidden = NO;
-    cell.andSymbol.hidden = NO;
-    cell.otherTalk.hidden = NO;
-    cell.authorName.hidden = NO;
-    cell.headIcon.hidden = NO;
-    cell.ownTalk.hidden = NO;
-    cell.frontImage.image = nil;
-    //cell.frontImage.backgroundColor = VinesGray;
-    cell.activityView.hidden = YES;
-    cell.frontImage.backgroundColor = VinesGray;
-    cell.cameraView.hidden = YES;
-    cell.waitingInfo.hidden = YES;
-    cell.shotPhoto.hidden = YES;
-    cell.gradientView.hidden = NO;
-    cell.moreButton.hidden = NO;
-    cell.frontImage.pageControl.hidden = YES;
-    cell.requestInfo.hidden = YES;
-    //cell.otherTalk.backgroundColor = [UIColor clearColor];
-    //cell.ownTalk.backgroundColor = [UIColor clearColor];
-    if(cp.isPlaceHolder){
-        cell.andSymbol.hidden = YES;
-        //cell.frontImage.pageControl.hidden = YES;
-        cell.gradientView.hidden = YES;
-        cell.moreButton.hidden = YES;
-        
-    }
-    else{
-        if(cp.photo.isPair){
-            cell.andSymbol.hidden = NO;
-            //cell.frontImage.pageControl.hidden = YES;
-        }else{
-            cell.andSymbol.hidden = YES;
-            if(cp.photo.photoRelations.count > 1){
-                cell.frontImage.pageControl.hidden = NO;
-                //cell.frontImage.pageControl.currentPage = cp.photoPos;
-            }
-        }
-        [cell.frontImage setPhotos:cp.photo.photoRelations position:cp.photoPos];
-    }
+    
+    //return cell;
+    
+    [cell setupCell:cp];
+    //return cell;
     //[cell.frontImage cleanAllPhotos];
     //[cell.frontImage setPhotos:cp.photo.photoRelations currentPos:cp.photoPos];
     if([self isVisibleController]){
@@ -216,7 +175,7 @@ static int photoCount = 1;
     //cell.photoDate.text = formatRelativeTime(myPhoto.createdTime);
     // Configure the cell...
     //[cell displayImage:[myPhoto getLocalImage]];
-    [[cell viewWithTag:animateCoverViewTag] removeFromSuperview];
+    //[[cell viewWithTag:animateCoverViewTag] removeFromSuperview];
     
     __weak EZAlbumTablePage* weakSelf = self;
     __weak EZPhotoCell* weakCell = cell;
@@ -280,9 +239,12 @@ static int photoCount = 1;
             [imageView loadImageURL:backPt.screenURL haveThumb:YES loading:NO];
         }
     };
-    
+    //return cell;
     EZDEBUG(@"Will display front image type:%i", myPhoto.typeUI);
     [self displayChat:cell ownerPhoto:myPhoto otherPhoto:switchPhoto];
+    //return cell;
+    
+    
     if(cp.isFront){
         [cell setFrontFormat:true];
         //cell.authorName.textColor = [UIColor whiteColor];
@@ -292,8 +254,7 @@ static int photoCount = 1;
             //takePhoto.center =
             //cell.frontImage.image = nil
             //cell.frontImage.backgroundColor = ClickedColor;
-            cell.cameraView.hidden = NO;
-            cell.gradientView.hidden = YES;
+            
             EZEventBlock personGet = ^(EZPerson* ps){
                 weakCell.requestInfo.hidden = NO;
                 weakCell.requestInfo.text =[NSString stringWithFormat:macroControlInfo(@"%@发来的照片"), ps.name];
@@ -303,6 +264,8 @@ static int photoCount = 1;
             if(!otherPerson)
                 weakCell.requestInfo.text = @"";
             
+            cell.cameraView.hidden = NO;
+            cell.gradientView.hidden = YES;
             weakSelf.rightCycleButton.hidden = YES;
             cell.shotPhoto.hidden = NO;
             //cell.frontImage.backgroundColor = ClickedColor;
@@ -350,7 +313,7 @@ static int photoCount = 1;
     if(!myPhoto.photoRelations.count && !(myPhoto.type == 1)){
         //EZDEBUG(@"Will register upload success");
         myPhoto.progress = ^(NSNumber* number){
-            if(cell.currentPos == indexPath.row){
+            if(weakCell.currentPos == indexPath.row){
                 if(number){
                     [_progressBar setProgress:0.2 + number.floatValue*0.8 animated:YES];
                 }else{
@@ -559,7 +522,7 @@ static int photoCount = 1;
                     [[EZDataUtil getInstance] deleteImageFiles:cp.photo.photoRelations];
                     [weakSelf.combinedPhotos removeObjectAtIndex:pos];
                     [[EZDataUtil getInstance] removeLocalPhoto:cp.photo.photoID];
-                    if(_combinedPhotos.count){
+                    if(weakSelf.combinedPhotos.count){
                         [weakSelf.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
                     }else{
                         [weakSelf.tableView reloadData];
@@ -572,21 +535,6 @@ static int photoCount = 1;
                 weakCell.activityView.hidden = YES;
             }];
         };
-        //NSArray* dataToShare = @[@"我爱老哈哈"];  // ...or whatever pieces of data you want to share.
-        //NSString *textToShare = self.navigationItem.title;
-        //NSArray *itemsToShare = @[@"", [imagesArray objectAtIndex:afImgViewer.currentImage]];
-        /**
-         UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:@[weakCell.frontImage.image] applicationActivities:nil];
-         //activityVC.excludedActivityTypes = @[UIActivityTypePrint, UIActivityTypeCopyToPasteboard, UIActivityTypeSaveToCameraRoll   UIActivityTypeAssignToContact]; //or whichever you don't need
-         [self presentViewController:activityVC animated:YES completion:nil];
-         **/
-        
-        //UIActivityViewController* activityViewController =
-        //[[UIActivityViewController alloc] initWithActivityItems:dataToShare applicationActivities:nil];
-        //[self presentViewController:activityViewController animated:YES completion:^{
-        //    EZDEBUG(@"Completed sharing");
-        //}];
-        
         
     };
     
@@ -972,7 +920,7 @@ static int photoCount = 1;
 - (void) setTitleFormat:(EZPerson*)currentUser isHeartSelector:(BOOL)heartSelector
 {
     _currentUser = currentUser;
-    self.title = currentUser.name;
+    self.title = @"";///currentUser.name;
     if(heartSelector){
         _numberLabel.alpha = 0;
     }else{
@@ -1738,20 +1686,40 @@ static int photoCount = 1;
         _outerImageView.image = nil;
     }];
     
+    [[EZMessageCenter getInstance] registerEvent:EZDeleteOtherPhoto block:^(NSDictionary* dict){
+        NSString* srcID = [dict objectForKey:@"srcID"];
+        NSString* deletedID = [dict objectForKey:@"deletedID"];
+        int pos = [self findPhotoByID:srcID photos:_combinedPhotos];
+        [[EZDataUtil getInstance] removeOtherPhoto:deletedID array:[EZDataUtil getInstance].mainPhotos store:YES];
+        if(pos > 0){
+            EZDisplayPhoto* dp = [_combinedPhotos objectAtIndex:pos];
+            [self deleteMatchPhoto:dp deletedID:deletedID pos:pos];
+        }
+    }];
+    
     [[EZMessageCenter getInstance] registerEvent:EZAlbumImageUpdate block:^(id obj){
         //Turn off the Album update
         //return;
         [[EZDataUtil getInstance] fetchLastImage:^(ALAsset* image){
             ALAssetRepresentation* ap = [image defaultRepresentation];
-            EZDEBUG(@"dimension is:%@", NSStringFromCGSize(ap.dimensions));
-            if(ap.dimensions.width/2.0 == CurrentScreenWidth && ap.dimensions.height/2.0 == CurrentScreenHeight){
-                EZDEBUG(@"Quit for encounter screenshot");
+            NSDate* date = [image valueForProperty:ALAssetPropertyDate];
+            CLLocation *location = [image valueForProperty:ALAssetPropertyLocation];
+            UIImageOrientation orientation = [[image valueForProperty:ALAssetPropertyOrientation] integerValue];
+            
+            if(!location){
+                EZDEBUG(@"quit for have no location");
                 return;
             }
+            if(orientation == UIImageOrientationLeft || orientation == UIImageOrientationRight){
+                orientation = UIImageOrientationUp;
+            }else{
+                orientation = UIImageOrientationLeft;
+            }
+            EZDEBUG(@"dimension is:%@, date is:%@, %@, %i", NSStringFromCGSize(ap.dimensions), date, location, orientation);
             //weakCell.frontImage.image = image;
             CGImageRef cgImage = [[image defaultRepresentation] fullScreenImage];
             NSString* assetURL = [[image valueForProperty:ALAssetPropertyAssetURL] absoluteString];
-            weakSelf.assetImage =[UIImage imageWithCGImage:cgImage scale:1.0 orientation:UIImageOrientationUp];
+            weakSelf.assetImage =[UIImage imageWithCGImage:cgImage scale:1.0 orientation:orientation];
             EZDEBUG(@"Get image from album, size:%@", NSStringFromCGSize(weakSelf.assetImage.size));
             weakSelf.asset = assetURL;
             //[self setupAlbumImage];
@@ -2014,21 +1982,26 @@ static int photoCount = 1;
                 [self.tableView reloadData];
             }
         }else{
-            EZDEBUG(@"found dp:%@, relation count:%i", dp.photo.photoID, dp.photo.photoRelations.count);
-            for(int i = 0; i < dp.photo.photoRelations.count; i++){
-                EZPhoto* photo = [dp.photo.photoRelations objectAtIndex:i];
-                if([photo.photoID isEqualToString:deletedID]){
-                    dp.photo.photoRelations = [[NSMutableArray alloc] initWithArray:dp.photo.photoRelations];
-                    [(NSMutableArray*)dp.photo.photoRelations removeObjectAtIndex:i];
-                }
-            }
-            dp.photoPos = 0;
-            EZDEBUG(@"Will reload photo");
-            [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:pos inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
-
+            [self deleteMatchPhoto:dp deletedID:deletedID pos:pos];
         }
         
     }
+}
+
+- (void) deleteMatchPhoto:(EZDisplayPhoto*)dp deletedID:(NSString*)deletedID pos:(NSInteger)pos
+{
+    EZDEBUG(@"found dp:%@, relation count:%i", dp.photo.photoID, dp.photo.photoRelations.count);
+    for(int i = 0; i < dp.photo.photoRelations.count; i++){
+        EZPhoto* photo = [dp.photo.photoRelations objectAtIndex:i];
+        if([photo.photoID isEqualToString:deletedID]){
+            dp.photo.photoRelations = [[NSMutableArray alloc] initWithArray:dp.photo.photoRelations];
+            [(NSMutableArray*)dp.photo.photoRelations removeObjectAtIndex:i];
+        }
+    }
+    dp.photoPos = 0;
+    
+    EZDEBUG(@"Will reload photo");
+    [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:pos inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
 }
 //Make sure current view is the topMost.
 - (BOOL) isVisibleController

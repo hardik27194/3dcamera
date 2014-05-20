@@ -57,6 +57,7 @@
     if (_assetLibaray == nil) {
         _assetLibaray = [[ALAssetsLibrary alloc] init];
     }
+    _personPhotoCount = [[NSMutableDictionary alloc] init];
     _contacts = [[NSMutableArray alloc] init];
     _isoFormatter = [[NSDateFormatter alloc] init];
     _isoFormatter.dateFormat = @"yyyy-MM-dd' 'HH:mm:ss.S";
@@ -95,6 +96,74 @@
 }
 
 
+- (NSMutableDictionary*) calculatePersonPhotoCount
+{
+    
+    //_personPhotoCount = [[NSMutableDictionary alloc] init];
+    [_personPhotoCount removeAllObjects];
+    for(int i = 0; i < _mainPhotos.count; i++){
+        EZDisplayPhoto* ph = [_mainPhotos objectAtIndex:i];
+        if(ph.isFirstTime){
+            NSNumber* num = [_personPhotoCount objectForKey:@"newPerson"];
+            NSInteger updated = num.integerValue + 1;
+            //personNew.photoCount += 1;
+            //personNew.pendingEventCount += 1;
+            [_personPhotoCount setObject:@(updated) forKey:@"newPerson"];
+            [_personPhotoCount setObject:@(updated) forKey:@"pending"];
+        }
+        
+        BOOL bothAdded = false;
+        BOOL otherAdded = false;
+        BOOL ownAdded = false;
+        for(EZPhoto* matchedPh in ph.photo.photoRelations){
+            //EZPhoto* matchedPh = [ph.photo.photoRelations objectAtIndex:0];
+            EZPerson* ps = pid2person(matchedPh.personID);
+            if(ph.photo.typeUI == kPhotoRequest && !ph.isFirstTime){
+                NSNumber* num = [_personPhotoCount objectForKey:@"newPerson"];
+                NSInteger updated = num.integerValue + 1;
+                [_personPhotoCount setObject:@(updated) forKey:@"newPerson"];
+                [_personPhotoCount setObject:@(updated) forKey:@"pending"];
+
+            }
+            if([ph.photo.likedUsers containsObject:matchedPh.personID] && [matchedPh.likedUsers containsObject:currentLoginID]){
+                //if(ph.photo.re)
+                if(!bothAdded){
+                    bothAdded = true;
+                    //personBothLike.photoCount += 1;
+                    NSNumber* num = [_personPhotoCount objectForKey:@"bothLike"];
+                    [_personPhotoCount setObject:@(num.integerValue + 1) forKey:@"bothLike"];
+                }
+                
+            }else if([ph.photo.likedUsers containsObject:matchedPh.personID]){
+                if(!otherAdded){
+                    otherAdded = true;
+                    //personOtherLike.photoCount += 1;
+                    NSNumber* num = [_personPhotoCount objectForKey:@"otherLike"];
+                    [_personPhotoCount setObject:@(num.integerValue + 1) forKey:@"otherLike"];
+                }
+            }else if([matchedPh.likedUsers containsObject:currentLoginID]){
+                if(!ownAdded){
+                    ownAdded = true;
+                    //personOwnLike.photoCount += 1;
+                    NSNumber* num = [_personPhotoCount objectForKey:@"ownLike"];
+                    [_personPhotoCount setObject:@(num.integerValue + 1) forKey:@"ownLike"];
+                }
+            }
+            
+            if(!ps.personID){
+                continue;
+            }
+            
+            NSNumber* count = [_personPhotoCount objectForKey:ps.personID];
+            //if(count){
+            //    count.integerValue += 1;
+            //}
+            [_personPhotoCount setValue:@(count.integerValue + 1) forKey:ps.personID];
+        }
+    }
+    [_personPhotoCount setValue:@(_mainPhotos.count) forKey:currentLoginID];
+    return _personPhotoCount;
+}
 
 - (void) jumpCycleAnimation:(EZEventBlock)callBack
 {
@@ -454,6 +523,20 @@
     } failblk:failure];
 }
 
+- (void) disbandPhoto:(EZPhoto *)photoInfo destPhoto:(EZPhoto*)destPhoto success:(EZEventBlock)success failure:(EZEventBlock)failure
+{
+    NSDictionary* jsons =@{@"cmd":@"disband",@"srcID":photoInfo.photoID, @"destID":destPhoto.photoID};
+    EZDEBUG(@"upload info:%@", jsons);
+    [EZNetworkUtility postParameterAsJson:@"photo/info" parameters:jsons complete:^(id infos){
+        success(nil);
+    } failblk:^(NSError* err){
+        EZDEBUG(@"Error:%@", err);
+        if(failure){
+            failure(err);
+        }
+    }];
+}
+
 
 - (void) deletePhoto:(EZPhoto *)photoInfo success:(EZEventBlock)success failure:(EZEventBlock)failure
 {
@@ -568,19 +651,37 @@
         EZPhoto* pt = dp.photo;
         CGFloat timeIntval = fabsf([pt.createdTime timeIntervalSinceNow]);
         EZDEBUG(@"time distance:%f", timeIntval);
-        if(timeIntval > expiredTime && ![self isBothLiked:pt]){
-            EZDEBUG(@"Will remove id:%@", pt.photoID);
-            
-            [self deletePhoto:pt success:^(id obj){
-                EZDEBUG(@"success fully deleted");
-                [_mainPhotos removeObject:dp];
-                NSArray* deleted = @[dp.photo];
-                [weakSelf removeLocalPhotos:deleted];
-                [[EZMessageCenter getInstance] postEvent:EZExpiredPhotos attached:deleted];
-            } failure:^(id err){
+        if(dp.isFirstTime || dp.photo.typeUI == kPhotoRequest){
+            continue;
+        }
+        if(timeIntval > expiredTime){
+            if(![self isBothLiked:pt]){
+                EZDEBUG(@"Will remove id:%@", pt.photoID);
+                [self deletePhoto:pt success:^(id obj){
+                    EZDEBUG(@"success fully deleted");
+                    [_mainPhotos removeObject:dp];
+                    NSArray* deleted = @[dp.photo];
+                    [weakSelf removeLocalPhotos:deleted];
+                    [[EZMessageCenter getInstance] postEvent:EZExpiredPhotos attached:deleted];
+                } failure:^(id err){
                 EZDEBUG(@"failed to delete photos");
-            }];
-            break;
+                }];
+                break;
+            }else if(pt.photoRelations.count > 1){
+                EZDEBUG(@"Both check single photos");
+                for(int i = 0; i < pt.photoRelations.count; i ++){
+                    EZPhoto* otherPT = [pt.photoRelations objectAtIndex:i];
+                    if(![pt.likedUsers containsObject:otherPT.personID] || ![otherPT.likedUsers containsObject:currentLoginID]){
+                        [self disbandPhoto:pt destPhoto:otherPT success:^(id obj){
+                            [[EZMessageCenter getInstance] postEvent:EZDeleteOtherPhoto attached:@{@"srcID":pt.photoID, @"deletedID":otherPT.photoID}];
+                        } failure:^(NSError* err){
+                            EZDEBUG(@"failed to disband:%@, %@", pt.photoID, otherPT.photoID);
+                        }];
+                        return;
+                    }
+                }
+                
+            }
         }
     }
 }
@@ -1006,11 +1107,11 @@
     if(_currentPersonID && !_currentLoginPerson){
         [self getPersonByID:_currentPersonID success:^(EZPerson* ps){
             //EZDEBUG(@"loaded person count:%i", ps.count);
-            EZDEBUG(@"Current person name:%@", ps.name);
+            //EZDEBUG(@"Current person name:%@", ps.name);
             _currentLoginPerson = ps;
         }];
     }
-    EZDEBUG(@"Current PersonID:%@, person name:%@", _currentPersonID, _currentLoginPerson.name);
+    //EZDEBUG(@"Current PersonID:%@, person name:%@", _currentPersonID, _currentLoginPerson.name);
     return _currentPersonID;
 }
 
@@ -1462,7 +1563,16 @@
         ps = [[EZPerson alloc] init];
         ps.personID = personID;
         ps.isQuerying = true;
+        ps.lastUpdate = [NSDate date];
         [_currentQueryUsers setObject:ps forKey:personID];
+    }else{
+        if(!ps.lastUpdate){
+            ps.lastUpdate = [NSDate date];
+        }
+        CGFloat timeIntval = abs([ps.lastUpdate timeIntervalSinceNow]);
+        if(timeIntval > personTimeout){
+            ps.isQuerying = true;
+        }
     }
     EZDEBUG(@"person querying is:%i, personID:%@", ps.isQuerying, personID);
     if(ps.isQuerying){
@@ -2240,6 +2350,7 @@
     //[pids addObjectsFromArray:[_joinedUsers allObjects]];
     [pids addObjectsFromArray:_notJoinedUsers.allObjects];
     [_sortedUserSets removeAllObjects];
+    NSString* currentID = currentLoginID;
     NSMutableArray* sortedPids = [[NSMutableArray alloc] init];
     for(NSString* pid in pids){
         if(![_sortedUserSets containsObject:pid]){
@@ -2251,7 +2362,7 @@
     for(NSString* pid in sortedPids){
         EZPerson* ps = [_currentQueryUsers objectForKey:pid];
         if(ps && ![stored containsObject:pid]){
-            if(![pid isEqualToString:currentLoginID]){
+            if(![pid isEqualToString:currentID]){
                 [res addObject:ps];
             }
         }
