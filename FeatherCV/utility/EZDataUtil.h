@@ -190,7 +190,7 @@
 
 - (void) deletePhoto:(EZPhoto *)photoInfo success:(EZEventBlock)success failure:(EZEventBlock)failure;
 
-- (void) disbandPhoto:(EZPhoto *)photoInfo success:(EZEventBlock)success failure:(EZEventBlock)failure;
+- (void) disbandPhoto:(EZPhoto *)photoInfo destPhoto:(EZPhoto*)destPhoto success:(EZEventBlock)success failure:(EZEventBlock)failure;
 //This method will enable the user to upload all it's contacts information to the server.
 //The server will get the uploaded information and return a list which update the current user information.
 //What, I should do?

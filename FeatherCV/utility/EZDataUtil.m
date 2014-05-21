@@ -896,7 +896,7 @@
         holder.filename = fileName;
         holder.downloaded = [EZFileUtil isExistInDocument:fileName];
     }
-    EZDEBUG(@"File in cache:%@", holder.downloaded);
+    EZDEBUG(@"File in cache:%@, success:%i, fail:%i", holder.downloaded, holder.success.count, holder.failures.count);
     if(!holder.downloaded){
         //return holder.downloaded;
         [holder insertSuccess:success];

@@ -40,6 +40,13 @@
     for(EZEventBlock block in successes){
         block(_downloaded);
     }
+    [self cleanAllPending];
+}
+
+- (void) cleanAllPending
+{
+    [_failures removeAllObjects];
+    [_success removeAllObjects];
 }
 
 - (void) callFailure:(id)failure
@@ -49,6 +56,7 @@
     for(EZEventBlock block in fails){
         block(failure);
     }
+    [self cleanAllPending];
 }
 
 @end

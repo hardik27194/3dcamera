@@ -393,6 +393,13 @@ static int photoCount = 1;
         //}];
         //EZDEBUG(@"Send a message out");
         //[[EZMessageCenter getInstance] postEvent:EZNoteCountChange attached:@(2)];
+        //[[EZDataUtil getInstance] disbandPhoto:myPhoto destPhoto:switchPhoto success:^(id obj){
+        //    EZDEBUG(@"successfully disband:%@ and %@", myPhoto.photoID, switchPhoto.photoID);
+        //} failure:^(id err){
+        //    EZDEBUG(@"disband error:%@", err);
+        //}];
+        
+        //return;
         if(myPhoto.typeUI != kPhotoRequest){
             EZPhoto* swPhoto = [myPhoto.photoRelations objectAtIndex:cp.photoPos];
             //swPhoto.screenURL = @"http://192.168.1.102:8080/broken/49497";
@@ -1047,10 +1054,16 @@ static int photoCount = 1;
                 ph = [dp.photo.photoRelations objectAtIndex:i];
                 if([ph.personID isEqualToString:currentUser.personID]){
                     //if(dp.photo.photoRelations.count > 0){
-                    EZDisplayPhoto* newDP = [self wrapPhoto:ph];
-                    newDP.photoPos = 0;
-                    newDP.photo = dp.photo.copy;
-                    newDP.photo.photoRelations = @[ph];
+                    
+                    EZDisplayPhoto* newDP = dp;
+                    if(dp.photo.typeUI != kPhotoRequest){
+                        //((ph.typeUI == kPhotoRequest)?dp:[self wrapPhoto:ph]);
+                        newDP = [self wrapPhoto:ph];
+                        newDP.photo = dp.photo.copy;
+                        newDP.photo.photoRelations = @[ph];
+                        newDP.photoPos = 0;
+                        
+                    }
                     //newDP.isSingle = YES;
                     if(dp.photo.type != kPhotoRequest){
                         newDP.isFront = NO;

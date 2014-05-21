@@ -297,9 +297,11 @@ static EZNetworkUtility* instance;
         }
         //NSLog(@"SUCCCESSFULL IMG RETRIEVE to %@!",path);
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-        EZDEBUG(@"fail to download:%@, error:%@", fullURL, error);
+        EZDEBUG(@"network fail to download:%@, error:%@, fail:%i", fullURL, error, holder.failures.count);
         [holder callFailure:error];
+         EZDEBUG(@"network tend to fail:%i", holder.failures.count);
         holder.isDownloading = false;
+        
         // Deal with failure
     }];//[[AFHTTPRequestOperation alloc] initWithRequest:request];
     
