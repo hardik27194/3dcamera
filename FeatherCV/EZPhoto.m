@@ -28,9 +28,10 @@
     //    return nil;
     NSMutableArray* res = [[NSMutableArray alloc] init];
     for(NSDictionary* dict in _conversations){
+        NSString* dateStr = isoDateFormat([dict objectForKey:@"date"]);
         [res addObject:@{
                          @"text":[dict objectForKey:@"text"],
-                         @"date":isoDateFormat([dict objectForKey:@"date"])
+                         @"date":dateStr?dateStr:@""
                          }];
     }
     return res;
@@ -40,10 +41,17 @@
 {
     NSMutableArray* res = [[NSMutableArray alloc] init];
     for(NSDictionary* dict in jsons){
-        [res addObject:@{
-                         @"text":[dict objectForKey:@"text"],
-                         @"date":isoStr2Date([dict objectForKey:@"date"])
+        NSDate* date = isoStr2Date([dict objectForKey:@"date"]);
+        if(!date){
+            [res addObject:@{
+                         @"text":[dict objectForKey:@"text"]
                          }];
+        }else{
+            [res addObject:@{
+                             @"text":[dict objectForKey:@"text"],
+                             @"date":date
+                             }];
+        }
     }
     return res;
 }
@@ -234,6 +242,11 @@
 
 - (void) fromJson:(NSDictionary*)dict
 {
+    
+    //NSDate* date = isoStr2Date([dict objectForKey:@"createdTime"]);
+    //if(!date){
+    //    EZDEBUG(@"photoID:%@,format:%@, string date:%@",[dict objectForKey:@"photoID"], [dict objectForKey:@"createdTime"], [EZDataUtil getInstance].isoFormatter.dateFormat);
+    //}
     //EZDEBUG(@"json raw string:%@", dict);
     _personID = [dict objectForKey:@"personID"];
     //[[EZDataUtil getInstance] getPersonID:personID success:^(NSArray* ps){

@@ -121,7 +121,10 @@ typedef enum {
 
 @property (nonatomic, strong) EZUpArrow* upArrow;
 
-@property (nonatomic, strong) NSString* assetURL;
+//@property (nonatomic, strong) NSString* assetURL;
+
+//@property (nonatomic, strong) UIImage* assetImage;
+@property (nonatomic, strong) EZImageAsset* imageAsset;
 
 @property (nonatomic, strong) UIImage* assetImage;
 
@@ -312,7 +315,7 @@ typedef enum {
 
 - (void) embededCancel;
 
-- (id) initWithAsset:(NSString*)asset image:(UIImage*)image;
+- (id) initWithAsset:(EZImageAsset*)asset;
 
 - (id) initWithFront:(BOOL)frontFacing;
 

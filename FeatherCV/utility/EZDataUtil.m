@@ -61,6 +61,10 @@
     _contacts = [[NSMutableArray alloc] init];
     _isoFormatter = [[NSDateFormatter alloc] init];
     _isoFormatter.dateFormat = @"yyyy-MM-dd' 'HH:mm:ss.S";
+    
+    _isoFormatter2 = [[NSDateFormatter alloc] init];
+    _isoFormatter2.dateFormat = @"yyyy-MM-dd' 'HH:mm:ss";
+    
     _localPhotos = [[NSMutableArray alloc] init];
     _pendingPhotos = [[NSMutableArray alloc] init];
     _recievedNotify = [[NSMutableDictionary alloc] init];
@@ -95,6 +99,15 @@
     return self;
 }
 
+
+- (NSDate*) formatISOString:(NSString*)string
+{
+    NSDate* date = [_isoFormatter dateFromString:string];
+    if(!date){
+        date = [_isoFormatter2 dateFromString:string];
+    }
+    return date;
+}
 
 - (NSMutableDictionary*) calculatePersonPhotoCount
 {
@@ -1557,6 +1570,7 @@
     if(personID == nil){
         return nil;
     }
+    EZEventBlock localSuccess = success;
     EZPerson* ps = [_currentQueryUsers objectForKey:personID];
     if(!ps){
         //[self queryPendingPerson]
@@ -1566,12 +1580,18 @@
         ps.lastUpdate = [NSDate date];
         [_currentQueryUsers setObject:ps forKey:personID];
     }else{
+        if(success){
+            success(ps);
+        }
+        localSuccess = nil;
         if(!ps.lastUpdate){
             ps.lastUpdate = [NSDate date];
         }
+        
         CGFloat timeIntval = abs([ps.lastUpdate timeIntervalSinceNow]);
         if(timeIntval > personTimeout){
             ps.isQuerying = true;
+            ps.lastUpdate = [NSDate date];
         }
     }
     EZDEBUG(@"person querying is:%i, personID:%@", ps.isQuerying, personID);
@@ -1582,14 +1602,14 @@
             queryCalls = [[NSMutableArray alloc] init];
             [_pendingPersonCall setObject:queryCalls forKey:personID];
         }
-        if(success){
-            [queryCalls addObject:success];
+        if(localSuccess){
+            [queryCalls addObject:localSuccess];
         }
         //Trigger the person query call
         [self queryPendingPerson];
     }else{
-        if(success){
-            success(ps);
+        if(localSuccess){
+            localSuccess(ps);
         }
     }
     [self adjustActivity:ps.personID];

@@ -382,10 +382,35 @@
     return [self initWithNibName:@"DLCImagePicker" bundle:nil];
 }
 
-- (id) initWithAsset:(NSString*)asset image:(UIImage*)assetImage
+
+
+- (id) initWithAsset:(EZImageAsset*)asset
 {
-    _assetURL = asset;
-    _assetImage = assetImage;
+    //_assetURL = asset;
+    //_assetImage = assetImage;
+    _imageAsset = asset;
+    
+        //weakCell.frontImage.image = image;
+    /**
+    [[EZDataUtil getInstance]assetURLToAsset:str2url(_imageAsset.assetURL) success:^(ALAsset* asset){
+        CGImageRef cgImage = [[asset defaultRepresentation] fullScreenImage];
+        //NSString* assetURL = [[image valueForProperty:ALAssetPropertyAssetURL] absoluteString];
+        //_imageAsset.assetURL = assetURL;
+        UIImageOrientation orginOrient = _imageAsset.orientation;
+        UIImageOrientation orientation = _imageAsset.orientation;
+        if(orientation == UIImageOrientationLeft || orientation == UIImageOrientationRight){
+            orientation = UIImageOrientationUp;
+        }else if(orientation == UIImageOrientationUp){
+            orientation = UIImageOrientationUp;
+        }else{
+            orientation = UIImageOrientationLeft;
+        }
+        _assetImage =[UIImage imageWithCGImage:cgImage scale:1.0 orientation:orientation];
+        EZDEBUG(@"dimension is:%@, date is:%@, %@, %i, origin:%i", NSStringFromCGSize(_assetImage.size), _imageAsset.createdTime, _imageAsset.location, orientation, orginOrient);
+        //CFRelease(cgImage);
+    }];
+     **/
+    _assetImage = [UIImage imageWithContentsOfFile:asset.storedImageFile];
     return  [self initWithNibName:@"DLCImagePicker" bundle:nil];
 }
 
@@ -783,7 +808,7 @@
     //[self startMobileMotion];
     [[EZMessageCenter getInstance] registerEvent:EZFaceCovered block:faceCovered];
     [self preMatchPhoto];
-    if(_assetImage){
+    if(_imageAsset){
         [self setStaticImage:_assetImage];
     }
     //[[EZUIUtility sharedEZUIUtility] enableProximate:YES];
@@ -897,13 +922,13 @@
     [self.view addSubview:_progressView];
     
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
-    if(!_assetImage){
+    if(!_imageAsset){
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
             [self setupCamera];
         });
     }
     
-    if(_assetImage){
+    if(_imageAsset){
         [self prepareRotateImage:_assetImage];
         [self showTextField:YES];
     }
@@ -1232,18 +1257,25 @@ context:(void *)context
     [_authorIcon setImageWithURL:str2url(currentLoginUser.avatar)];
     //[textInputRegion addSubview:_authorIcon];
     
-    UILabel* signText = [[UILabel alloc] initWithFrame:CGRectMake(16, -3, 10, 44)];
-    signText.font = [UIFont systemFontOfSize:30];
-    signText.text = @":";
-    signText.textColor = ClickedColor;
+    //UILabel* signText = [[UILabel alloc] initWithFrame:CGRectMake(16, -3, 10, 44)];
+    //signText.font = [UIFont systemFontOfSize:30];
+    //signText.text = @":";
+    //signText.textColor = ClickedColor;
     
-    EZClickView* signClicked = [[EZClickView alloc] initWithFrame:CGRectMake(0, 4, 40, 40)];
+    EZClickImage* signClicked = [[EZClickImage alloc] initWithFrame:CGRectMake(2, 4, smallIconRadius, smallIconRadius)];
     signClicked.backgroundColor = ButtonWhiteColor;
-    [signClicked addSubview:signText];
+    //[signClicked addSubview:signText];
+    [signClicked loadImageURL:currentLoginUser.avatar haveThumb:NO loading:NO];
     [signClicked enableRoundImage];
     signClicked.enableTouchEffects = YES;
     signClicked.releasedBlock = ^(id obj){
         [weakSelf.textField  becomeFirstResponder];
+    };
+    
+    __weak EZClickImage* weakSign = signClicked;
+    
+    signClicked.longPressBlock = ^(id obj){
+        weakSign.image = [UIImage imageNamed:@"feather_icon"];
     };
     //[signText enableShadow:[UIColor blackColor]];
     _textField = [[UITextField alloc] initWithFrame:CGRectMake(50, 5, 310, 44)];
@@ -2055,9 +2087,9 @@ context:(void *)context
     if(_flashMode > 2){
         _flashMode = 0;
     }
-    NSString* flashFile = @"flash-off";
+    NSString* flashFile = @"flash";
     if(_flashMode == 1){
-        flashFile = @"flash";
+        flashFile = @"flash-off";
     }else if(_flashMode == 2){
         flashFile = @"flash-auto";
     }
@@ -2488,9 +2520,9 @@ context:(void *)context
     [staticPicture processImage];
         NSString* flashMode = macroControlInfo(@"闪光灯:自动");
         if(_flashMode == 0){
-            flashMode = macroControlInfo(@"闪光灯:关闭");
+            flashMode = macroControlInfo(@"闪光灯:打开");
         }else if(_flashMode == 1){
-            flashMode =macroControlInfo(@"闪光灯:打开");
+            flashMode =macroControlInfo(@"闪光灯:关闭");
         }
     
     //(_disableFaceBeautify?@"打开美化":@"关闭美化")
@@ -3142,7 +3174,7 @@ context:(void *)context
     //[self prepareForCapture];
     //[staticPicture processImage];
     EZDEBUG(@"_shotPhoto is %@", _shotPhoto);
-    [self createPhoto:_assetImage orgData:photoMeta shotPhoto:_shotPhoto];
+    [self createPhoto:_assetImage orgData:_imageAsset.metaData shotPhoto:_shotPhoto];
     if(_shotPhoto.photoRelations.count){
         EZPhoto* matched = [_shotPhoto.photoRelations objectAtIndex:0];
         EZDEBUG(@"prefetch image:%@", matched.screenURL);
@@ -3216,8 +3248,8 @@ context:(void *)context
         _instrTitle.hidden = YES;
         if(_uploadStatus != kInitialUploading){
             [MobClick event:EZALCameraShot label:@"confirm"];
-            if(_assetURL){
-                [[EZDataUtil getInstance] setAssetUsed:_assetURL];
+            if(_imageAsset){
+                [[EZDataUtil getInstance] setAssetUsed:_imageAsset.assetURL];
                 [[EZMessageCenter getInstance] postEvent:EZAlbumImageClean attached:nil];
             }
             _toolBarRegion.alpha = 0.0;

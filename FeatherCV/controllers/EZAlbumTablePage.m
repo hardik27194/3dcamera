@@ -62,10 +62,13 @@ static int photoCount = 1;
     __weak EZAlbumTablePage* weakSelf = self;
     //if(back.type == kPhotoRequest || ([cp.photo.exchangePersonID isNotEmpty] && back==nil)){
     if(isEmpty){
+        _rightCycleButton.hidden = YES;
         cell.frontImage.image = nil;
         cell.frontImage.backgroundColor = ClickedColor;
-        cell.requestFixInfo.text = @"";
+        //cell.requestFixInfo.text = @"";
         //cell.waitingInfo.text =@"我拍故我在";//[NSString stringWithFormat:@"等待\"%@\"的照片", otherPerson.name?otherPerson.name:@"朋友"];
+        //cell.waitingInfo.hidden = NO;
+        cell.requestFixInfo.text = macroControlInfo(@"点击+号拍摄照片");
         cell.waitingInfo.hidden = YES;
         cell.otherIcon.hidden = YES;
         cell.otherName.hidden = YES;
@@ -78,6 +81,12 @@ static int photoCount = 1;
         cell.shotPhoto.hidden = NO;
         cell.shotPhoto.releasedBlock = ^(id obj){
             [weakSelf raiseCamera:nil indexPath:nil personID:_currentUser.personID];
+        };
+        cell.shotPhoto.longPressBlock = ^(id obj){
+            EZDEBUG(@"long pressed get called");
+            if(weakSelf.imageAsset){
+                [weakSelf popAlbumSender:nil];
+            }
         };
         
         cell.frontImage.tappedBlock = nil;
@@ -281,6 +290,13 @@ static int photoCount = 1;
                 EZDEBUG(@"cameraView clicked");
                 [self raiseCamera:cp indexPath:indexPath];
             };
+            
+            cell.shotPhoto.longPressBlock = ^(id obj){
+                //EZDEBUG(@"long pressed get called");
+                if(weakSelf.imageAsset){
+                    [weakSelf popAlbumSender:cp];
+                }
+            };
         }else{
             [self loadFrontImage:cell photo:myPhoto file:myPhoto.assetURL path:indexPath];
         }
@@ -303,7 +319,7 @@ static int photoCount = 1;
             //[cell.frontImage setPhotos:cp.photo.photoRelations currentPos:cp.photoPos];
             EZPhoto* backPt = [cp.photo.photoRelations objectAtIndex:cp.photoPos];
             [self loadImage:cell url:backPt.screenURL retry:0 path:indexPath position:cp.photoPos];
-            
+            cell.frontImage.pageControl.currentPage = cp.photoPos;
         }
     }
     
@@ -343,14 +359,17 @@ static int photoCount = 1;
     
     cell.buttonClicked = ^(EZClickView* obj){
         EZDEBUG(@"Liked clicked");
-        if(!myPhoto.photoRelations.count || myPhoto.typeUI == kPhotoRequest || switchPhoto.typeUI == kPhotoRequest){
+        if(weakCell.currentPos != indexPath.row || !myPhoto.photoRelations.count || myPhoto.typeUI == kPhotoRequest || switchPhoto.typeUI == kPhotoRequest || !switchPhoto){
             return;
         }
-        if(cp.photoPos > myPhoto.photoRelations.count){
+        if(cp.photoPos >= myPhoto.photoRelations.count){
             return;
         }
         EZPhoto* otherPhoto = [myPhoto.photoRelations objectAtIndex:cp.photoPos];
         if(otherPhoto){
+            if(!otherPhoto.photoID || !myPhoto.photoID){
+                return;
+            }
             BOOL liked = [otherPhoto.likedUsers containsObject:currentLoginID];
             EZDEBUG(@"photoID:%@, liked:%i, personID:%@", otherPhoto.photoID, liked, otherPhoto.personID);
             liked = !liked;
@@ -364,7 +383,7 @@ static int photoCount = 1;
                 otherPhoto.likedUsers = nil;
             }
             [self setHeart:myPhoto back:otherPhoto cell:weakCell];
-
+            
             [[EZDataUtil getInstance] likedPhoto:otherPhoto.photoID ownPhotoID:myPhoto.photoID like:liked success:^(id success){
                 EZDEBUG(@"Liked successfully");
                 [[EZDataUtil getInstance] storeAllPhotos:@[myPhoto]];
@@ -720,7 +739,9 @@ static int photoCount = 1;
     weakSelf.scrollBlock = clickBlock;
 }
 
-- (DLCImagePickerController*) embedCamera:(NSString*)photo personID:(NSString*)personID
+
+
+- (DLCImagePickerController*) embedCamera:(EZImageAsset*)photo personID:(NSString*)personID
 {
     _newlyCreated = 0;
     EZDEBUG(@"before present");
@@ -728,7 +749,7 @@ static int photoCount = 1;
         return nil;
     }
 
-    DLCImagePickerController* camera = [[DLCImagePickerController alloc] initWithAsset:photo image:_assetImage];
+    DLCImagePickerController* camera = [[DLCImagePickerController alloc] initWithAsset:_imageAsset];
     //}
     //controller.prefersStatusBarHidden = TRUE;
     //camera.transitioningDelegate = _cameraAnimation;
@@ -756,7 +777,7 @@ static int photoCount = 1;
     
     //if(_picker == nil){
     
-    DLCImagePickerController* camera = [[DLCImagePickerController alloc] initWithAsset:photo image:_assetImage];
+    DLCImagePickerController* camera = [[DLCImagePickerController alloc] initWithAsset:_imageAsset];
     //}
     //controller.prefersStatusBarHidden = TRUE;
     //camera.transitioningDelegate = _cameraAnimation;
@@ -1386,6 +1407,9 @@ static int photoCount = 1;
     //if(photo)
     //if(pers)
     camera.personID = personID;
+    if(_currentUser.filterType){
+        camera.personID = nil;
+    }
     if(disPhoto){
         camera.personID = nil;
         camera.shotPhoto = disPhoto.photo;
@@ -1599,11 +1623,11 @@ static int photoCount = 1;
         [_outerImageView setY:CurrentScreenHeight];
         [_albumContainer addSubview:_outerImageView];
     }
-    _assetView.image = _assetImage;
-    _outerImageView.image = _assetImage;
+    //_assetView.image = _assetImage;
+    //_outerImageView.image = _assetImage;
     NSString* oldPhotoURL = [[NSUserDefaults standardUserDefaults] stringForKey:EZOldPhotoAssetURL];
-    if(![oldPhotoURL isEqualToString:_asset]){
-        [[NSUserDefaults standardUserDefaults]  setObject:_asset forKey:EZOldPhotoAssetURL];
+    if(![oldPhotoURL isEqualToString:_imageAsset.assetURL]){
+        [[NSUserDefaults standardUserDefaults]  setObject:_imageAsset.assetURL forKey:EZOldPhotoAssetURL];
         [self triggerFallAnim];
         dispatch_later(1.5, ^(){
             [self triggerFallAnim];
@@ -1694,8 +1718,9 @@ static int photoCount = 1;
     }];
     [[EZMessageCenter getInstance] registerEvent:EZAlbumImageClean block:^(id obj){
         _assetView.image = nil;
-        _asset = nil;
-        _assetImage = nil;
+        //_asset = nil;
+        _imageAsset = nil;
+        //_assetImage = nil;
         _outerImageView.image = nil;
     }];
     
@@ -1719,30 +1744,57 @@ static int photoCount = 1;
             CLLocation *location = [image valueForProperty:ALAssetPropertyLocation];
             UIImageOrientation orientation = [[image valueForProperty:ALAssetPropertyOrientation] integerValue];
             
-            if(!location){
-                EZDEBUG(@"quit for have no location");
-                return;
-            }
+            
+            _imageAsset = [[EZImageAsset alloc] init];
+            _imageAsset.location = location;
+            _imageAsset.createdTime = date;
+            _imageAsset.orientation = orientation;
+            _imageAsset.assetURL = ((NSURL*)[image valueForProperty:ALAssetPropertyAssetURL]).absoluteString;
+            //CGImageSourceRef source = CGImageSourceCreateWithURL( (CFURLRef) aUrl, NULL);
+            //CGImageSourceRef source = CGImageSourceCreateWithData( (CFDataRef) theData, NULL);
+            NSDictionary* metadata = ap.metadata;
+            //if(!location){
+            EZDEBUG(@"meta detail:%@", metadata);
+            //    return;
+            //}
+            _imageAsset.metaData = metadata;
+            CGFloat height = [[metadata objectForKey:@"PixelHeight"] floatValue];
+            CGFloat width = [[metadata objectForKey:@"PixelWidth"] floatValue];
+            CGFloat ratio = height/width;
+            //weakSelf.assetImage = assetImage;
+            //EZDEBUG(@"Get image from album, size:%@", NSStringFromCGSize(assetImage.size));
+            //CFRelease(cgImage);
+            //weakSelf.asset = assetURL;
+            //[self setupAlbumImage];
+            //[weakSelf raiseCamera:assetURL personID:nil];
+            CGImageRef cgImage = [[image defaultRepresentation] fullScreenImage];
+            //NSString* assetURL = [[image valueForProperty:ALAssetPropertyAssetURL] absoluteString];
+            //_imageAsset.assetURL = assetURL;
+            UIImageOrientation orginOrient = _imageAsset.orientation;
+            //orientation = _imageAsset.orientation;
             if(orientation == UIImageOrientationLeft || orientation == UIImageOrientationRight){
                 orientation = UIImageOrientationUp;
+            }else if(orientation == UIImageOrientationUp){
+                if(ratio > 1.0){
+                    orientation = UIImageOrientationUp;
+                }else{
+                    orientation = UIImageOrientationLeft;
+                }
             }else{
                 orientation = UIImageOrientationLeft;
             }
-            EZDEBUG(@"dimension is:%@, date is:%@, %@, %i", NSStringFromCGSize(ap.dimensions), date, location, orientation);
-            //weakCell.frontImage.image = image;
-            CGImageRef cgImage = [[image defaultRepresentation] fullScreenImage];
-            NSString* assetURL = [[image valueForProperty:ALAssetPropertyAssetURL] absoluteString];
-            weakSelf.assetImage =[UIImage imageWithCGImage:cgImage scale:1.0 orientation:orientation];
-            EZDEBUG(@"Get image from album, size:%@", NSStringFromCGSize(weakSelf.assetImage.size));
-            weakSelf.asset = assetURL;
-            //[self setupAlbumImage];
-            //[weakSelf raiseCamera:assetURL personID:nil];
+            UIImage* assetImage =[UIImage imageWithCGImage:cgImage scale:1.0 orientation:orientation];
+            EZDEBUG(@"dimension is:%@, date is:%@, %@, %i, origin:%i, ratio:%f", NSStringFromCGSize(assetImage.size), _imageAsset.createdTime, _imageAsset.location, orientation, orginOrient, ratio);
+            //CFRelease(cgImage);
+            _imageAsset.storedImageFile = [EZFileUtil saveToDocument:[assetImage toJpegData] filename:@"AlbumPhoto"];
+
         } failure:^(id err){
             EZDEBUG(@"failed to get album:%@", err);
             _assetView.image = nil;
             _outerImageView.image = nil;
-            _asset = nil;
-            _assetImage = nil;
+            //_asset = nil;
+            //_assetImage = nil;
+            _imageAsset = nil;
         }];
 
     }];
@@ -2252,14 +2304,15 @@ static int photoCount = 1;
             if(pos < 0){
                 pos = i;
             }
-            if(ph.photo.photoRelations.count){
-                EZPhoto* match = [ph.photo.photoRelations objectAtIndex:0];
+            for(int j = 0; j < ph.photo.photoRelations.count; j++){
+                EZPhoto* match = [ph.photo.photoRelations objectAtIndex:j];
                 if([match.photoID isEqualToString:note.matchedID]){
                     EZDEBUG(@"Already matched");
                     alreadyIn = true;
                     break;
                 }
             }
+            break;
         }
     }
     
@@ -2275,13 +2328,15 @@ static int photoCount = 1;
     EZDisplayPhoto* disPhoto = [matchedArrs objectAtIndex:pos];
     EZPhoto* orgin = disPhoto.photo;
     
+    /**
     for(EZPhoto* pt in orgin.photoRelations){
         if([pt.photoID isEqualToString:note.matchedPhoto.photoID]){
             EZDEBUG(@"photo id already existed");
             return;
         }
     }
-    NSMutableArray* ma = [[NSMutableArray alloc] initWithArray:orgin.photoRelations];
+     **/
+    NSMutableArray* ma = [[NSMutableArray alloc] initWithArray:orgin.photoRelations?orgin.photoRelations:@[]];
     [ma addObject:note.matchedPhoto];
     
     orgin.photoRelations = ma;
@@ -2682,8 +2737,8 @@ static int photoCount = 1;
     
     _rightCycleButton.longPressBlock = ^(id obj){
         EZDEBUG(@"long pressed get called");
-        if(weakSelf.asset){
-            [weakSelf popAlbumSender];
+        if(weakSelf.imageAsset){
+            [weakSelf popAlbumSender:nil];
         }
     };
     
@@ -3103,7 +3158,11 @@ static int photoCount = 1;
 {
     EZDEBUG(@"setWaitingInfo get called:%i, %i", back.typeUI, back
             .type);
-    EZPerson* otherPerson = pid2person(back.personID);
+    NSString* pid = back.personID;
+    if(!pid){
+        pid = cp.photo.exchangePersonID;
+    }
+    EZPerson* otherPerson = pid2person(pid);
     if(back.type == kPhotoRequest || ([cp.photo.exchangePersonID isNotEmpty] && back==nil)){
         cell.frontImage.image = nil;
         //cell.frontImage.backgroundColor = ClickedColor;
@@ -3295,10 +3354,10 @@ static int photoCount = 1;
 }
 
 
-- (void) popAlbumSender
+- (void) popAlbumSender:(EZDisplayPhoto*)disPhoto
 {
     _raiseAssetCamera = true;
-    DLCImagePickerController* picker = [self embedCamera:_asset personID:_currentUser.personID];
+    DLCImagePickerController* camera = [self embedCamera:_imageAsset personID:_currentUser.personID];
     //[_tableView addSubview:_innerPicker.view];
     //[_innerPicker.view setY:0];
     //[_innerPicker viewWillAppear:YES];
@@ -3312,7 +3371,7 @@ static int photoCount = 1;
     //_bottomView = _innerPicker.view;
     __weak EZAlbumTablePage* weakSelf = self;
     //[_tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:_combinedPhotos.count inSection:0]] withRowAnimation:UITableViewRowAnimationBottom];
-    picker.innerCancelBlock = ^(id obj){
+    camera.innerCancelBlock = ^(id obj){
         weakSelf.raiseAssetCamera = false;
         //weakSelf.leftCyleButton.hidden = NO;
         //weakSelf.rightCycleButton.hidden = NO;
@@ -3331,13 +3390,32 @@ static int photoCount = 1;
         //weakSelf.bottomView = nil;
     };
     _isPushCamera = YES;
-    [self.navigationController pushViewController:picker animated:YES];
+    
+    if(disPhoto){
+        camera.personID = nil;
+        camera.shotPhoto = disPhoto.photo;
+        camera.disPhoto = disPhoto;
+        camera.isPhotoRequest = true;
+        camera.refreshTable = ^(id obj){
+            //EZDEBUG("Refresh type:%i", photo.typeUI);
+            
+            //[[EZMessageCenter getInstance] postEvent:EZNoteCountChange attached:@(-1)];
+            
+            NSInteger pos = [weakSelf.combinedPhotos indexOfObject:disPhoto];
+            if(pos != NSNotFound){
+                [weakSelf.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:pos inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
+            }
+            //[self.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
+        };
+    }
+
+    [self.navigationController pushViewController:camera animated:YES];
 }
 
 
 - (void) scrollViewDidScrollOld:(UIScrollView *)scrollView{
     EZDEBUG(@"Did scroll get called");
-    if(!_raiseAssetCamera && _asset && !_currentUser.filterType){
+    if(!_raiseAssetCamera && _imageAsset && !_currentUser.filterType){
         CGFloat exceedY = scrollView.contentOffset.y + CurrentScreenHeight - scrollView.contentSize.height;
         if(exceedY > 90){
             
@@ -3360,7 +3438,7 @@ static int photoCount = 1;
     
     CGFloat exceedY = scrollView.contentOffset.y + CurrentScreenHeight - scrollView.contentSize.height;
     if(exceedY > 90){
-        if(_asset && !_currentUser.filterType){
+        if(_imageAsset && !_currentUser.filterType){
             _raiseAssetCamera = true;
             
             [UIView animateWithDuration:0.3 animations:^(){

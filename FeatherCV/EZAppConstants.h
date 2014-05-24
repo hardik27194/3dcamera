@@ -128,7 +128,7 @@
 
 #define isoDateFormat(curDate) [[EZDataUtil getInstance].isoFormatter stringFromDate:curDate]
 
-#define isoStr2Date(curStr) [[EZDataUtil getInstance].isoFormatter dateFromString:curStr]
+#define isoStr2Date(curStr) [[EZDataUtil getInstance] formatISOString:curStr]
 
 #define EZNoteCountChange @"EZNoteCountChange"
 
@@ -164,7 +164,7 @@
 //If there are production user,
 //Then will send to production push server.
 //If not we will send to sandbox server
-#define EZProductFlag @"1"
+#define EZProductFlag @"0"
 
 //#define inviteMessageURL @"http://www.enjoyxue.com:8080/"
 

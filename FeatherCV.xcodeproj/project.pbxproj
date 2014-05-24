@@ -54,6 +54,7 @@
 		184DBE7C18BC909000239F0F /* UIControlInfo.strings in Resources */ = {isa = PBXBuildFile; fileRef = 184DBE7E18BC909000239F0F /* UIControlInfo.strings */; };
 		184DBE8218BDA16E00239F0F /* EZSharpenGaussian.m in Sources */ = {isa = PBXBuildFile; fileRef = 184DBE8118BDA16E00239F0F /* EZSharpenGaussian.m */; };
 		184DBE8918BE2B5800239F0F /* EZChromaBiFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 184DBE8818BE2B5800239F0F /* EZChromaBiFilter.m */; };
+		184EC693192F1BA4004B32A0 /* EZImageAsset.m in Sources */ = {isa = PBXBuildFile; fileRef = 184EC692192F1BA4004B32A0 /* EZImageAsset.m */; };
 		18512A331861BE6300282264 /* shot_voice.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 18512A321861BE6300282264 /* shot_voice.aiff */; };
 		185CE25F18FFAE760037947A /* EZPageControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 185CE25E18FFAE760037947A /* EZPageControl.m */; };
 		185CE266190123ED0037947A /* libMobClickLibrary_armv6.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 185CE263190123ED0037947A /* libMobClickLibrary_armv6.a */; };
@@ -406,6 +407,8 @@
 		184DBE8118BDA16E00239F0F /* EZSharpenGaussian.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZSharpenGaussian.m; sourceTree = "<group>"; };
 		184DBE8718BE2B5800239F0F /* EZChromaBiFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZChromaBiFilter.h; sourceTree = "<group>"; };
 		184DBE8818BE2B5800239F0F /* EZChromaBiFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZChromaBiFilter.m; sourceTree = "<group>"; };
+		184EC691192F1BA4004B32A0 /* EZImageAsset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZImageAsset.h; sourceTree = "<group>"; };
+		184EC692192F1BA4004B32A0 /* EZImageAsset.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZImageAsset.m; sourceTree = "<group>"; };
 		18512A321861BE6300282264 /* shot_voice.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = shot_voice.aiff; sourceTree = "<group>"; };
 		185CE25D18FFAE760037947A /* EZPageControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZPageControl.h; sourceTree = "<group>"; };
 		185CE25E18FFAE760037947A /* EZPageControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZPageControl.m; sourceTree = "<group>"; };
@@ -1141,6 +1144,8 @@
 				18E4FBBA18F68F7600FA6C21 /* EZUpArrow.m */,
 				1862FC6A18FA760F00C2D0B5 /* EZScrollViewer.h */,
 				1862FC6B18FA760F00C2D0B5 /* EZScrollViewer.m */,
+				184EC691192F1BA4004B32A0 /* EZImageAsset.h */,
+				184EC692192F1BA4004B32A0 /* EZImageAsset.m */,
 			);
 			path = controllers;
 			sourceTree = "<group>";
@@ -1789,6 +1794,7 @@
 				18F58B57187130E0006CB966 /* UIView+Shadow.m in Sources */,
 				18E34725183DFA3300C9D89D /* EZPhotoCell.m in Sources */,
 				18E34748183DFA7300C9D89D /* EZCombinedPhoto.m in Sources */,
+				184EC693192F1BA4004B32A0 /* EZImageAsset.m in Sources */,
 				18E746FC18A4BBBC0023967B /* EZFeatherAPIClient.m in Sources */,
 				18E34737183DFA5800C9D89D /* EZTransitionLayout.m in Sources */,
 				18E34788183DFAA400C9D89D /* EZImageFileCache.m in Sources */,
@@ -1920,7 +1926,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = YES;
-				PROVISIONING_PROFILE = "C7A41C98-6126-4076-80B5-319E31EA8BE5";
+				PROVISIONING_PROFILE = "F8E0626D-BA61-4685-84B3-300EEE1091AF";
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
@@ -1955,7 +1961,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = YES;
-				PROVISIONING_PROFILE = "C7A41C98-6126-4076-80B5-319E31EA8BE5";
+				PROVISIONING_PROFILE = "F8E0626D-BA61-4685-84B3-300EEE1091AF";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -1986,7 +1992,7 @@
 					"$(PROJECT_DIR)/FeatherCV",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "C7A41C98-6126-4076-80B5-319E31EA8BE5";
+				PROVISIONING_PROFILE = "F8E0626D-BA61-4685-84B3-300EEE1091AF";
 				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};
@@ -2017,7 +2023,7 @@
 					"$(PROJECT_DIR)/FeatherCV",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "C7A41C98-6126-4076-80B5-319E31EA8BE5";
+				PROVISIONING_PROFILE = "F8E0626D-BA61-4685-84B3-300EEE1091AF";
 				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};

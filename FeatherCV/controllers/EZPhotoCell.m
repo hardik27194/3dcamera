@@ -553,7 +553,6 @@
     
 }
 
-
 - (void) setupCell:(EZDisplayPhoto *)cp
 {
     EZDEBUG(@"pos1");

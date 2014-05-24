@@ -17,6 +17,7 @@
 #import "EZHairButton.h"
 
 
+
 @class EZDisplayPhoto;
 @class EZShapeCover;
 @class EZPerson;
@@ -144,11 +145,15 @@
 
 @property (nonatomic, strong) UILabel* networkStatus;
 
-@property (nonatomic, strong) UIImage* assetImage;
+//@property (nonatomic, strong) UIImage* assetImage;
+
+//@property (nonatomic, strong) NSString* assetImageFile;
 
 @property (nonatomic, strong) UIImageView* assetView;
 
-@property (nonatomic, strong) NSString* asset;
+//@property (nonatomic, strong) NSString* asset;
+
+@property (nonatomic, strong) EZImageAsset* imageAsset;
 
 @property (nonatomic, assign) int totalCount;
 

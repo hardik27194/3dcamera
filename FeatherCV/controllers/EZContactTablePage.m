@@ -33,7 +33,7 @@
     self.tableView.contentInset = UIEdgeInsetsMake(-44, 0, 0, 0);
     //self.tableView
     self.tableView.dataSource = self;
-    self.tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
+    //self.tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
     self.tableView.delegate = self;
     //self.tableView.backgroundColor = RGBA(255, 255, 255, 128);
     self.tableView.backgroundColor = [UIColor clearColor];//RGBA(0, 0, 0, 40);

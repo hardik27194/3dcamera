@@ -417,7 +417,6 @@
     EZDEBUG(@"Mobile version:%@", version);
     [MobClick setAppVersion:version];
     [MobClick beginEvent:EZALStartPeriod label:@"launch"];
-    [[NSUserDefaults standardUserDefaults] setBool:TRUE forKey:EZNotFirstTime];
     [EZTestSuites testAll];
     [self setupRecieveNotification];
     
@@ -556,6 +555,7 @@
     if([[NSUserDefaults standardUserDefaults] boolForKey:EZNotFirstTime]){
         [[EZMessageCenter getInstance] postEvent:EZAlbumImageUpdate attached:nil];
     }
+    [[NSUserDefaults standardUserDefaults] setBool:TRUE forKey:EZNotFirstTime];
     [MobClick beginEvent:EZALStartPeriod label:@"becomeActive"];
     [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
 }

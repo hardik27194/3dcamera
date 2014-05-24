@@ -95,7 +95,7 @@
         count = photos.count;
     }
     _pageControl.currentPage = pos;
-    _pageControl.numberOfPages = photos.count;
+    _pageControl.numberOfPages = count;
     int addCount = photos.count - 2;
     if(addCount > 0){
         _pageControl.width = 24 + 16 * addCount;

@@ -53,6 +53,10 @@
 //Otherwise the whole thing rotate together, this is not what I expected.
 @property (nonatomic, strong) UIView* container;
 
+//All the control will be locate at this layer,
+//Then the full screen will be more easy to implement.
+@property (nonatomic, strong) UIView* controlLayer;
+
 //This view will in charge of the whole rotate, because I need to rotate the whole thing.
 @property (nonatomic, strong) UIView* rotateContainer;
 

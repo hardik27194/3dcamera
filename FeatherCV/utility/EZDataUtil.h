@@ -68,6 +68,8 @@
 
 @property (nonatomic, strong) NSDateFormatter* isoFormatter;
 
+@property (nonatomic, strong) NSDateFormatter* isoFormatter2;
+
 @property (nonatomic, strong) NSMutableArray* localPhotos;
 
 @property (nonatomic, strong) EZPerson* currentLoginPerson;
@@ -137,6 +139,8 @@
 - (void) queryPendingPerson;
 
 - (void) queryNotify;
+
+- (NSDate*) formatISOString:(NSString*)string;
 
 - (NSString*) getCurrentPersonID;
 
