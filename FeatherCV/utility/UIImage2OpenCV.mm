@@ -10,6 +10,7 @@
 
 @implementation UIImage (OpenCV)
 
+/**
 - (UIImage*)scaleToSize:(CGSize)size {
     UIGraphicsBeginImageContext(size);
     
@@ -171,4 +172,6 @@ if (image.channels() == 3)
     
 	return thumbnail;
 }
+ 
+ **/
 @end

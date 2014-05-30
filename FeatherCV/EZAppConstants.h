@@ -52,6 +52,7 @@
 
 #define pid2personCall(pid, call) [[EZDataUtil getInstance] getPersonByID:pid success:call]
 
+#define normalizeMb(mobile) [[EZDataUtil getInstance]normalizeMobile:mobile]
 
 #define checkimageload(url) [[EZDataUtil getInstance] preloadImage:url success:nil failed:nil]
 
@@ -293,6 +294,11 @@
 #define EZExpiredPhotos @"EZExpiredPhotos"
 
 #define EZNotFirstTime @"EZNotFirstTime"
+
+#define EZAvatarURL @"EZAvatarURL"
+
+#define EZAvatarFileName @"EZAvatarFileName"
+
 
 #define DefaultEmptyString @"    "
 

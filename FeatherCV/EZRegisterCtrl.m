@@ -45,7 +45,7 @@
 {
     [_uploadAvatar setImage:image];
     _uploadingAvatar = TRUE;
-    [[EZDataUtil getInstance] uploadAvatar:image success:^(NSString* url){
+    [[EZDataUtil getInstance] uploadAvatarImage:image success:^(NSString* url){
         EZDEBUG(@"avatar url:%@", url);
         currentLoginUser.avatar = url;
         _avatarURL = url;
@@ -53,8 +53,9 @@
         if(_registerBlock){
             _registerBlock(nil);
         }
-    } failure:^(id err){
-        [[EZUIUtility sharedEZUIUtility] raiseInfoWindow:macroControlInfo(@"Upload avatar failed") info:@"Please try avatar upload later"];
+       
+    } failed:^(id sender){
+        //[[EZUIUtility sharedEZUIUtility] raiseInfoWindow:macroControlInfo(@"Upload avatar failed") info:@"Please try avatar upload later"];
         _uploadingAvatar = false;
     }];
 }
@@ -549,7 +550,8 @@
         return;
     }
     
-    if(![_avatarURL isNotEmpty]){
+    
+    if(!_uploadAvatar.image){
         [[EZUIUtility sharedEZUIUtility] raiseInfoWindow:@"请上传头像" info:nil];
         return;
     }
@@ -578,18 +580,11 @@
             //[[EZDataUtil getInstance] setCurrentLoginPerson:person];
             //[[EZDataUtil]]
             [[EZMessageCenter getInstance] postEvent:EZUserAuthenticated attached:person];
+            person.joined = true;
             [weakSelf startActivity];
-            /**
-            UIViewController* presenting = weakSelf.presentingViewController;
-            
-            [weakSelf dismissViewControllerAnimated:YES completion:^(){
-                EZDEBUG(@"presenting class:%@", weakSelf.presentingViewController);
-                if([presenting isKindOfClass:[EZLoginController class]]){
-                    [presenting dismissViewControllerAnimated:NO completion:nil];
-                }
-            }];
-             **/
-            
+                
+            //if([EZDataUtil getInstance].avatarURL){
+            //}
             [weakSelf.navigationController dismissViewControllerAnimated:YES completion:^(){
                 [[EZMessageCenter getInstance] postEvent:EZAlbumImageUpdate attached:nil];
             }];

@@ -145,11 +145,13 @@
 {
     NSInteger pos = _scrollView.contentOffset.x / CurrentScreenWidth;
     EZDEBUG(@"Current Position:%i", pos);
-    _currentPos = pos;
-    _pageControl.currentPage = pos;
-    _imageView = [_imageViews objectAtIndex:pos];
-    if(_scrollBlock){
-        _scrollBlock(@(pos));
+    if(pos < _imageViews.count){
+        _currentPos = pos;
+        _pageControl.currentPage = pos;
+        _imageView = [_imageViews objectAtIndex:pos];
+        if(_scrollBlock){
+            _scrollBlock(@(pos));
+        }
     }
 }
 

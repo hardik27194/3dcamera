@@ -15,12 +15,12 @@ class EZFaceResult{
 public:
     EZFaceResult();
     ~EZFaceResult();
-    cv::Rect_<float> orgRect;
-    cv::Rect_<float> destRect;
-    cv::Mat* face;
+    //cv::Rect_<float> orgRect;
+    //cv::Rect_<float> destRect;
+    //cv::Mat* face;
     float smileDegree;
     //For test purpose
-    cv::Mat* resizedImage;
+    //cv::Mat* resizedImage;
     
 };
 #endif /* defined(__FeatherCV__EZFaceResult__) */

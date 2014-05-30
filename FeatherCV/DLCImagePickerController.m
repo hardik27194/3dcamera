@@ -1246,7 +1246,7 @@ context:(void *)context
     
     __weak DLCImagePickerController* weakSelf = self;
     CGRect bounds = [UIScreen mainScreen].applicationFrame;
-    textInputRegion = [[UIView alloc] initWithFrame:CGRectMake(0, CurrentScreenHeight, 320, 44)];
+    textInputRegion = [[UIView alloc] initWithFrame:CGRectMake(0, CurrentScreenHeight, 320, 70)];
     //textInputRegion.backgroundColor = [UIColor whiteColor];
     textInputRegion.backgroundColor = [UIColor clearColor];
     
@@ -1278,17 +1278,20 @@ context:(void *)context
         weakSign.image = [UIImage imageNamed:@"feather_icon"];
     };
     //[signText enableShadow:[UIColor blackColor]];
-    _textField = [[UITextField alloc] initWithFrame:CGRectMake(50, 5, 310, 44)];
+    _textField = [[UITextView alloc] initWithFrame:CGRectMake(50, 5, 250, 65)];
     _textField.font = [UIFont systemFontOfSize:13];
+    _textField.backgroundColor = [UIColor clearColor];
     //_textField.placeholder = macroControlInfo(@"Say something");
+    //[_textField enabl]
     
     _textField.delegate = self;
-    _textField.returnKeyType = UIReturnKeyDone;
+    _textField.returnKeyType = UIReturnKeyDefault;
     _textField.keyboardAppearance = UIKeyboardAppearanceLight;
-    [_textField addTarget:self action:@selector(onValueChange:) forControlEvents:UIControlEventEditingChanged];
+    
+    //[_textField addTarget:self action:@selector(onValueChange:) forControlEvents:UIControlEventEditingChanged];
     //_textField.allowsEditingTextAttributes
     
-    _textPlaceHolder = [[UILabel alloc] initWithFrame:_textField.frame];
+    _textPlaceHolder = [[UILabel alloc] initWithFrame:CGRectMake(50, 5, 250, 44)];
     [_textPlaceHolder setTextColor:[UIColor whiteColor]];
     [_textPlaceHolder enableShadow:[UIColor blackColor]];
     [_textPlaceHolder setFont:_textField.font];
@@ -1300,7 +1303,7 @@ context:(void *)context
     //[cancelText setTitleColor:RGBCOLOR(128, 128, 128) forState:UIControlStateNormal];
     //[cancelText addTarget:self action:@selector(cancelText:) forControlEvents:UIControlEventTouchUpInside];
     //[textInputRegion addSubview:cancelText];
-    //[textInputRegion addSubview:_textPlaceHolder];
+    [textInputRegion addSubview:_textPlaceHolder];
     [textInputRegion addSubview:_textField];
     [textInputRegion addSubview:signClicked];
     [self.view addSubview:textInputRegion];
@@ -1313,7 +1316,7 @@ context:(void *)context
 }
 **/
 
-- (void)textFieldDidBeginEditing:(UITextField *)textField
+- (void)textViewDidBeginEditing:(UITextView *)textField
 {
     EZDEBUG(@"Rotate back");
     _textPlaceHolder.hidden = YES;
@@ -1324,7 +1327,8 @@ context:(void *)context
 }
 
 
-- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
+/**
+- (BOOL)textView:(UITextView *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
 {
     //EZDEBUG(@"should Change:%i", textField.text.length);
     //if(textField.text.length < 18){
@@ -1332,7 +1336,7 @@ context:(void *)context
     //}
     //return false;
 }
-
+**/
 - (void) showLimitChar:(NSInteger)charLeft
 {
     if(charLeft < 0){
@@ -1357,8 +1361,8 @@ context:(void *)context
 
 - (IBAction)onValueChange:(id)sender
 {
-    EZDEBUG(@"Value change:%i", _textField.text.length);
     
+    /**
     if((EZCharLimit - _textField.text.length) < 10){
         [self showLimitChar:(EZCharLimit - _textField.text.length)];
     }else{
@@ -1370,9 +1374,16 @@ context:(void *)context
             _textField.text = [_textField.text substringToIndex:EZCharLimit];
         });
     }
+     **/
+    //CGSize fitSize = [_textField sizeThatFits:CGSizeMake(250, 999)];
+    //if(fitSize.height > 50){
+    //    _textField.height = fitSize.height;
+    //}
+    
+    //EZDEBUG(@"Value change:%i, fitSize:%f", _textField.text.length, fitSize.height);
 }
 
-
+/**
 - (BOOL)textFieldShouldReturn:(UITextField *)textFd
 {
 
@@ -1380,8 +1391,9 @@ context:(void *)context
     [textFd resignFirstResponder];
     return true;
 }
+ **/
 
-- (void) textFieldDidEndEditing:(UITextField *)textField
+- (void) textViewDidEndEditing:(UITextView *)textField
 {
     if([textField.text isEmpty]){
         _textPlaceHolder.hidden = NO;

@@ -45,6 +45,8 @@
 //You can add key-value pair to listen to this value.
 @property (nonatomic, assign) BOOL isQuerying;
 
+@property (nonatomic, assign) BOOL isReloading;
+
 @property (nonatomic, assign) BOOL uploaded;
 
 @property (nonatomic, assign) int photoCount;

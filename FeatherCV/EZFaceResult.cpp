@@ -7,7 +7,7 @@
 //
 
 #include "EZFaceResult.h"
-
+/**
 EZFaceResult::EZFaceResult():face(0)
 {
     
@@ -19,3 +19,4 @@ EZFaceResult::~EZFaceResult()
         delete face;
     }
 }
+**/

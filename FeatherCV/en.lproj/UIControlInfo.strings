@@ -38,9 +38,9 @@
 
 "Quit Login" = "Quit Login";
 
-"回复" = "Respond";
+"回复" = "Respond To";
 
-"发送" = "Send";
+"发送" = "Send To";
 
 "Complete" = "Complete";
 
@@ -56,11 +56,11 @@
 
 "新照片" = "New Photos";
 
-"都喜欢" = "Like By Both";
+"都喜欢" = "Liked By Both";
 
-"对方喜欢" = "Like By Friend";
+"对方喜欢" = "Liked By Friend";
 
-"我喜欢" = "Like By Me";
+"我喜欢" = "Liked By Me";
 
 "我的所有照片" = "All My Photos";
 
@@ -80,7 +80,7 @@
 
 "退出" = "Back";
 
-"重拍" = "Re-shoot";
+"重拍" = "Retake";
 
 "相机设置" = "Configure";
 
@@ -109,10 +109,10 @@
 
 
 "请检查后重试" = "Check and retry";
-"填写手机号" = "Please fill mobile";
+"填写手机号" = "Please fill in Mobile No.";
 "短信验证码错" = "SMS authentication failed";
 "该手机已注册" = "Mobile already registered";
-"注册失败" = "Register failed";
+"注册失败" = "Registration failed";
 
 "点击+号拍摄照片" = "Tap + to shoot";
 

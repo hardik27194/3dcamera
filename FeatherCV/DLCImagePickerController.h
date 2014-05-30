@@ -89,7 +89,7 @@ typedef enum {
 - (void)imagePickerControllerDidCancel:(DLCImagePickerController *)picker imageCount:(int)imageCount;
 @end
 
-@interface DLCImagePickerController : UIViewController <UINavigationControllerDelegate,UIImagePickerControllerDelegate, UIActionSheetDelegate, UITextFieldDelegate>
+@interface DLCImagePickerController : UIViewController <UINavigationControllerDelegate,UIImagePickerControllerDelegate, UIActionSheetDelegate, UITextViewDelegate>
 
 
 //The job front camera will have to do. 
@@ -275,7 +275,9 @@ typedef enum {
 
 @property (nonatomic, assign) CGSize cameraAspectSize;
 
-@property (nonatomic, strong) UITextField* textField;
+@property (nonatomic, strong) UITextView* textField;
+
+//@property (nonatomic, strong) UILabel* textLabel;
 @property (nonatomic, strong) UILabel* textPlaceHolder;
 @property (nonatomic, strong) UILabel* textReminder;
 

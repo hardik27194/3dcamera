@@ -25,6 +25,7 @@ X& singleton()
     return x;
 }
 
+/**
 class EZFaceUtil
 {
 public:
@@ -64,7 +65,7 @@ public:
     void detectSmile(EZFaceResult* faceResult);
 };
 
-
+**/
 
 //std::vector<cv::Mat>&
 

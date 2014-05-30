@@ -7,13 +7,14 @@
 //
 
 #import "EZFaceUtilWrapper.h"
-#include "EZFaceUtil.h"
+//#include "EZFaceUtil.h"
 
 @implementation EZFaceUtilWrapper
 
 + (NSArray*) detectFace:(UIImage*) image ratio:(CGFloat) miniRatio
 {
-    return singleton<EZFaceUtil>().detectFace(image, miniRatio);
+    //return singleton<EZFaceUtil>().detectFace(image, miniRatio);
+    return nil;
 }
 
 @end

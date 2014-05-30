@@ -112,6 +112,8 @@ NSString* doubleString(NSString* str)
     self.spellCheckingType = UITextSpellCheckingTypeNo;
 }
 
+
+
 @end
 
 @implementation UIImageView(EZPrivate)
@@ -290,10 +292,10 @@ NSString* doubleString(NSString* str)
 
 - (void) enableShadow:(UIColor *)color
 {
-    //self.layer.shadowColor = color.CGColor;
-    //self.layer.shadowRadius = 1.0;
-    //self.layer.shadowOpacity = 0.7;
-    //self.layer.shadowOffset = CGSizeMake(1.0, 1.0);
+    self.layer.shadowColor = color.CGColor;
+    self.layer.shadowRadius = 1.0;
+    self.layer.shadowOpacity = 0.7;
+    self.layer.shadowOffset = CGSizeMake(1.0, 1.0);
 }
 
 @end

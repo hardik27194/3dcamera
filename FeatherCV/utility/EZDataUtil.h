@@ -28,6 +28,11 @@
 
 + (EZDataUtil*) getInstance;
 
+
+@property (nonatomic, strong) EZEventBlock avatarSuccess;
+
+@property (nonatomic, strong) EZEventBlock avatarFailed;
+
 @property (nonatomic, strong) NSMutableDictionary* personPhotoCount;
 
 @property (nonatomic, assign) int queryingCount;
@@ -131,6 +136,13 @@
 
 @property (nonatomic, strong) NSArray* updatedPersons;
 
+//Once the avatar is uploaded successfully, I will set it to nil
+@property (nonatomic, strong) NSString* avatarFile;
+
+@property (nonatomic, assign) BOOL uploadingAvatar;
+
+@property (nonatomic, strong) NSString* avatarURL;
+
 //Check the current status
 - (BOOL) canUpload;
 
@@ -219,6 +231,8 @@
 
 //Adjust the sequence for the users
 - (void) adjustActivity:(NSString*)personID;
+
+- (NSString*) normalizeMobile:(NSString*)mobile;
 //The Photo object will returned.
 //How about thumbnail.
 //Should we generate it dynamically.
@@ -347,6 +361,10 @@
 - (void) addPendingUpload:(EZPhoto*)photo;
 
 - (void) storePendingPhoto;
+
+- (void) uploadAvatarImage:(UIImage*)image success:(EZEventBlock)success failed:(EZEventBlock)failed;
+
+- (void) uploadAvatar;
 
 //Will return the array which will have the photo displayed for the firstTime
 - (NSArray*) getFirstTimeArray;

@@ -64,6 +64,8 @@ typedef void  (^ IterateOperation)(id obj);
 
 - (void) setPlainPassword;
 
+//- (void) enableTextWrap;
+
 @end
 
 @interface UIImageView(EZPrivate)

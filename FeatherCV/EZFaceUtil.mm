@@ -10,7 +10,7 @@
 #include "UIImage2OpenCV.h"
 #include "EZFaceResultObj.h"
 
-
+/**
 EZFaceUtil::EZFaceUtil()
 {
     clahe = cv::createCLAHE();
@@ -76,15 +76,15 @@ void EZFaceUtil::containsSmiles(UIImage* image,EZEventBlock callback)
        
         // Perform the detections
         //kCGImagePropertyOrientation;
-        int exifOrientation = convertOrientation(image.imageOrientation);
+    int exifOrientation = convertOrientation(image.imageOrientation);
     //EZDEBUG(@"Dector:%i",(int)_faceDetector);
     for(int i = 1; i < 9; i++){
-        EZDEBUG(@"The image is:%i, converted:%i, faceDetector:%i", image.imageOrientation, exifOrientation, (int)_faceDetector);
+        //EZDEBUG(@"The image is:%i, converted:%i, faceDetector:%i", image.imageOrientation, exifOrientation, (int)_faceDetector);
         NSArray *features = [_faceDetector featuresInImage:[image CIImage]
                                                    options:@{CIDetectorEyeBlink: @YES,
                                                              CIDetectorSmile: @YES,
                                                              CIDetectorImageOrientation:@5}];
-        NSLog(@"%i features, orientation:%i", [features count], i);
+        //NSLog(@"%i features, orientation:%i", [features count], i);
         BOOL happyPicture = NO;
         //if([features count] > 0) {
         //    happyPicture = YES;
@@ -320,3 +320,5 @@ void EZFaceUtil::detectFace(cv::Mat& inputFrame, std::vector<EZFaceResult*>& fac
         faces.push_back(fres);
     }
 }
+
+**/

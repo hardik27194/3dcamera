@@ -58,7 +58,6 @@
         self.view.backgroundColor = [UIColor clearColor];
         //self.title = @"朋友";
         [self.tableView registerClass:[EZContactTableCell class] forCellReuseIdentifier:@"Cell"];
-        _filteredMobile = [[NSMutableDictionary alloc] init];
         //_contacts = [[NSMutableArray alloc] init];
         //_contacts = [EZDataUtil getInstance].contacts;
     }
@@ -188,7 +187,10 @@
     EZDEBUG(@"after person");
     for(EZPerson* ps in arrs){
         if(ps.mobile){
-            [_filteredMobile setObject:@"" forKey:ps.mobile];
+            if(![_filteredMobile objectForKey:ps.mobile]){
+                [_filteredMobile setObject:@"" forKey:ps.mobile];
+                EZDEBUG(@"stored mobile:%@, name:%@", ps.mobile, ps.name);
+            }
         }
     }
     [_contacts addObjectsFromArray:arrs];
@@ -219,6 +221,7 @@
                 if(![_filteredMobile objectForKey:ps.mobile]){
                     [_filteredMobile setObject:@"" forKey:ps.mobile];
                     [weakSelf.contacts addObject:ps];
+                    EZDEBUG(@"contacts mobile:%@", ps.mobile);
                 }
             }
             
@@ -252,6 +255,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    _filteredMobile = [[NSMutableDictionary alloc] init];
     _photoCountMap = [[NSMutableDictionary alloc] init];
    
     //dispatch_later(0.1, ^(){
@@ -308,12 +312,25 @@
     EZContactTableCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
     
     EZPerson* person = [_contacts objectAtIndex:indexPath.row];
+    
+    
     if(indexPath.row == 0){
         cell.name.text = macroControlInfo(@"我的所有照片");
         EZDEBUG(@"current user id:%@, this id:%@", currentLoginID, person.personID);
     }else{
         cell.name.text = person.name;
     }
+    __weak EZContactTableCell* weakCell = cell;
+    if(!person.filterType || indexPath.row == 0){
+        person = pid2person(person.personID);
+    }
+    if(person.isQuerying && indexPath.row){
+        pid2personCall(person.personID, ^(EZPerson* ps){
+            weakCell.name.text = ps.name;
+            [weakCell.headIcon.clickImage loadImageURL:ps.avatar haveThumb:NO loading:NO];
+        });
+    }
+    
     
     //if(person.pendingEventCount > 0){
         //cell.notesNumber.alpha = 1.0;

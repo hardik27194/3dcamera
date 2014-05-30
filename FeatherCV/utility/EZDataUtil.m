@@ -282,6 +282,7 @@
     } failure:^(id obj){
         EZDEBUG(@"upload persons:%@", obj);
         _queryingCount = false;
+        //[_pendingUserQuery]
     }];
     
 }
@@ -663,25 +664,25 @@
     for(EZDisplayPhoto* dp in mainPhotos){
         EZPhoto* pt = dp.photo;
         CGFloat timeIntval = fabsf([pt.createdTime timeIntervalSinceNow]);
-        EZDEBUG(@"time distance:%f", timeIntval);
+        //EZDEBUG(@"time distance:%f", timeIntval);
         if(dp.isFirstTime || dp.photo.typeUI == kPhotoRequest){
             continue;
         }
         if(timeIntval > expiredTime){
             if(![self isBothLiked:pt]){
-                EZDEBUG(@"Will remove id:%@", pt.photoID);
+                //EZDEBUG(@"Will remove id:%@", pt.photoID);
                 [self deletePhoto:pt success:^(id obj){
-                    EZDEBUG(@"success fully deleted");
+                    //EZDEBUG(@"success fully deleted");
                     [_mainPhotos removeObject:dp];
                     NSArray* deleted = @[dp.photo];
                     [weakSelf removeLocalPhotos:deleted];
                     [[EZMessageCenter getInstance] postEvent:EZExpiredPhotos attached:deleted];
                 } failure:^(id err){
-                EZDEBUG(@"failed to delete photos");
+                    //EZDEBUG(@"failed to delete photos");
                 }];
                 break;
             }else if(pt.photoRelations.count > 1){
-                EZDEBUG(@"Both check single photos");
+                //EZDEBUG(@"Both check single photos");
                 for(int i = 0; i < pt.photoRelations.count; i ++){
                     EZPhoto* otherPT = [pt.photoRelations objectAtIndex:i];
                     if(![pt.likedUsers containsObject:otherPT.personID] || ![otherPT.likedUsers containsObject:currentLoginID]){
@@ -1248,7 +1249,7 @@
                                                      //NSLog(@"\n");
                                                      EZPerson* person = [[EZPerson alloc] init];
                                                      person.name = name;
-                                                     person.mobile = phone;
+                                                     person.mobile = normalizeMb(phone);
                                                      person.email = email;
                                                      if(phone)
                                                          [_mobileNumbers addObject:phone];
@@ -1548,21 +1549,61 @@
             }
             NSInteger weekNum = day/7;
             return [NSString stringWithFormat:macroControlInfo(@"%i周前"), weekNum];
-        }
-        calendar = [NSCalendar currentCalendar];
-        components = [calendar components:(NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:date];
-        NSInteger hour = [components hour];
-        //NSInteger minute = [components minute];
-        EZDEBUG(@"hours of the day:%i", hour);
-        if(hour < 12){
-            return macroControlInfo(@"上午");
-        }else if(hour < 19){
-            return macroControlInfo(@"下午");
         }else{
-            return macroControlInfo(@"晚上");
+            calendar = [NSCalendar currentCalendar];
+            components = [calendar components:(NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:date];
+            NSInteger hour = [components hour];
+            //NSInteger minute = [components minute];
+            EZDEBUG(@"hours of the day:%i", hour);
+            if(hour < 12){
+                return macroControlInfo(@"上午");
+            }else if(hour < 19){
+                return macroControlInfo(@"下午");
+            }else{
+                return macroControlInfo(@"晚上");
+            }
         }
     }
 }
+
+- (void) uploadAvatar
+{
+    EZDEBUG(@"uploadingAvatar:%i, %@", _uploadingAvatar, _avatarFile);
+    if(_uploadingAvatar || !_avatarFile){
+        return;
+    }
+    _uploadingAvatar = true;
+    [EZNetworkUtility upload:baseUploadURL parameters:@{} file:_avatarFile complete:^(id obj){
+        NSString* screenURL = [obj objectForKey:@"avatar"];
+        _avatarFile = nil;
+        EZDEBUG(@"uploaded avatar URL:%@", screenURL);
+        currentLoginUser.avatar = screenURL;
+        _avatarURL = screenURL;
+        if(_avatarSuccess){
+            _avatarSuccess(screenURL);
+        }
+        _uploadingAvatar = false;
+    } error:^(id obj){
+        _uploadingAvatar = false;
+        if(_avatarFailed){
+            _avatarFailed(obj);
+        }
+    } progress:^(CGFloat percent){
+        EZDEBUG(@"The uploaded percent:%f", percent);
+        //_uploadingAvatar = false;
+    }];
+}
+
+- (void) uploadAvatarImage:(UIImage*)image success:(EZEventBlock)success failed:(EZEventBlock)failed
+{
+    _avatarFile = [EZFileUtil saveToDocument:[image toJpegData] filename:@"avatar"];
+    _uploadingAvatar = false;
+    _avatarFailed = failed;
+    _avatarSuccess = success;
+    [self uploadAvatar];
+}
+
+
 
 //Get the person object
 - (EZPerson*) getPersonByID:(NSString*)personID success:(EZEventBlock)success;
@@ -1572,29 +1613,37 @@
     }
     EZEventBlock localSuccess = success;
     EZPerson* ps = [_currentQueryUsers objectForKey:personID];
+    EZDEBUG(@"person querying is:%i, personID:%@", ps.isQuerying, personID);
     if(!ps){
         //[self queryPendingPerson]
         ps = [[EZPerson alloc] init];
         ps.personID = personID;
         ps.isQuerying = true;
+        ps.joined = true;
         ps.lastUpdate = [NSDate date];
         [_currentQueryUsers setObject:ps forKey:personID];
     }else{
-        if(success){
-            success(ps);
-        }
-        localSuccess = nil;
-        if(!ps.lastUpdate){
-            ps.lastUpdate = [NSDate date];
+        if(ps.isReloading){
+            if(success){
+                success(ps);
+            }
+            localSuccess = nil;
         }
         
-        CGFloat timeIntval = abs([ps.lastUpdate timeIntervalSinceNow]);
-        if(timeIntval > personTimeout){
-            ps.isQuerying = true;
-            ps.lastUpdate = [NSDate date];
+        if(!ps.isQuerying){
+            if(!ps.lastUpdate){
+                ps.lastUpdate = [NSDate date];
+            }
+        
+            CGFloat timeIntval = abs([ps.lastUpdate timeIntervalSinceNow]);
+            if(timeIntval > personTimeout){
+                ps.isQuerying = true;
+                ps.isReloading = true;
+                ps.lastUpdate = [NSDate date];
+            }
         }
     }
-    EZDEBUG(@"person querying is:%i, personID:%@", ps.isQuerying, personID);
+    
     if(ps.isQuerying){
         [_pendingUserQuery addObject:personID];
         NSMutableArray* queryCalls = [_pendingPersonCall objectForKey:personID];
@@ -1628,6 +1677,26 @@
 - (void) getConversation:(int)combineID success:(EZEventBlock)success failure:(EZEventBlock)failure
 {
    
+}
+
+
+
+//How to optimize the mobile
+- (NSString*) normalizeMobile:(NSString*)mobile
+{
+    if(mobile.length == 13){
+        if([mobile hasPrefix:@"86"]){
+            return [mobile substringFromIndex:2];
+        }
+        return mobile;
+    }else if(mobile.length == 14){
+        if([mobile hasPrefix:@"+86"]){
+            return [mobile substringFromIndex:3];
+        }
+        return mobile;
+    }else{
+        return mobile;
+    }
 }
 
 //Will be used to adjust the squence.

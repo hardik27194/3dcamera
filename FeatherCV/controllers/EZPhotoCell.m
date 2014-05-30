@@ -329,7 +329,7 @@
     _headIcon.alpha = ownAlpha;
     
     if([_otherTalk.text isNotEmpty]){
-        CGSize actualSize = [_otherTalk sizeThatFits:CGSizeMake(200, _otherTalk.height)];
+        CGSize actualSize = [_otherTalk sizeThatFits:CGSizeMake(260, _otherTalk.height)];
         _otherTalk.width = actualSize.width + 6;
         _otherTalk.backgroundColor = otherColor;
         
@@ -338,7 +338,7 @@
     }
     
     if([_ownTalk.text isNotEmpty]){
-        CGSize actualSize = [_ownTalk sizeThatFits:CGSizeMake(200, _ownTalk.height)];
+        CGSize actualSize = [_ownTalk sizeThatFits:CGSizeMake(260, _ownTalk.height)];
         _ownTalk.width = actualSize.width + 6;
         _ownTalk.backgroundColor = ownColor;
     }else{

@@ -86,35 +86,24 @@
 
 - (void) iterateImages:(NSString*)imageName
 {
-    EZFaceUtil faceUtil = singleton<EZFaceUtil>();
+    //EZFaceUtil faceUtil = singleton<EZFaceUtil>();
     std::vector<EZFaceResult*> faces;
     std::vector<EZFaceResult*> filteredFaces;
     UIImage* srcImage = [UIImage imageNamed:imageName];
     UIImage* testImage = [srcImage resizedImageWithMaximumSize:CGSizeMake(720, 720)];
-    cv::Mat target;
-    [testImage toMat:target];
-    EZDEBUG(@"The test image name:%@ row:%d, col:%d",imageName, target.rows, target.cols);
-    faceUtil.detectFace(target, faces, true);
+    //cv::Mat target;
+    //[testImage toMat:target];
+    //EZDEBUG(@"The test image name:%@ row:%d, col:%d",imageName, target.rows, target.cols);
+    //faceUtil.detectFace(target, faces, true);
     
-    faceUtil.filterFaces(target, faces, filteredFaces);
+    //faceUtil.filterFaces(target, faces, filteredFaces);
     EZDEBUG(@"Final face is:%lu, filtered faces:%lu", faces.size(), filteredFaces.size());
     for(int i = 0; i < filteredFaces.size(); i++){
-        /**
-        EZDEBUG(@"Found face at:%d, %d,%d,%d resized to %d, %d",filteredFaces[i]->orgRect.x, filteredFaces[i]->orgRect.y,filteredFaces[i]->orgRect.width, filteredFaces[i]->orgRect.height, filteredFaces[i]->destRect.width, filteredFaces[i]->destRect.height);
-        faceUtil.drawRegion(target, filteredFaces[i]->orgRect);
-        cropped.image = [UIImage imageWithMat:*(filteredFaces[i]->face) andImageOrientation:testImage.imageOrientation];
-        faceUtil.containsSmiles(srcImage, ^(NSNumber* num){
-            if(num.intValue > 0){
-                EZDEBUG(@"detected smile for:%i, %i, %i,%i", filteredFaces[i]->orgRect.x, filteredFaces[i]->orgRect.y, filteredFaces[i]->orgRect.width, filteredFaces[i]->orgRect.height);
-            }
-        });
-         **/
-        //original.image = [UIImage imageWithMat:*(faces[i]->resizedImage) andImageOrientation:testImage.imageOrientation];
     }
     //EZDEBUG(@"Test image orientation:%i", testImage.imageOrientation);
     
     //if(faces.size() == 0){
-    original.image = [UIImage imageWithMat:target andImageOrientation:testImage.imageOrientation];
+    //original.image = [UIImage imageWithMat:target andImageOrientation:testImage.imageOrientation];
     //}
 }
 

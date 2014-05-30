@@ -369,6 +369,7 @@
             [EZDataUtil getInstance].timerBlock(nil);
         }
         [[EZDataUtil getInstance] queryNotify];
+        [[EZDataUtil getInstance] uploadAvatar];
     
     
         BOOL uploaded = [[NSUserDefaults standardUserDefaults] boolForKey:EZTokenUploaded];
