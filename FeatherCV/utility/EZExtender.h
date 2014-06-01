@@ -301,6 +301,8 @@ typedef void  (^ IterateOperation)(id obj);
 
 - (NSData*) toJpegData;
 
+- (NSData*) toJpegData:(CGFloat)quality;
+
 - (UIImage*) resizableImage:(UIEdgeInsets)insects;
 
 @end

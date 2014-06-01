@@ -56,6 +56,7 @@
 #import "EZGeoUtility.h"
 #import "EZMotionRecorder.h"
 #import "EZMotionImage.h"
+#import "FaceppAPI.h"
 
 
 //#include <vector>
@@ -2387,6 +2388,7 @@ context:(void *)context
     //_takingPhoto = false;
     [blackCover removeFromSuperview];
     if(_captureComplete){
+        [[EZDataUtil getInstance] detectFace:currentImage success:nil failure:nil];
         _captureComplete(nil);
     }
 }
@@ -3249,6 +3251,7 @@ context:(void *)context
         _captureComplete = ^(id obj){
             EZDEBUG(@"photo captured, we will upload, specified person:%@, isPhotoRequest:%i", weakSelf.personID, weakSelf.isPhotoRequest);
             weakSelf.uploadStatus = kUploading;
+            
             //[[EZDataUtil getInstance] remoteDebug:@"capture completed" isSync:YES];
         };
         [self prepareForCapture];

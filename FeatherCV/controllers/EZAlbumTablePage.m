@@ -2301,7 +2301,7 @@ static int photoCount = 1;
         if(!_currentUser || [note.matchedPhoto.personID isEqualToString:_currentUser.personID] || _currentUser.filterType == kPhotoNewFilter){
             [_combinedPhotos addObject:disPhoto];
             //[_nonsplitted addObject:note.srcPhoto];
-            if(_combinedPhotos.count){
+            if(_combinedPhotos.count > 1){
                 [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:_combinedPhotos.count - 1 inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
                 if(triggerByNotes){
                     [weakSelf scrollToBottom:NO];
@@ -2498,6 +2498,27 @@ static int photoCount = 1;
                                 [weakSelf.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
                             }];
                             //}
+                        }else{
+                            NSArray* visibleIndex = [_tableView indexPathsForVisibleRows];
+                            if(visibleIndex.count){
+                                NSIndexPath* idx = [visibleIndex objectAtIndex:0];
+                                if(idx.row <= _combinedPhotos.count){
+                                    EZDisplayPhoto* dp = [_combinedPhotos objectAtIndex:idx.row];
+                                    EZDEBUG(@"Will update the like:%i, photoID:%@, like peronson:%@", note.like, dp.photo.photoID, note.otherID);
+                                    if([dp.photo.photoID isEqual:note.photoID]){
+                                        if(note.like){
+                                            if(![dp.photo.likedUsers containsObject:note.otherID]){
+                                                [dp.photo.likedUsers addObject:note.otherID];
+                                            }
+                                        }else{
+                                            //if([ph.likedUsers containsObject:note.otherID]){
+                                            [dp.photo.likedUsers removeObject:note.otherID];
+                                            //}
+                                        }
+                                        [weakSelf.tableView reloadRowsAtIndexPaths:@[idx] withRowAnimation:UITableViewRowAnimationFade];
+                                    }
+                                }
+                            }
                         }
                     }
                     break;
@@ -2505,6 +2526,8 @@ static int photoCount = 1;
     }
 
 }
+
+
 
 - (void) switchFriend:(EZPerson*)person
 {

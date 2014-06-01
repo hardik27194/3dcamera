@@ -1228,6 +1228,11 @@ NSString* doubleString(NSString* str)
     return UIImagePNGRepresentation(self);
 }
 
+- (NSData*) toJpegData:(CGFloat)quality
+{
+    return UIImageJPEGRepresentation(self, quality);
+}
+
 - (NSData*) toJpegData
 {
     return UIImageJPEGRepresentation(self, 0.7);

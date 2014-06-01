@@ -40,6 +40,7 @@
 #import "EZDummyPage.h"
 #import "EZLoginController.h"
 #import "EZRegisterCtrl.h"
+#import "FaceppAPI.h"
 
 
 @implementation EZAppDelegate
@@ -414,6 +415,7 @@
     _cameraRaised = false;
     ///[EZDataUtil getInstance].currentPersonID = @"52f783d7e7b5b9dd9c28f1cc";
     [MobClick startWithAppkey:@"5350f11d56240bb1e901071a" reportPolicy:SENDWIFIONLY channelId:@"AppStore"];
+    [FaceppAPI initWithApiKey:@"80554f973e57498ae065ec46d16c6e6a" andApiSecret: @"7pwPTvUY2wSf0FqYI7WbZ783U3l0MPNJ" andRegion:APIServerRegionCN];
     NSString *version = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
     EZDEBUG(@"Mobile version:%@", version);
     [MobClick setAppVersion:version];

@@ -30,6 +30,7 @@
 #import "EZMessageCenter.h"
 #import "EZNote.h"
 #import "EZLoginController.h"
+#import "FaceppAPI.h"
 
 
 @implementation EZAlbumResult
@@ -348,6 +349,7 @@
     NSMutableDictionary* md = [[NSMutableDictionary alloc] initWithDictionary:person];
     EZDEBUG(@"current login languge:%@", currentLocalLang);
     [md setValue:currentLocalLang forKey:@"lang"];
+    [md setValue:_version?_version:@"" forKey:@"version"];
     [EZNetworkUtility postJson:@"register" parameters:md complete:^(NSDictionary* dict){
         EZPerson* person = [self addPersonToStore:dict isQuerying:NO];
         self.currentPersonID  = person.personID;
@@ -1067,7 +1069,7 @@
     NSMutableDictionary* md = [[NSMutableDictionary alloc] initWithDictionary:loginInfo];
     EZDEBUG(@"current login languge:%@", currentLocalLang);
     [md setValue:currentLocalLang forKey:@"lang"];
-    
+    [md setValue:_version?_version:@"" forKey:@"version"];
     [EZNetworkUtility postJson:@"login" parameters:md complete:^(NSDictionary* dict){
         EZPerson* person = [self addPersonToStore:dict isQuerying:NO];//[[EZPerson alloc] init];
         //[person fromJson:dict];
@@ -1934,6 +1936,41 @@
         }
     }
     return false;
+}
+
+//it will be incapsulated in this API.
+- (void) detectFace:(UIImage*)image success:(EZEventBlock)success failure:(EZEventBlock)failure
+{
+    //FaceppResult* result = [[FaceppAPI train] trainAsynchronouslyWithId:currentLoginID orName:currentLoginUser.name andType:FaceppTrainVerify imageData:[image toJpegData:0.45]];
+    //[[FaceppAPI train] trainAsynchronouslyWithId:nil orName:nil andType:];
+    
+    EZDEBUG(@"before detect face");
+    FaceppResult* fres = [[FaceppAPI detection] detectWithURL:nil orImageData:[image toJpegData:0.45] mode:FaceppDetectionModeNormal];
+    
+    
+    NSString* faceID = [fres.content objectForKey:@"face_id"];
+    EZDEBUG(@"detecting face, fres.result:%i,%@, %@", fres.success,faceID,fres.content);
+    if(faceID){
+        
+        if(!_prevFaceID){
+            fres = [[FaceppAPI group] createWithGroupName:currentLoginID];
+            EZDEBUG(@"created group success:%i, %@",fres.success, fres.content);
+            fres = [[FaceppAPI person] createWithPersonName:currentLoginUser.name andFaceId:@[faceID] andTag:nil andGroupId:nil orGroupName:nil];
+            EZDEBUG(@"create person:%i, %@",fres.success, fres.content);
+            _prevFaceID = faceID;
+            fres = [[FaceppAPI train] trainAsynchronouslyWithId:faceID orName:nil andType:FaceppTrainVerify];
+            EZDEBUG(@"train %i,%@",fres.success, fres.content);
+            
+        }else{
+            //[[FaceppAPI recognition] verifyWithFaceId:faceID andPersonId: orPersonName: async:]
+        
+        }
+        
+    }
+}
+- (void) trainFace:(UIImage*)image success:(EZEventBlock)success failure:(EZEventBlock)failure
+{
+   
 }
 
 

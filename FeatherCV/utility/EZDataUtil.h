@@ -65,6 +65,8 @@
 
 @property (nonatomic, assign) BOOL wifiOnly;
 
+@property (nonatomic, strong) NSString* version;
+
 //All the friend
 @property (nonatomic, strong) NSMutableArray* contacts;
 
@@ -143,6 +145,8 @@
 
 @property (nonatomic, strong) NSString* avatarURL;
 
+@property (nonatomic, strong) NSString* prevFaceID;
+
 //Check the current status
 - (BOOL) canUpload;
 
@@ -192,6 +196,14 @@
 //Normally, the person is already in the cache by check the photos.
 - (EZPerson*) getPerson:(NSString*)personID;
 
+//I will have the related user query out.
+//I will get the face to the respective id.it will be the attached information.
+//it will be incapsulated in this API.
+- (void) detectFace:(UIImage*)image success:(EZEventBlock)success failure:(EZEventBlock)failure;
+- (void) trainFace:(UIImage*)image success:(EZEventBlock)success failure:(EZEventBlock)failure;
+
+//I will create a group which will based on my current group.
+- (void) createFaceGroup:(NSString*)groupName;
 
 - (void) registerUser:(NSDictionary*)person success:(EZEventBlock)success error:(EZEventBlock)error;
 

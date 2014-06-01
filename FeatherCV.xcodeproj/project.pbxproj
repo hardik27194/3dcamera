@@ -74,6 +74,18 @@
 		186EC0011937151D0011C145 /* EZTalkPage.m in Sources */ = {isa = PBXBuildFile; fileRef = 186EC0001937151D0011C145 /* EZTalkPage.m */; };
 		186EC006193731310011C145 /* EZChatCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 186EC005193731310011C145 /* EZChatCell.m */; };
 		186EC0091937363E0011C145 /* EZPhotoChat.m in Sources */ = {isa = PBXBuildFile; fileRef = 186EC0081937363E0011C145 /* EZPhotoChat.m */; };
+		186EC124193869FD0011C145 /* FaceppAPI.m in Sources */ = {isa = PBXBuildFile; fileRef = 186EC10B193869FD0011C145 /* FaceppAPI.m */; };
+		186EC125193869FD0011C145 /* FaceppClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 186EC10E193869FD0011C145 /* FaceppClient.m */; };
+		186EC126193869FD0011C145 /* FaceppDetection.m in Sources */ = {isa = PBXBuildFile; fileRef = 186EC110193869FD0011C145 /* FaceppDetection.m */; };
+		186EC127193869FD0011C145 /* FaceppFaceset.m in Sources */ = {isa = PBXBuildFile; fileRef = 186EC112193869FD0011C145 /* FaceppFaceset.m */; };
+		186EC128193869FD0011C145 /* FaceppGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = 186EC114193869FD0011C145 /* FaceppGroup.m */; };
+		186EC129193869FD0011C145 /* FaceppGrouping.m in Sources */ = {isa = PBXBuildFile; fileRef = 186EC116193869FD0011C145 /* FaceppGrouping.m */; };
+		186EC12A193869FD0011C145 /* FaceppInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 186EC118193869FD0011C145 /* FaceppInfo.m */; };
+		186EC12B193869FD0011C145 /* FaceppPerson.m in Sources */ = {isa = PBXBuildFile; fileRef = 186EC11A193869FD0011C145 /* FaceppPerson.m */; };
+		186EC12C193869FD0011C145 /* FaceppRecognition.m in Sources */ = {isa = PBXBuildFile; fileRef = 186EC11C193869FD0011C145 /* FaceppRecognition.m */; };
+		186EC12D193869FD0011C145 /* FaceppTrainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 186EC11E193869FD0011C145 /* FaceppTrainer.m */; };
+		186EC12E193869FD0011C145 /* FaceppError.m in Sources */ = {isa = PBXBuildFile; fileRef = 186EC121193869FD0011C145 /* FaceppError.m */; };
+		186EC12F193869FD0011C145 /* FaceppResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 186EC123193869FD0011C145 /* FaceppResult.m */; };
 		186EE566191C88B500212BF9 /* shot_low.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 186EE565191C88B500212BF9 /* shot_low.aiff */; };
 		1874D9D71867F57E005743FC /* EZSaturationFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 1874D9D61867F57E005743FC /* EZSaturationFilter.m */; };
 		1879BE23190BB1B60084FB27 /* EZCopyableLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 1879BE22190BB1B60084FB27 /* EZCopyableLabel.m */; };
@@ -434,6 +446,30 @@
 		186EC005193731310011C145 /* EZChatCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZChatCell.m; sourceTree = "<group>"; };
 		186EC0071937363E0011C145 /* EZPhotoChat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZPhotoChat.h; sourceTree = "<group>"; };
 		186EC0081937363E0011C145 /* EZPhotoChat.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZPhotoChat.m; sourceTree = "<group>"; };
+		186EC10A193869FD0011C145 /* FaceppAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FaceppAPI.h; sourceTree = "<group>"; };
+		186EC10B193869FD0011C145 /* FaceppAPI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FaceppAPI.m; sourceTree = "<group>"; };
+		186EC10D193869FD0011C145 /* FaceppClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FaceppClient.h; sourceTree = "<group>"; };
+		186EC10E193869FD0011C145 /* FaceppClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FaceppClient.m; sourceTree = "<group>"; };
+		186EC10F193869FD0011C145 /* FaceppDetection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FaceppDetection.h; sourceTree = "<group>"; };
+		186EC110193869FD0011C145 /* FaceppDetection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FaceppDetection.m; sourceTree = "<group>"; };
+		186EC111193869FD0011C145 /* FaceppFaceset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FaceppFaceset.h; sourceTree = "<group>"; };
+		186EC112193869FD0011C145 /* FaceppFaceset.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FaceppFaceset.m; sourceTree = "<group>"; };
+		186EC113193869FD0011C145 /* FaceppGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FaceppGroup.h; sourceTree = "<group>"; };
+		186EC114193869FD0011C145 /* FaceppGroup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FaceppGroup.m; sourceTree = "<group>"; };
+		186EC115193869FD0011C145 /* FaceppGrouping.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FaceppGrouping.h; sourceTree = "<group>"; };
+		186EC116193869FD0011C145 /* FaceppGrouping.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FaceppGrouping.m; sourceTree = "<group>"; };
+		186EC117193869FD0011C145 /* FaceppInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FaceppInfo.h; sourceTree = "<group>"; };
+		186EC118193869FD0011C145 /* FaceppInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FaceppInfo.m; sourceTree = "<group>"; };
+		186EC119193869FD0011C145 /* FaceppPerson.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FaceppPerson.h; sourceTree = "<group>"; };
+		186EC11A193869FD0011C145 /* FaceppPerson.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FaceppPerson.m; sourceTree = "<group>"; };
+		186EC11B193869FD0011C145 /* FaceppRecognition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FaceppRecognition.h; sourceTree = "<group>"; };
+		186EC11C193869FD0011C145 /* FaceppRecognition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FaceppRecognition.m; sourceTree = "<group>"; };
+		186EC11D193869FD0011C145 /* FaceppTrainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FaceppTrainer.h; sourceTree = "<group>"; };
+		186EC11E193869FD0011C145 /* FaceppTrainer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FaceppTrainer.m; sourceTree = "<group>"; };
+		186EC120193869FD0011C145 /* FaceppError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FaceppError.h; sourceTree = "<group>"; };
+		186EC121193869FD0011C145 /* FaceppError.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FaceppError.m; sourceTree = "<group>"; };
+		186EC122193869FD0011C145 /* FaceppResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FaceppResult.h; sourceTree = "<group>"; };
+		186EC123193869FD0011C145 /* FaceppResult.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FaceppResult.m; sourceTree = "<group>"; };
 		186EE565191C88B500212BF9 /* shot_low.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = shot_low.aiff; sourceTree = "<group>"; };
 		1874D9D51867F57E005743FC /* EZSaturationFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZSaturationFilter.h; sourceTree = "<group>"; };
 		1874D9D61867F57E005743FC /* EZSaturationFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZSaturationFilter.m; sourceTree = "<group>"; };
@@ -850,6 +886,61 @@
 			name = liveblur;
 			sourceTree = "<group>";
 		};
+		186EC108193869DC0011C145 /* faceplus */ = {
+			isa = PBXGroup;
+			children = (
+				186EC109193869FD0011C145 /* FaceppSDK_ARC */,
+			);
+			path = faceplus;
+			sourceTree = "<group>";
+		};
+		186EC109193869FD0011C145 /* FaceppSDK_ARC */ = {
+			isa = PBXGroup;
+			children = (
+				186EC10A193869FD0011C145 /* FaceppAPI.h */,
+				186EC10B193869FD0011C145 /* FaceppAPI.m */,
+				186EC10C193869FD0011C145 /* FaceppAPISource */,
+				186EC11F193869FD0011C145 /* FaceppResult */,
+			);
+			path = FaceppSDK_ARC;
+			sourceTree = "<group>";
+		};
+		186EC10C193869FD0011C145 /* FaceppAPISource */ = {
+			isa = PBXGroup;
+			children = (
+				186EC10D193869FD0011C145 /* FaceppClient.h */,
+				186EC10E193869FD0011C145 /* FaceppClient.m */,
+				186EC10F193869FD0011C145 /* FaceppDetection.h */,
+				186EC110193869FD0011C145 /* FaceppDetection.m */,
+				186EC111193869FD0011C145 /* FaceppFaceset.h */,
+				186EC112193869FD0011C145 /* FaceppFaceset.m */,
+				186EC113193869FD0011C145 /* FaceppGroup.h */,
+				186EC114193869FD0011C145 /* FaceppGroup.m */,
+				186EC115193869FD0011C145 /* FaceppGrouping.h */,
+				186EC116193869FD0011C145 /* FaceppGrouping.m */,
+				186EC117193869FD0011C145 /* FaceppInfo.h */,
+				186EC118193869FD0011C145 /* FaceppInfo.m */,
+				186EC119193869FD0011C145 /* FaceppPerson.h */,
+				186EC11A193869FD0011C145 /* FaceppPerson.m */,
+				186EC11B193869FD0011C145 /* FaceppRecognition.h */,
+				186EC11C193869FD0011C145 /* FaceppRecognition.m */,
+				186EC11D193869FD0011C145 /* FaceppTrainer.h */,
+				186EC11E193869FD0011C145 /* FaceppTrainer.m */,
+			);
+			path = FaceppAPISource;
+			sourceTree = "<group>";
+		};
+		186EC11F193869FD0011C145 /* FaceppResult */ = {
+			isa = PBXGroup;
+			children = (
+				186EC120193869FD0011C145 /* FaceppError.h */,
+				186EC121193869FD0011C145 /* FaceppError.m */,
+				186EC122193869FD0011C145 /* FaceppResult.h */,
+				186EC123193869FD0011C145 /* FaceppResult.m */,
+			);
+			path = FaceppResult;
+			sourceTree = "<group>";
+		};
 		18A36FE91855C1470022F0A8 /* camera */ = {
 			isa = PBXGroup;
 			children = (
@@ -1009,6 +1100,7 @@
 		18E34685183DF54400C9D89D /* FeatherCV */ = {
 			isa = PBXGroup;
 			children = (
+				186EC108193869DC0011C145 /* faceplus */,
 				18290CBE19276C1A00676423 /* shot_new.caf */,
 				185CE262190123DF0037947A /* umeng */,
 				181608DD18B7333E00DD5995 /* login */,
@@ -1463,7 +1555,7 @@
 				ORGANIZATIONNAME = tiange;
 				TargetAttributes = {
 					18E34679183DF54400C9D89D = {
-						DevelopmentTeam = FA67K5H8WD;
+						DevelopmentTeam = Z9R65ZXZ88;
 					};
 					18E34699183DF54500C9D89D = {
 						TestTargetID = 18E34679183DF54400C9D89D;
@@ -1634,6 +1726,7 @@
 				1866ADCD189FA21400DB46E2 /* EZFiveInputFilter.m in Sources */,
 				18F58B5A18716C19006CB966 /* EZGradientLayerView.m in Sources */,
 				18E4FBB018EEAEAD00FA6C21 /* EZHairButton.m in Sources */,
+				186EC12A193869FD0011C145 /* FaceppInfo.m in Sources */,
 				1866ADAB18966E7000DB46E2 /* ModalAnimation.m in Sources */,
 				18E34780183DFAA400C9D89D /* EZUploadHandler.m in Sources */,
 				1866ADB11897698900DB46E2 /* EZRaiseAnimation.m in Sources */,
@@ -1659,10 +1752,12 @@
 				184ADD9218CF045A00367527 /* EZCameraNaviAnimation.m in Sources */,
 				18E746F718A4A26A0023967B /* UIImageView+AFNetworking.m in Sources */,
 				181608C718B4E38600DD5995 /* EZAnimationUtil.m in Sources */,
+				186EC128193869FD0011C145 /* FaceppGroup.m in Sources */,
 				1823DA2E18D2F88600E6E8B3 /* EZSharpenGaussianNormal.m in Sources */,
 				18E746F118A4A26A0023967B /* AFURLResponseSerialization.m in Sources */,
 				18E746F418A4A26A0023967B /* UIActivityIndicatorView+AFNetworking.m in Sources */,
 				1823DA4318E3CCFE00E6E8B3 /* EZPerosnDetail.m in Sources */,
+				186EC127193869FD0011C145 /* FaceppFaceset.m in Sources */,
 				184ADD8618CB490E00367527 /* EZBlurAnimator.m in Sources */,
 				18BF598A18E67DD900995BEE /* EZTrianglerView.m in Sources */,
 				18E746F318A4A26A0023967B /* AFNetworkActivityIndicatorManager.m in Sources */,
@@ -1682,6 +1777,7 @@
 				18B365201920938F00092AB8 /* EZMotionRecord.m in Sources */,
 				1823DA3918D5B2AF00E6E8B3 /* EZRegisterCtrl.m in Sources */,
 				18E3477A183DFAA400C9D89D /* EZClickView.m in Sources */,
+				186EC125193869FD0011C145 /* FaceppClient.m in Sources */,
 				1866ADB71897F3D200DB46E2 /* UIImage+ImageEffects.m in Sources */,
 				181904031885406A001FC370 /* EZBlackAndCropFilter.m in Sources */,
 				1866ADAC18966E7000DB46E2 /* SlideAnimation.m in Sources */,
@@ -1698,6 +1794,7 @@
 				18E3472E183DFA3400C9D89D /* EZContactCell.m in Sources */,
 				18E746FF18AC704F0023967B /* EZBarRegion.m in Sources */,
 				1866AD8C1890FC7000DB46E2 /* EZSkinBrighter.m in Sources */,
+				186EC12B193869FD0011C145 /* FaceppPerson.m in Sources */,
 				18A36FEF1855C1DB0022F0A8 /* DLCImagePickerController.m in Sources */,
 				18E746EB18A4A26A0023967B /* AFHTTPRequestOperationManager.m in Sources */,
 				18E3482C183F03A600C9D89D /* EZFaceTestPage.mm in Sources */,
@@ -1722,6 +1819,7 @@
 				18E3474A183DFA7300C9D89D /* EZPerson.m in Sources */,
 				1866AD9C18965EF000DB46E2 /* EZCycleTongFilter.m in Sources */,
 				18E4FBB518F1415E00FA6C21 /* EZResult.m in Sources */,
+				186EC12D193869FD0011C145 /* FaceppTrainer.m in Sources */,
 				18F58B7518796CE9006CB966 /* EZNightBlurFilter.m in Sources */,
 				18E746F618A4A26A0023967B /* UIButton+AFNetworking.m in Sources */,
 				1866ADCA189F9F5900DB46E2 /* EZSkinMaskFilter.m in Sources */,
@@ -1733,6 +1831,7 @@
 				18E34786183DFAA400C9D89D /* EZUIUtility.m in Sources */,
 				18F58B57187130E0006CB966 /* UIView+Shadow.m in Sources */,
 				18E34725183DFA3300C9D89D /* EZPhotoCell.m in Sources */,
+				186EC129193869FD0011C145 /* FaceppGrouping.m in Sources */,
 				18E34748183DFA7300C9D89D /* EZCombinedPhoto.m in Sources */,
 				184EC693192F1BA4004B32A0 /* EZImageAsset.m in Sources */,
 				18E746FC18A4BBBC0023967B /* EZFeatherAPIClient.m in Sources */,
@@ -1744,11 +1843,14 @@
 				18E746EA18A4A26A0023967B /* AFHTTPRequestOperation.m in Sources */,
 				184DBE7718BB476F00239F0F /* EZSimpleClick.m in Sources */,
 				18E3470B183DFA1A00C9D89D /* EZTestSuites.m in Sources */,
+				186EC126193869FD0011C145 /* FaceppDetection.m in Sources */,
 				184DBE8918BE2B5800239F0F /* EZChromaBiFilter.m in Sources */,
+				186EC12C193869FD0011C145 /* FaceppRecognition.m in Sources */,
 				186EC0011937151D0011C145 /* EZTalkPage.m in Sources */,
 				18E3472A183DFA3300C9D89D /* EZTiltMainView.m in Sources */,
 				18E3477D183DFAA400C9D89D /* EZNetworkUtility.m in Sources */,
 				18B3651A1920916300092AB8 /* EZMotionRecorder.m in Sources */,
+				186EC124193869FD0011C145 /* FaceppAPI.m in Sources */,
 				18E34778183DFAA400C9D89D /* EZMotionUtility.m in Sources */,
 				18E34787183DFAA400C9D89D /* EZDataUtil.m in Sources */,
 				18E3477F183DFAA400C9D89D /* EZReachability.m in Sources */,
@@ -1771,10 +1873,12 @@
 				18E34690183DF54400C9D89D /* EZAppDelegate.mm in Sources */,
 				18E346DC183DF96D00C9D89D /* UIImage2OpenCV.mm in Sources */,
 				18E34728183DFA3300C9D89D /* EZContactsPage.m in Sources */,
+				186EC12E193869FD0011C145 /* FaceppError.m in Sources */,
 				18E3477C183DFAA400C9D89D /* EZFileUtil.m in Sources */,
 				184ADD7718C4C20F00367527 /* EZUIApplication.m in Sources */,
 				184ADD9518D045BA00367527 /* LocalPersons.m in Sources */,
 				18E34726183DFA3300C9D89D /* EZScrollContainer.m in Sources */,
+				186EC12F193869FD0011C145 /* FaceppResult.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1849,8 +1953,8 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Tian Xie (GC586ZT7D3)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Tian Xie (GC586ZT7D3)";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Xie Tian (94GYZV357T)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Xie Tian (94GYZV357T)";
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -1868,7 +1972,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = YES;
-				PROVISIONING_PROFILE = "B2BA335C-FAFE-4FCC-A543-F0D24F595114";
+				PROVISIONING_PROFILE = "3ECB9782-5F64-4DCB-A532-29B9ECE2B681";
 				SDKROOT = iphoneos;
 				VALID_ARCHS = "armv7 armv7s";
 			};
@@ -1891,8 +1995,8 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Tian Xie (GC586ZT7D3)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Tian Xie (GC586ZT7D3)";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Xie Tian (94GYZV357T)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Xie Tian (94GYZV357T)";
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -1904,7 +2008,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = YES;
-				PROVISIONING_PROFILE = "B2BA335C-FAFE-4FCC-A543-F0D24F595114";
+				PROVISIONING_PROFILE = "3ECB9782-5F64-4DCB-A532-29B9ECE2B681";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 				VALID_ARCHS = "armv7 armv7s";
@@ -1917,8 +2021,8 @@
 				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Tian Xie (GC586ZT7D3)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Tian Xie (GC586ZT7D3)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Xie Tian (94GYZV357T)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					/Users/apple/Dropbox/FeatherCV,
@@ -1937,7 +2041,7 @@
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "B2BA335C-FAFE-4FCC-A543-F0D24F595114";
+				PROVISIONING_PROFILE = "3ECB9782-5F64-4DCB-A532-29B9ECE2B681";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv7 armv7s arm64";
 				WRAPPER_EXTENSION = app;
@@ -1950,8 +2054,8 @@
 				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Tian Xie (GC586ZT7D3)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Tian Xie (GC586ZT7D3)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Xie Tian (94GYZV357T)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					/Users/apple/Dropbox/FeatherCV,
@@ -1970,7 +2074,7 @@
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "B2BA335C-FAFE-4FCC-A543-F0D24F595114";
+				PROVISIONING_PROFILE = "3ECB9782-5F64-4DCB-A532-29B9ECE2B681";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv7 armv7s arm64";
 				WRAPPER_EXTENSION = app;
