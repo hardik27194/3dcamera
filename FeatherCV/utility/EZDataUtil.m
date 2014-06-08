@@ -31,6 +31,7 @@
 #import "EZNote.h"
 #import "EZLoginController.h"
 #import "FaceppAPI.h"
+#import "EZPhotoChat.h"
 
 
 @implementation EZAlbumResult
@@ -474,6 +475,15 @@
     
 }
 
+- (void) removeLocalPhotoByPos:(NSInteger)pos
+{
+    EZDEBUG(@"removed object at pos:%i", pos);
+    EZDisplayPhoto* dp = [_mainPhotos objectAtIndex:pos];
+    [dp.photo.localPhoto.managedObjectContext deleteObject:dp.photo.localPhoto];
+    [[EZCoreAccessor getClientAccessor]saveContext];
+    [_mainPhotos removeObjectAtIndex:pos];
+}
+
 - (void) removeLocalPhoto:(NSString*)photoID
 {
     //int pos = -1;
@@ -556,6 +566,13 @@
 
 - (void) deletePhoto:(EZPhoto *)photoInfo success:(EZEventBlock)success failure:(EZEventBlock)failure
 {
+    if(![photoInfo.photoID isNotEmpty]){
+        //assert(false);
+        //photoInfo.deleted = false;
+        [_pendingUploads removeObject:photoInfo];
+        success(nil);
+        return;
+    }
     NSDictionary* jsons =@{@"cmd":@"delete",@"photoID":photoInfo.photoID};
     EZDEBUG(@"upload info:%@", jsons);
     [EZNetworkUtility postParameterAsJson:@"photo/info" parameters:jsons complete:^(id infos){
@@ -606,6 +623,7 @@
 {
     NSString* type = [dict objectForKey:@"type"];
     EZNote* note = [[EZNote alloc] init];
+    note.rawInfo = dict;
     [note fromJson:dict];
     
     if(note.senderPerson){
@@ -1610,7 +1628,7 @@
 //Get the person object
 - (EZPerson*) getPersonByID:(NSString*)personID success:(EZEventBlock)success;
 {
-    if(personID == nil){
+    if(![personID isNotEmpty]){
         return nil;
     }
     EZEventBlock localSuccess = success;
@@ -1706,6 +1724,94 @@
 {
     [_sortedUsers removeObject:personID];
     [_sortedUsers insertObject:personID atIndex:0];
+}
+
+
+- (void) addPhotoChat:(EZPhoto*)ownPhoto otherPhoto:(EZPhoto*)otherPhoto chat:(EZPhotoChat*)chat success:(EZEventBlock)success failure:(EZEventBlock)failure
+{
+    if(![ownPhoto.photoID isNotEmpty] || ![otherPhoto.photoID isNotEmpty]){
+        EZDEBUG(@"empty photoID");
+        if(failure){
+            failure(@"empty photoID");
+        }
+        return;
+    }
+    NSDictionary* dict = @{@"cmd":@"add", @"createdTime":isoDateFormat(chat.date), @"text":chat.text, @"photoID":ownPhoto.photoID, @"otherPhotoID":otherPhoto.photoID};
+    [EZNetworkUtility postParameterAsJson:@"pchat" parameters:dict complete:^(NSDictionary* back){
+        chat.chatID = [back objectForKey:@"chatID"];
+        EZDEBUG(@"add chat:%@", back);
+        if(success){
+            success(back);
+        }
+    } failblk:failure];
+}
+
+- (void) addPhotoChat:(EZPhotoChat*)chat success:(EZEventBlock)success failure:(EZEventBlock)failure
+{
+    if(chat.photos.count < 2){
+        if(failure){
+            failure(@"failed for empty photoID");
+        }
+        return;
+    }
+    //chat.success = success;
+    //chat.failure = failure;
+    NSDictionary* dict = @{@"cmd":@"add", @"createdTime":isoDateFormat(chat.date), @"text":chat.text, @"photoID":[chat.photos objectAtIndex:0] , @"otherPhotoID":[chat.photos objectAtIndex:1]};
+    [EZNetworkUtility postParameterAsJson:@"pchat" parameters:dict complete:^(NSDictionary* back){
+        chat.chatID = [back objectForKey:@"chatID"];
+        EZDEBUG(@"add chat:%@", back);
+        if(success){
+            success(back);
+        }
+    } failblk:failure];
+
+}
+
+
+- (void) queryPhotoChat:(EZPhoto*)ownPhoto otherPhoto:(EZPhoto*)otherPhoto success:(EZEventBlock)success failure:(EZEventBlock)failure
+{
+    if(![ownPhoto.photoID isNotEmpty] || ![otherPhoto.photoID isNotEmpty]){
+        EZDEBUG(@"query empty photoID");
+        if(failure){
+            failure(@"query empty photoID");
+        }
+        return;
+    }
+    NSDictionary* dict = @{@"cmd":@"query", @"photoID":ownPhoto.photoID, @"otherPhotoID":otherPhoto.photoID};
+    [EZNetworkUtility postParameterAsJson:@"pchat" parameters:dict complete:^(NSArray* chats){
+        //chat.chatID = [back objectForKey:@"chatID"];
+        EZDEBUG(@"query back chat count:%i, %@", chats.count, chats);
+        NSMutableArray* res = [[NSMutableArray alloc] init];
+        for(NSDictionary* chat in chats){
+            EZPhotoChat* pc = [[EZPhotoChat alloc] init];
+            [pc fromJson:chat];
+            [res addObject:pc];
+        }
+        if(success){
+            success(res);
+        }
+    } failblk:failure];
+    
+    
+}
+
+
+- (void) queryByChatID:(NSString*)chatID success:(EZEventBlock)success failure:(EZEventBlock)failure
+{
+    NSDictionary* dict = @{@"cmd":@"query", @"chatID":chatID};
+    [EZNetworkUtility postParameterAsJson:@"pchat" parameters:dict complete:^(NSArray* chats){
+        //chat.chatID = [back objectForKey:@"chatID"];
+        EZDEBUG(@"query back chat count:%i, %@", chats.count, chats);
+        NSMutableArray* res = [[NSMutableArray alloc] init];
+        for(NSDictionary* chat in chats){
+            EZPhotoChat* pc = [[EZPhotoChat alloc] init];
+            [pc fromJson:chat];
+            [res addObject:pc];
+        }
+        if(success){
+            success(res);
+        }
+    } failblk:failure];
 }
 
 //The converstation will add to the relationship.

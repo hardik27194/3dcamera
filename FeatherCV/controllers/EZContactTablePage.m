@@ -94,7 +94,7 @@
 {
     [super viewWillDisappear:animated];
     [EZUIUtility sharedEZUIUtility].stopRotationRaise = false;
-    [TopView addSubview:_barBackground];
+    //[TopView addSubview:_barBackground];
     [UIView animateWithDuration:0.3 animations:^(){
         _barBackground.y = - _barBackground.frame.size.height;
     } completion:^(BOOL completed){
@@ -321,7 +321,7 @@
         cell.name.text = person.name;
     }
     __weak EZContactTableCell* weakCell = cell;
-    if(!person.filterType || indexPath.row == 0){
+    if((!person.filterType && [person.personID isNotEmpty]) || indexPath.row == 0){
         person = pid2person(person.personID);
     }
     if(person.isQuerying && indexPath.row){

@@ -52,6 +52,8 @@
 
 @property (nonatomic, strong) NSString* deletedID;
 
+@property (nonatomic, strong) NSDictionary* rawInfo;
+
 - (void) fromJson:(NSDictionary*)dict;
 
 @end

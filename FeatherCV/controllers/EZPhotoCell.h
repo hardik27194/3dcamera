@@ -81,6 +81,10 @@
 
 @property (nonatomic, strong) EZEnlargedView* otherIcon;
 
+@property (nonatomic, strong) EZEnlargedView* ownChatButton;
+
+@property (nonatomic, strong) EZEnlargedView* otherChatButton;
+
 @property (nonatomic, strong) UILabel* otherName;
 
 @property (nonatomic, strong) UILabel* photoDate;

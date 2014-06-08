@@ -106,7 +106,7 @@
         //[_otherName enableShadow:[UIColor blackColor]];
         [self.container addSubview:_otherName];
         
-        _otherTalk = [[UILabel alloc] initWithFrame:CGRectMake(7, CurrentScreenHeight - 245 - startPos, 300, 19)];
+        _otherTalk = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 300, 19)];
         [_otherTalk setTextColor:[UIColor whiteColor]];
         _otherTalk.font = [UIFont systemFontOfSize:13];
         //[_otherTalk enableShadow:[UIColor blackColor]];
@@ -114,7 +114,8 @@
         _otherTalk.textAlignment = NSTextAlignmentCenter;
         _otherTalk.layer.cornerRadius = 4;
         _otherTalk.clipsToBounds = true;
-        [self.container addSubview:_otherTalk];
+        _otherChatButton = [[EZEnlargedView alloc] initWithFrame:CGRectMake(7, CurrentScreenHeight - 245 - startPos, 300, 19) innerView:_otherTalk enlargeRatio:EZEnlargeIconRatio];
+        [self.container addSubview:_otherChatButton];
 
         _andSymbol = [[UILabel alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 225 - startPos, 20, 20)];
         [_andSymbol setTextColor:[UIColor whiteColor]];
@@ -143,7 +144,8 @@
         [self.container addSubview:_authorName];
 
         
-        _ownTalk = [[UILabel alloc] initWithFrame:CGRectMake(7, CurrentScreenHeight - 138 - startPos, 300, 19)];
+        
+        _ownTalk = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 300, 19)];
         [_ownTalk setTextColor:[UIColor whiteColor]];
         _ownTalk.font = [UIFont systemFontOfSize:13];
         [_ownTalk enableShadow:[UIColor blackColor]];
@@ -151,7 +153,8 @@
         [_ownTalk enableTextWrap];
         _ownTalk.layer.cornerRadius = 4;
         _ownTalk.clipsToBounds = true;
-        [self.container addSubview:_ownTalk];
+        _ownChatButton = [[EZEnlargedView alloc] initWithFrame:CGRectMake(7, CurrentScreenHeight - 138 - startPos, 300, 19) innerView:_ownTalk enlargeRatio:EZEnlargeIconRatio];
+        [self.container addSubview:_ownChatButton];
         
         _likeButton =  [[UIButton alloc] initWithFrame:CGRectMake(249, CurrentScreenHeight - 220 - startPos, 80, 80)]; //[[EZClickView alloc] initWithFrame:CGRectMake(255, CurrentScreenHeight - 105, 45,45)]; //[[EZCenterButton alloc] initWithFrame:CGRectMake(255, 23, 60,60) cycleRadius:21 lineWidth:2];
         //_likeButton.backgroundColor = [UIColor redColor];

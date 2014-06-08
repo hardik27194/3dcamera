@@ -137,6 +137,64 @@
 		18BF598A18E67DD900995BEE /* EZTrianglerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 18BF598918E67DD900995BEE /* EZTrianglerView.m */; };
 		18C0E76B1861A08700D694CE /* page_turn.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 18C0E76A1861A08700D694CE /* page_turn.aiff */; };
 		18C0E76E1861A0FF00D694CE /* EZSoundEffect.m in Sources */ = {isa = PBXBuildFile; fileRef = 18C0E76D1861A0FF00D694CE /* EZSoundEffect.m */; };
+		18DE98F319404734008C1B3F /* bubble.png in Resources */ = {isa = PBXBuildFile; fileRef = 18DE989E19404734008C1B3F /* bubble.png */; };
+		18DE98F419404734008C1B3F /* bubble@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 18DE989F19404734008C1B3F /* bubble@2x.png */; };
+		18DE98F519404734008C1B3F /* bubble_min.png in Resources */ = {isa = PBXBuildFile; fileRef = 18DE98A019404734008C1B3F /* bubble_min.png */; };
+		18DE98F619404734008C1B3F /* bubble_min@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 18DE98A119404734008C1B3F /* bubble_min@2x.png */; };
+		18DE98F719404734008C1B3F /* bubble_min_tailless.png in Resources */ = {isa = PBXBuildFile; fileRef = 18DE98A219404734008C1B3F /* bubble_min_tailless.png */; };
+		18DE98F819404734008C1B3F /* bubble_min_tailless@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 18DE98A319404734008C1B3F /* bubble_min_tailless@2x.png */; };
+		18DE98F919404734008C1B3F /* bubble_stroked.png in Resources */ = {isa = PBXBuildFile; fileRef = 18DE98A419404734008C1B3F /* bubble_stroked.png */; };
+		18DE98FA19404734008C1B3F /* bubble_stroked@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 18DE98A519404734008C1B3F /* bubble_stroked@2x.png */; };
+		18DE98FB19404734008C1B3F /* bubble_stroked_tailless.png in Resources */ = {isa = PBXBuildFile; fileRef = 18DE98A619404734008C1B3F /* bubble_stroked_tailless.png */; };
+		18DE98FC19404734008C1B3F /* bubble_stroked_tailless@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 18DE98A719404734008C1B3F /* bubble_stroked_tailless@2x.png */; };
+		18DE98FD19404734008C1B3F /* bubble_tailless.png in Resources */ = {isa = PBXBuildFile; fileRef = 18DE98A819404734008C1B3F /* bubble_tailless.png */; };
+		18DE98FE19404734008C1B3F /* bubble_tailless@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 18DE98A919404734008C1B3F /* bubble_tailless@2x.png */; };
+		18DE98FF19404734008C1B3F /* camera.png in Resources */ = {isa = PBXBuildFile; fileRef = 18DE98AA19404734008C1B3F /* camera.png */; };
+		18DE990019404734008C1B3F /* camera@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 18DE98AB19404734008C1B3F /* camera@2x.png */; };
+		18DE990119404734008C1B3F /* typing.png in Resources */ = {isa = PBXBuildFile; fileRef = 18DE98AC19404734008C1B3F /* typing.png */; };
+		18DE990219404734008C1B3F /* typing@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 18DE98AD19404734008C1B3F /* typing@2x.png */; };
+		18DE990319404734008C1B3F /* message_received.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 18DE98AF19404734008C1B3F /* message_received.aiff */; };
+		18DE990419404734008C1B3F /* message_sent.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 18DE98B019404734008C1B3F /* message_sent.aiff */; };
+		18DE990519404734008C1B3F /* JSQSystemSoundPlayer+JSQMessages.m in Sources */ = {isa = PBXBuildFile; fileRef = 18DE98B319404734008C1B3F /* JSQSystemSoundPlayer+JSQMessages.m */; };
+		18DE990619404734008C1B3F /* NSString+JSQMessages.m in Sources */ = {isa = PBXBuildFile; fileRef = 18DE98B519404734008C1B3F /* NSString+JSQMessages.m */; };
+		18DE990719404734008C1B3F /* UIColor+JSQMessages.m in Sources */ = {isa = PBXBuildFile; fileRef = 18DE98B719404734008C1B3F /* UIColor+JSQMessages.m */; };
+		18DE990819404734008C1B3F /* UIImage+JSQMessages.m in Sources */ = {isa = PBXBuildFile; fileRef = 18DE98B919404734008C1B3F /* UIImage+JSQMessages.m */; };
+		18DE990919404734008C1B3F /* UIView+JSQMessages.m in Sources */ = {isa = PBXBuildFile; fileRef = 18DE98BB19404734008C1B3F /* UIView+JSQMessages.m */; };
+		18DE990A19404734008C1B3F /* JSQMessagesKeyboardController.m in Sources */ = {isa = PBXBuildFile; fileRef = 18DE98BE19404734008C1B3F /* JSQMessagesKeyboardController.m */; };
+		18DE990B19404734008C1B3F /* JSQMessagesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 18DE98C019404734008C1B3F /* JSQMessagesViewController.m */; };
+		18DE990C19404734008C1B3F /* JSQMessagesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 18DE98C119404734008C1B3F /* JSQMessagesViewController.xib */; };
+		18DE990D19404734008C1B3F /* JSQMessagesAvatarFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = 18DE98C419404734008C1B3F /* JSQMessagesAvatarFactory.m */; };
+		18DE990E19404734008C1B3F /* JSQMessagesBubbleImageFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = 18DE98C619404734008C1B3F /* JSQMessagesBubbleImageFactory.m */; };
+		18DE990F19404734008C1B3F /* JSQMessagesTimestampFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 18DE98C819404734008C1B3F /* JSQMessagesTimestampFormatter.m */; };
+		18DE991019404734008C1B3F /* JSQMessagesToolbarButtonFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = 18DE98CA19404734008C1B3F /* JSQMessagesToolbarButtonFactory.m */; };
+		18DE991119404734008C1B3F /* JSQSystemSoundPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 18DE98CD19404734008C1B3F /* JSQSystemSoundPlayer.m */; };
+		18DE991219404734008C1B3F /* JSQMessagesCollectionViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 18DE98D019404734008C1B3F /* JSQMessagesCollectionViewFlowLayout.m */; };
+		18DE991319404734008C1B3F /* JSQMessagesCollectionViewFlowLayoutInvalidationContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 18DE98D219404734008C1B3F /* JSQMessagesCollectionViewFlowLayoutInvalidationContext.m */; };
+		18DE991419404734008C1B3F /* JSQMessagesCollectionViewLayoutAttributes.m in Sources */ = {isa = PBXBuildFile; fileRef = 18DE98D419404734008C1B3F /* JSQMessagesCollectionViewLayoutAttributes.m */; };
+		18DE991519404734008C1B3F /* JSQMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 18DE98D719404734008C1B3F /* JSQMessage.m */; };
+		18DE991619404734008C1B3F /* JSQMessagesCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 18DE98DB19404734008C1B3F /* JSQMessagesCollectionView.m */; };
+		18DE991719404734008C1B3F /* JSQMessagesCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 18DE98DD19404734008C1B3F /* JSQMessagesCollectionViewCell.m */; };
+		18DE991819404734008C1B3F /* JSQMessagesCollectionViewCellIncoming.m in Sources */ = {isa = PBXBuildFile; fileRef = 18DE98DF19404734008C1B3F /* JSQMessagesCollectionViewCellIncoming.m */; };
+		18DE991919404734008C1B3F /* JSQMessagesCollectionViewCellIncoming.xib in Resources */ = {isa = PBXBuildFile; fileRef = 18DE98E019404734008C1B3F /* JSQMessagesCollectionViewCellIncoming.xib */; };
+		18DE991A19404734008C1B3F /* JSQMessagesCollectionViewCellOutgoing.m in Sources */ = {isa = PBXBuildFile; fileRef = 18DE98E219404734008C1B3F /* JSQMessagesCollectionViewCellOutgoing.m */; };
+		18DE991B19404734008C1B3F /* JSQMessagesCollectionViewCellOutgoing.xib in Resources */ = {isa = PBXBuildFile; fileRef = 18DE98E319404734008C1B3F /* JSQMessagesCollectionViewCellOutgoing.xib */; };
+		18DE991C19404734008C1B3F /* JSQMessagesComposerTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 18DE98E519404734008C1B3F /* JSQMessagesComposerTextView.m */; };
+		18DE991D19404734008C1B3F /* JSQMessagesInputToolbar.m in Sources */ = {isa = PBXBuildFile; fileRef = 18DE98E719404734008C1B3F /* JSQMessagesInputToolbar.m */; };
+		18DE991E19404734008C1B3F /* JSQMessagesLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 18DE98E919404734008C1B3F /* JSQMessagesLabel.m */; };
+		18DE991F19404734008C1B3F /* JSQMessagesLoadEarlierHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 18DE98EB19404734008C1B3F /* JSQMessagesLoadEarlierHeaderView.m */; };
+		18DE992019404734008C1B3F /* JSQMessagesLoadEarlierHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 18DE98EC19404734008C1B3F /* JSQMessagesLoadEarlierHeaderView.xib */; };
+		18DE992119404734008C1B3F /* JSQMessagesToolbarContentView.m in Sources */ = {isa = PBXBuildFile; fileRef = 18DE98EE19404734008C1B3F /* JSQMessagesToolbarContentView.m */; };
+		18DE992219404734008C1B3F /* JSQMessagesToolbarContentView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 18DE98EF19404734008C1B3F /* JSQMessagesToolbarContentView.xib */; };
+		18DE992319404734008C1B3F /* JSQMessagesTypingIndicatorFooterView.m in Sources */ = {isa = PBXBuildFile; fileRef = 18DE98F119404734008C1B3F /* JSQMessagesTypingIndicatorFooterView.m */; };
+		18DE992419404734008C1B3F /* JSQMessagesTypingIndicatorFooterView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 18DE98F219404734008C1B3F /* JSQMessagesTypingIndicatorFooterView.xib */; };
+		18DE992B19404774008C1B3F /* JSQTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 18DE992A19404774008C1B3F /* JSQTableViewController.m */; };
+		18DE992E19404A6F008C1B3F /* JSQDemoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 18DE992D19404A6F008C1B3F /* JSQDemoViewController.m */; };
+		18DE993619405521008C1B3F /* demo_avatar_cook.png in Resources */ = {isa = PBXBuildFile; fileRef = 18DE993019405521008C1B3F /* demo_avatar_cook.png */; };
+		18DE993719405521008C1B3F /* demo_avatar_cook@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 18DE993119405521008C1B3F /* demo_avatar_cook@2x.png */; };
+		18DE993819405521008C1B3F /* demo_avatar_jobs.png in Resources */ = {isa = PBXBuildFile; fileRef = 18DE993219405521008C1B3F /* demo_avatar_jobs.png */; };
+		18DE993919405521008C1B3F /* demo_avatar_jobs@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 18DE993319405521008C1B3F /* demo_avatar_jobs@2x.png */; };
+		18DE993A19405521008C1B3F /* demo_avatar_woz.png in Resources */ = {isa = PBXBuildFile; fileRef = 18DE993419405521008C1B3F /* demo_avatar_woz.png */; };
+		18DE993B19405521008C1B3F /* demo_avatar_woz@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 18DE993519405521008C1B3F /* demo_avatar_woz@2x.png */; };
 		18E3467E183DF54400C9D89D /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18E3467D183DF54400C9D89D /* Foundation.framework */; };
 		18E34680183DF54400C9D89D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18E3467F183DF54400C9D89D /* CoreGraphics.framework */; };
 		18E34682183DF54400C9D89D /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18E34681183DF54400C9D89D /* UIKit.framework */; };
@@ -535,6 +593,95 @@
 		18C0E76A1861A08700D694CE /* page_turn.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = page_turn.aiff; sourceTree = "<group>"; };
 		18C0E76C1861A0FF00D694CE /* EZSoundEffect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZSoundEffect.h; sourceTree = "<group>"; };
 		18C0E76D1861A0FF00D694CE /* EZSoundEffect.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZSoundEffect.m; sourceTree = "<group>"; };
+		18DE989E19404734008C1B3F /* bubble.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bubble.png; sourceTree = "<group>"; };
+		18DE989F19404734008C1B3F /* bubble@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bubble@2x.png"; sourceTree = "<group>"; };
+		18DE98A019404734008C1B3F /* bubble_min.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bubble_min.png; sourceTree = "<group>"; };
+		18DE98A119404734008C1B3F /* bubble_min@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bubble_min@2x.png"; sourceTree = "<group>"; };
+		18DE98A219404734008C1B3F /* bubble_min_tailless.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bubble_min_tailless.png; sourceTree = "<group>"; };
+		18DE98A319404734008C1B3F /* bubble_min_tailless@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bubble_min_tailless@2x.png"; sourceTree = "<group>"; };
+		18DE98A419404734008C1B3F /* bubble_stroked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bubble_stroked.png; sourceTree = "<group>"; };
+		18DE98A519404734008C1B3F /* bubble_stroked@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bubble_stroked@2x.png"; sourceTree = "<group>"; };
+		18DE98A619404734008C1B3F /* bubble_stroked_tailless.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bubble_stroked_tailless.png; sourceTree = "<group>"; };
+		18DE98A719404734008C1B3F /* bubble_stroked_tailless@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bubble_stroked_tailless@2x.png"; sourceTree = "<group>"; };
+		18DE98A819404734008C1B3F /* bubble_tailless.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bubble_tailless.png; sourceTree = "<group>"; };
+		18DE98A919404734008C1B3F /* bubble_tailless@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bubble_tailless@2x.png"; sourceTree = "<group>"; };
+		18DE98AA19404734008C1B3F /* camera.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = camera.png; sourceTree = "<group>"; };
+		18DE98AB19404734008C1B3F /* camera@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "camera@2x.png"; sourceTree = "<group>"; };
+		18DE98AC19404734008C1B3F /* typing.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = typing.png; sourceTree = "<group>"; };
+		18DE98AD19404734008C1B3F /* typing@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "typing@2x.png"; sourceTree = "<group>"; };
+		18DE98AF19404734008C1B3F /* message_received.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = message_received.aiff; sourceTree = "<group>"; };
+		18DE98B019404734008C1B3F /* message_sent.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = message_sent.aiff; sourceTree = "<group>"; };
+		18DE98B219404734008C1B3F /* JSQSystemSoundPlayer+JSQMessages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "JSQSystemSoundPlayer+JSQMessages.h"; sourceTree = "<group>"; };
+		18DE98B319404734008C1B3F /* JSQSystemSoundPlayer+JSQMessages.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "JSQSystemSoundPlayer+JSQMessages.m"; sourceTree = "<group>"; };
+		18DE98B419404734008C1B3F /* NSString+JSQMessages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+JSQMessages.h"; sourceTree = "<group>"; };
+		18DE98B519404734008C1B3F /* NSString+JSQMessages.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+JSQMessages.m"; sourceTree = "<group>"; };
+		18DE98B619404734008C1B3F /* UIColor+JSQMessages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIColor+JSQMessages.h"; sourceTree = "<group>"; };
+		18DE98B719404734008C1B3F /* UIColor+JSQMessages.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+JSQMessages.m"; sourceTree = "<group>"; };
+		18DE98B819404734008C1B3F /* UIImage+JSQMessages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+JSQMessages.h"; sourceTree = "<group>"; };
+		18DE98B919404734008C1B3F /* UIImage+JSQMessages.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+JSQMessages.m"; sourceTree = "<group>"; };
+		18DE98BA19404734008C1B3F /* UIView+JSQMessages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+JSQMessages.h"; sourceTree = "<group>"; };
+		18DE98BB19404734008C1B3F /* UIView+JSQMessages.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+JSQMessages.m"; sourceTree = "<group>"; };
+		18DE98BD19404734008C1B3F /* JSQMessagesKeyboardController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSQMessagesKeyboardController.h; sourceTree = "<group>"; };
+		18DE98BE19404734008C1B3F /* JSQMessagesKeyboardController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSQMessagesKeyboardController.m; sourceTree = "<group>"; };
+		18DE98BF19404734008C1B3F /* JSQMessagesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSQMessagesViewController.h; sourceTree = "<group>"; };
+		18DE98C019404734008C1B3F /* JSQMessagesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSQMessagesViewController.m; sourceTree = "<group>"; };
+		18DE98C119404734008C1B3F /* JSQMessagesViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = JSQMessagesViewController.xib; sourceTree = "<group>"; };
+		18DE98C319404734008C1B3F /* JSQMessagesAvatarFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSQMessagesAvatarFactory.h; sourceTree = "<group>"; };
+		18DE98C419404734008C1B3F /* JSQMessagesAvatarFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSQMessagesAvatarFactory.m; sourceTree = "<group>"; };
+		18DE98C519404734008C1B3F /* JSQMessagesBubbleImageFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSQMessagesBubbleImageFactory.h; sourceTree = "<group>"; };
+		18DE98C619404734008C1B3F /* JSQMessagesBubbleImageFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSQMessagesBubbleImageFactory.m; sourceTree = "<group>"; };
+		18DE98C719404734008C1B3F /* JSQMessagesTimestampFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSQMessagesTimestampFormatter.h; sourceTree = "<group>"; };
+		18DE98C819404734008C1B3F /* JSQMessagesTimestampFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSQMessagesTimestampFormatter.m; sourceTree = "<group>"; };
+		18DE98C919404734008C1B3F /* JSQMessagesToolbarButtonFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSQMessagesToolbarButtonFactory.h; sourceTree = "<group>"; };
+		18DE98CA19404734008C1B3F /* JSQMessagesToolbarButtonFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSQMessagesToolbarButtonFactory.m; sourceTree = "<group>"; };
+		18DE98CB19404734008C1B3F /* JSQMessages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSQMessages.h; sourceTree = "<group>"; };
+		18DE98CC19404734008C1B3F /* JSQSystemSoundPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSQSystemSoundPlayer.h; sourceTree = "<group>"; };
+		18DE98CD19404734008C1B3F /* JSQSystemSoundPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSQSystemSoundPlayer.m; sourceTree = "<group>"; };
+		18DE98CF19404734008C1B3F /* JSQMessagesCollectionViewFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSQMessagesCollectionViewFlowLayout.h; sourceTree = "<group>"; };
+		18DE98D019404734008C1B3F /* JSQMessagesCollectionViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSQMessagesCollectionViewFlowLayout.m; sourceTree = "<group>"; };
+		18DE98D119404734008C1B3F /* JSQMessagesCollectionViewFlowLayoutInvalidationContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSQMessagesCollectionViewFlowLayoutInvalidationContext.h; sourceTree = "<group>"; };
+		18DE98D219404734008C1B3F /* JSQMessagesCollectionViewFlowLayoutInvalidationContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSQMessagesCollectionViewFlowLayoutInvalidationContext.m; sourceTree = "<group>"; };
+		18DE98D319404734008C1B3F /* JSQMessagesCollectionViewLayoutAttributes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSQMessagesCollectionViewLayoutAttributes.h; sourceTree = "<group>"; };
+		18DE98D419404734008C1B3F /* JSQMessagesCollectionViewLayoutAttributes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSQMessagesCollectionViewLayoutAttributes.m; sourceTree = "<group>"; };
+		18DE98D619404734008C1B3F /* JSQMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSQMessage.h; sourceTree = "<group>"; };
+		18DE98D719404734008C1B3F /* JSQMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSQMessage.m; sourceTree = "<group>"; };
+		18DE98D819404734008C1B3F /* JSQMessageData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSQMessageData.h; sourceTree = "<group>"; };
+		18DE98DA19404734008C1B3F /* JSQMessagesCollectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSQMessagesCollectionView.h; sourceTree = "<group>"; };
+		18DE98DB19404734008C1B3F /* JSQMessagesCollectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSQMessagesCollectionView.m; sourceTree = "<group>"; };
+		18DE98DC19404734008C1B3F /* JSQMessagesCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSQMessagesCollectionViewCell.h; sourceTree = "<group>"; };
+		18DE98DD19404734008C1B3F /* JSQMessagesCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSQMessagesCollectionViewCell.m; sourceTree = "<group>"; };
+		18DE98DE19404734008C1B3F /* JSQMessagesCollectionViewCellIncoming.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSQMessagesCollectionViewCellIncoming.h; sourceTree = "<group>"; };
+		18DE98DF19404734008C1B3F /* JSQMessagesCollectionViewCellIncoming.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSQMessagesCollectionViewCellIncoming.m; sourceTree = "<group>"; };
+		18DE98E019404734008C1B3F /* JSQMessagesCollectionViewCellIncoming.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = JSQMessagesCollectionViewCellIncoming.xib; sourceTree = "<group>"; };
+		18DE98E119404734008C1B3F /* JSQMessagesCollectionViewCellOutgoing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSQMessagesCollectionViewCellOutgoing.h; sourceTree = "<group>"; };
+		18DE98E219404734008C1B3F /* JSQMessagesCollectionViewCellOutgoing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSQMessagesCollectionViewCellOutgoing.m; sourceTree = "<group>"; };
+		18DE98E319404734008C1B3F /* JSQMessagesCollectionViewCellOutgoing.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = JSQMessagesCollectionViewCellOutgoing.xib; sourceTree = "<group>"; };
+		18DE98E419404734008C1B3F /* JSQMessagesComposerTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSQMessagesComposerTextView.h; sourceTree = "<group>"; };
+		18DE98E519404734008C1B3F /* JSQMessagesComposerTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSQMessagesComposerTextView.m; sourceTree = "<group>"; };
+		18DE98E619404734008C1B3F /* JSQMessagesInputToolbar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSQMessagesInputToolbar.h; sourceTree = "<group>"; };
+		18DE98E719404734008C1B3F /* JSQMessagesInputToolbar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSQMessagesInputToolbar.m; sourceTree = "<group>"; };
+		18DE98E819404734008C1B3F /* JSQMessagesLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSQMessagesLabel.h; sourceTree = "<group>"; };
+		18DE98E919404734008C1B3F /* JSQMessagesLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSQMessagesLabel.m; sourceTree = "<group>"; };
+		18DE98EA19404734008C1B3F /* JSQMessagesLoadEarlierHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSQMessagesLoadEarlierHeaderView.h; sourceTree = "<group>"; };
+		18DE98EB19404734008C1B3F /* JSQMessagesLoadEarlierHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSQMessagesLoadEarlierHeaderView.m; sourceTree = "<group>"; };
+		18DE98EC19404734008C1B3F /* JSQMessagesLoadEarlierHeaderView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = JSQMessagesLoadEarlierHeaderView.xib; sourceTree = "<group>"; };
+		18DE98ED19404734008C1B3F /* JSQMessagesToolbarContentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSQMessagesToolbarContentView.h; sourceTree = "<group>"; };
+		18DE98EE19404734008C1B3F /* JSQMessagesToolbarContentView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSQMessagesToolbarContentView.m; sourceTree = "<group>"; };
+		18DE98EF19404734008C1B3F /* JSQMessagesToolbarContentView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = JSQMessagesToolbarContentView.xib; sourceTree = "<group>"; };
+		18DE98F019404734008C1B3F /* JSQMessagesTypingIndicatorFooterView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSQMessagesTypingIndicatorFooterView.h; sourceTree = "<group>"; };
+		18DE98F119404734008C1B3F /* JSQMessagesTypingIndicatorFooterView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSQMessagesTypingIndicatorFooterView.m; sourceTree = "<group>"; };
+		18DE98F219404734008C1B3F /* JSQMessagesTypingIndicatorFooterView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = JSQMessagesTypingIndicatorFooterView.xib; sourceTree = "<group>"; };
+		18DE99271940474F008C1B3F /* JSQMessages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSQMessages.h; sourceTree = "<group>"; };
+		18DE992919404774008C1B3F /* JSQTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSQTableViewController.h; sourceTree = "<group>"; };
+		18DE992A19404774008C1B3F /* JSQTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSQTableViewController.m; sourceTree = "<group>"; };
+		18DE992C19404A6F008C1B3F /* JSQDemoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSQDemoViewController.h; sourceTree = "<group>"; };
+		18DE992D19404A6F008C1B3F /* JSQDemoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSQDemoViewController.m; sourceTree = "<group>"; };
+		18DE993019405521008C1B3F /* demo_avatar_cook.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = demo_avatar_cook.png; sourceTree = "<group>"; };
+		18DE993119405521008C1B3F /* demo_avatar_cook@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "demo_avatar_cook@2x.png"; sourceTree = "<group>"; };
+		18DE993219405521008C1B3F /* demo_avatar_jobs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = demo_avatar_jobs.png; sourceTree = "<group>"; };
+		18DE993319405521008C1B3F /* demo_avatar_jobs@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "demo_avatar_jobs@2x.png"; sourceTree = "<group>"; };
+		18DE993419405521008C1B3F /* demo_avatar_woz.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = demo_avatar_woz.png; sourceTree = "<group>"; };
+		18DE993519405521008C1B3F /* demo_avatar_woz@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "demo_avatar_woz@2x.png"; sourceTree = "<group>"; };
 		18E3467A183DF54400C9D89D /* FeatherCV.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FeatherCV.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		18E3467D183DF54400C9D89D /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		18E3467F183DF54400C9D89D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -1053,6 +1200,189 @@
 			path = sound_effects;
 			sourceTree = "<group>";
 		};
+		18DE989A19404734008C1B3F /* chat */ = {
+			isa = PBXGroup;
+			children = (
+				18DE992C19404A6F008C1B3F /* JSQDemoViewController.h */,
+				18DE992D19404A6F008C1B3F /* JSQDemoViewController.m */,
+				18DE992919404774008C1B3F /* JSQTableViewController.h */,
+				18DE992A19404774008C1B3F /* JSQTableViewController.m */,
+				18DE99271940474F008C1B3F /* JSQMessages.h */,
+				18DE989B19404734008C1B3F /* JSQMessagesViewController */,
+			);
+			path = chat;
+			sourceTree = "<group>";
+		};
+		18DE989B19404734008C1B3F /* JSQMessagesViewController */ = {
+			isa = PBXGroup;
+			children = (
+				18DE989C19404734008C1B3F /* Assets */,
+				18DE98B119404734008C1B3F /* Categories */,
+				18DE98BC19404734008C1B3F /* Controllers */,
+				18DE98C219404734008C1B3F /* Factories */,
+				18DE98CB19404734008C1B3F /* JSQMessages.h */,
+				18DE98CC19404734008C1B3F /* JSQSystemSoundPlayer.h */,
+				18DE98CD19404734008C1B3F /* JSQSystemSoundPlayer.m */,
+				18DE98CE19404734008C1B3F /* Layout */,
+				18DE98D519404734008C1B3F /* Model */,
+				18DE98D919404734008C1B3F /* Views */,
+			);
+			path = JSQMessagesViewController;
+			sourceTree = "<group>";
+		};
+		18DE989C19404734008C1B3F /* Assets */ = {
+			isa = PBXGroup;
+			children = (
+				18DE989D19404734008C1B3F /* Images */,
+				18DE98AE19404734008C1B3F /* Sounds */,
+			);
+			path = Assets;
+			sourceTree = "<group>";
+		};
+		18DE989D19404734008C1B3F /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				18DE989E19404734008C1B3F /* bubble.png */,
+				18DE989F19404734008C1B3F /* bubble@2x.png */,
+				18DE98A019404734008C1B3F /* bubble_min.png */,
+				18DE98A119404734008C1B3F /* bubble_min@2x.png */,
+				18DE98A219404734008C1B3F /* bubble_min_tailless.png */,
+				18DE98A319404734008C1B3F /* bubble_min_tailless@2x.png */,
+				18DE98A419404734008C1B3F /* bubble_stroked.png */,
+				18DE98A519404734008C1B3F /* bubble_stroked@2x.png */,
+				18DE98A619404734008C1B3F /* bubble_stroked_tailless.png */,
+				18DE98A719404734008C1B3F /* bubble_stroked_tailless@2x.png */,
+				18DE98A819404734008C1B3F /* bubble_tailless.png */,
+				18DE98A919404734008C1B3F /* bubble_tailless@2x.png */,
+				18DE98AA19404734008C1B3F /* camera.png */,
+				18DE98AB19404734008C1B3F /* camera@2x.png */,
+				18DE98AC19404734008C1B3F /* typing.png */,
+				18DE98AD19404734008C1B3F /* typing@2x.png */,
+			);
+			path = Images;
+			sourceTree = "<group>";
+		};
+		18DE98AE19404734008C1B3F /* Sounds */ = {
+			isa = PBXGroup;
+			children = (
+				18DE98AF19404734008C1B3F /* message_received.aiff */,
+				18DE98B019404734008C1B3F /* message_sent.aiff */,
+			);
+			path = Sounds;
+			sourceTree = "<group>";
+		};
+		18DE98B119404734008C1B3F /* Categories */ = {
+			isa = PBXGroup;
+			children = (
+				18DE98B219404734008C1B3F /* JSQSystemSoundPlayer+JSQMessages.h */,
+				18DE98B319404734008C1B3F /* JSQSystemSoundPlayer+JSQMessages.m */,
+				18DE98B419404734008C1B3F /* NSString+JSQMessages.h */,
+				18DE98B519404734008C1B3F /* NSString+JSQMessages.m */,
+				18DE98B619404734008C1B3F /* UIColor+JSQMessages.h */,
+				18DE98B719404734008C1B3F /* UIColor+JSQMessages.m */,
+				18DE98B819404734008C1B3F /* UIImage+JSQMessages.h */,
+				18DE98B919404734008C1B3F /* UIImage+JSQMessages.m */,
+				18DE98BA19404734008C1B3F /* UIView+JSQMessages.h */,
+				18DE98BB19404734008C1B3F /* UIView+JSQMessages.m */,
+			);
+			path = Categories;
+			sourceTree = "<group>";
+		};
+		18DE98BC19404734008C1B3F /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				18DE98BD19404734008C1B3F /* JSQMessagesKeyboardController.h */,
+				18DE98BE19404734008C1B3F /* JSQMessagesKeyboardController.m */,
+				18DE98BF19404734008C1B3F /* JSQMessagesViewController.h */,
+				18DE98C019404734008C1B3F /* JSQMessagesViewController.m */,
+				18DE98C119404734008C1B3F /* JSQMessagesViewController.xib */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		18DE98C219404734008C1B3F /* Factories */ = {
+			isa = PBXGroup;
+			children = (
+				18DE98C319404734008C1B3F /* JSQMessagesAvatarFactory.h */,
+				18DE98C419404734008C1B3F /* JSQMessagesAvatarFactory.m */,
+				18DE98C519404734008C1B3F /* JSQMessagesBubbleImageFactory.h */,
+				18DE98C619404734008C1B3F /* JSQMessagesBubbleImageFactory.m */,
+				18DE98C719404734008C1B3F /* JSQMessagesTimestampFormatter.h */,
+				18DE98C819404734008C1B3F /* JSQMessagesTimestampFormatter.m */,
+				18DE98C919404734008C1B3F /* JSQMessagesToolbarButtonFactory.h */,
+				18DE98CA19404734008C1B3F /* JSQMessagesToolbarButtonFactory.m */,
+			);
+			path = Factories;
+			sourceTree = "<group>";
+		};
+		18DE98CE19404734008C1B3F /* Layout */ = {
+			isa = PBXGroup;
+			children = (
+				18DE98CF19404734008C1B3F /* JSQMessagesCollectionViewFlowLayout.h */,
+				18DE98D019404734008C1B3F /* JSQMessagesCollectionViewFlowLayout.m */,
+				18DE98D119404734008C1B3F /* JSQMessagesCollectionViewFlowLayoutInvalidationContext.h */,
+				18DE98D219404734008C1B3F /* JSQMessagesCollectionViewFlowLayoutInvalidationContext.m */,
+				18DE98D319404734008C1B3F /* JSQMessagesCollectionViewLayoutAttributes.h */,
+				18DE98D419404734008C1B3F /* JSQMessagesCollectionViewLayoutAttributes.m */,
+			);
+			path = Layout;
+			sourceTree = "<group>";
+		};
+		18DE98D519404734008C1B3F /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				18DE98D619404734008C1B3F /* JSQMessage.h */,
+				18DE98D719404734008C1B3F /* JSQMessage.m */,
+				18DE98D819404734008C1B3F /* JSQMessageData.h */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		18DE98D919404734008C1B3F /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				18DE98DA19404734008C1B3F /* JSQMessagesCollectionView.h */,
+				18DE98DB19404734008C1B3F /* JSQMessagesCollectionView.m */,
+				18DE98DC19404734008C1B3F /* JSQMessagesCollectionViewCell.h */,
+				18DE98DD19404734008C1B3F /* JSQMessagesCollectionViewCell.m */,
+				18DE98DE19404734008C1B3F /* JSQMessagesCollectionViewCellIncoming.h */,
+				18DE98DF19404734008C1B3F /* JSQMessagesCollectionViewCellIncoming.m */,
+				18DE98E019404734008C1B3F /* JSQMessagesCollectionViewCellIncoming.xib */,
+				18DE98E119404734008C1B3F /* JSQMessagesCollectionViewCellOutgoing.h */,
+				18DE98E219404734008C1B3F /* JSQMessagesCollectionViewCellOutgoing.m */,
+				18DE98E319404734008C1B3F /* JSQMessagesCollectionViewCellOutgoing.xib */,
+				18DE98E419404734008C1B3F /* JSQMessagesComposerTextView.h */,
+				18DE98E519404734008C1B3F /* JSQMessagesComposerTextView.m */,
+				18DE98E619404734008C1B3F /* JSQMessagesInputToolbar.h */,
+				18DE98E719404734008C1B3F /* JSQMessagesInputToolbar.m */,
+				18DE98E819404734008C1B3F /* JSQMessagesLabel.h */,
+				18DE98E919404734008C1B3F /* JSQMessagesLabel.m */,
+				18DE98EA19404734008C1B3F /* JSQMessagesLoadEarlierHeaderView.h */,
+				18DE98EB19404734008C1B3F /* JSQMessagesLoadEarlierHeaderView.m */,
+				18DE98EC19404734008C1B3F /* JSQMessagesLoadEarlierHeaderView.xib */,
+				18DE98ED19404734008C1B3F /* JSQMessagesToolbarContentView.h */,
+				18DE98EE19404734008C1B3F /* JSQMessagesToolbarContentView.m */,
+				18DE98EF19404734008C1B3F /* JSQMessagesToolbarContentView.xib */,
+				18DE98F019404734008C1B3F /* JSQMessagesTypingIndicatorFooterView.h */,
+				18DE98F119404734008C1B3F /* JSQMessagesTypingIndicatorFooterView.m */,
+				18DE98F219404734008C1B3F /* JSQMessagesTypingIndicatorFooterView.xib */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		18DE992F19405506008C1B3F /* demo_avatar */ = {
+			isa = PBXGroup;
+			children = (
+				18DE993019405521008C1B3F /* demo_avatar_cook.png */,
+				18DE993119405521008C1B3F /* demo_avatar_cook@2x.png */,
+				18DE993219405521008C1B3F /* demo_avatar_jobs.png */,
+				18DE993319405521008C1B3F /* demo_avatar_jobs@2x.png */,
+				18DE993419405521008C1B3F /* demo_avatar_woz.png */,
+				18DE993519405521008C1B3F /* demo_avatar_woz@2x.png */,
+			);
+			name = demo_avatar;
+			sourceTree = "<group>";
+		};
 		18E34671183DF54400C9D89D = {
 			isa = PBXGroup;
 			children = (
@@ -1100,6 +1430,7 @@
 		18E34685183DF54400C9D89D /* FeatherCV */ = {
 			isa = PBXGroup;
 			children = (
+				18DE989A19404734008C1B3F /* chat */,
 				186EC108193869DC0011C145 /* faceplus */,
 				18290CBE19276C1A00676423 /* shot_new.caf */,
 				185CE262190123DF0037947A /* umeng */,
@@ -1220,6 +1551,7 @@
 		18E346D4183DF90600C9D89D /* images */ = {
 			isa = PBXGroup;
 			children = (
+				18DE992F19405506008C1B3F /* demo_avatar */,
 				1841DC111907782B00213EB6 /* feather_icon@2x.png */,
 				18E346DE183DF99E00C9D89D /* buttons */,
 				18E346DD183DF99300C9D89D /* overlays */,
@@ -1610,21 +1942,29 @@
 			buildActionMask = 2147483647;
 			files = (
 				18E3481E183F02D600C9D89D /* haarcascade_mcs_leftear.xml in Resources */,
+				18DE992419404734008C1B3F /* JSQMessagesTypingIndicatorFooterView.xib in Resources */,
 				18A3702A1855C2A40022F0A8 /* flash.png in Resources */,
 				18A370211855C2A40022F0A8 /* close@2x.png in Resources */,
 				18A3702F1855C2A40022F0A8 /* camera-button@2x.png in Resources */,
 				18A3701D1855C2A40022F0A8 /* library.png in Resources */,
+				18DE990119404734008C1B3F /* typing.png in Resources */,
 				18A3701F1855C2A40022F0A8 /* blur-on@2x.png in Resources */,
 				18E34817183F02D600C9D89D /* haarcascade_frontalface_alt_tree.xml in Resources */,
 				18A3703A1855C2A40022F0A8 /* photo_bar.png in Resources */,
 				18E346F7183DF9C400C9D89D /* chat_bubble_blue@2x.png in Resources */,
+				18DE98F619404734008C1B3F /* bubble_min@2x.png in Resources */,
 				18E34818183F02D600C9D89D /* haarcascade_frontalface_default.xml in Resources */,
 				18E346F8183DF9C400C9D89D /* chat_bubble_gray@2x.png in Resources */,
 				18E346E3183DF9B300C9D89D /* corner_left_up@2x.png in Resources */,
+				18DE993B19405521008C1B3F /* demo_avatar_woz@2x.png in Resources */,
+				18DE98FF19404734008C1B3F /* camera.png in Resources */,
+				18DE98F319404734008C1B3F /* bubble.png in Resources */,
 				18E34820183F02D600C9D89D /* haarcascade_mcs_mouth.xml in Resources */,
+				18DE993619405521008C1B3F /* demo_avatar_cook.png in Resources */,
 				18E346F9183DF9C400C9D89D /* share_btn@2x.png in Resources */,
 				18A3703B1855C2A40022F0A8 /* photo_bar@2x.png in Resources */,
 				18E34826183F02D600C9D89D /* haarcascade_righteye_2splits.xml in Resources */,
+				18DE990319404734008C1B3F /* message_received.aiff in Resources */,
 				18A370301855C2A40022F0A8 /* camera-icon.png in Resources */,
 				18E346FB183DF9C400C9D89D /* take_photo@2x.png in Resources */,
 				18E346FA183DF9C400C9D89D /* not_love@2x.png in Resources */,
@@ -1642,6 +1982,7 @@
 				18A370311855C2A40022F0A8 /* camera-icon@2x.png in Resources */,
 				18E346FD183DF9C400C9D89D /* default-like-btn-pressed@2x.png in Resources */,
 				186EE566191C88B500212BF9 /* shot_low.aiff in Resources */,
+				18DE990219404734008C1B3F /* typing@2x.png in Resources */,
 				18A370251855C2A40022F0A8 /* front-camera@2x.png in Resources */,
 				18F58B5F1871750F006CB966 /* gradient_border.png in Resources */,
 				1841DC121907782B00213EB6 /* feather_icon@2x.png in Resources */,
@@ -1655,47 +1996,68 @@
 				18E34700183DF9C400C9D89D /* talk-btn@2x.png in Resources */,
 				18A370391855C2A40022F0A8 /* micro_carbon@2x.png in Resources */,
 				18A370261855C2A40022F0A8 /* flash-auto.png in Resources */,
+				18DE990C19404734008C1B3F /* JSQMessagesViewController.xib in Resources */,
 				18A370331855C2A40022F0A8 /* filter-close@2x.png in Resources */,
+				18DE98F419404734008C1B3F /* bubble@2x.png in Resources */,
 				18A36FF61855C2700022F0A8 /* DLCImagePicker.xib in Resources */,
 				18A3701B1855C2A40022F0A8 /* focus-crosshair@2x.png in Resources */,
+				18DE98FD19404734008C1B3F /* bubble_tailless.png in Resources */,
 				18A370271855C2A40022F0A8 /* flash-auto@2x.png in Resources */,
+				18DE993A19405521008C1B3F /* demo_avatar_woz.png in Resources */,
 				18E34821183F02D600C9D89D /* haarcascade_mcs_nose.xml in Resources */,
+				18DE98FE19404734008C1B3F /* bubble_tailless@2x.png in Resources */,
 				18E34822183F02D600C9D89D /* haarcascade_mcs_rightear.xml in Resources */,
+				18DE993919405521008C1B3F /* demo_avatar_jobs@2x.png in Resources */,
 				18A3701E1855C2A40022F0A8 /* blur-on.png in Resources */,
+				18DE990019404734008C1B3F /* camera@2x.png in Resources */,
 				18A370281855C2A40022F0A8 /* flash-off.png in Resources */,
 				18E346F4183DF9C400C9D89D /* half_love_right@2x.png in Resources */,
 				18E346E4183DF9B300C9D89D /* corner_left_bottom@2x.png in Resources */,
 				18A370381855C2A40022F0A8 /* micro_carbon.png in Resources */,
+				18DE993719405521008C1B3F /* demo_avatar_cook@2x.png in Resources */,
 				18A370291855C2A40022F0A8 /* flash-off@2x.png in Resources */,
 				18E34816183F02D600C9D89D /* haarcascade_frontalface_alt2.xml in Resources */,
 				18A3702E1855C2A40022F0A8 /* camera-button.png in Resources */,
+				18DE992219404734008C1B3F /* JSQMessagesToolbarContentView.xib in Resources */,
+				18DE991919404734008C1B3F /* JSQMessagesCollectionViewCellIncoming.xib in Resources */,
 				18E34819183F02D600C9D89D /* haarcascade_fullbody.xml in Resources */,
 				18E346F6183DF9C400C9D89D /* whole_love@2x.png in Resources */,
+				18DE98F919404734008C1B3F /* bubble_stroked.png in Resources */,
 				18A3702C1855C2A40022F0A8 /* filter.png in Resources */,
 				18E34825183F02D600C9D89D /* haarcascade_profileface.xml in Resources */,
 				18F58B6D18719071006CB966 /* border_bottom.png in Resources */,
+				18DE991B19404734008C1B3F /* JSQMessagesCollectionViewCellOutgoing.xib in Resources */,
 				18C0E76B1861A08700D694CE /* page_turn.aiff in Resources */,
 				18E346F5183DF9C400C9D89D /* half_love_left@2x.png in Resources */,
 				18E346FF183DF9C400C9D89D /* talk-btn-pressed@2x.png in Resources */,
+				18DE98FC19404734008C1B3F /* bubble_stroked_tailless@2x.png in Resources */,
 				18E3481F183F02D600C9D89D /* haarcascade_mcs_lefteye.xml in Resources */,
 				18512A331861BE6300282264 /* shot_voice.aiff in Resources */,
+				18DE98F519404734008C1B3F /* bubble_min.png in Resources */,
 				18A370221855C2A40022F0A8 /* blur.png in Resources */,
 				18A370241855C2A40022F0A8 /* front-camera.png in Resources */,
 				18E34828183F02D600C9D89D /* haarcascade_upperbody.xml in Resources */,
 				18A370361855C2A40022F0A8 /* dock_bg.png in Resources */,
+				18DE98F719404734008C1B3F /* bubble_min_tailless.png in Resources */,
+				18DE98FB19404734008C1B3F /* bubble_stroked_tailless.png in Resources */,
 				18A3702B1855C2A40022F0A8 /* flash@2x.png in Resources */,
+				18DE992019404734008C1B3F /* JSQMessagesLoadEarlierHeaderView.xib in Resources */,
 				18E34823183F02D600C9D89D /* haarcascade_mcs_righteye.xml in Resources */,
+				18DE990419404734008C1B3F /* message_sent.aiff in Resources */,
 				18A3701A1855C2A40022F0A8 /* focus-crosshair.png in Resources */,
 				18E3468A183DF54400C9D89D /* InfoPlist.strings in Resources */,
 				18A370201855C2A40022F0A8 /* close.png in Resources */,
 				18E34695183DF54400C9D89D /* Images.xcassets in Resources */,
 				18E34815183F02D600C9D89D /* haarcascade_frontalface_alt.xml in Resources */,
 				18E346E6183DF9B300C9D89D /* corner_right_up@2x.png in Resources */,
+				18DE993819405521008C1B3F /* demo_avatar_jobs.png in Resources */,
 				18E34814183F02D600C9D89D /* haarcascade_eye_tree_eyeglasses.xml in Resources */,
+				18DE98FA19404734008C1B3F /* bubble_stroked@2x.png in Resources */,
 				18A370341855C2A40022F0A8 /* filter-open.png in Resources */,
 				18F58B6F18719071006CB966 /* border_left.png in Resources */,
 				18E3481C183F02D600C9D89D /* haarcascade_mcs_eyepair_big.xml in Resources */,
 				18A3702D1855C2A40022F0A8 /* filter@2x.png in Resources */,
+				18DE98F819404734008C1B3F /* bubble_min_tailless@2x.png in Resources */,
 				18E34824183F02D600C9D89D /* haarcascade_mcs_upperbody.xml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1739,13 +2101,17 @@
 				184ADD9818D045BD00367527 /* LocalPhotos.m in Sources */,
 				18E3472F183DFA3400C9D89D /* EZDummyPage.m in Sources */,
 				186EC006193731310011C145 /* EZChatCell.m in Sources */,
+				18DE992E19404A6F008C1B3F /* JSQDemoViewController.m in Sources */,
 				1823DA3318D5674F00E6E8B3 /* EZLoginController.m in Sources */,
 				18E3477B183DFAA400C9D89D /* EZExtender.m in Sources */,
 				184ADD7418C4B40D00367527 /* EZAvatarView.m in Sources */,
+				18DE990519404734008C1B3F /* JSQSystemSoundPlayer+JSQMessages.m in Sources */,
 				18FA529E188CD04D00C91D18 /* EZColorBrighter.m in Sources */,
 				1879BE23190BB1B60084FB27 /* EZCopyableLabel.m in Sources */,
+				18DE990719404734008C1B3F /* UIColor+JSQMessages.m in Sources */,
 				18F58B52186EC0D1006CB966 /* ILTranslucentView.m in Sources */,
 				1823DA4018DA9ABA00E6E8B3 /* EZNote.m in Sources */,
+				18DE991619404734008C1B3F /* JSQMessagesCollectionView.m in Sources */,
 				1866ADB418979C7400DB46E2 /* EZModalRaiseAnimation.m in Sources */,
 				181903F7187FFC64001FC370 /* EZHomeGaussianFilter.m in Sources */,
 				18E34693183DF54400C9D89D /* FeatherCV.xcdatamodeld in Sources */,
@@ -1756,17 +2122,22 @@
 				1823DA2E18D2F88600E6E8B3 /* EZSharpenGaussianNormal.m in Sources */,
 				18E746F118A4A26A0023967B /* AFURLResponseSerialization.m in Sources */,
 				18E746F418A4A26A0023967B /* UIActivityIndicatorView+AFNetworking.m in Sources */,
+				18DE990619404734008C1B3F /* NSString+JSQMessages.m in Sources */,
+				18DE992319404734008C1B3F /* JSQMessagesTypingIndicatorFooterView.m in Sources */,
 				1823DA4318E3CCFE00E6E8B3 /* EZPerosnDetail.m in Sources */,
 				186EC127193869FD0011C145 /* FaceppFaceset.m in Sources */,
 				184ADD8618CB490E00367527 /* EZBlurAnimator.m in Sources */,
 				18BF598A18E67DD900995BEE /* EZTrianglerView.m in Sources */,
+				18DE991D19404734008C1B3F /* JSQMessagesInputToolbar.m in Sources */,
 				18E746F318A4A26A0023967B /* AFNetworkActivityIndicatorManager.m in Sources */,
 				18A36FF31855C1F50022F0A8 /* DLCGrayscaleContrastFilter.m in Sources */,
 				18F58B7C187AF205006CB966 /* EZFaceResultObj.m in Sources */,
+				18DE991219404734008C1B3F /* JSQMessagesCollectionViewFlowLayout.m in Sources */,
 				180ADA5A18C1CA2500AB490C /* EZChatUnit.m in Sources */,
 				185CE26A190299D30037947A /* EZEnlargedView.m in Sources */,
 				18E34738183DFA5800C9D89D /* EZCollectionPhotoCell.m in Sources */,
 				1823DA3618D5A1E000E6E8B3 /* EZKeyboardController.m in Sources */,
+				18DE990A19404734008C1B3F /* JSQMessagesKeyboardController.m in Sources */,
 				18F58B7F187AF540006CB966 /* EZFaceUtilWrapper.mm in Sources */,
 				18A370411859B7C20022F0A8 /* EZContactTableCell.m in Sources */,
 				1874D9D71867F57E005743FC /* EZSaturationFilter.m in Sources */,
@@ -1776,7 +2147,10 @@
 				18E3468C183DF54400C9D89D /* main.m in Sources */,
 				18B365201920938F00092AB8 /* EZMotionRecord.m in Sources */,
 				1823DA3918D5B2AF00E6E8B3 /* EZRegisterCtrl.m in Sources */,
+				18DE991A19404734008C1B3F /* JSQMessagesCollectionViewCellOutgoing.m in Sources */,
 				18E3477A183DFAA400C9D89D /* EZClickView.m in Sources */,
+				18DE991319404734008C1B3F /* JSQMessagesCollectionViewFlowLayoutInvalidationContext.m in Sources */,
+				18DE992B19404774008C1B3F /* JSQTableViewController.m in Sources */,
 				186EC125193869FD0011C145 /* FaceppClient.m in Sources */,
 				1866ADB71897F3D200DB46E2 /* UIImage+ImageEffects.m in Sources */,
 				181904031885406A001FC370 /* EZBlackAndCropFilter.m in Sources */,
@@ -1797,10 +2171,12 @@
 				186EC12B193869FD0011C145 /* FaceppPerson.m in Sources */,
 				18A36FEF1855C1DB0022F0A8 /* DLCImagePickerController.m in Sources */,
 				18E746EB18A4A26A0023967B /* AFHTTPRequestOperationManager.m in Sources */,
+				18DE990D19404734008C1B3F /* JSQMessagesAvatarFactory.m in Sources */,
 				18E3482C183F03A600C9D89D /* EZFaceTestPage.mm in Sources */,
 				18E34779183DFAA400C9D89D /* EZClickImage.m in Sources */,
 				18E34739183DFA5800C9D89D /* APLStackLayout.m in Sources */,
 				18B3651D1920926900092AB8 /* EZMotionImage.m in Sources */,
+				18DE991419404734008C1B3F /* JSQMessagesCollectionViewLayoutAttributes.m in Sources */,
 				1819040018853903001FC370 /* EZDoubleOutFilter.m in Sources */,
 				184ADD8318C8ACA300367527 /* EZShapeButton.m in Sources */,
 				18A36FF01855C1DB0022F0A8 /* DLCBlurOverlayView.m in Sources */,
@@ -1809,17 +2185,20 @@
 				18E34776183DFAA400C9D89D /* EZCycleDiminish.m in Sources */,
 				18FA52A3188FDDEE00C91D18 /* EZHomeLineBiFilter.m in Sources */,
 				182A551018645374003D4A01 /* EZFaceBlurFilter2.m in Sources */,
+				18DE991519404734008C1B3F /* JSQMessage.m in Sources */,
 				181903FD1882980E001FC370 /* EZHomeEdgeFilter.m in Sources */,
 				1862FC6C18FA760F00C2D0B5 /* EZScrollViewer.m in Sources */,
 				18E34777183DFAA400C9D89D /* EZCrossHair.m in Sources */,
 				184ADD9B18D046EC00367527 /* EZCoreAccessor.m in Sources */,
 				18E746F818A4A26A0023967B /* UIProgressView+AFNetworking.m in Sources */,
 				18E3472C183DFA3300C9D89D /* EZViewContainer.m in Sources */,
+				18DE991819404734008C1B3F /* JSQMessagesCollectionViewCellIncoming.m in Sources */,
 				18E746EC18A4A26A0023967B /* AFHTTPSessionManager.m in Sources */,
 				18E3474A183DFA7300C9D89D /* EZPerson.m in Sources */,
 				1866AD9C18965EF000DB46E2 /* EZCycleTongFilter.m in Sources */,
 				18E4FBB518F1415E00FA6C21 /* EZResult.m in Sources */,
 				186EC12D193869FD0011C145 /* FaceppTrainer.m in Sources */,
+				18DE990F19404734008C1B3F /* JSQMessagesTimestampFormatter.m in Sources */,
 				18F58B7518796CE9006CB966 /* EZNightBlurFilter.m in Sources */,
 				18E746F618A4A26A0023967B /* UIButton+AFNetworking.m in Sources */,
 				1866ADCA189F9F5900DB46E2 /* EZSkinMaskFilter.m in Sources */,
@@ -1827,35 +2206,42 @@
 				180ADA5518C1CA1000AB490C /* EZChatRegion.m in Sources */,
 				185CE25F18FFAE760037947A /* EZPageControl.m in Sources */,
 				18E34785183DFAA400C9D89D /* EZKeyboadUtility.m in Sources */,
+				18DE991719404734008C1B3F /* JSQMessagesCollectionViewCell.m in Sources */,
 				181903F4187FF49C001FC370 /* EZHomeBlendFilter.m in Sources */,
 				18E34786183DFAA400C9D89D /* EZUIUtility.m in Sources */,
 				18F58B57187130E0006CB966 /* UIView+Shadow.m in Sources */,
 				18E34725183DFA3300C9D89D /* EZPhotoCell.m in Sources */,
 				186EC129193869FD0011C145 /* FaceppGrouping.m in Sources */,
+				18DE991E19404734008C1B3F /* JSQMessagesLabel.m in Sources */,
 				18E34748183DFA7300C9D89D /* EZCombinedPhoto.m in Sources */,
 				184EC693192F1BA4004B32A0 /* EZImageAsset.m in Sources */,
 				18E746FC18A4BBBC0023967B /* EZFeatherAPIClient.m in Sources */,
 				18E34737183DFA5800C9D89D /* EZTransitionLayout.m in Sources */,
 				18E34788183DFAA400C9D89D /* EZImageFileCache.m in Sources */,
 				18E746EE18A4A26A0023967B /* AFSecurityPolicy.m in Sources */,
+				18DE992119404734008C1B3F /* JSQMessagesToolbarContentView.m in Sources */,
 				1879BE28190BB8830084FB27 /* EZLimitTextField.m in Sources */,
 				181903EE187FD4E5001FC370 /* EZHomeBiBlur.m in Sources */,
+				18DE990E19404734008C1B3F /* JSQMessagesBubbleImageFactory.m in Sources */,
 				18E746EA18A4A26A0023967B /* AFHTTPRequestOperation.m in Sources */,
 				184DBE7718BB476F00239F0F /* EZSimpleClick.m in Sources */,
 				18E3470B183DFA1A00C9D89D /* EZTestSuites.m in Sources */,
 				186EC126193869FD0011C145 /* FaceppDetection.m in Sources */,
 				184DBE8918BE2B5800239F0F /* EZChromaBiFilter.m in Sources */,
 				186EC12C193869FD0011C145 /* FaceppRecognition.m in Sources */,
+				18DE991119404734008C1B3F /* JSQSystemSoundPlayer.m in Sources */,
 				186EC0011937151D0011C145 /* EZTalkPage.m in Sources */,
 				18E3472A183DFA3300C9D89D /* EZTiltMainView.m in Sources */,
 				18E3477D183DFAA400C9D89D /* EZNetworkUtility.m in Sources */,
 				18B3651A1920916300092AB8 /* EZMotionRecorder.m in Sources */,
+				18DE991C19404734008C1B3F /* JSQMessagesComposerTextView.m in Sources */,
 				186EC124193869FD0011C145 /* FaceppAPI.m in Sources */,
 				18E34778183DFAA400C9D89D /* EZMotionUtility.m in Sources */,
 				18E34787183DFAA400C9D89D /* EZDataUtil.m in Sources */,
 				18E3477F183DFAA400C9D89D /* EZReachability.m in Sources */,
 				186EC0091937363E0011C145 /* EZPhotoChat.m in Sources */,
 				18E3474C183DFA7300C9D89D /* EZDisplayPhoto.m in Sources */,
+				18DE990B19404734008C1B3F /* JSQMessagesViewController.m in Sources */,
 				181608CC18B4EA9F00DD5995 /* EZRotateAnimation.m in Sources */,
 				18C0E76E1861A0FF00D694CE /* EZSoundEffect.m in Sources */,
 				181608D218B5B1A300DD5995 /* EZShapeCover.m in Sources */,
@@ -1865,15 +2251,19 @@
 				18E34784183DFAA400C9D89D /* EZGeoUtility.m in Sources */,
 				18E746F018A4A26A0023967B /* AFURLRequestSerialization.m in Sources */,
 				184ADD6F18C4B3DD00367527 /* EZAvatarController.m in Sources */,
+				18DE991019404734008C1B3F /* JSQMessagesToolbarButtonFactory.m in Sources */,
+				18DE991F19404734008C1B3F /* JSQMessagesLoadEarlierHeaderView.m in Sources */,
 				18E3472D183DFA3300C9D89D /* EZTiltCell.m in Sources */,
 				180ADA5D18C4247F00AB490C /* EZCenterButton.m in Sources */,
 				18E3472B183DFA3300C9D89D /* EZMainPage.m in Sources */,
 				18E34749183DFA7300C9D89D /* EZConversation.m in Sources */,
 				18E746F518A4A26A0023967B /* UIAlertView+AFNetworking.m in Sources */,
+				18DE990919404734008C1B3F /* UIView+JSQMessages.m in Sources */,
 				18E34690183DF54400C9D89D /* EZAppDelegate.mm in Sources */,
 				18E346DC183DF96D00C9D89D /* UIImage2OpenCV.mm in Sources */,
 				18E34728183DFA3300C9D89D /* EZContactsPage.m in Sources */,
 				186EC12E193869FD0011C145 /* FaceppError.m in Sources */,
+				18DE990819404734008C1B3F /* UIImage+JSQMessages.m in Sources */,
 				18E3477C183DFAA400C9D89D /* EZFileUtil.m in Sources */,
 				184ADD7718C4C20F00367527 /* EZUIApplication.m in Sources */,
 				184ADD9518D045BA00367527 /* LocalPersons.m in Sources */,

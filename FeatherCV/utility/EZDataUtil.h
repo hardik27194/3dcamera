@@ -16,6 +16,7 @@
 #import "LFGlassView.h"
 
 @class EZCenterButton;
+@class EZPhotoChat;
 @interface EZAlbumResult : NSObject
 
 @property (nonatomic, assign) int totalPhoto;
@@ -255,6 +256,17 @@
 
 - (void) uploadAvatar:(UIImage*)img success:(EZEventBlock)success failure:(EZEventBlock)failure;
 
+
+- (void) addPhotoChat:(EZPhoto*)ownPhoto otherPhoto:(EZPhoto*)otherPhoto chat:(EZPhotoChat*)chat success:(EZEventBlock)success failure:(EZEventBlock)failure;
+
+- (void) addPhotoChat:(EZPhotoChat*)chat success:(EZEventBlock)success failure:(EZEventBlock)failure;
+
+
+- (void) queryPhotoChat:(EZPhoto*)ownPhoto otherPhoto:(EZPhoto*)otherPhoto success:(EZEventBlock)success failure:(EZEventBlock)failure;
+
+
+- (void) queryByChatID:(NSString*)chatID success:(EZEventBlock)success failure:(EZEventBlock)failure;
+
 - (void) addConverstaion:(int)combinedID text:(NSString*)text success:(EZEventBlock)success failure:(EZEventBlock)failure;
 
 //Send invite request
@@ -285,6 +297,8 @@
 - (void) queryPhotos:(int)page pageSize:(int)pageSize otherID:(NSString*)otherID success:(EZEventBlock)success failure:(EZEventBlock)failure;
 
 - (void) removeLocalPhoto:(NSString*)photoID;
+
+- (void) removeLocalPhotoByPos:(NSInteger)pos;
 
 - (int) removeOtherPhoto:(NSString*)photoID array:(NSMutableArray*)arr store:(BOOL)store;
 

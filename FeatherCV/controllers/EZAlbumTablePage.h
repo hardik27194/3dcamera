@@ -186,6 +186,8 @@
 
 @property (nonatomic, assign) CGFloat previousGap;
 
+@property (nonatomic, assign) BOOL isPrevHidden;
+
 //@property (nonatomic, strong) NSMutableArray* unhandledNotes;
 
 - (void) storeCurrent;

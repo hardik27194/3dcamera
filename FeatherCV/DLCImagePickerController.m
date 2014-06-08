@@ -2388,7 +2388,7 @@ context:(void *)context
     //_takingPhoto = false;
     [blackCover removeFromSuperview];
     if(_captureComplete){
-        [[EZDataUtil getInstance] detectFace:currentImage success:nil failure:nil];
+        //[[EZDataUtil getInstance] detectFace:currentImage success:nil failure:nil];
         _captureComplete(nil);
     }
 }
@@ -2968,15 +2968,13 @@ context:(void *)context
                 [[EZMessageCenter getInstance]postEvent:EZTakePicture attached:_disPhoto];
             }];
         }else{
-            //[weakSelf showErrorInfo:macroControlInfo(@"Network not available")];
+            //[weakSelf showErrorInfo:macroControlInfo(@"Find no match")];
             [[EZMessageCenter getInstance]postEvent:EZTakePicture attached:weakSelf.disPhoto];
             dispatch_later(0.8,
                            ^(){
                                [weakSelf innerCancel:YES];
                            });
         }
-       
-
     });
     
     _uploadFailureBlock = ^(id obj){

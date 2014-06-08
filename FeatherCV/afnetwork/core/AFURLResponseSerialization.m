@@ -213,6 +213,7 @@ static BOOL AFErrorOrUnderlyingErrorHasCode(NSError *error, NSInteger code) {
     //EZDEBUG(@"default coding:%i,string encoding:%i",self.stringEncoding, stringEncoding);
     id responseObject = nil;
     NSString *responseString = [[NSString alloc] initWithData:data encoding:stringEncoding];
+    
     //EZDEBUG(@"responseString:%@", responseString);
     if (responseString && ![responseString isEqualToString:@" "]) {
         // Workaround for a bug in NSJSONSerialization when Unicode character escape codes are used instead of the actual character
