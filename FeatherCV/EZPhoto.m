@@ -114,7 +114,8 @@
              //@"conversationUpdated":@(_conversationUploaded),
              @"deleted":@(_deleted),
              @"type":@(_type),
-             @"isPair":@(_isPair)
+             @"isPair":@(_isPair),
+             @"isFrontCamera":@(_isFrontCamera)
              };
 }
 
@@ -140,7 +141,8 @@
              @"type":@(_type),
              //@"screenURL":[self screenURL],
              @"likedUsers":_likedUsers.count?_likedUsers:@[],
-             @"isPair":@(_isPair)
+             @"isPair":@(_isPair),
+             @"isFrontCamera":@(_isFrontCamera)
                  };
         
     }else{
@@ -162,7 +164,8 @@
                  //@"screenURL":[self screenURL],
                  @"type":@(_type),
                  @"liked":_likedUsers.count?_likedUsers:@[],
-                 @"isPair":@(_isPair)
+                 @"isPair":@(_isPair),
+                 @"isFrontCamera":@(_isFrontCamera)
                  };
 
     }
@@ -236,6 +239,7 @@
     pt.type = _type;
     pt.typeUI = _type;
     pt.isPair = _isPair;
+    pt.isFrontCamera = _isFrontCamera;
     return pt;
 }
 
@@ -272,6 +276,7 @@
     _isPair = [[dict objectForKey:@"isPair"] boolValue];
     CGFloat width = [[dict objectForKey:@"width"] floatValue];
     CGFloat height = [[dict objectForKey:@"height"] floatValue];
+    _isFrontCamera = [[dict objectForKey:@"isFrontCamera"] integerValue];
 
     _size = CGSizeMake(width, height);
     //EZDEBUG(@"The serialized size:%@, screenURL:%@", NSStringFromCGSize(_size), _screenURL);

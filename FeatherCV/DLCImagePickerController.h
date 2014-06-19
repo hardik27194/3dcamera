@@ -237,6 +237,7 @@ typedef enum {
 //If current camera point forward
 @property (nonatomic, assign) BOOL isFrontCamera;
 
+
 @property (nonatomic, assign) BOOL isVisible;
 
 @property (nonatomic, strong) EZClickImage* authorIcon;
@@ -276,6 +277,8 @@ typedef enum {
 @property (nonatomic, assign) CGSize cameraAspectSize;
 
 @property (nonatomic, strong) UITextView* textField;
+
+@property (nonatomic, strong) UIButton* confirmButton;
 
 //@property (nonatomic, strong) UILabel* textLabel;
 @property (nonatomic, strong) UILabel* textPlaceHolder;

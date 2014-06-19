@@ -118,7 +118,19 @@
     };
     
     [containerView addSubview:_uploadAvatar];
-    _name = [[UITextField alloc] initWithFrame:CGRectMake((CurrentScreenWidth - 206.0)/2.0, 88.0, 206.0, 40)];
+    
+    _smsCodeField = [[UITextField alloc] initWithFrame:CGRectMake((CurrentScreenWidth - 206.0)/2.0, 88.0, 206.0, 40)];
+    
+    [self setInputField:_smsCodeField container:containerView];
+    _smsCodeField.keyboardType = UIKeyboardTypeNumbersAndPunctuation;
+    _smsCodeField.returnKeyType = UIReturnKeyNext;
+    _smsCodePlaceHolder = [self createPlaceHolder:_smsCodeField];
+    _smsCodePlaceHolder.text = macroControlInfo(@"PassCode");
+    [containerView addSubview:_smsCodePlaceHolder];
+
+    
+    
+    _name = [[UITextField alloc] initWithFrame:CGRectMake((CurrentScreenWidth - 206.0)/2.0, 148.0, 206.0, 40)];
     [self setInputField:_name container:containerView];
     _name.keyboardType = UIKeyboardTypeDefault;
     _namePlaceHolder = [self createPlaceHolder:_name];
@@ -141,17 +153,17 @@
     [self.view addSubview:_mobilePlaceHolder];
     **/
     
-    _passwordField = [[UITextField alloc] initWithFrame:CGRectMake((CurrentScreenWidth - 206.0)/2.0, 148, 206, 40)];
+    _passwordField = [[UITextField alloc] initWithFrame:CGRectMake((CurrentScreenWidth - 206.0)/2.0, 208, 206, 40)];
     [self setInputField:_passwordField container:containerView];
     _passwordField.returnKeyType = UIReturnKeyJoin;
     [_passwordField setPlainPassword];
     _passwordPlaceHolder = [self createPlaceHolder:_passwordField];
-    _passwordPlaceHolder.text = macroControlInfo(@"PassCode");
+    _passwordPlaceHolder.text = macroControlInfo(@"Password");
     [containerView addSubview:_passwordPlaceHolder];
     
     
     
-    _registerButton = [[UIButton alloc] initWithFrame:CGRectMake((CurrentScreenWidth - 246.0)/2.0, 208.0, 246.0, 40.0)];
+    _registerButton = [[UIButton alloc] initWithFrame:CGRectMake((CurrentScreenWidth - 246.0)/2.0, 268.0, 246.0, 40.0)];
     //[_registerButton enableRoundImage];
     _registerButton.layer.cornerRadius = _registerButton.height/2.0;
     _registerButton.backgroundColor = ButtonWhiteColor;//EZButtonGreen;
@@ -183,6 +195,7 @@
     //[containerView addSubview:_passwordButton];
     return containerView;
 }
+
 
 - (UIView*) createSmsView:(CGFloat)startGap
 {
@@ -415,7 +428,7 @@
 - (void) registerClicked:(id)obj
 {
     //EZDEBUG(@"Register get clicked");
-    [self startRegister:_name.text mobile:_mobileField.text password:_passwordField.text];
+    [self startRegister:_name.text mobile:_mobileField.text smsCode:_smsCodeField.text password:_passwordField.text];
 }
 
 - (void) passwordSwitch:(id)obj
@@ -447,6 +460,11 @@
 - (BOOL) textFieldShouldReturn:(UITextField *)textField
 {
     if([textField.text isNotEmpty]){
+        if(textField == _smsCodeField){
+            [_name becomeFirstResponder];
+            self.currentFocused = _name;
+            [self liftWithBottom:self.prevKeyboard isSmall:NO time:0.3 complete:nil];
+        }else
         if(textField == _name){
             [_passwordField becomeFirstResponder];
             self.currentFocused = _passwordField;
@@ -460,7 +478,7 @@
             [self sendCode:_mobileField.text];
         }else if(textField == _passwordField){
             //[_password becomeFirstResponder];
-            [self startRegister:_name.text mobile:_mobileField.text password:_passwordField.text];
+            [self startRegister:_name.text mobile:_mobileField.text smsCode:_smsCodeField.text password:_passwordField.text];
             [textField resignFirstResponder];
         }
     }
@@ -489,6 +507,8 @@
         _passwordPlaceHolder.hidden = YES;
     }else if(_mobileField == textField){
         _mobilePlaceHolder.hidden = YES;
+    }else if(_smsCodeField == textField){
+        _smsCodePlaceHolder.hidden = YES;
     }
 }
 
@@ -533,21 +553,24 @@
 
 
 
-- (void) startRegister:(NSString*)name mobile:(NSString*)mobile password:(NSString*)password
+- (void) startRegister:(NSString*)name mobile:(NSString*)mobile smsCode:(NSString*)smsCode password:(NSString*)password
 {
     
     __weak EZRegisterCtrl* weakSelf = self;
-    if([name isEmpty]){
+    if(![name isNotEmpty]){
         [_name becomeFirstResponder];
         return;
     }
-    if([mobile isEmpty]){
+    if(![mobile isNotEmpty]){
         [_mobileField becomeFirstResponder];
         return;
     }
-    if([password isEmpty]){
+    if(![password isNotEmpty]){
         [_passwordField becomeFirstResponder];
         return;
+    }
+    if(![smsCode isNotEmpty]){
+        [_smsCodeField becomeFirstResponder];
     }
     
     
@@ -564,7 +587,8 @@
         NSDictionary* registerInfo = @{
                                        @"name":name,
                                        @"mobile":mobile,
-                                       @"passCode":password,
+                                       @"passCode":smsCode,
+                                       @"password":password,
                                        @"personID":currentID?currentID:@"",
                                        @"avatar":weakSelf.avatarURL?weakSelf.avatarURL:@"",
                                        @"prodFlag":EZProductFlag

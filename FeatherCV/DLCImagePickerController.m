@@ -384,7 +384,6 @@
 }
 
 
-
 - (id) initWithAsset:(EZImageAsset*)asset
 {
     //_assetURL = asset;
@@ -875,7 +874,7 @@
 	[self.view addSubview:self.focusView];
 	self.focusView.alpha = 0;
     orgFocusSize = self.focusView.frame.size;
-    
+    //UIBarButtonItem* barButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonItemStyleDone target:self action:@selector(takePhoto:)];
     __weak DLCImagePickerController* weakSelf = self;
     
     [[EZMessageCenter getInstance] registerEvent:EZCameraIsReady block:^(id obj){
@@ -1170,8 +1169,16 @@ context:(void *)context
 
         if(abs(smallGap) > 0){
             [weakSelf liftWithBottom:smallGap time:0.3 complete:nil];
+            [UIView animateWithDuration:0.15 animations:^(){
+                [weakSelf.confirmButton moveY:smallGap];
+            }];
         }else{
             //weakSelf.toolBarRegion.hidden = TRUE;
+            [weakSelf.confirmButton setY:CurrentScreenHeight - keyFrame.size.height - weakSelf.confirmButton.height];
+            //weakSelf.confirmButton.hidden = NO;
+            [UIView animateWithDuration:0.3 animations:^(){
+                weakSelf.confirmButton.alpha = 1.0;
+            }];
             [weakSelf.view insertSubview:cancelKeyboard  belowSubview:weakSelf.textInputRegion];
             [weakSelf liftWithBottom:-keyFrame.size.height time:0.3 complete:nil];
         }
@@ -1182,6 +1189,8 @@ context:(void *)context
         [cancelKeyboard removeFromSuperview];
         //[weakSelf liftWithBottom:-keyFrame.size.height time:0.6];
         [weakSelf hideKeyboard:weakSelf.hideTextInput complete:nil];
+        //weakSelf.confirmButton.hidden = YES;
+        weakSelf.confirmButton.alpha = 0.0;
         //[EZDataUtil getInstance].centerButton.alpha = 1.0;
         
     };
@@ -1242,6 +1251,23 @@ context:(void *)context
     _textField.text = @"";
 }
 
+/**
+- (BOOL)isAcceptableTextLength:(NSUInteger)length {
+    return length <= 30;
+}
+
+- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)string {
+    
+    return [self isAcceptableTextLength:_textField.text.length + string.length - range.length];
+}
+
+-(IBAction)checkIfCorrectLength:(id)sender{
+    if (![self isAcceptableTextLength:self.textField.text.length]) {
+        self.textField.text = [self.textField ]
+    }
+}
+**/
+ 
 - (void) createTextField
 {
     
@@ -1281,7 +1307,8 @@ context:(void *)context
     //[signText enableShadow:[UIColor blackColor]];
     _textField = [[UITextView alloc] initWithFrame:CGRectMake(50, 5, 250, 65)];
     _textField.font = [UIFont systemFontOfSize:13];
-    _textField.backgroundColor = [UIColor clearColor];
+    _textField.backgroundColor = RGBA(100, 100, 100, 40);
+    _textField.layer.cornerRadius = 5;
     //_textField.placeholder = macroControlInfo(@"Say something");
     //[_textField enabl]
     
@@ -1292,7 +1319,7 @@ context:(void *)context
     //[_textField addTarget:self action:@selector(onValueChange:) forControlEvents:UIControlEventEditingChanged];
     //_textField.allowsEditingTextAttributes
     
-    _textPlaceHolder = [[UILabel alloc] initWithFrame:CGRectMake(50, 5, 250, 44)];
+    _textPlaceHolder = [[UILabel alloc] initWithFrame:CGRectMake(50, 3, 250, 44)];
     [_textPlaceHolder setTextColor:[UIColor whiteColor]];
     [_textPlaceHolder enableShadow:[UIColor blackColor]];
     [_textPlaceHolder setFont:_textField.font];
@@ -1308,8 +1335,22 @@ context:(void *)context
     [textInputRegion addSubview:_textField];
     [textInputRegion addSubview:signClicked];
     [self.view addSubview:textInputRegion];
+    
+    _confirmButton = [[UIButton alloc] initWithFrame:CGRectMake(CurrentScreenWidth - 60, 216, 60, 44)];
+    [_confirmButton setTitle:macroControlInfo(@"完成") forState:UIControlStateNormal];
+    [_confirmButton.titleLabel enableShadow:[UIColor blackColor]];
+    [_confirmButton setTitleColor:ClickedColor forState:UIControlStateNormal];
+    [_confirmButton addTarget:self action:@selector(confirmButtonClicked) forControlEvents:UIControlEventTouchUpInside];
+    //_confirmButton.hidden = YES;
+    _confirmButton.alpha = 0.0;
+    [self.view addSubview:_confirmButton];
 }
 
+- (void) confirmButtonClicked
+{
+    [_textField resignFirstResponder];
+    [self takePhoto:nil];
+}
 /**
 - (BOOL)textFieldShouldEndEditing:(UITextField *)textField
 {
@@ -1494,7 +1535,10 @@ context:(void *)context
     //[EZDataUtil getInstance].centerButton.releasedBlock = nil;
     _upArrow = [[EZUpArrow alloc] initWithFrame:CGRectMake(0, 0, EZInnerCycleRadius, EZInnerCycleRadius/3.0)];
     _upArrow.hidden = YES;
+    //_upArrow.backgroundColor = [UIColor redColor];
+    
     _shotButton.pressedBlock = ^(EZCenterButton* obj){
+        //[weakSelf startUpArrowAnimation];
         [obj animateButton:0.3 lineWidth:13 completed:^(id obj){
             if(!weakSelf.motionRecorder){
                 [weakSelf takePhoto:nil];
@@ -3155,9 +3199,38 @@ context:(void *)context
 }
 
 
+//UIViewAnimationOptionAutoreverse | UIViewAnimationOptionRepeat | 
+- (void) startUpArrowAnimation
+{
+    EZDEBUG(@"start animation get called");
+    
+    [UIView animateWithDuration:0.8 delay:0.0 usingSpringWithDamping:1.4 initialSpringVelocity:0.5 options:UIViewAnimationOptionAutoreverse|UIViewAnimationOptionRepeat animations:^(){
+        _upArrow.transform = CGAffineTransformMakeScale(1.3, 1.3);
+    } completion:nil];
+    /**
+    [UIView animateWithDuration:0.8
+                     animations:^{
+                         // do whatever animation you want, e.g.,
+                         
+                         //someView.frame = someFrame1;
+                         
+                     }
+                     completion:^(BOOL completed){
+                         _upArrow.transform = CGAffineTransformIdentity;
+                     }];
+    **/
+}
+
+- (void) stopUpArrowAnimation
+{
+    [_upArrow.layer removeAllAnimations];
+}
+
 - (void) setStaticImage:(UIImage*)image
 {
     _upArrow.hidden = NO;
+    
+    [self startUpArrowAnimation];
     [(EZHairButton*)_quitCrossButton.innerView setButtonStyle:kShotHappen];
     _uploadStatus = kUploading;
     _isUploading = false;
@@ -3229,7 +3302,8 @@ context:(void *)context
             return;
         }
         //[[EZDataUtil getInstance] remoteDebug:[NSString stringWithFormat: @"after get free space:%llu", diskSpace] isSync:YES];
-        _upArrow.hidden = NO;
+       
+        _shotPhoto.isFrontCamera = stillCamera.isFrontFacing;
         [(EZHairButton*)_quitCrossButton.innerView setButtonStyle:kShotHappen];
         _uploadStatus = kInitialUploading;
         _isUploading = false;
@@ -3249,6 +3323,8 @@ context:(void *)context
         _captureComplete = ^(id obj){
             EZDEBUG(@"photo captured, we will upload, specified person:%@, isPhotoRequest:%i", weakSelf.personID, weakSelf.isPhotoRequest);
             weakSelf.uploadStatus = kUploading;
+            weakSelf.upArrow.hidden = NO;
+            [weakSelf startUpArrowAnimation];
             
             //[[EZDataUtil getInstance] remoteDebug:@"capture completed" isSync:YES];
         };

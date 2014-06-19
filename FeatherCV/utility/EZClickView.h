@@ -12,7 +12,8 @@
 
 typedef enum {
     kPressColorChange,
-    kPressEnlargeCycle
+    kPressEnlargeCycle,
+    kPressGlow
 } EZPressAnimType;
 
 @interface EZClickView : UIView

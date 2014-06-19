@@ -8,6 +8,7 @@
 
 #import "EZClickView.h"
 #import "EZUIUtility.h"
+#import "UIView+Glow.h"
 
 @implementation EZClickView
 
@@ -98,8 +99,10 @@
     
     if(_animType == kPressColorChange){
         [self changeColor];
-    }else{
+    }else if(_animType == kPressColorChange){
         [self enlargeCycle:YES];
+    }else if(_animType == kPressGlow){
+        [self glowOnce:0.8];
     }
     /**
     [UIView animateWithDuration:0.2f animations:^{
@@ -129,7 +132,7 @@
     }
     if(_animType == kPressColorChange){
         [self hideColor];
-    }else{
+    }else if(_animType == kPressEnlargeCycle){
         [self enlargeCycle:NO];
     }
 }

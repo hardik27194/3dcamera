@@ -135,7 +135,9 @@
 
 //@property (nonatomic, strong) UIView* leftContainer;
 
-@property (nonatomic, strong) UIButton* leftCyleButton;
+@property (nonatomic, strong) EZClickView* leftCyleButton;
+
+@property (nonatomic, strong) UILabel* personTitle;
 
 @property (nonatomic, strong) UILabel* leftText;
 
@@ -183,6 +185,8 @@
 @property (nonatomic, assign) CGFloat scrollBeginPos;
 @property (nonatomic, strong) EZPhotoCell* rotateCell;
 @property (nonatomic, strong) NSIndexPath* rotateIndex;
+
+@property (nonatomic, strong) UIImageView* iconImage;
 
 @property (nonatomic, assign) CGFloat previousGap;
 

@@ -24,6 +24,10 @@
 
 @property (nonatomic, strong) UILabel* mobilePlaceHolder;
 
+@property (nonatomic, strong) UITextField* smsCodeField;
+
+@property (nonatomic, strong) UILabel* smsCodePlaceHolder;
+
 @property (nonatomic, strong) UITextField* passwordField;
 
 @property (nonatomic, strong) UILabel* passwordPlaceHolder;

@@ -394,9 +394,13 @@ static int photoCount = 1;
             BOOL liked = [otherPhoto.likedUsers containsObject:currentLoginID];
             EZDEBUG(@"photoID:%@, liked:%i, personID:%@", otherPhoto.photoID, liked, otherPhoto.personID);
             liked = !liked;
+            if(cp.likeProcessing){
+                return;
+            }
+            cp.likeProcessing = true;
             //UIColor* oldColor = obj.backgroundColor;
             //obj.backgroundColor = RGBA(0, 0, 0, 60);
-            weakCell.likeButton.userInteractionEnabled = NO;
+            //weakCell.likeButton.userInteractionEnabled = NO;
             EZDEBUG(@"start like");
             if(liked){
                 otherPhoto.likedUsers = @[currentLoginID];
@@ -408,14 +412,15 @@ static int photoCount = 1;
             [[EZDataUtil getInstance] likedPhoto:otherPhoto.photoID ownPhotoID:myPhoto.photoID like:liked success:^(id success){
                 EZDEBUG(@"Liked successfully");
                 [[EZDataUtil getInstance] storeAllPhotos:@[myPhoto]];
-                weakCell.likeButton.userInteractionEnabled = YES;
+                cp.likeProcessing = false;
+                //weakCell.likeButton.userInteractionEnabled = YES;
             } failure:^(id err){
-                weakCell.likeButton.userInteractionEnabled = YES;
+                //weakCell.likeButton.userInteractionEnabled = YES;
                 //obj.backgroundColor = oldColor;
                 //EZDEBUG(@"Encounter like errors:%@", err);
                 otherPhoto.likedUsers = nil;
                 [self setHeart:myPhoto back:otherPhoto cell:weakCell];
-                
+                cp.likeProcessing = false;
             }];
         }
     };
@@ -998,14 +1003,30 @@ static int photoCount = 1;
     }else{
         [self setNoteCount];
     }
-    [_leftCyleButton setTitle:currentUser.name forState:UIControlStateNormal];
-    _iconButton.hidden = YES;
-    _leftCyleButton.titleLabel.font= EZLargeFont;
-    CGSize fitSize = [_leftCyleButton.titleLabel sizeThatFits:CGSizeMake(230, 40)];
+    //[_leftCyleButton setTitle:currentUser.name forState:UIControlStateNormal];
+    
+    if(![currentUser.personID isEqualToString:currentLoginID]){
+        [_iconImage loadImageURL:currentUser.avatar haveThumb:NO loading:NO];
+    }else{
+        _iconImage.image = featherIconImage;
+    }
+    [self setLeftTitle:currentUser.name];
+
+}
+
+- (void) setLeftTitle:(NSString*)title
+{
+    _personTitle.text = title;
+    _personTitle.font= EZLargeFont;
+    CGSize fitSize = [_personTitle sizeThatFits:CGSizeMake(230, 40)];
     CGFloat width = fitSize.width > 230?230:fitSize.width;
-    EZDEBUG(@"like fit size for string:%@, size:%f, width:%f", currentUser.name, fitSize.width, width);
-    [_leftCyleButton setWidth:width + 2];
-    [_signRegion setX:width + 10];
+    EZDEBUG(@"like fit size for string:%@, size:%f, width:%f", title, fitSize.width, width);
+    //if(width < 50){
+    //    width = 50;
+    //}
+    [_personTitle setWidth:width + 2];
+    [_leftCyleButton setWidth:50 + width + 2];
+    [_signRegion setX:50 + width + 10];
 }
 
 - (void) setCurrentUser:(EZPerson *)currentUser readyBlock:(EZEventBlock)readyBlock
@@ -1049,17 +1070,10 @@ static int photoCount = 1;
             self.title = @"";
             //[[EZMessageCenter getInstance] postEvent:EZNoteCountSet attached:@([self getPendingCount])];
              [self setNoteCount];
-            _iconButton.hidden = NO;
+            //_iconButton.hidden = NO;
+            _iconImage.image = featherIconImage;
             [(EZHairButton*)_rightCycleButton.innerView setButtonStyle:kShotForAll];
-            [_leftCyleButton setTitle:DefaultEmptyString forState:UIControlStateNormal];
-            _leftCyleButton.titleLabel.font = EZTitleSlimFont;
-            
-            CGSize fitSize = [_leftCyleButton.titleLabel sizeThatFits:CGSizeMake(230, 40)];
-            CGFloat width = fitSize.width > 230?230:fitSize.width;
-            EZDEBUG(@"fit size width:%f", width);
-            //[_leftText setWidth:fitSize.width];
-            [_signRegion setX:width + 10];
-            [_leftCyleButton setWidth:width + 2];
+            [self setTitleFormat:currentLoginUser isHeartSelector:NO];
             [_combinedPhotos removeAllObjects];
             //[_nonsplitted removeAllObjects];
             //
@@ -1093,14 +1107,8 @@ static int photoCount = 1;
         _currentUser = currentUser;
         [self setNoteCount];
         _iconButton.hidden = YES;
-        [_leftCyleButton setTitle:currentUser.name forState:UIControlStateNormal];
-        _leftCyleButton.titleLabel.font= EZLargeFont;
-        CGSize fitSize = [_leftCyleButton.titleLabel sizeThatFits:CGSizeMake(230, 40)];
-        CGFloat width = fitSize.width > 230?230:fitSize.width;
-        EZDEBUG(@"fit size for string:%@, size:%f, width:%f", currentUser.name, fitSize.width, width);
-        //[_leftText setWidth:fitSize.width];
-        [_leftCyleButton setWidth:width + 2];
-        [_signRegion setX:width + 10];
+        
+        [self setTitleFormat:currentUser isHeartSelector:NO];
         [_combinedPhotos removeAllObjects];
         //[_nonsplitted removeAllObjects];
         NSArray* storedPhoto = nil;
@@ -1448,7 +1456,11 @@ static int photoCount = 1;
 
     
     //if(_picker == nil){
-    DLCImagePickerController* camera = [[DLCImagePickerController alloc] init];
+    BOOL isFrontFacing = false;
+    if(disPhoto.photo.photoRelations.count){
+        isFrontFacing = ((EZPhoto*)[disPhoto.photo.photoRelations objectAtIndex:0]).isFrontCamera;
+    }
+    DLCImagePickerController* camera = [[DLCImagePickerController alloc] initWithFront:isFrontFacing];
     //}
     //controller.prefersStatusBarHidden = TRUE;
     //camera.transitioningDelegate = _cameraAnimation;
@@ -2896,13 +2908,23 @@ static int photoCount = 1;
     //_leftContainer = [[UIView alloc] initWithFrame:CGRectMake(12,30, 120, 46)];
     //_leftContainer.backgroundColor = [UIColor clearColor];
     
-    _leftCyleButton = [[UIButton alloc] initWithFrame:CGRectMake(10,25, 120, 46)];
-    _leftCyleButton.titleLabel.font = EZTitleSlimFont;
-    [_leftCyleButton setTitleColor:ClickedColor forState:UIControlStateHighlighted];
-    [_leftCyleButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    _leftCyleButton.titleLabel.textAlignment = NSTextAlignmentLeft;
-    [_leftCyleButton setTitle:DefaultEmptyString forState:UIControlStateNormal];
-    [_leftCyleButton addSubview:_iconButton];
+    _leftCyleButton = [[EZClickView alloc] initWithFrame:CGRectMake(10,25, 120 + 50, 46)];
+    _leftCyleButton.animType = kPressGlow;
+    
+    _personTitle = [[UILabel alloc] initWithFrame:CGRectMake(50,0, 120, 46)];
+    _personTitle.font = EZLargeFont;
+    //[_personTitle setTitleColor:ClickedColor forState:UIControlStateHighlighted];
+    _personTitle.textColor = [UIColor whiteColor];
+    //[_leftCyleButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    //_leftCyleButton.titleLabel.textAlignment = NSTextAlignmentRight;
+    //[_leftCyleButton setTitle:DefaultEmptyString forState:UIControlStateNormal];
+    //[_leftCyleButton addSubview:_iconButton];
+    
+    _iconImage = [[UIImageView alloc] initWithFrame:CGRectMake(0, 5, EZShotButtonDiameter, EZShotButtonDiameter)];
+    [_leftCyleButton addSubview:_iconImage];
+    [_leftCyleButton addSubview:_personTitle];
+    [_iconImage enableRoundImage];
+    _iconImage.image = featherIconImage;
     
     //_leftCyleButton.layer.borderColor = [UIColor whiteColor].CGColor;
     //_leftCyleButton.layer.borderWidth = 2;
@@ -2913,7 +2935,7 @@ static int photoCount = 1;
     //_leftText.textColor = [UIColor whiteColor];
     //[_leftCyleButton addSubview:_leftText];
     
-    CGSize reginSize = [_leftCyleButton.titleLabel sizeThatFits:CGSizeMake(999, 40)];
+    CGSize reginSize = [_personTitle sizeThatFits:CGSizeMake(999, 40)];
     
     _signRegion = [[UIView alloc] initWithFrame:CGRectMake(reginSize.width + 10,  0, 20, 46)];
     
@@ -2929,7 +2951,7 @@ static int photoCount = 1;
     //[_triangler enableShadow:[UIColor whiteColor]];
     
     //[_leftCyleButton enableRoundImage];
-    
+    [self setLeftTitle:@""];
     _leftMessageCount = [[UIView alloc] initWithFrame:CGRectMake(4, 0, 12, 12)];
     _leftMessageCount.layer.borderColor = [UIColor whiteColor].CGColor;
     _leftMessageCount.layer.borderWidth = 1;
@@ -2945,7 +2967,10 @@ static int photoCount = 1;
         _rightCycleButton.hidden = YES;
     }
     
-    [_leftCyleButton addTarget:self action:@selector(titleClicked:) forControlEvents:UIControlEventTouchUpInside];
+    //[_leftCyleButton addTarget:self action:@selector(titleClicked:) forControlEvents:UIControlEventTouchUpInside];
+    _leftCyleButton.releasedBlock = ^(id obj){
+        [weakSelf titleClicked:nil];
+    };
 }
 
 - (void) titleClicked:(id)obj

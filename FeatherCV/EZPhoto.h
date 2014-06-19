@@ -126,6 +126,8 @@ typedef enum {
 //This property don't seems very well.
 @property (nonatomic, assign) BOOL isLocal;
 
+@property (nonatomic, assign) BOOL isFrontCamera;
+
 //Do I have any case to use this?
 @property (nonatomic, strong) NSDate* uploadedTime;
 

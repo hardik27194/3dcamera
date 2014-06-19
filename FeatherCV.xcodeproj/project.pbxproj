@@ -22,6 +22,7 @@
 		181903FD1882980E001FC370 /* EZHomeEdgeFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 181903FC1882980E001FC370 /* EZHomeEdgeFilter.m */; };
 		1819040018853903001FC370 /* EZDoubleOutFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 181903FF18853903001FC370 /* EZDoubleOutFilter.m */; };
 		181904031885406A001FC370 /* EZBlackAndCropFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 181904021885406A001FC370 /* EZBlackAndCropFilter.m */; };
+		181FC35F1951DD6F00442AF3 /* UIView+Glow.m in Sources */ = {isa = PBXBuildFile; fileRef = 181FC35E1951DD6F00442AF3 /* UIView+Glow.m */; };
 		1823DA2E18D2F88600E6E8B3 /* EZSharpenGaussianNormal.m in Sources */ = {isa = PBXBuildFile; fileRef = 1823DA2D18D2F88600E6E8B3 /* EZSharpenGaussianNormal.m */; };
 		1823DA3318D5674F00E6E8B3 /* EZLoginController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1823DA3218D5674F00E6E8B3 /* EZLoginController.m */; };
 		1823DA3618D5A1E000E6E8B3 /* EZKeyboardController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1823DA3518D5A1E000E6E8B3 /* EZKeyboardController.m */; };
@@ -32,6 +33,8 @@
 		182A55091862C735003D4A01 /* libGPUImage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 182A55041862C71A003D4A01 /* libGPUImage.a */; };
 		182A550D18643141003D4A01 /* EZFaceBlurFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 182A550C18643140003D4A01 /* EZFaceBlurFilter.m */; };
 		182A551018645374003D4A01 /* EZFaceBlurFilter2.m in Sources */ = {isa = PBXBuildFile; fileRef = 182A550F18645374003D4A01 /* EZFaceBlurFilter2.m */; };
+		182AC31D194ECBB200055D19 /* EZPasswordFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 182AC31C194ECBB200055D19 /* EZPasswordFetcher.m */; };
+		182AC325194EDB0800055D19 /* NIDropDown.m in Sources */ = {isa = PBXBuildFile; fileRef = 182AC324194EDB0800055D19 /* NIDropDown.m */; };
 		1841DC121907782B00213EB6 /* feather_icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1841DC111907782B00213EB6 /* feather_icon@2x.png */; };
 		184ADD6F18C4B3DD00367527 /* EZAvatarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 184ADD6E18C4B3DD00367527 /* EZAvatarController.m */; };
 		184ADD7418C4B40D00367527 /* EZAvatarView.m in Sources */ = {isa = PBXBuildFile; fileRef = 184ADD7318C4B40D00367527 /* EZAvatarView.m */; };
@@ -406,6 +409,8 @@
 		181903FF18853903001FC370 /* EZDoubleOutFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZDoubleOutFilter.m; sourceTree = "<group>"; };
 		181904011885406A001FC370 /* EZBlackAndCropFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZBlackAndCropFilter.h; sourceTree = "<group>"; };
 		181904021885406A001FC370 /* EZBlackAndCropFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZBlackAndCropFilter.m; sourceTree = "<group>"; };
+		181FC35D1951DD6F00442AF3 /* UIView+Glow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+Glow.h"; sourceTree = "<group>"; };
+		181FC35E1951DD6F00442AF3 /* UIView+Glow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+Glow.m"; sourceTree = "<group>"; };
 		1823DA2C18D2F88600E6E8B3 /* EZSharpenGaussianNormal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZSharpenGaussianNormal.h; sourceTree = "<group>"; };
 		1823DA2D18D2F88600E6E8B3 /* EZSharpenGaussianNormal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZSharpenGaussianNormal.m; sourceTree = "<group>"; };
 		1823DA3118D5674F00E6E8B3 /* EZLoginController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZLoginController.h; sourceTree = "<group>"; };
@@ -424,6 +429,10 @@
 		182A550C18643140003D4A01 /* EZFaceBlurFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZFaceBlurFilter.m; sourceTree = "<group>"; };
 		182A550E18645374003D4A01 /* EZFaceBlurFilter2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZFaceBlurFilter2.h; sourceTree = "<group>"; };
 		182A550F18645374003D4A01 /* EZFaceBlurFilter2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZFaceBlurFilter2.m; sourceTree = "<group>"; };
+		182AC31B194ECBB200055D19 /* EZPasswordFetcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZPasswordFetcher.h; sourceTree = "<group>"; };
+		182AC31C194ECBB200055D19 /* EZPasswordFetcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZPasswordFetcher.m; sourceTree = "<group>"; };
+		182AC323194EDB0800055D19 /* NIDropDown.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NIDropDown.h; sourceTree = "<group>"; };
+		182AC324194EDB0800055D19 /* NIDropDown.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NIDropDown.m; sourceTree = "<group>"; };
 		1841DC111907782B00213EB6 /* feather_icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "feather_icon@2x.png"; sourceTree = "<group>"; };
 		184ADD6D18C4B3DD00367527 /* EZAvatarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZAvatarController.h; sourceTree = "<group>"; };
 		184ADD6E18C4B3DD00367527 /* EZAvatarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZAvatarController.m; sourceTree = "<group>"; };
@@ -961,6 +970,8 @@
 		181608DD18B7333E00DD5995 /* login */ = {
 			isa = PBXGroup;
 			children = (
+				182AC323194EDB0800055D19 /* NIDropDown.h */,
+				182AC324194EDB0800055D19 /* NIDropDown.m */,
 				184ADD6D18C4B3DD00367527 /* EZAvatarController.h */,
 				184ADD6E18C4B3DD00367527 /* EZAvatarController.m */,
 				184ADD7218C4B40D00367527 /* EZAvatarView.h */,
@@ -973,6 +984,8 @@
 				1823DA3818D5B2AF00E6E8B3 /* EZRegisterCtrl.m */,
 				1823DA4118E3CCFD00E6E8B3 /* EZPersonDetail.h */,
 				1823DA4218E3CCFE00E6E8B3 /* EZPerosnDetail.m */,
+				182AC31B194ECBB200055D19 /* EZPasswordFetcher.h */,
+				182AC31C194ECBB200055D19 /* EZPasswordFetcher.m */,
 			);
 			name = login;
 			sourceTree = "<group>";
@@ -1563,6 +1576,8 @@
 			isa = PBXGroup;
 			children = (
 				18E4FBB618F584DF00FA6C21 /* UIScrollView+ScrollIndicator.h */,
+				181FC35D1951DD6F00442AF3 /* UIView+Glow.h */,
+				181FC35E1951DD6F00442AF3 /* UIView+Glow.m */,
 				18E4FBB718F584DF00FA6C21 /* UIScrollView+ScrollIndicator.m */,
 				18E746FA18A4BBBC0023967B /* EZFeatherAPIClient.h */,
 				18E746FB18A4BBBC0023967B /* EZFeatherAPIClient.m */,
@@ -2148,6 +2163,7 @@
 				18B365201920938F00092AB8 /* EZMotionRecord.m in Sources */,
 				1823DA3918D5B2AF00E6E8B3 /* EZRegisterCtrl.m in Sources */,
 				18DE991A19404734008C1B3F /* JSQMessagesCollectionViewCellOutgoing.m in Sources */,
+				182AC325194EDB0800055D19 /* NIDropDown.m in Sources */,
 				18E3477A183DFAA400C9D89D /* EZClickView.m in Sources */,
 				18DE991319404734008C1B3F /* JSQMessagesCollectionViewFlowLayoutInvalidationContext.m in Sources */,
 				18DE992B19404774008C1B3F /* JSQTableViewController.m in Sources */,
@@ -2178,6 +2194,7 @@
 				18B3651D1920926900092AB8 /* EZMotionImage.m in Sources */,
 				18DE991419404734008C1B3F /* JSQMessagesCollectionViewLayoutAttributes.m in Sources */,
 				1819040018853903001FC370 /* EZDoubleOutFilter.m in Sources */,
+				181FC35F1951DD6F00442AF3 /* UIView+Glow.m in Sources */,
 				184ADD8318C8ACA300367527 /* EZShapeButton.m in Sources */,
 				18A36FF01855C1DB0022F0A8 /* DLCBlurOverlayView.m in Sources */,
 				18E4FBBB18F68F7600FA6C21 /* EZUpArrow.m in Sources */,
@@ -2225,6 +2242,7 @@
 				18DE990E19404734008C1B3F /* JSQMessagesBubbleImageFactory.m in Sources */,
 				18E746EA18A4A26A0023967B /* AFHTTPRequestOperation.m in Sources */,
 				184DBE7718BB476F00239F0F /* EZSimpleClick.m in Sources */,
+				182AC31D194ECBB200055D19 /* EZPasswordFetcher.m in Sources */,
 				18E3470B183DFA1A00C9D89D /* EZTestSuites.m in Sources */,
 				186EC126193869FD0011C145 /* FaceppDetection.m in Sources */,
 				184DBE8918BE2B5800239F0F /* EZChromaBiFilter.m in Sources */,

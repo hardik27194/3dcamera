@@ -145,6 +145,8 @@
 
 #define EZPurposeInfo macroControlInfo(@"按下快门\n捕获他(她)的照片。")
 
+#define EZSetPasswordInfo macroControlInfo(@"重设密码")
+
 #define FullHeartImage [EZUIUtility sharedEZUIUtility].fullHeart
 
 #define EmptyHeartImage [EZUIUtility sharedEZUIUtility].emptyHeart
@@ -178,13 +180,13 @@
 //#define baseUploadURL @"http://10.0.1.6:8080/upload"
 //#define baseUploadURL @"http://www.enjoyxue.com:8080/upload"
 //#define baseUploadURL @"http://192.168.1.101:8080/upload"
-#define baseUploadURL @"http://192.168.0.115:8080/upload"
+#define baseUploadURL @"http://192.168.1.101:8080/upload"
 
 //#define baseServiceURL @"http://172.13.0.127:8080/"
 //#define baseServiceURL @"http://10.0.1.6:8080/"
 //#define baseServiceURL @"http://www.enjoyxue.com:8080/"
 //#define baseServiceURL @"http://192.168.1.101:8080/"
-#define baseServiceURL @"http://192.168.0.115:8080/"
+#define baseServiceURL @"http://192.168.1.101:8080/"
 
 #define EZButtonGreen RGBCOLOR(56, 216, 116)
 
@@ -306,8 +308,9 @@
 
 #define EZAvatarFileName @"EZAvatarFileName"
 
+#define featherIconImage [UIImage imageNamed:@"feather_icon"]
 
-#define DefaultEmptyString @"    "
+#define DefaultEmptyString  macroControlInfo(@"同时拍摄的人")
 
 #define EZCenterBigRadius 60.0
 

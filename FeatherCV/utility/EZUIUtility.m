@@ -74,7 +74,6 @@ SINGLETON_FOR_CLASS(EZUIUtility)
 
 - (void) sendMessge:(NSString *)phone content:(NSString *)content presenter:(UIViewController*)presenter completed:(EZEventBlock)completed
 {
-    
     __weak EZUIUtility* weakSelf = self;
     //dispatch_later(0.15, (^(){
         [MobClick event:EZInviteFriend label:currentLoginID];

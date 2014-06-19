@@ -85,4 +85,6 @@ typedef enum {
 
 @property (nonatomic, strong) NSString* randImage;
 
+@property (nonatomic, assign) BOOL likeProcessing;
+
 @end

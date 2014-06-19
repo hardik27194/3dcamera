@@ -107,6 +107,7 @@
 "下午" = "Afternoon";
 "晚上" = "Evening";
 
+"完成" = "完成";
 
 "请检查后重试" = "Check and retry";
 "填写手机号" = "Please fill in Mobile No.";
@@ -117,3 +118,5 @@
 "点击+号拍摄照片" = "Tap + to shoot";
 
 "Find no match" = "Find no match";
+
+"Reset password" = "Reset password";
