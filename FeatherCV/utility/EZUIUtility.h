@@ -11,6 +11,7 @@
 #import "EZClickView.h"
 //#import "DLCImagePickerController.h"
 #import <MessageUI/MessageUI.h>
+#import "EZPinchController.h"
 
 @class EZShapeCover;
 @class EZClickImage;
@@ -19,6 +20,7 @@
 //@class EZClickView;
 @interface EZUIUtility : NSObject<UIImagePickerControllerDelegate, UINavigationControllerDelegate, MFMessageComposeViewControllerDelegate>
 
+@property (nonatomic, strong) EZPinchController* pinchControl;
 @property (nonatomic, assign) BOOL cameraRaised;
 
 @property (nonatomic, assign) BOOL stopRotationRaise;
@@ -85,6 +87,10 @@
 //Why do I use this?
 //I want to get the controller to present my modal view.
 + (UIViewController*) topMostController;
+
++ (void) adjustFontSizeToFillItsContents:(UITextView*)textView miniFont:(int)miniFont maxFont:(int)maxFont;
+
++ (void) verticalCentering:(UITextView*)textView height:(CGFloat)actualHeight;
 //+ (EZUIUtility*) getInstance;
 SINGLETON_FOR_HEADER(EZUIUtility);
 

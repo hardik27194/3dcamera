@@ -113,6 +113,13 @@ NSString* doubleString(NSString* str)
 }
 
 
+/**
+- (void) enableTextWrap
+{
+    self.numberOfLines = 0;
+    self.lineBreakMode = NSLineBreakByWordWrapping;
+}
+**/
 
 @end
 
@@ -1048,6 +1055,9 @@ NSString* doubleString(NSString* str)
 
 
 @end
+
+
+
 
 @implementation UIButton(EZPrivate)
 

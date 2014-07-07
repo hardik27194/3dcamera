@@ -104,25 +104,34 @@
         [_otherName setTextColor:[UIColor whiteColor]];
         _otherName.font = [UIFont boldSystemFontOfSize:13];
         //[_otherName enableShadow:[UIColor blackColor]];
-        [self.container addSubview:_otherName];
+        //[self.container addSubview:_otherName];
         
-        _otherTalk = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 300, 19)];
+        _otherTalk = [[UITextView alloc] initWithFrame:CGRectMake(10,(CurrentScreenHeight - 200)/2.0 , CurrentScreenWidth - 20, 200)];
         [_otherTalk setTextColor:[UIColor whiteColor]];
-        _otherTalk.font = [UIFont systemFontOfSize:13];
-        //[_otherTalk enableShadow:[UIColor blackColor]];
-        [_otherTalk enableTextWrap];
+        _otherTalk.font = [UIFont systemFontOfSize:15.0];
+        _otherTalk.backgroundColor = [UIColor clearColor];//RGBA(100, 100, 100, 128);
+        _otherTalk.userInteractionEnabled = NO;
         _otherTalk.textAlignment = NSTextAlignmentCenter;
-        _otherTalk.layer.cornerRadius = 4;
-        _otherTalk.clipsToBounds = true;
-        _otherChatButton = [[EZEnlargedView alloc] initWithFrame:CGRectMake(7, CurrentScreenHeight - 245 - startPos, 300, 19) innerView:_otherTalk enlargeRatio:EZEnlargeIconRatio];
-        [self.container addSubview:_otherChatButton];
+        //[_otherTalk enableShadow:[UIColor blackColor]];
+        //[_otherTalk enableTextWrap];
+        //_otherTalk.numberOfLines = 1;
+        //_otherTalk.minimumFontSize = 15.;
+        //_otherTalk.minimumScaleFactor = 15./_otherTalk.font.pointSize;
+        //_otherTalk.adjustsFontSizeToFitWidth = YES;
+        
+        //_otherTalk.textAlignment = NSTextAlignmentCenter;
+        //_otherTalk.center = CGPointMake(CurrentScreenWidth/2.0, CurrentScreenHeight/2.0);
+        //_otherTalk.layer.cornerRadius = 4;
+        //_otherTalk.clipsToBounds = true;
+        //_otherChatButton = [[EZEnlargedView alloc] initWithFrame:CGRectMake(7, CurrentScreenHeight - 245 - startPos, 300, 19) innerView:_otherTalk enlargeRatio:EZEnlargeIconRatio];
+        [self.container addSubview:_otherTalk];
 
         _andSymbol = [[UILabel alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 225 - startPos, 20, 20)];
         [_andSymbol setTextColor:[UIColor whiteColor]];
         _andSymbol.font = [UIFont systemFontOfSize:13];
         //[andSymbol enableShadow:[UIColor blackColor]];
         _andSymbol.text = @"&";
-        [self.container addSubview:_andSymbol];
+        //[self.container addSubview:_andSymbol];
         
         _headIcon = [[EZEnlargedView alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 198 - startPos, smallIconRadius, smallIconRadius) enlargeRatio:EZEnlargeIconRatio];
         _homeSliverLine = [[UIView alloc] initWithFrame:CGRectMake(10-1, CurrentScreenHeight - 198 - startPos-1, smallIconRadius+2, smallIconRadius+2)];
@@ -134,14 +143,14 @@
         [_headIcon enableRoundImage];
         [_headIcon enableTouchEffects];
         //[self.container addSubview:_homeSliverLine];
-        [self.container addSubview:_headIcon];
+        //[self.container addSubview:_headIcon];
         [_headIcon enableShadow:[UIColor blackColor]];
         
         _authorName = [[UILabel alloc] initWithFrame:CGRectMake(10, CurrentScreenHeight - 163 - startPos, 300, 30)];
         [_authorName setTextColor:[UIColor whiteColor]];
         _authorName.font = [UIFont boldSystemFontOfSize:13];
         [_authorName enableShadow:[UIColor blackColor]];
-        [self.container addSubview:_authorName];
+        //[self.container addSubview:_authorName];
 
         
         
@@ -154,7 +163,7 @@
         _ownTalk.layer.cornerRadius = 4;
         _ownTalk.clipsToBounds = true;
         _ownChatButton = [[EZEnlargedView alloc] initWithFrame:CGRectMake(7, CurrentScreenHeight - 138 - startPos, 300, 19) innerView:_ownTalk enlargeRatio:EZEnlargeIconRatio];
-        [self.container addSubview:_ownChatButton];
+        //[self.container addSubview:_ownChatButton];
         
         _likeButton =  [[UIButton alloc] initWithFrame:CGRectMake(249, CurrentScreenHeight - 220 - startPos, 80, 80)]; //[[EZClickView alloc] initWithFrame:CGRectMake(255, CurrentScreenHeight - 105, 45,45)]; //[[EZCenterButton alloc] initWithFrame:CGRectMake(255, 23, 60,60) cycleRadius:21 lineWidth:2];
         //_likeButton.backgroundColor = [UIColor redColor];
@@ -331,6 +340,7 @@
     _authorName.alpha = ownAlpha;
     _headIcon.alpha = ownAlpha;
     
+    /**
     if([_otherTalk.text isNotEmpty]){
         CGSize actualSize = [_otherTalk sizeThatFits:CGSizeMake(260, _otherTalk.height)];
         _otherTalk.width = actualSize.width + 6;
@@ -347,6 +357,7 @@
     }else{
         _ownTalk.backgroundColor = [UIColor clearColor];
     }
+    **/
     //_headIcon.alpha = ownAlpha;
 }
 

@@ -265,6 +265,12 @@ typedef void  (^ IterateOperation)(id obj);
 - (void) addBlockWrapper:(EZBlockWrapper*)bw;
 
 @end
+
+@interface UITextField(EZPrivate)
+
+- (void) enableTextWrap;
+
+@end
 /**
 @interface UIButton(EZPrivate)
 

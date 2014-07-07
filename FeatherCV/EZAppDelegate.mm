@@ -41,6 +41,9 @@
 #import "EZLoginController.h"
 #import "EZRegisterCtrl.h"
 #import "FaceppAPI.h"
+#import "EZContactMain.h"
+#import "EZPinchController.h"
+#import "EZPhotoDetail.h"
 
 
 @implementation EZAppDelegate
@@ -410,6 +413,71 @@
     }
 }
 
+- (void) createPersonMain:(UIWindow*)window
+{
+    EZPerson* personOne = [[EZPerson alloc] init];
+    personOne.name = @"天哥";
+    
+    EZPerson* personTwo = [[EZPerson alloc] init];
+    personTwo.name = @"云哲";
+    
+    EZPinchController* pincher = [[EZPinchController alloc] initWithView:window];
+    EZDEBUG(@"Th interaction is:%i", self.window.userInteractionEnabled);
+    window.userInteractionEnabled = true;
+    EZContactMain* contactMain = [[EZContactMain alloc] init];
+    UINavigationController* navCtrl = [[UINavigationController alloc] initWithRootViewController:contactMain];
+    navCtrl.transitioningDelegate = pincher;
+    navCtrl.delegate = pincher;
+    [EZUIUtility sharedEZUIUtility].pinchControl = pincher;
+    pincher.pushBlock = ^(NSNumber* s){
+        NSInteger ops = s.intValue;
+        if(ops == EZInteractionOperationPush){
+            EZPhotoDetail* detail = [[EZPhotoDetail alloc] init];
+            [navCtrl pushViewController:detail animated:YES];
+        }else if(ops == EZInteractionOperationPop){
+            [navCtrl popViewControllerAnimated:YES];
+        }
+    };
+    
+    /**
+    dispatch_later(0.3,^(){
+        UILabel* largeLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 100, 200, 100)];
+        largeLabel.font = [UIFont fontWithName:@"HiraMinProN-W6" size:30];
+        largeLabel.textColor = [UIColor blackColor];
+        largeLabel.text = @"我爱你爱的深";
+        [window addSubview:largeLabel];
+
+    });
+    **/
+    window.rootViewController = navCtrl;
+    dispatch_later(0.1,
+                   (^(){
+    contactMain.persons = [[NSMutableArray alloc] initWithArray:@[personOne, personTwo]];
+                   }));
+}
+
+
+- (void) listAllFonts
+{
+    NSArray *fontFamilyNames = [UIFont familyNames];
+    
+    // loop
+    for (NSString *familyName in fontFamilyNames)
+    {
+        EZDEBUG(@"Font Family Name = %@", familyName);
+        
+        // font names under family
+        NSArray *names = [UIFont fontNamesForFamilyName:familyName];
+        
+        //NSLog(@"Font Names = %@", names);
+        for(NSString* fontName in names){
+            EZDEBUG(@"Font name:%@", fontName);
+        }
+        
+        // add to array
+        //[fontNames addObjectsFromArray:names];
+    }
+}
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     _cameraRaised = false;
@@ -422,7 +490,7 @@
     [MobClick beginEvent:EZALStartPeriod label:@"launch"];
     [EZTestSuites testAll];
     [self setupRecieveNotification];
-    
+    //[self listAllFonts];
     NSDictionary *remoteNote =  [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
     EZDEBUG(@"Launched options:%@", remoteNote);
     if(remoteNote){
@@ -487,7 +555,7 @@
     [self setupKeyboard];
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     //[[UIDevice currentDevice] setProximityMonitoringEnabled:YES];
-    //self.window.backgroundColor = [UIColor greenColor];
+    self.window.backgroundColor = [UIColor greenColor];
     //[[EZDataUtil getInstance] loadAlbumPhoto:0 limit:100 success:^(NSArray* phs){
     //    EZDEBUG(@"returned size:%i", phs.count);
     //} failure:^(NSError* err){
@@ -495,7 +563,8 @@
     //}];
     EZDEBUG(@"before get scrollView");
     EZUIUtility.sharedEZUIUtility.mainWindow = self.window;
-    self.window.rootViewController = [self createScrollView];
+    [self createPersonMain:self.window];
+    //self.window.rootViewController = [self createScrollView];
     //EZDEBUG(@"After get scrollView");
    
     EZDEBUG(@"Register orientation change");

@@ -3251,12 +3251,12 @@ static int photoCount = 1;
     EZDEBUG(@"own Conversation count:%i, other count:%i", ownp.conversations.count, otherp.conversations.count);
     if(ownp.conversations.count){
         NSDictionary* conversation = [ownp.conversations objectAtIndex:0];
-        cell.ownTalk.text = [conversation objectForKey:@"text"];
+        cell.otherTalk.text = [conversation objectForKey:@"text"];
     }else{
         //cell.ownTalk.text = @"";
-        cell.ownTalk.text = formatRelativeTime(ownp.createdTime);
+        cell.otherTalk.text = formatRelativeTime(ownp.createdTime);
     }
-    
+    /**
     if(otherp.conversations.count){
         NSDictionary* conversation = [otherp.conversations objectAtIndex:0];
         cell.otherTalk.text = [conversation objectForKey:@"text"];
@@ -3268,6 +3268,11 @@ static int photoCount = 1;
             cell.otherTalk.text =formatRelativeTime(otherp.createdTime);
         }
     }
+    **/
+    //CGSize labelSize = [cell.otherTalk.text sizeWithFont:cell.otherTalk.font forWidth:cell.otherTalk.frame.size.width lineBreakMode:cell.otherTalk.lineBreakMode];
+    //EZDEBUG(@"Original size:%@, changed size:%@", NSStringFromCGSize(cell.otherTalk.frame.size), NSStringFromCGSize(labelSize));
+    //[cell.otherTalk setSize:labelSize];
+    [EZUIUtility adjustFontSizeToFillItsContents:cell.otherTalk miniFont:EZMinAdaptiveFont maxFont:EZMaxAdaptiveFont];
 }
 
 /**

@@ -237,6 +237,8 @@ typedef enum {
 //If current camera point forward
 @property (nonatomic, assign) BOOL isFrontCamera;
 
+//This camera will use the front camera to do this
+@property (nonatomic, assign) BOOL isTurnToFront;
 
 @property (nonatomic, assign) BOOL isVisible;
 

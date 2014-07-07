@@ -93,7 +93,7 @@
 
 @property (nonatomic, strong) UILabel* ownTalk;
 
-@property (nonatomic, strong) UILabel* otherTalk;
+@property (nonatomic, strong) UITextView* otherTalk;
 
 @property (nonatomic, strong) EZShapeButton* moreButton;
 //The icon which represent the relationship between the headIcon and other icons

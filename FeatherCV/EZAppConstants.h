@@ -27,6 +27,8 @@
 
 #define CenterUpShift 20
 
+#define EZPersonCellHeight 84
+
 #define EZRotateAnimDuration 0.5
 
 #define EZRaiseAnimationDuration 0.3
@@ -39,6 +41,10 @@
 #define CurrentScreenHeight [UIScreen mainScreen].bounds.size.height
 
 #define ContainerWidth 300.0
+
+#define EZMaxAdaptiveFont 40
+
+#define EZMinAdaptiveFont 15
 
 #define DefaultChatUnitHeight 95.0
 

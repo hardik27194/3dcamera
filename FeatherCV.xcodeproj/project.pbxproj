@@ -10,6 +10,8 @@
 		180ADA5518C1CA1000AB490C /* EZChatRegion.m in Sources */ = {isa = PBXBuildFile; fileRef = 180ADA5418C1CA1000AB490C /* EZChatRegion.m */; };
 		180ADA5A18C1CA2500AB490C /* EZChatUnit.m in Sources */ = {isa = PBXBuildFile; fileRef = 180ADA5918C1CA2500AB490C /* EZChatUnit.m */; };
 		180ADA5D18C4247F00AB490C /* EZCenterButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 180ADA5C18C4247F00AB490C /* EZCenterButton.m */; };
+		1814A39A195A913900FA0D6A /* EZPinchController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1814A399195A913900FA0D6A /* EZPinchController.m */; };
+		1814A39F195AA5FE00FA0D6A /* EZPhotoDetail.m in Sources */ = {isa = PBXBuildFile; fileRef = 1814A39E195AA5FE00FA0D6A /* EZPhotoDetail.m */; };
 		181608C718B4E38600DD5995 /* EZAnimationUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 181608C618B4E38600DD5995 /* EZAnimationUtil.m */; };
 		181608CC18B4EA9F00DD5995 /* EZRotateAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = 181608CB18B4EA9F00DD5995 /* EZRotateAnimation.m */; };
 		181608D218B5B1A300DD5995 /* EZShapeCover.m in Sources */ = {isa = PBXBuildFile; fileRef = 181608D118B5B1A300DD5995 /* EZShapeCover.m */; };
@@ -23,6 +25,9 @@
 		1819040018853903001FC370 /* EZDoubleOutFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 181903FF18853903001FC370 /* EZDoubleOutFilter.m */; };
 		181904031885406A001FC370 /* EZBlackAndCropFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 181904021885406A001FC370 /* EZBlackAndCropFilter.m */; };
 		181FC35F1951DD6F00442AF3 /* UIView+Glow.m in Sources */ = {isa = PBXBuildFile; fileRef = 181FC35E1951DD6F00442AF3 /* UIView+Glow.m */; };
+		181FC36B19540F8B00442AF3 /* EZContactMainCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 181FC36A19540F8B00442AF3 /* EZContactMainCell.m */; };
+		181FC36E1954409700442AF3 /* TLSwipeForOptionsCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 181FC36D1954409700442AF3 /* TLSwipeForOptionsCell.m */; };
+		1820C9CB195ACAE600387052 /* EZContactMain.m in Sources */ = {isa = PBXBuildFile; fileRef = 1820C9CA195ACAE600387052 /* EZContactMain.m */; };
 		1823DA2E18D2F88600E6E8B3 /* EZSharpenGaussianNormal.m in Sources */ = {isa = PBXBuildFile; fileRef = 1823DA2D18D2F88600E6E8B3 /* EZSharpenGaussianNormal.m */; };
 		1823DA3318D5674F00E6E8B3 /* EZLoginController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1823DA3218D5674F00E6E8B3 /* EZLoginController.m */; };
 		1823DA3618D5A1E000E6E8B3 /* EZKeyboardController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1823DA3518D5A1E000E6E8B3 /* EZKeyboardController.m */; };
@@ -55,6 +60,9 @@
 		184DBE8918BE2B5800239F0F /* EZChromaBiFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 184DBE8818BE2B5800239F0F /* EZChromaBiFilter.m */; };
 		184EC693192F1BA4004B32A0 /* EZImageAsset.m in Sources */ = {isa = PBXBuildFile; fileRef = 184EC692192F1BA4004B32A0 /* EZImageAsset.m */; };
 		18512A331861BE6300282264 /* shot_voice.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 18512A321861BE6300282264 /* shot_voice.aiff */; };
+		1857B4C219690D9600ED2632 /* EZPaintRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 1857B4C119690D9600ED2632 /* EZPaintRecognizer.m */; };
+		1857B4C71969291800ED2632 /* EZPathPainter.m in Sources */ = {isa = PBXBuildFile; fileRef = 1857B4C61969291800ED2632 /* EZPathPainter.m */; };
+		1857B4CC1969479E00ED2632 /* EZLineDrawingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1857B4CB1969479E00ED2632 /* EZLineDrawingView.m */; };
 		185CE25F18FFAE760037947A /* EZPageControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 185CE25E18FFAE760037947A /* EZPageControl.m */; };
 		185CE266190123ED0037947A /* libMobClickLibrary_armv6.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 185CE263190123ED0037947A /* libMobClickLibrary_armv6.a */; };
 		185CE267190123ED0037947A /* libMobClickLibrary.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 185CE264190123ED0037947A /* libMobClickLibrary.a */; };
@@ -385,6 +393,10 @@
 		180ADA5918C1CA2500AB490C /* EZChatUnit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZChatUnit.m; sourceTree = "<group>"; };
 		180ADA5B18C4247F00AB490C /* EZCenterButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZCenterButton.h; sourceTree = "<group>"; };
 		180ADA5C18C4247F00AB490C /* EZCenterButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZCenterButton.m; sourceTree = "<group>"; };
+		1814A398195A913900FA0D6A /* EZPinchController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZPinchController.h; sourceTree = "<group>"; };
+		1814A399195A913900FA0D6A /* EZPinchController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZPinchController.m; sourceTree = "<group>"; };
+		1814A39D195AA5FE00FA0D6A /* EZPhotoDetail.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZPhotoDetail.h; sourceTree = "<group>"; };
+		1814A39E195AA5FE00FA0D6A /* EZPhotoDetail.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZPhotoDetail.m; sourceTree = "<group>"; };
 		181608C518B4E38600DD5995 /* EZAnimationUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZAnimationUtil.h; sourceTree = "<group>"; };
 		181608C618B4E38600DD5995 /* EZAnimationUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZAnimationUtil.m; sourceTree = "<group>"; };
 		181608CA18B4EA9F00DD5995 /* EZRotateAnimation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZRotateAnimation.h; sourceTree = "<group>"; };
@@ -411,6 +423,12 @@
 		181904021885406A001FC370 /* EZBlackAndCropFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZBlackAndCropFilter.m; sourceTree = "<group>"; };
 		181FC35D1951DD6F00442AF3 /* UIView+Glow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+Glow.h"; sourceTree = "<group>"; };
 		181FC35E1951DD6F00442AF3 /* UIView+Glow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+Glow.m"; sourceTree = "<group>"; };
+		181FC36519540EE100442AF3 /* EZContactMain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EZContactMain.h; path = controllers/EZContactMain.h; sourceTree = "<group>"; };
+		181FC36919540F8B00442AF3 /* EZContactMainCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZContactMainCell.h; sourceTree = "<group>"; };
+		181FC36A19540F8B00442AF3 /* EZContactMainCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZContactMainCell.m; sourceTree = "<group>"; };
+		181FC36C1954409700442AF3 /* TLSwipeForOptionsCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TLSwipeForOptionsCell.h; sourceTree = "<group>"; };
+		181FC36D1954409700442AF3 /* TLSwipeForOptionsCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TLSwipeForOptionsCell.m; sourceTree = "<group>"; };
+		1820C9CA195ACAE600387052 /* EZContactMain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZContactMain.m; sourceTree = "<group>"; };
 		1823DA2C18D2F88600E6E8B3 /* EZSharpenGaussianNormal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZSharpenGaussianNormal.h; sourceTree = "<group>"; };
 		1823DA2D18D2F88600E6E8B3 /* EZSharpenGaussianNormal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZSharpenGaussianNormal.m; sourceTree = "<group>"; };
 		1823DA3118D5674F00E6E8B3 /* EZLoginController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZLoginController.h; sourceTree = "<group>"; };
@@ -469,6 +487,12 @@
 		184EC691192F1BA4004B32A0 /* EZImageAsset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZImageAsset.h; sourceTree = "<group>"; };
 		184EC692192F1BA4004B32A0 /* EZImageAsset.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZImageAsset.m; sourceTree = "<group>"; };
 		18512A321861BE6300282264 /* shot_voice.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = shot_voice.aiff; sourceTree = "<group>"; };
+		1857B4C019690D9600ED2632 /* EZPaintRecognizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZPaintRecognizer.h; sourceTree = "<group>"; };
+		1857B4C119690D9600ED2632 /* EZPaintRecognizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZPaintRecognizer.m; sourceTree = "<group>"; };
+		1857B4C51969291800ED2632 /* EZPathPainter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZPathPainter.h; sourceTree = "<group>"; };
+		1857B4C61969291800ED2632 /* EZPathPainter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZPathPainter.m; sourceTree = "<group>"; };
+		1857B4CA1969479E00ED2632 /* EZLineDrawingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZLineDrawingView.h; sourceTree = "<group>"; };
+		1857B4CB1969479E00ED2632 /* EZLineDrawingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZLineDrawingView.m; sourceTree = "<group>"; };
 		185CE25D18FFAE760037947A /* EZPageControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZPageControl.h; sourceTree = "<group>"; };
 		185CE25E18FFAE760037947A /* EZPageControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZPageControl.m; sourceTree = "<group>"; };
 		185CE263190123ED0037947A /* libMobClickLibrary_armv6.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libMobClickLibrary_armv6.a; sourceTree = "<group>"; };
@@ -990,6 +1014,29 @@
 			name = login;
 			sourceTree = "<group>";
 		};
+		181FC36819540F1000442AF3 /* new controllers */ = {
+			isa = PBXGroup;
+			children = (
+				1814A398195A913900FA0D6A /* EZPinchController.h */,
+				1814A399195A913900FA0D6A /* EZPinchController.m */,
+				181FC36C1954409700442AF3 /* TLSwipeForOptionsCell.h */,
+				181FC36D1954409700442AF3 /* TLSwipeForOptionsCell.m */,
+				181FC36519540EE100442AF3 /* EZContactMain.h */,
+				1820C9CA195ACAE600387052 /* EZContactMain.m */,
+				181FC36919540F8B00442AF3 /* EZContactMainCell.h */,
+				181FC36A19540F8B00442AF3 /* EZContactMainCell.m */,
+				1814A39D195AA5FE00FA0D6A /* EZPhotoDetail.h */,
+				1814A39E195AA5FE00FA0D6A /* EZPhotoDetail.m */,
+				1857B4C019690D9600ED2632 /* EZPaintRecognizer.h */,
+				1857B4C119690D9600ED2632 /* EZPaintRecognizer.m */,
+				1857B4C51969291800ED2632 /* EZPathPainter.h */,
+				1857B4C61969291800ED2632 /* EZPathPainter.m */,
+				1857B4CA1969479E00ED2632 /* EZLineDrawingView.h */,
+				1857B4CB1969479E00ED2632 /* EZLineDrawingView.m */,
+			);
+			name = "new controllers";
+			sourceTree = "<group>";
+		};
 		182A54FE1862C717003D4A01 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -1443,6 +1490,7 @@
 		18E34685183DF54400C9D89D /* FeatherCV */ = {
 			isa = PBXGroup;
 			children = (
+				181FC36819540F1000442AF3 /* new controllers */,
 				18DE989A19404734008C1B3F /* chat */,
 				186EC108193869DC0011C145 /* faceplus */,
 				18290CBE19276C1A00676423 /* shot_new.caf */,
@@ -2131,6 +2179,7 @@
 				181903F7187FFC64001FC370 /* EZHomeGaussianFilter.m in Sources */,
 				18E34693183DF54400C9D89D /* FeatherCV.xcdatamodeld in Sources */,
 				184ADD9218CF045A00367527 /* EZCameraNaviAnimation.m in Sources */,
+				181FC36B19540F8B00442AF3 /* EZContactMainCell.m in Sources */,
 				18E746F718A4A26A0023967B /* UIImageView+AFNetworking.m in Sources */,
 				181608C718B4E38600DD5995 /* EZAnimationUtil.m in Sources */,
 				186EC128193869FD0011C145 /* FaceppGroup.m in Sources */,
@@ -2143,6 +2192,7 @@
 				186EC127193869FD0011C145 /* FaceppFaceset.m in Sources */,
 				184ADD8618CB490E00367527 /* EZBlurAnimator.m in Sources */,
 				18BF598A18E67DD900995BEE /* EZTrianglerView.m in Sources */,
+				1857B4C219690D9600ED2632 /* EZPaintRecognizer.m in Sources */,
 				18DE991D19404734008C1B3F /* JSQMessagesInputToolbar.m in Sources */,
 				18E746F318A4A26A0023967B /* AFNetworkActivityIndicatorManager.m in Sources */,
 				18A36FF31855C1F50022F0A8 /* DLCGrayscaleContrastFilter.m in Sources */,
@@ -2198,6 +2248,7 @@
 				184ADD8318C8ACA300367527 /* EZShapeButton.m in Sources */,
 				18A36FF01855C1DB0022F0A8 /* DLCBlurOverlayView.m in Sources */,
 				18E4FBBB18F68F7600FA6C21 /* EZUpArrow.m in Sources */,
+				181FC36E1954409700442AF3 /* TLSwipeForOptionsCell.m in Sources */,
 				18E3477E183DFAA400C9D89D /* EZThreadUtility.m in Sources */,
 				18E34776183DFAA400C9D89D /* EZCycleDiminish.m in Sources */,
 				18FA52A3188FDDEE00C91D18 /* EZHomeLineBiFilter.m in Sources */,
@@ -2219,8 +2270,10 @@
 				18F58B7518796CE9006CB966 /* EZNightBlurFilter.m in Sources */,
 				18E746F618A4A26A0023967B /* UIButton+AFNetworking.m in Sources */,
 				1866ADCA189F9F5900DB46E2 /* EZSkinMaskFilter.m in Sources */,
+				1820C9CB195ACAE600387052 /* EZContactMain.m in Sources */,
 				18F58B72187916F2006CB966 /* EZColorGaussianFilter.m in Sources */,
 				180ADA5518C1CA1000AB490C /* EZChatRegion.m in Sources */,
+				1814A39F195AA5FE00FA0D6A /* EZPhotoDetail.m in Sources */,
 				185CE25F18FFAE760037947A /* EZPageControl.m in Sources */,
 				18E34785183DFAA400C9D89D /* EZKeyboadUtility.m in Sources */,
 				18DE991719404734008C1B3F /* JSQMessagesCollectionViewCell.m in Sources */,
@@ -2258,7 +2311,9 @@
 				18E34787183DFAA400C9D89D /* EZDataUtil.m in Sources */,
 				18E3477F183DFAA400C9D89D /* EZReachability.m in Sources */,
 				186EC0091937363E0011C145 /* EZPhotoChat.m in Sources */,
+				1857B4C71969291800ED2632 /* EZPathPainter.m in Sources */,
 				18E3474C183DFA7300C9D89D /* EZDisplayPhoto.m in Sources */,
+				1814A39A195A913900FA0D6A /* EZPinchController.m in Sources */,
 				18DE990B19404734008C1B3F /* JSQMessagesViewController.m in Sources */,
 				181608CC18B4EA9F00DD5995 /* EZRotateAnimation.m in Sources */,
 				18C0E76E1861A0FF00D694CE /* EZSoundEffect.m in Sources */,
@@ -2274,6 +2329,7 @@
 				18E3472D183DFA3300C9D89D /* EZTiltCell.m in Sources */,
 				180ADA5D18C4247F00AB490C /* EZCenterButton.m in Sources */,
 				18E3472B183DFA3300C9D89D /* EZMainPage.m in Sources */,
+				1857B4CC1969479E00ED2632 /* EZLineDrawingView.m in Sources */,
 				18E34749183DFA7300C9D89D /* EZConversation.m in Sources */,
 				18E746F518A4A26A0023967B /* UIAlertView+AFNetworking.m in Sources */,
 				18DE990919404734008C1B3F /* UIView+JSQMessages.m in Sources */,

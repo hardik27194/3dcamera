@@ -65,7 +65,7 @@
 
 #define RotateBackground [UIColor blackColor]
 
-#define EZTextRegionPosY (CurrentScreenHeight - 150)
+#define EZTextRegionPosY (CurrentScreenHeight - 250)
 
 /**
 @interface EZMotionRecord : NSObject 
@@ -1256,10 +1256,6 @@ context:(void *)context
     return length <= 30;
 }
 
-- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)string {
-    
-    return [self isAcceptableTextLength:_textField.text.length + string.length - range.length];
-}
 
 -(IBAction)checkIfCorrectLength:(id)sender{
     if (![self isAcceptableTextLength:self.textField.text.length]) {
@@ -1267,13 +1263,35 @@ context:(void *)context
     }
 }
 **/
+
+- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)string {
+    
+    NSInteger totalLength = _textField.text.length + string.length - range.length;
+    if(totalLength > 140){
+        return false;
+    }
+    
+    if(totalLength > 120){
+        int remain = 140 - totalLength;
+        [self showLimitChar:remain];
+    }
+    return true;
+}
+
+
+- (void)textViewDidChange:(UITextView *)textView
+{
+    EZDEBUG(@"did change called:%@", textView.text);
+    [EZUIUtility adjustFontSizeToFillItsContents:_textField miniFont:EZMinAdaptiveFont  maxFont:EZMaxAdaptiveFont];
+}
+
  
 - (void) createTextField
 {
     
     __weak DLCImagePickerController* weakSelf = self;
-    CGRect bounds = [UIScreen mainScreen].applicationFrame;
-    textInputRegion = [[UIView alloc] initWithFrame:CGRectMake(0, CurrentScreenHeight, 320, 70)];
+    //CGRect bounds = [UIScreen mainScreen].applicationFrame;
+    textInputRegion = [[UIView alloc] initWithFrame:CGRectMake(0, CurrentScreenHeight, 320, 300)];
     //textInputRegion.backgroundColor = [UIColor whiteColor];
     textInputRegion.backgroundColor = [UIColor clearColor];
     
@@ -1305,17 +1323,20 @@ context:(void *)context
         weakSign.image = [UIImage imageNamed:@"feather_icon"];
     };
     //[signText enableShadow:[UIColor blackColor]];
-    _textField = [[UITextView alloc] initWithFrame:CGRectMake(50, 5, 250, 65)];
-    _textField.font = [UIFont systemFontOfSize:13];
-    _textField.backgroundColor = RGBA(100, 100, 100, 40);
-    _textField.layer.cornerRadius = 5;
+    _textField = [[UITextView alloc] initWithFrame:CGRectMake(10, 0, CurrentScreenWidth - 20, 300)];
+    _textField.font = [UIFont systemFontOfSize:EZMaxAdaptiveFont];
+    _textField.backgroundColor = RGBA(100, 100, 100, 128);
+    //_textField.layer.cornerRadius = 5;
     //_textField.placeholder = macroControlInfo(@"Say something");
     //[_textField enabl]
+    //[_textField addTarget:self action:@selector(textChanaged:) forControlEvents:UIControlEventEditingChanged];
+    //[_textField add]
     
     _textField.delegate = self;
-    _textField.returnKeyType = UIReturnKeyDefault;
+    _textField.returnKeyType = UIReturnKeySend;
     _textField.keyboardAppearance = UIKeyboardAppearanceLight;
-    
+    _textField.scrollEnabled = false;
+    _textField.textAlignment = NSTextAlignmentCenter;
     //[_textField addTarget:self action:@selector(onValueChange:) forControlEvents:UIControlEventEditingChanged];
     //_textField.allowsEditingTextAttributes
     
@@ -1331,10 +1352,12 @@ context:(void *)context
     //[cancelText setTitleColor:RGBCOLOR(128, 128, 128) forState:UIControlStateNormal];
     //[cancelText addTarget:self action:@selector(cancelText:) forControlEvents:UIControlEventTouchUpInside];
     //[textInputRegion addSubview:cancelText];
-    [textInputRegion addSubview:_textPlaceHolder];
+    //[textInputRegion addSubview:_textPlaceHolder];
     [textInputRegion addSubview:_textField];
-    [textInputRegion addSubview:signClicked];
+    //[textInputRegion addSubview:signClicked];
     [self.view addSubview:textInputRegion];
+    //[EZUIUtility verticalCentering:_textField height:]
+    [EZUIUtility adjustFontSizeToFillItsContents:_textField miniFont:EZMinAdaptiveFont maxFont:EZMaxAdaptiveFont];
     
     _confirmButton = [[UIButton alloc] initWithFrame:CGRectMake(CurrentScreenWidth - 60, 216, 60, 44)];
     [_confirmButton setTitle:macroControlInfo(@"完成") forState:UIControlStateNormal];
@@ -1362,6 +1385,7 @@ context:(void *)context
 {
     EZDEBUG(@"Rotate back");
     _textPlaceHolder.hidden = YES;
+    //[EZUIUtility verticalCentering:_textField];
     //if(!_turnedImage){
     //    _turnedImage = TRUE;
         //[self rotateCurrentImage:[disPhoto.photo getScreenImage]];
@@ -3205,7 +3229,7 @@ context:(void *)context
     EZDEBUG(@"start animation get called");
     
     [UIView animateWithDuration:0.8 delay:0.0 usingSpringWithDamping:1.4 initialSpringVelocity:0.5 options:UIViewAnimationOptionAutoreverse|UIViewAnimationOptionRepeat animations:^(){
-        _upArrow.transform = CGAffineTransformMakeScale(1.3, 1.3);
+        _upArrow.transform = CGAffineTransformMakeScale(1.4, 1.4);
     } completion:nil];
     /**
     [UIView animateWithDuration:0.8
@@ -3325,7 +3349,7 @@ context:(void *)context
             weakSelf.uploadStatus = kUploading;
             weakSelf.upArrow.hidden = NO;
             [weakSelf startUpArrowAnimation];
-            
+            [weakSelf.textField becomeFirstResponder];
             //[[EZDataUtil getInstance] remoteDebug:@"capture completed" isSync:YES];
         };
         [self prepareForCapture];

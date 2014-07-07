@@ -122,6 +122,40 @@ SINGLETON_FOR_CLASS(EZUIUtility)
     }
 }
 
++ (void) adjustFontSizeToFillItsContents:(UITextView*)textView miniFont:(int)miniFont maxFont:(int)maxFont
+{
+    NSString* text = textView.text?[NSString stringWithFormat:@"%@\n",textView.text]:@"\n";
+    CGFloat lastHeight = textView.bounds.size.height;
+    for (int i = maxFont; i>miniFont; i--) {
+        
+        UIFont *font = [UIFont fontWithName:textView.font.fontName size:(CGFloat)i];
+        NSAttributedString *attributedText = [[NSAttributedString alloc] initWithString:text attributes:@{NSFontAttributeName: font}];
+        
+        CGRect rectSize = [attributedText boundingRectWithSize:CGSizeMake(textView.frame.size.width, CGFLOAT_MAX) options:NSStringDrawingUsesLineFragmentOrigin context:nil];
+        if (rectSize.size.height <= textView.frame.size.height) {
+            EZDEBUG(@"final font:%i", i);
+            textView.font = font;//[UIFont fontWithName:textView.font.fontName size:(CGFloat)i];
+            lastHeight = rectSize.size.height;
+            break;
+        }
+    }
+    [self verticalCentering:textView height:lastHeight];
+}
+
++ (void) verticalCentering:(UITextView *)textView height:(CGFloat)actualHeight
+{
+    /**
+    CGFloat topCorrect = ([textView bounds].size.height - [textView contentSize].height * [textView zoomScale])/2.0;
+    topCorrect = ( topCorrect < 0.0 ? 0.0 : topCorrect );
+    textView.contentOffset = (CGPoint){.x = 0, .y = -topCorrect};
+     **/
+    CGFloat gap = textView.bounds.size.height - actualHeight;
+    EZDEBUG(@"gap is:%f", gap);
+    
+    //[textView moveY:gap];
+    [textView setY:gap];
+    
+}
 
 + (UIViewController*) topMostController
 {
