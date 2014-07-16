@@ -181,7 +181,7 @@ alpha:(a)/255.0f]
 
 #define cellGray  [UIColor colorFromHex:@"dfdfdf"]
 
-#define GrayTextColor [UIColor colorFromHex:@"9d9d9c"]
+//#define GrayTextColor [UIColor colorFromHex:@"9d9d9c"]
 
 #define setnav(nav) [nav.navigationBar setBackgroundImage:[UIImage imageNamed:@"bg-navigationBar"] forBarMetrics:UIBarMetricsDefault]
 

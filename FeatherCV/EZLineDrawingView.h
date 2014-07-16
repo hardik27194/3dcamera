@@ -21,6 +21,8 @@
 
 @property (nonatomic, strong) NSMutableArray* points;
 
+@property (nonatomic, assign) BOOL ignoreTouch;
+
 - (void) paintLine:(NSArray*)line;
 
 @end

@@ -402,4 +402,6 @@
 
 - (void) removeExpiredPhotos;
 
+- (void) sendTouches:(EZPerson*)ps touches:(NSArray*)touches  success:(EZEventBlock)success failed:(EZEventBlock)failed;
+
 @end

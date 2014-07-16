@@ -10,12 +10,40 @@
 #import "EZContactMainCell.h"
 #import "EZPerson.h"
 #import "EZLineDrawingView.h"
+#import "EZProfileView.h"
+#import "EZNote.h"
+#import "EZMessageCenter.h"
+#import "EZDataUtil.h"
+#import "EZAddFriendCell.h"
+#import "EZToolStripe.h"
+
 
 @interface EZContactMain ()
 
 @end
 
 @implementation EZContactMain
+
+
+- (NSArray*) adjustTouchPosition:(NSArray*)touches
+{
+    NSMutableArray* res = [[NSMutableArray alloc] init];
+    BOOL isFirst = true;
+    CGFloat startY = 0;
+    for(NSValue* touch in touches){
+        CGPoint pt = [touch CGPointValue];
+        if(isFirst){
+            isFirst = false;
+            startY = pt.y;
+            pt.y = 20;
+            [res addObject:[NSValue valueWithCGPoint:pt]];
+        }else{
+            pt.y = pt.y - startY + 20;
+            [res addObject:[NSValue valueWithCGPoint:pt]];
+        }
+    }
+    return res;
+}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -26,12 +54,23 @@
     return self;
 }
 
+-(UIStatusBarStyle)preferredStatusBarStyle{
+    EZDEBUG(@"preferredStatusBarStyle");
+    return UIStatusBarStyleDefault;
+}
+
+
+- (void) viewWillAppear:(BOOL)animated
+{
+    [self.navigationController setNavigationBarHidden:true animated:YES];
+}
+
 - (CGFloat) tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     return 84;
 }
 
-- (UITableViewCell*) tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+- (UITableViewCell*) createPersonCell:(UITableView*)tableView index:(NSIndexPath*)indexPath
 {
     EZContactMainCell* cell = [_tableView dequeueReusableCellWithIdentifier:@"contactCell"];
     
@@ -39,11 +78,68 @@
     EZDEBUG(@"person name:%@", person.name);
     cell.name.text = person.name;
     cell.contentView.backgroundColor = randBack(nil);
+    __weak EZContactMain* weakContact = self;
     cell.paintTouchView.collectBlock = ^(NSArray* points){
-        
+        //EZDEBUG(@"The points:%@", points);
+        if(points.count > 1){
+            [weakContact movePersonTop:person animated:YES];
+        }
     };
-    
     return cell;
+}
+
+
+- (UITableViewCell*) tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if(indexPath.row < _persons.count){
+        return [self createPersonCell:tableView index:indexPath];
+    }else{
+        EZAddFriendCell* friendCell = [_tableView dequeueReusableCellWithIdentifier:@"addFriendCell"];
+        friendCell.addClicked = ^(id sender){
+            EZDEBUG(@"Add clicked");
+        };
+        return friendCell;
+    }
+    
+    //return cell;
+}
+
+
+- (void) tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if(editingStyle == UITableViewCellEditingStyleDelete){
+        EZDEBUG(@"Will delete indexPath %i", indexPath.row);
+    }
+}
+
+
+- (BOOL) tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    
+    if(!tableView.isEditing){
+        return false;
+    }
+    EZDEBUG(@"can edit indexPath:%i", indexPath.row);
+    if(indexPath.row < _persons.count){
+        return true;
+    }else{
+        return false;
+    }
+}
+
+
+
+
+- (void) movePersonTop:(EZPerson*)person animated:(BOOL)animated
+{
+    int pos = [_persons indexOfObject:person];
+    EZDEBUG(@"Will start to move object");
+    if(pos == 0){
+        return;
+    }
+    [_persons removeObject:person];
+    [_persons insertObject:person atIndex:0];
+    [_tableView moveRowAtIndexPath:[NSIndexPath indexPathForRow:pos inSection:0] toIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
 }
 
 - (void) setPersons:(NSMutableArray *)persons
@@ -55,22 +151,162 @@
 
 - (NSInteger) tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    EZDEBUG(@"person count:%i", _persons.count);
-    return _persons.count;
+    EZDEBUG(@"person count:%i, type:%i", _persons.count, _displayType);
+    if(_displayType == kOwnPageType){
+        return _persons.count + 1;
+    }else{
+        return _persons.count;
+    }
+}
+
+- (void) editClicked
+{
+    if(_tableView.isEditing){
+        [_tableView setEditing:NO animated:YES];
+        _profileView.isEditing = NO;
+    }else{
+        [_tableView setEditing:YES animated:YES];
+        _profileView.isEditing = YES;
+    }
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     EZDEBUG(@"View did load get called");
+    self.edgesForExtendedLayout = UIRectEdgeTop;
+    self.extendedLayoutIncludesOpaqueBars=NO;
+    self.automaticallyAdjustsScrollViewInsets=NO;
     _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, CurrentScreenHeight) style:UITableViewStylePlain];
     _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     [_tableView registerClass:[EZContactMainCell class] forCellReuseIdentifier:@"contactCell"];
+    [_tableView registerClass:[EZAddFriendCell class] forCellReuseIdentifier:@"addFriendCell"];
     _tableView.delegate = self;
     _tableView.dataSource = self;
     [self.view addSubview:_tableView];
+    _profileStatus = kStripeShow;
+    _tableView.contentInset = UIEdgeInsetsMake(EZToolStripeHeight, 0, 0, 0);
+    _profileView = [[EZProfileView alloc] init];
+    [_profileView setPosition:CGPointMake(0, -_profileView.bounds.size.height)];
+    [_tableView addSubview:_profileView];
+    __weak EZContactMain* weakSelf = self;
+    if(_displayType == kOwnPageType){
+        _profileView.toolStripe.clicked = ^(NSNumber* num){
+            if(num.integerValue == 3){
+                [weakSelf editClicked];
+            }
+        };
+    }
+    
+    [[EZMessageCenter getInstance] registerEvent:EZRecievedNotes block:^(EZNote* note){
+        
+        BOOL triggerByNotes = [[EZDataUtil getInstance].pushNotes objectForKey:note.noteID] != nil;
+        NSString* trigger = [NSString stringWithFormat:@"%@,%i", note.type, triggerByNotes];
+        [MobClick event:EZALRecievedNotes label:trigger];
+        EZDEBUG(@"Recieved notes:%@, notes:%@, pointer:%i", note.type, note.noteID, (int)note);
+        if([@"touched" isEqualToString:note.type]){
+            EZDEBUG(@"Recieved touched");
+        }else if([@"avatar" isEqualToString:note.type]){
+            EZDEBUG(@"Avatar changed");
+        }
+        else
+        if([@"match" isEqualToString:note.type]){
+            //EZPhoto* matchedPhoto = note.matchedPhoto;
+            //self.title = @"用户合照片";
+            
+            //[self insertMatch:note];
+        }else if([@"like" isEqualToString:note.type]){
+            //[self addLike:note];
+        }else if([@"upload" isEqualToString:note.type]){
+            //[self insertUpload:note];
+        }else if([EZNoteJoined isEqualToString:note.type]){
+            EZPerson* ps = note.person;
+            //[EZDataUtil getInstance].currentQueryUsers
+            EZDEBUG(@"adjust the activity for person:%@", ps.personID);
+            //[[EZDataUtil getInstance] adjustActivity:ps.personID];
+            //_leftMessageCount.hidden = NO;
+            /**
+            BOOL triggerByNote = [[EZDataUtil getInstance].pushNotes objectForKey:note.noteID] != nil;
+            if(triggerByNote){
+                EZPersonDetail* pd = [[EZPersonDetail alloc] initWithPerson:ps];
+                _isPushCamera = false;
+                _leftCyleButton.hidden = YES;
+                _rightCycleButton.hidden = YES;
+                [self.navigationController pushViewController:pd animated:YES];
+            }
+             **/
+        }else if([@"textSend" isEqualToString:note.type]){
+            EZDEBUG(@"received chat:%@", note.rawInfo);
+            /**
+            EZPhotoChat* pc = [[EZPhotoChat alloc] init];
+            [pc fromJson:note.rawInfo];
+            //BOOL triggerByNote = [[EZDataUtil getInstance].pushNotes objectForKey:note.noteID] != nil;
+            [self handleChatNote:pc isPush:triggerByNotes];
+             **/
+        }else if([@"deleted" isEqualToString:note.type]){
+            //[self processDeleteNote:note];
+        }
+        else if([EZNoteFriendAdd isEqualToString:note.type]){
+            
+        }else if([EZNoteFriendKick isEqualToString:note.type]){
+            
+        }
+    }];
+
+    
     // Do any additional setup after loading the view.
 }
+
+
+
+- (void) scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
+{
+    CGFloat offsetY = scrollView.contentOffset.y + _tableView.contentInset.top;
+    EZDEBUG(@"end of scroll %f, profileStatus:%i, offsetY:%f", scrollView.contentOffset.y, _profileStatus, offsetY);
+    //if(_profileStatus == kStripeShow){
+    //}
+    if(_profileStatus == kStripeShow && offsetY < -EZToolStripeHeight * 0.5){
+        _profileStatus = kFullProfile;
+        [UIView animateWithDuration:0.3 animations:^(){
+            [_tableView setContentInset:UIEdgeInsetsMake(EZProfileImageHeight + EZToolStripeHeight, 0, 0, 0)];
+        }];
+        return;
+    }
+        if(offsetY >= 0){
+            if(_profileStatus == kNormalPos){
+                EZDEBUG(@"Do nothing");
+            }else{
+                if(offsetY > 5){
+                    _profileStatus = kNormalPos;
+                    [UIView animateWithDuration:0.3 animations:^(){
+                        [_tableView setContentInset:UIEdgeInsetsMake(0, 0, 0, 0)];
+                    }];
+                }
+            }
+        }else
+       if(offsetY < -EZToolStripeHeight * 1.5){
+           if(_profileStatus == kFullProfile){
+               EZDEBUG(@"already full profile");
+           }else{
+               _profileStatus = kFullProfile;
+               [UIView animateWithDuration:0.3 animations:^(){
+                   [_tableView setContentInset:UIEdgeInsetsMake(EZProfileImageHeight + EZToolStripeHeight, 0, 0, 0)];
+               }];
+           }
+           
+       }else if(offsetY > -EZToolStripeHeight * 1.5){
+           if(_profileStatus == kStripeShow){
+               EZDEBUG(@"already strip show");
+           }else{
+               _profileStatus = kStripeShow;
+               [UIView animateWithDuration:0.3 animations:^(){
+                   [_tableView setContentInset:UIEdgeInsetsMake(EZToolStripeHeight, 0, 0, 0)];
+               }];
+           }
+       }
+}
+
+
 
 - (void)didReceiveMemoryWarning
 {

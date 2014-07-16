@@ -8,12 +8,25 @@
 
 #import <UIKit/UIKit.h>
 
+typedef enum {
+    kNormalPos,
+    kStripeShow,
+    kFullProfile
+} EZProfileStatus;
+
+
+
+@class EZProfileView;
 @interface EZContactMain : UIViewController<UITableViewDelegate, UITableViewDataSource>
 
 @property (nonatomic, strong) UITableView* tableView;
 
 @property (nonatomic, strong) NSMutableArray* persons;
 
+@property (nonatomic, strong) EZProfileView* profileView;
 
+@property (nonatomic, assign) EZProfileStatus profileStatus;
+
+@property (nonatomic, assign) EZContactDisplayType displayType;
 
 @end

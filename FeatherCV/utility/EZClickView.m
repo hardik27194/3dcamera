@@ -102,7 +102,8 @@
     }else if(_animType == kPressColorChange){
         [self enlargeCycle:YES];
     }else if(_animType == kPressGlow){
-        [self glowOnce:0.8];
+        //[self glowOnce:0.8];
+        [self showWhiteRadius];
     }
     /**
     [UIView animateWithDuration:0.2f animations:^{
@@ -134,6 +135,8 @@
         [self hideColor];
     }else if(_animType == kPressEnlargeCycle){
         [self enlargeCycle:NO];
+    }else if(_animType == kPressGlow){
+        [self hideWhiteRadius:0.2];
     }
 }
 

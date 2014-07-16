@@ -105,6 +105,8 @@ static char* GLOWVIEW_KEY = "GLOWVIEW";
 }
 
 - (void) glowOnce:(CGFloat)time{
+    
+    
     [self startGlowing:time];
     
     int64_t delayInSeconds = time;
@@ -112,7 +114,26 @@ static char* GLOWVIEW_KEY = "GLOWVIEW";
     dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
         [self stopGlowing];
     });
+}
 
+
+- (void) showWhiteRadius
+{
+    
+    EZDEBUG(@"Show white glow");
+    UIColor *color = [UIColor whiteColor];
+    self.layer.shadowColor = [color CGColor];
+    self.layer.shadowRadius = 20.0f;
+    self.layer.shadowOpacity = 0.9;
+    self.layer.shadowOffset = CGSizeZero;
+    self.layer.masksToBounds = NO;
+}
+
+- (void) hideWhiteRadius:(CGFloat)delay
+{
+    dispatch_later(delay, ^(){
+        self.layer.shadowColor = [UIColor clearColor].CGColor;
+    });
 }
 
 // Create a pulsing, glowing view based on this one.

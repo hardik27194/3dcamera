@@ -9,6 +9,11 @@
 #import <Foundation/Foundation.h>
 #import "LocalPersons.h"
 
+typedef enum {
+    kMale,
+    kFemale,
+    kUnknown
+}EZGender;
 
 @interface EZPerson : NSObject
 
@@ -23,6 +28,10 @@
 @property (nonatomic, strong) NSString* email;
 
 @property (nonatomic, strong) NSString* pushToken;
+
+@property (nonatomic, assign) EZGender gender;
+
+@property (nonatomic, strong) NSString* signature;
 
 //A default user
 //Anything need a mock user to success
@@ -51,8 +60,13 @@
 
 @property (nonatomic, assign) int photoCount;
 
+@property (nonatomic, assign) int touchCount;
+
 //Used to sort the user in the array.
 @property (nonatomic, strong) NSDate* lastActive;
+
+//My touch time for this person.
+@property (nonatomic, strong) NSDate* lastMineActive;
 
 @property (nonatomic, assign) NSInteger activityCount;
 

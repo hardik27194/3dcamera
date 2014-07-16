@@ -31,7 +31,11 @@
              @"joinedTime":_joinedTime?isoDateFormat(_joinedTime):@"",
              @"joined":@(_joined),
              @"photoCount":@(_photoCount),
-             //@"pendingEventCount":@(_pendingEventCount)
+             @"gender":@(_gender),
+             @"signature":null2Empty(_signature),
+             @"lastActive":_lastActive?isoDateFormat(_lastActive):@"",
+             @"lastMineActive":_lastMineActive?isoDateFormat(_lastMineActive):@""
+            //@"pendingEventCount":@(_pendingEventCount)
              };
 
 }
@@ -80,8 +84,12 @@
     _isFriend = ps.isFriend;
     _joined = ps.joined;
     _mock = ps.mock;
+    _gender = ps.gender;
+    _signature = ps.signature;
     //_pendingEventCount = ps.pendingEventCount;
     _joinedTime = ps.joinedTime;
+    _lastActive = ps.lastActive;
+    _lastMineActive = ps.lastMineActive;
 }
 
 
@@ -99,8 +107,15 @@
     }
     _joined = [[dict objectForKey:@"joined"] integerValue];
     _mock = [[dict objectForKey:@"mock"] integerValue];
-    //_pendingEventCount = [[dict objectForKey:@"pendingEventCount"] integerValue];
+    _gender = [[dict objectForKey:@"gender"] integerValue];
+    _signature = [dict objectForKey:@"signature"];
+    if([dict objectForKey:@"lastActive"]){
+        _lastActive = [[EZDataUtil getInstance].isoFormatter  dateFromString:[dict objectForKey:@"lastActive"]];
+    }    //_pendingEventCount = [[dict objectForKey:@"pendingEventCount"] integerValue];
 
+    if([dict objectForKey:@"lastMineActive"]){
+        _lastMineActive = [[EZDataUtil getInstance].isoFormatter  dateFromString:[dict objectForKey:@"lastMineActive"]];
+    }
 }
 
 - (NSDictionary*) toJson
@@ -114,7 +129,9 @@
              @"mock":@(_mock),
              @"joinedTime":_joinedTime?isoDateFormat(_joinedTime):@"",
              @"joined":@(_joined),
-             @"photoCount":@(_photoCount)
+             @"photoCount":@(_photoCount),
+             @"gender":@(_gender),
+             @"signature":_signature
              };
 }
 
@@ -134,6 +151,8 @@
     }
     _joined = [[dict objectForKey:@"joined"] integerValue];
     _mock = [[dict objectForKey:@"mock"] integerValue];
+    _gender = [[dict objectForKey:@"gender"] integerValue];
+    _signature = [dict objectForKey:@"signature"];
     //return self;
 }
 

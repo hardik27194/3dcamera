@@ -68,6 +68,9 @@
     EZDEBUG(@"Touch begin");
     [myPath removeAllPoints];
     [_points removeAllObjects];
+    if(_ignoreTouch){
+        return;
+    }
     if(touches.count > 1){
         return;
     }
@@ -100,6 +103,9 @@
 - (void) touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
 {
     EZDEBUG(@"Touch cancelled");
+    if(_collectBlock){
+        _collectBlock(_points);
+    }
     
 }
 

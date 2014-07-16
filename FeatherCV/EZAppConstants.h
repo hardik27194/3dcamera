@@ -12,6 +12,15 @@
 //#include <opencv2/opencv.hpp>
 //Will hold the Application related constants.
 
+typedef enum {
+    kOwnPageType,
+    kOtherPageType
+} EZContactDisplayType;
+
+#define EZMainCellHeight 84
+
+#define GrayTextColor RGBCOLOR(70, 70, 70)
+
 #define  EZLargeFont [UIFont fontWithName:@"HelveticaNeue-Light" size:25]
 #define  EZSmallFont [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:30]
 
@@ -28,6 +37,10 @@
 #define CenterUpShift 20
 
 #define EZPersonCellHeight 84
+
+#define EZToolStripeHeight 74
+
+#define EZProfileImageHeight 360
 
 #define EZRotateAnimDuration 0.5
 

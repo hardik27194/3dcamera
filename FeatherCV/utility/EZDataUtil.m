@@ -101,6 +101,21 @@
     return self;
 }
 
+- (void) sendTouches:(EZPerson*)ps touches:(NSArray*)touches success:(EZEventBlock)success failed:(EZEventBlock)failed
+{
+    NSMutableArray* jsonTouches = [[NSMutableArray alloc] init];
+    for(NSValue* nv in touches){
+        CGPoint pt = [nv CGPointValue];
+        NSString* ptStr = NSStringFromCGPoint(pt);
+        [jsonTouches addObject:ptStr];
+    }
+    NSDictionary* dict = @{
+                           @"personID":ps.personID,
+                           @"touches":jsonTouches
+                           };
+    [EZNetworkUtility postParameterAsJson:@"/touch" parameters:dict complete:success failblk:failed];
+}
+
 
 - (NSDate*) formatISOString:(NSString*)string
 {

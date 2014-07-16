@@ -24,6 +24,14 @@
 
 @property (nonatomic, strong) UILabel* name;
 
+@property (nonatomic, strong) UILabel* otherName;
+
+@property (nonatomic, strong) UILabel* signature;
+
 @property (nonatomic, strong) EZLineDrawingView* paintTouchView;
+
+@property (nonatomic, strong) UIButton* addButton;
+
+@property (nonatomic, strong) EZEventBlock addClicked;
 
 @end

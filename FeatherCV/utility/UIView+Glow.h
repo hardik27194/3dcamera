@@ -11,6 +11,11 @@
 
 @property (nonatomic, readonly) UIView* glowView;
 
+- (void) showWhiteRadius;
+
+
+- (void) hideWhiteRadius:(CGFloat)delay;
+
 // Fade up, then down.
 - (void) glowOnce;
 
