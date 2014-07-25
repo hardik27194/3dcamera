@@ -16,5 +16,16 @@
 
 @property (nonatomic, strong) UIImageView* infoIcon;
 
+@property (nonatomic, strong) UIImageView* triangle;
+
 @property (nonatomic, strong) EZEventBlock clicked;
+
+@property (nonatomic, strong) UIView* graySep;
+
+@property (nonatomic, assign) BOOL selected;
+
+- (void) setCount:(int) count;
+
+- (void) setSelected:(BOOL)selected;
+
 @end

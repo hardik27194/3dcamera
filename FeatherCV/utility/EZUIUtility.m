@@ -464,7 +464,11 @@ SINGLETON_FOR_CLASS(EZUIUtility)
     [info objectForKey:
      UIImagePickerControllerEditedImage];
     if(_completed){
-        _completed([info objectForKey:UIImagePickerControllerEditedImage]);
+        UIImage* img = [info objectForKey:UIImagePickerControllerEditedImage];
+        if(!img){
+            img = [info objectForKey:UIImagePickerControllerOriginalImage];
+        }
+        _completed(img);
     }
     /**
     _cameraRaised = false;

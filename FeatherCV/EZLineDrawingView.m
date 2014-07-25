@@ -17,7 +17,7 @@
     if (self) {
         // Initialization code
                 
-        self.backgroundColor=[UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:.5];
+        self.backgroundColor=[UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:.2];
         myPath=[[UIBezierPath alloc]init];
         myPath.lineCapStyle=kCGLineCapRound;
         myPath.miterLimit=0;

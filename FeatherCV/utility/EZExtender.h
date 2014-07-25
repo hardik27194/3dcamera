@@ -79,6 +79,8 @@ typedef void  (^ IterateOperation)(id obj);
 
 @interface UILabel(EZPrivate)
 
++ (UILabel*) createLabel:(CGRect)frame font:(UIFont*)font color:(UIColor*)color;
+
 - (CGFloat) calcRegionDelta:(NSString*)string;
 
 - (CGSize) calcRegion:(NSString*)text;

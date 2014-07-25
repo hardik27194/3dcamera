@@ -27,14 +27,17 @@
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if(self){
         
+        _photoView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, EZPersonCellHeight)];
+        _photoView.contentMode = UIViewContentModeScaleAspectFill;
+        [self.contentView addSubview:_photoView];
         _paintTouchView = [[EZLineDrawingView alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, EZPersonCellHeight)];
         [self.contentView addSubview:_paintTouchView];
         _name = [[UILabel alloc] initWithFrame:CGRectMake(0, 30, CurrentScreenWidth, 24)];
-        _name.font = [UIFont boldSystemFontOfSize:22];
+        _name.font = [UIFont systemFontOfSize:22];
         _name.textColor = [UIColor whiteColor];
         _name.textAlignment = NSTextAlignmentCenter;
         _otherName = [[UILabel alloc] initWithFrame:CGRectMake(20, 20, 200, 18)];
-        _otherName.font = [UIFont boldSystemFontOfSize:16];
+        _otherName.font = [UIFont systemFontOfSize:16];
         _otherName.textColor = [UIColor whiteColor];
         _otherName.textAlignment = NSTextAlignmentLeft;
         

@@ -16,6 +16,9 @@
 #import "EZDataUtil.h"
 #import "EZAddFriendCell.h"
 #import "EZToolStripe.h"
+#import "EZProfileView.h"
+#import "AFNetworking.h"
+#import "UIImageView+AFNetworking.h"
 
 
 @interface EZContactMain ()
@@ -62,7 +65,12 @@
 
 - (void) viewWillAppear:(BOOL)animated
 {
-    [self.navigationController setNavigationBarHidden:true animated:YES];
+    //[self.navigationController setNavigationBarHidden:true animated:YES];
+    if(_profileStatus != kFullProfile){
+        [self.navigationController setNavigationBarHidden:true animated:YES];
+    }else{
+        [self.navigationController setNavigationBarHidden:false animated:YES];
+    }
 }
 
 - (CGFloat) tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -77,7 +85,8 @@
     EZPerson* person = [_persons objectAtIndex:indexPath.row];
     EZDEBUG(@"person name:%@", person.name);
     cell.name.text = person.name;
-    cell.contentView.backgroundColor = randBack(nil);
+    //cell.contentView.backgroundColor = randBack(nil);
+    [cell.photoView setImageWithURL:str2url(person.avatar)];
     __weak EZContactMain* weakContact = self;
     cell.paintTouchView.collectBlock = ^(NSArray* points){
         //EZDEBUG(@"The points:%@", points);
@@ -86,6 +95,38 @@
         }
     };
     return cell;
+}
+
+
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    EZDEBUG(@"index:%i", buttonIndex);
+    if(buttonIndex == 2){
+        return;
+    }
+    
+    __weak  EZContactMain* weakSelf = self;
+    [[EZUIUtility sharedEZUIUtility] raiseCamera:buttonIndex controller:self completed:^(UIImage* image){
+        EZDEBUG(@"will upload image:%@", NSStringFromCGSize(image.size));
+        image = [image resizedImageWithMinimumSize:image.size antialias:YES];
+        //image = [image changeOriention:UIImageOrientationUp];
+        [[EZDataUtil getInstance] uploadAvatarImage:image success:^(NSString* url){
+            EZDEBUG(@"avatar url:%@", url);
+            currentLoginUser.avatar = url;
+            //_avatarURL = url;
+            //_uploadingAvatar = false;
+            //if(_registerBlock){
+            //    _registerBlock(nil);
+            //}
+            [weakSelf.profileView.headIcon setImageWithURL:str2url(url)];
+            
+        } failed:^(id sender){
+            //[[EZUIUtility sharedEZUIUtility] raiseInfoWindow:macroControlInfo(@"Upload avatar failed") info:@"Please try avatar upload later"];
+            //_uploadingAvatar = false;
+        }];
+
+    } allowEditing:NO];
+    
 }
 
 
@@ -115,11 +156,10 @@
 
 - (BOOL) tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    
+    EZDEBUG(@"can edit indexPath:%i", indexPath.row);
     if(!tableView.isEditing){
         return false;
     }
-    EZDEBUG(@"can edit indexPath:%i", indexPath.row);
     if(indexPath.row < _persons.count){
         return true;
     }else{
@@ -170,6 +210,21 @@
     }
 }
 
+- (void) imageClicked:(id) obj{
+    UIActionSheet* action = [[UIActionSheet alloc] initWithTitle:macroControlInfo(@"Choose Avatar") delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Camera",@"Album", nil];
+    [action showInView:self.view];
+}
+
+- (void) setupProfile:(EZPerson*)person
+{
+    [_profileView.headIcon setImageWithURL:str2url(person.avatar)];
+    _profileView.signature.text = @"昨夜西风凋碧树";//person.signature;
+    _profileView.name.text = person.name;
+    _profileView.touchCount.text = int2str(person.touchCount);
+    
+    
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -184,22 +239,45 @@
     _tableView.delegate = self;
     _tableView.dataSource = self;
     [self.view addSubview:_tableView];
-    _profileStatus = kStripeShow;
-    _tableView.contentInset = UIEdgeInsetsMake(EZToolStripeHeight, 0, 0, 0);
+    _profileStatus = kFullProfile;
+    _tableView.contentInset = UIEdgeInsetsMake(EZProfileImageHeight + EZToolStripeHeight + 64.0, 0, 0, 0);
     _profileView = [[EZProfileView alloc] init];
     [_profileView setPosition:CGPointMake(0, -_profileView.bounds.size.height)];
     [_tableView addSubview:_profileView];
     __weak EZContactMain* weakSelf = self;
     if(_displayType == kOwnPageType){
+        self.title = @"羽毛";
         _profileView.toolStripe.clicked = ^(NSNumber* num){
             if(num.integerValue == 3){
                 [weakSelf editClicked];
+            }else
+                if(num.integerValue == 1){
+                /**
+                [[EZDataUtil getInstance] triggerLogin:^(EZPerson* ps){
+                    [[EZDataUtil getInstance] getMatchUsers:nil failure:nil];
+                } failure:^(id err){} reason:@"请注册" isLogin:NO];
+                 **/
             }
         };
+        
+        _profileView.headIcon.releasedBlock = ^(id obj){
+            [weakSelf imageClicked:nil];
+        };
+       
+        [[EZMessageCenter getInstance] registerEvent:EZUserAuthenticated block:^(id obj){
+            weakSelf.person = currentLoginUser;
+            [weakSelf setupProfile:currentLoginUser];
+        }];
+        
+        [[EZDataUtil getInstance] getPersonByID:currentLoginID success:^(EZPerson* ps){
+            weakSelf.person = ps;
+            [weakSelf setupProfile:ps];
+        }];
     }
     
+    [weakSelf setupProfile:_person];
+    
     [[EZMessageCenter getInstance] registerEvent:EZRecievedNotes block:^(EZNote* note){
-        
         BOOL triggerByNotes = [[EZDataUtil getInstance].pushNotes objectForKey:note.noteID] != nil;
         NSString* trigger = [NSString stringWithFormat:@"%@,%i", note.type, triggerByNotes];
         [MobClick event:EZALRecievedNotes label:trigger];
@@ -261,23 +339,29 @@
 
 - (void) scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
 {
+    
+    CGFloat navHeight = 64.0;
     CGFloat offsetY = scrollView.contentOffset.y + _tableView.contentInset.top;
     EZDEBUG(@"end of scroll %f, profileStatus:%i, offsetY:%f", scrollView.contentOffset.y, _profileStatus, offsetY);
     //if(_profileStatus == kStripeShow){
     //}
     if(_profileStatus == kStripeShow && offsetY < -EZToolStripeHeight * 0.5){
         _profileStatus = kFullProfile;
+        [self.navigationController setNavigationBarHidden:NO animated:YES];
         [UIView animateWithDuration:0.3 animations:^(){
-            [_tableView setContentInset:UIEdgeInsetsMake(EZProfileImageHeight + EZToolStripeHeight, 0, 0, 0)];
+            [_tableView setContentInset:UIEdgeInsetsMake(EZProfileImageHeight + EZToolStripeHeight + navHeight, 0, 0, 0)];
         }];
         return;
     }
-        if(offsetY >= 0){
+    
+    
+    if(offsetY >= 0){
             if(_profileStatus == kNormalPos){
                 EZDEBUG(@"Do nothing");
             }else{
                 if(offsetY > 5){
                     _profileStatus = kNormalPos;
+                    [self.navigationController setNavigationBarHidden:YES animated:YES];
                     [UIView animateWithDuration:0.3 animations:^(){
                         [_tableView setContentInset:UIEdgeInsetsMake(0, 0, 0, 0)];
                     }];
@@ -289,8 +373,9 @@
                EZDEBUG(@"already full profile");
            }else{
                _profileStatus = kFullProfile;
+               [self.navigationController setNavigationBarHidden:NO animated:YES];
                [UIView animateWithDuration:0.3 animations:^(){
-                   [_tableView setContentInset:UIEdgeInsetsMake(EZProfileImageHeight + EZToolStripeHeight, 0, 0, 0)];
+                   [_tableView setContentInset:UIEdgeInsetsMake(EZProfileImageHeight + EZToolStripeHeight + navHeight, 0, 0, 0)];
                }];
            }
            
@@ -299,6 +384,7 @@
                EZDEBUG(@"already strip show");
            }else{
                _profileStatus = kStripeShow;
+               [self.navigationController setNavigationBarHidden:YES animated:YES];
                [UIView animateWithDuration:0.3 animations:^(){
                    [_tableView setContentInset:UIEdgeInsetsMake(EZToolStripeHeight, 0, 0, 0)];
                }];

@@ -9,17 +9,17 @@
 #import <UIKit/UIKit.h>
 
 @class EZToolStripe;
-@interface EZProfileView : UIView
+@interface EZProfileView : UIView<UITextFieldDelegate>
 
 //Following method will be used
 @property (nonatomic, assign) EZContactDisplayType displayType;
 @property (nonatomic, assign) BOOL isEditing;
-
 @property (nonatomic, strong) UITextField* name;
 @property (nonatomic, strong) UITextField* signature;
 @property (nonatomic, strong) UILabel* touchCount;
 @property (nonatomic, strong) UIImageView* touchIcon;
 @property (nonatomic, strong) EZClickImage* headIcon;
 @property (nonatomic, strong) EZToolStripe* toolStripe;
+
 
 @end

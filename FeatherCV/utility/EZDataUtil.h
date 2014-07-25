@@ -15,6 +15,11 @@
 #import "EZConversation.h"
 #import "LFGlassView.h"
 
+
+typedef enum {
+    kMotherStatus,
+    kChildStatus
+}EZPersonSelected;
 @class EZCenterButton;
 @class EZPhotoChat;
 @interface EZAlbumResult : NSObject
@@ -29,6 +34,7 @@
 
 + (EZDataUtil*) getInstance;
 
+@property (nonatomic, assign) EZPersonSelected currentSelected;
 
 @property (nonatomic, strong) EZEventBlock avatarSuccess;
 

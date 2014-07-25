@@ -17,7 +17,19 @@ typedef enum {
     kOtherPageType
 } EZContactDisplayType;
 
+typedef enum {
+    kMessageTab,
+    kPartyTab,
+    kFriendTab,
+    kMyselfTab
+} EZTabType;
+
+
 #define EZMainCellHeight 84
+
+#define ToolBarTextColor RGBCOLOR(62, 58, 57)
+
+#define ToolBarBackground RGBCOLOR(237, 240, 245)
 
 #define GrayTextColor RGBCOLOR(70, 70, 70)
 
@@ -193,25 +205,27 @@ typedef enum {
 //If not we will send to sandbox server
 #define EZProductFlag @"1"
 
-//#define inviteMessageURL @"http://www.enjoyxue.com:8080/"
+#define inviteMessageURL @"http://www.enjoyxue.com:8080/"
 
 //#define baseUploadURL @"http://172.13.0.127:8080/upload"
 //#define baseUploadURL @"http://10.0.1.6:8080/upload"
-//#define baseUploadURL @"http://www.enjoyxue.com:8080/upload"
+#define baseUploadURL @"http://www.enjoyxue.com:8080/upload"
+//#define baseUploadURL @"http://192.168.0.150:8080/upload"
 //#define baseUploadURL @"http://192.168.1.101:8080/upload"
-#define baseUploadURL @"http://192.168.1.101:8080/upload"
+//#define baseUploadURL @"http://192.168.1.101:8080/upload"
 
 //#define baseServiceURL @"http://172.13.0.127:8080/"
 //#define baseServiceURL @"http://10.0.1.6:8080/"
-//#define baseServiceURL @"http://www.enjoyxue.com:8080/"
+#define baseServiceURL @"http://www.enjoyxue.com:8080/"
+//#define baseServiceURL @"http://192.168.0.150:8080/"
 //#define baseServiceURL @"http://192.168.1.101:8080/"
-#define baseServiceURL @"http://192.168.1.101:8080/"
+//#define baseServiceURL @"http://192.168.1.101:8080/"
 
 #define EZButtonGreen RGBCOLOR(56, 216, 116)
 
 #define EZButtonRed RGBCOLOR(216, 116, 56)
 
-#define ClickedColor RGBCOLOR(61, 191, 216)
+#define ClickedColor RGBCOLOR(62, 192, 216)
 
 #define EZEmptyColor RGBA(255,255,255,120)//[UIColor whiteColor]
 #define EZOwnColor RGBCOLOR(101, 247, 231)

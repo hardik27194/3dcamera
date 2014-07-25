@@ -123,10 +123,30 @@
 
 "friend tab" = "friend";
 
-"activity tab" = "activity";
+"activity tab" = "party";
 
 "message tab" = "message";
 
 "setting tab" = "setting";
 
+"myself tab" = "myself";
+
 "add friend" = "add friend";
+
+
+"daily record" = "Daily Record";
+"relative cycle" = "Friends";
+"discussion" = "Discussion";
+"pregnant" = "Pregnant Journal";
+"notification" = "Notifications";
+"settings" = "Settings";
+"baby journal" = "Baby Journal";
+
+
+
+
+
+
+
+
+

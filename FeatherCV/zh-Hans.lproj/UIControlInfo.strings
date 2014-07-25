@@ -77,10 +77,22 @@
 
 "friend tab" = "朋友";
 
-"activity tab" = "活动";
+"activity tab" = "聚会";
 
-"message tab" = "新消息";
+"message tab" = "消息";
 
 "setting tab" = "设置";
 
+"myself tab" = "我";
+
+
 "add friend" = "添加朋友";
+
+
+"daily record" = "日常记录";
+"relative cycle" = "亲友圈";
+"discussion" = "话题讨论";
+"pregnant" = "孕期日记";
+"notification" = "通知";
+"settings" = "设置";
+"baby journal" = "成长日记";

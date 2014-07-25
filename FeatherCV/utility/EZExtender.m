@@ -163,6 +163,15 @@ NSString* doubleString(NSString* str)
 @end
 
 @implementation UILabel(EZPrivate)
+
++ (UILabel*) createLabel:(CGRect)frame font:(UIFont*)font color:(UIColor*)color
+{
+    UILabel* res = [[UILabel alloc] initWithFrame:frame];
+    res.font = font;
+    res.textColor = color;
+    res.backgroundColor = [UIColor clearColor];
+    return  res;
+}
 /**
 - (CGSize) calcRegion:(NSString*)string
 {

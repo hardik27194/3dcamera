@@ -238,6 +238,14 @@ static inline CGSize swapWidthAndHeight(CGSize size)
 }
 
 
+- (UIImage *) changeOrientionNew:(UIImageOrientation)orientation
+{
+    CGImageRef imgRef = [self CGImageWithCorrectOrientation];
+    UIImage *result = [UIImage imageWithCGImage:imgRef scale:self.scale orientation:orientation];
+    CGImageRelease(imgRef);
+    return result;
+}
+
 - (UIImage *) changeOriention:(UIImageOrientation)orientation
 {
     CGRect rect = CGRectMake(0, 0, self.size.width, self.size.width);

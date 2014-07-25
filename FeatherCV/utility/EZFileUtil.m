@@ -341,8 +341,8 @@
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsPath = [paths objectAtIndex:0]; //Get the docs directory
     NSString *filePath = [documentsPath stringByAppendingPathComponent:filename]; //Add the file name
-    EZDEBUG(@"Full path will be stored:%@", filePath);
-    [data writeToFile:filePath atomically:YES]; //Write the file
+    BOOL writeSuccess = [data writeToFile:filePath atomically:YES]; //Write the file
+    EZDEBUG(@"Full path will be stored:%@, write success:%i", filePath, writeSuccess);
     return filePath;
 }
 
@@ -516,6 +516,7 @@
 {
     static  NSInteger count = 0;
     NSString* fileName = [EZFileUtil getTempFileName:int2str(count++) postFix:@"jpg"];
+    //EZDEBUG(@"the image size:%@", NSStringFromCGSize(img.size));
     NSString* fullPath = [EZFileUtil saveToCache:img.toJpegData filename:fileName];
     return fullPath;
 }
@@ -649,8 +650,20 @@
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
     NSString *documentsPath = [paths objectAtIndex:0]; //Get the docs directory
     NSString *filePath = [documentsPath stringByAppendingPathComponent:filename]; //Add the file name
-    EZDEBUG(@"Full path will be stored:%@", filePath);
-    [data writeToFile:filePath atomically:YES]; //Write the file
+    
+    BOOL writeResult = [data writeToFile:filePath atomically:YES]; //Write the file
+    //EZDEBUG(@"Write Result:%i, Full path will be stored:%@",writeResult, filePath);
+    
+    /**
+    UIImage* image = [UIImage imageWithContentsOfFile:filePath];
+    
+    UIImageView* imgView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
+    imgView.backgroundColor = [UIColor grayColor];
+    imgView.contentMode = UIViewContentModeScaleAspectFill;
+    imgView.image = image;
+    //[[UIImageView alloc] initWithImage:image];
+    [TopView addSubview:imgView];
+    **/
     return filePath;
 }
 

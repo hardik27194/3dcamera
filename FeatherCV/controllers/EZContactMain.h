@@ -15,9 +15,13 @@ typedef enum {
 } EZProfileStatus;
 
 
+//typedef enum {
 
+//} EZTabStatus;
+
+@class EZPerson;
 @class EZProfileView;
-@interface EZContactMain : UIViewController<UITableViewDelegate, UITableViewDataSource>
+@interface EZContactMain : UIViewController<UITableViewDelegate, UITableViewDataSource, UIActionSheetDelegate>
 
 @property (nonatomic, strong) UITableView* tableView;
 
@@ -28,5 +32,9 @@ typedef enum {
 @property (nonatomic, assign) EZProfileStatus profileStatus;
 
 @property (nonatomic, assign) EZContactDisplayType displayType;
+
+@property (nonatomic, assign) EZTabType tabType;
+
+@property (nonatomic, strong) EZPerson* person;
 
 @end

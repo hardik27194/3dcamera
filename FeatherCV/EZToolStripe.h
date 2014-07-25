@@ -18,6 +18,8 @@
 
 @property (nonatomic, strong) NSArray* infoButtons;
 
+//@property (nonatomic)
+
 //@property (nonatomic, assign) NSInteger currentPos;
 
 @end

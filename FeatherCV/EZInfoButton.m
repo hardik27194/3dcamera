@@ -17,27 +17,57 @@
         // Initialization code
         //self.animType = kPressGlow;
         self.showsTouchWhenHighlighted = YES;
-        UIView* graySep = [[UIView alloc] initWithFrame:CGRectMake(0, 20, 1, 32)];
-        graySep.backgroundColor = RGBCOLOR(180, 180, 180);
-        [self addSubview:graySep];
+        _graySep = [[UIView alloc] initWithFrame:CGRectMake(0, 20, 1, 32)];
+        _graySep.backgroundColor = RGBCOLOR(180, 180, 180);
+        [self addSubview:_graySep];
         
-        _infoCount = [[UILabel alloc] initWithFrame:CGRectMake(10, 18, 70, 20)];
+        _infoCount = [[UILabel alloc] initWithFrame:CGRectMake(10, 12, 70, 20)];
         _infoCount.font = [UIFont boldSystemFontOfSize:19];
         _infoCount.textColor = RGBCOLOR(70, 70, 70);
         [self addSubview:_infoCount];
         
-        _infoIcon = [[UIImageView alloc] initWithFrame:CGRectMake(10, 20, 17, 17)];
+        _infoIcon = [[UIImageView alloc] initWithFrame:CGRectMake(10, 12,  27, 27)];
         _infoIcon.contentMode = UIViewContentModeScaleAspectFill;
         [self addSubview:_infoIcon];
 
-        _infoType = [[UILabel alloc] initWithFrame:CGRectMake(10, 40, 70, 12)];
+        _infoType = [[UILabel alloc] initWithFrame:CGRectMake(10, 42, 70, 12)];
         _infoType.font = [UIFont systemFontOfSize:12];
-        _infoType.textColor = RGBCOLOR(70, 70, 70);
+        _infoType.textColor = ToolBarTextColor;
         [self addSubview:_infoType];
         [self addTarget:self action:@selector(btnClicked:) forControlEvents:UIControlEventTouchUpInside];
+        
+        _triangle = [[UIImageView alloc] initWithFrame:CGRectMake(10, frame.size.height, 12 , 6)];
+        _triangle.contentMode = UIViewContentModeScaleAspectFill;
+        _triangle.image = [UIImage imageNamed:@"triangle"];
+        [self addSubview:_triangle];
+        _triangle.hidden = YES;
         //self.enableTouchEffects = true;
     }
     return self;
+}
+
+- (void) setSelected:(BOOL)selected
+{
+    EZDEBUG(@"info selected:%i", selected);
+    if(selected){
+        _graySep.backgroundColor = ClickedColor;
+        _triangle.hidden = NO;
+    }else{
+        _graySep.backgroundColor = RGBCOLOR(180, 180, 180);
+        _triangle.hidden = YES;
+    }
+}
+
+- (void) setCount:(int) count
+{
+    if(count){
+        _infoIcon.hidden = true;
+        _infoCount.hidden = false;
+        _infoCount.text = int2str(count);
+    }else{
+        _infoIcon.hidden = false;
+        _infoCount.hidden = true;
+    }
 }
 
 - (void) btnClicked:(id)btn

@@ -232,7 +232,7 @@
 - (void) setupAppearance
 {
     //Remove the drop shadow
-    [[UINavigationBar appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName : [UIColor whiteColor], NSFontAttributeName: [UIFont systemFontOfSize:18]}];
+    [[UINavigationBar appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName : [UIColor blackColor], NSFontAttributeName: [UIFont boldSystemFontOfSize:17]}];
     [[UIBarButtonItem appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName : [UIColor whiteColor]} forState:UIControlStateNormal];
     [[UINavigationBar appearance] setShadowImage:[[UIImage alloc] init]];
     //[[UINavigationBar appearance] set]
@@ -242,7 +242,7 @@
     //UIImage *gradientImage44 =
     
     [[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
-    [[UINavigationBar appearance] setBackgroundImage:ClearBarImage forBarMetrics:UIBarMetricsDefault];
+    //[[UINavigationBar appearance] setBackgroundImage:ClearBarImage forBarMetrics:UIBarMetricsDefault];
     [[UIScrollView appearance] setIndicatorStyle:UIScrollViewIndicatorStyleWhite];
     
     [[UILabel appearance] setFont:[UIFont fontWithName:@"HelveticaNeue-UltraLight" size:14.0]];
@@ -417,14 +417,22 @@
 {
     EZPerson* personOne = [[EZPerson alloc] init];
     personOne.name = @"天哥";
+    personOne.avatar = [EZFileUtil fileToURL:@"demo_avatar_cook.png"].absoluteString;
+    personOne.signature = @"天天向上";
+    EZDEBUG(@"avatar string is:%@", personOne.avatar);
     
     EZPerson* personTwo = [[EZPerson alloc] init];
     personTwo.name = @"云哲";
+    personTwo.signature = @"天天云里";
+    personTwo.avatar = [EZFileUtil fileToURL:@"demo_avatar_jobs.png"].absoluteString;
     
     EZPinchController* pincher = [[EZPinchController alloc] initWithView:window];
-    EZDEBUG(@"Th interaction is:%i", self.window.userInteractionEnabled);
+    EZDEBUG(@"Th interaction is:%i, name:%@, id:%@", self.window.userInteractionEnabled, currentLoginUser.name, currentLoginUser.personID);
     window.userInteractionEnabled = true;
     EZContactMain* contactMain = [[EZContactMain alloc] init];
+    contactMain.person = currentLoginUser;
+    
+    EZDEBUG(@"login user is:%@, avatar:%@", currentLoginUser.name, currentLoginUser.avatar);
     UINavigationController* navCtrl = [[UINavigationController alloc] initWithRootViewController:contactMain];
     navCtrl.transitioningDelegate = pincher;
     navCtrl.delegate = pincher;
@@ -552,7 +560,7 @@
     [self setupAppearance];
     [self setupNetwork];
     //[self enableProximate:YES];
-    [self setupKeyboard];
+    //[self setupKeyboard];
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     //[[UIDevice currentDevice] setProximityMonitoringEnabled:YES];
     self.window.backgroundColor = [UIColor greenColor];
@@ -563,10 +571,10 @@
     //}];
     EZDEBUG(@"before get scrollView");
     EZUIUtility.sharedEZUIUtility.mainWindow = self.window;
-    [self createPersonMain:self.window];
+    //[self createPersonMain:self.window];
     //self.window.rootViewController = [self createScrollView];
     //EZDEBUG(@"After get scrollView");
-   
+    self.window.rootViewController = [self createMainPage];
     EZDEBUG(@"Register orientation change");
     //[self.window addSubview:barView];
     /**
@@ -580,6 +588,12 @@
     [self.window makeKeyAndVisible];
     EZDEBUG(@"Visible enabled");
     return YES;
+}
+
+- (EZMainPage*) createMainPage
+{
+    EZMainPage* mainPage = [[EZMainPage alloc] init];
+    return mainPage;
 }
 
 - (BOOL)applicationTestFace:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions

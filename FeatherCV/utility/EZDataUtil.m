@@ -1631,7 +1631,7 @@
 
 - (void) uploadAvatarImage:(UIImage*)image success:(EZEventBlock)success failed:(EZEventBlock)failed
 {
-    _avatarFile = [EZFileUtil saveToDocument:[image toJpegData] filename:@"avatar"];
+    _avatarFile = [EZFileUtil saveImageToCache:image];
     _uploadingAvatar = false;
     _avatarFailed = failed;
     _avatarSuccess = success;
