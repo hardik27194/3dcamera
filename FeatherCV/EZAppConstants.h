@@ -46,6 +46,12 @@ typedef enum {
     kExamRecord
 } EZTrackRecordType;
 
+#define EZListChangedEvent @"EZListChangedEvent"
+
+#define EZUpdateSelection @"EZUpdateSelection"
+
+#define EZEverSaved @"EZEverSaved"
+
 #define EZRecordDetailHeight 89
 
 #define EZProfileCellHeight 164
@@ -60,6 +66,8 @@ typedef enum {
 #define type2unit(typeID)
 
 #define type2name(typeID)
+
+#define type2desc(typeID) [[EZDataUtil getInstance] typeToDesc:typeID]
 
 #define ToolBarBackground RGBCOLOR(237, 240, 245)
 

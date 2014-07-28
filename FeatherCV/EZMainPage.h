@@ -22,4 +22,5 @@
 
 @property (nonatomic, strong) EZScrollerView* recorderScroll;
 
+
 @end

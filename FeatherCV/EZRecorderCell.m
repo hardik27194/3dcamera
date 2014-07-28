@@ -32,6 +32,15 @@
     }
 }
 
+
+- (void) enableTapView
+{
+    if(_tapView == nil){
+        _tapView = [[UIView alloc] initWithFrame:self.bounds];
+        _tapView.backgroundColor = [UIColor clearColor];//RGBA(255, 0, 0, 40);
+        [self addSubview:_tapView];
+    }
+}
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
@@ -45,10 +54,12 @@
         starImg.tag = 1677;
         [_starButton addTarget:self action:@selector(starClicked:) forControlEvents:UIControlEventTouchUpInside];
         
-        _measurement = [UILabel createLabel:CGRectMake(30, 13, frame.size.width - 2*30, 16) font:[UIFont boldSystemFontOfSize:14] color:RGBCOLOR(94, 94, 94)];
+        _measurement = [UILabel createLabel:CGRectMake(20, 13, frame.size.width - 2*20, 16) font:[UIFont boldSystemFontOfSize:14] color:RGBCOLOR(94, 94, 94)];
         _measurement.textAlignment = NSTextAlignmentCenter;
         
-        _name = [UILabel createLabel:CGRectMake(30, 90, frame.size.width - 2 * 30, 14) font:[UIFont boldSystemFontOfSize:12] color:RGBCOLOR(58, 178, 223)];
+        _name = [UILabel createLabel:CGRectMake(5, 90, frame.size.width - 10, 14) font:[UIFont boldSystemFontOfSize:12] color:RGBCOLOR(58, 178, 223)];
+        _name.textAlignment = NSTextAlignmentCenter;
+        
         
         _iconButton = [[UIButton alloc] initWithFrame:CGRectMake((frame.size.width - 50)/2.0, 35, 50, 50)];
         _iconButton.showsTouchWhenHighlighted = YES;
@@ -58,6 +69,7 @@
         [self.contentView addSubview:_measurement];
         [self.contentView addSubview:_name];
         [self.contentView addSubview:_iconButton];
+        self.contentView.backgroundColor = [UIColor whiteColor];
     }
     return self;
 }

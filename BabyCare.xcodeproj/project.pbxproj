@@ -275,6 +275,7 @@
 		1870B0231984B847005A663A /* EZRecordTypeDesc.m in Sources */ = {isa = PBXBuildFile; fileRef = 1870B0221984B847005A663A /* EZRecordTypeDesc.m */; };
 		1870B02619852E41005A663A /* EZRecordMain.m in Sources */ = {isa = PBXBuildFile; fileRef = 1870B02519852E41005A663A /* EZRecordMain.m */; };
 		1870B0291985313A005A663A /* EZRecorderCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 1870B0281985313A005A663A /* EZRecorderCell.m */; };
+		1870B02C19860657005A663A /* EZCustomButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 1870B02B19860657005A663A /* EZCustomButton.m */; };
 		1874D9D71867F57E005743FC /* EZSaturationFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 1874D9D61867F57E005743FC /* EZSaturationFilter.m */; };
 		1879BE23190BB1B60084FB27 /* EZCopyableLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 1879BE22190BB1B60084FB27 /* EZCopyableLabel.m */; };
 		1879BE28190BB8830084FB27 /* EZLimitTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 1879BE27190BB8830084FB27 /* EZLimitTextField.m */; };
@@ -911,6 +912,8 @@
 		1870B02519852E41005A663A /* EZRecordMain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZRecordMain.m; sourceTree = "<group>"; };
 		1870B0271985313A005A663A /* EZRecorderCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZRecorderCell.h; sourceTree = "<group>"; };
 		1870B0281985313A005A663A /* EZRecorderCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZRecorderCell.m; sourceTree = "<group>"; };
+		1870B02A19860657005A663A /* EZCustomButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZCustomButton.h; sourceTree = "<group>"; };
+		1870B02B19860657005A663A /* EZCustomButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZCustomButton.m; sourceTree = "<group>"; };
 		1874D9D51867F57E005743FC /* EZSaturationFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZSaturationFilter.h; sourceTree = "<group>"; };
 		1874D9D61867F57E005743FC /* EZSaturationFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZSaturationFilter.m; sourceTree = "<group>"; };
 		1879BE21190BB1B60084FB27 /* EZCopyableLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZCopyableLabel.h; sourceTree = "<group>"; };
@@ -1634,6 +1637,8 @@
 				1870B01F1984B340005A663A /* EZTrackRecord.m */,
 				1870B0211984B847005A663A /* EZRecordTypeDesc.h */,
 				1870B0221984B847005A663A /* EZRecordTypeDesc.m */,
+				1870B02A19860657005A663A /* EZCustomButton.h */,
+				1870B02B19860657005A663A /* EZCustomButton.m */,
 			);
 			name = controllers;
 			sourceTree = "<group>";
@@ -2948,6 +2953,7 @@
 				1870B01D1984B0A6005A663A /* EZProfile.m in Sources */,
 				180ADA5518C1CA1000AB490C /* EZChatRegion.m in Sources */,
 				1814A39F195AA5FE00FA0D6A /* EZPhotoDetail.m in Sources */,
+				1870B02C19860657005A663A /* EZCustomButton.m in Sources */,
 				185CE25F18FFAE760037947A /* EZPageControl.m in Sources */,
 				18E34785183DFAA400C9D89D /* EZKeyboadUtility.m in Sources */,
 				18DE991719404734008C1B3F /* JSQMessagesCollectionViewCell.m in Sources */,

@@ -24,6 +24,7 @@ typedef enum {
 @class EZCenterButton;
 @class EZPhotoChat;
 @class EZProfile;
+@class EZRecordTypeDesc;
 @interface EZAlbumResult : NSObject
 
 @property (nonatomic, assign) int totalPhoto;
@@ -42,10 +43,27 @@ typedef enum {
 
 - (NSString*) recordTypeToUnit:(EZTrackRecordType)type;
 
+- (EZRecordTypeDesc*) typeToDesc:(EZTrackRecordType)type;
+
 //The record which listed on the main page
 - (NSArray*) getSelectedRecordLists:(NSString*)profileID;
 
-- (NSArray*) getTotalRecordLists:(NSString*)profileID;
+- (NSArray*) getCurrentTotalRecordLists;
+
+- (NSArray*) getTotalRecordLists:(EZProfile*)profile;
+
+- (EZProfile*) getCurrentProfile;
+
+- (BOOL) getTypeSelectStatus:(EZTrackRecordType)type;
+
+- (void) saveTypeSelectedStatus:(EZTrackRecordType)type selected:(BOOL)selected;
+
+
+
+//Query the current list out
+- (void) queryRecordByList:(NSArray*)list success:(EZEventBlock)success failure:(EZEventBlock)failure;
+
+- (void) queryRecordByDate:(NSArray*)list date:(NSDate*)date success:(EZEventBlock)success failure:(EZEventBlock)failure;
 
 - (void) fetchCurrentRecord:(EZTrackRecordType)recordType profileID:(NSString*)profileID success:(EZEventBlock)success failure:(EZEventBlock)failure;
 

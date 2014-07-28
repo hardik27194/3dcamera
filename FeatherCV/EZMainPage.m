@@ -19,6 +19,8 @@
 #import "EZRecordTypeDesc.h"
 #import "UIImageView+AFNetworking.h"
 #import "EZTrackRecord.h"
+#import "EZRecordMain.h"
+#import "EZMessageCenter.h"
 
 @interface EZMainPage ()
 
@@ -86,6 +88,10 @@
         EZDEBUG(@"failed to load profiles");
     }];
     
+    
+    [[EZMessageCenter getInstance] registerEvent:EZUpdateSelection block:^(id obj){
+        [self showRecordList:[EZDataUtil getInstance].getCurrentProfile];
+    }];
     //_infoCells = [[NSMutableArray alloc] init];
 
     
@@ -123,7 +129,6 @@
     _profileScroll.views = _profileScroll.views;
     [self showRecordList:[profiles objectAtIndex:0]];
 }
-
 
 - (void) showRecordList:(EZProfile*)profile
 {
@@ -194,6 +199,11 @@
 - (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     EZDEBUG(@"selectect:%i", indexPath.row);
+    if(indexPath.row == 0){
+        NSArray* currentOrder = [[EZDataUtil getInstance] getCurrentTotalRecordLists];
+        EZRecordMain* rcMain = [[EZRecordMain alloc] initPage:currentOrder records:nil mode:kInputMode];
+        [self.navigationController pushViewController:rcMain animated:YES];
+    }
     
 }
 

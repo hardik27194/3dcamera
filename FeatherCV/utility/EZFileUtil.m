@@ -477,7 +477,37 @@
     return res;
 }
 
++ (NSString*) removeFileEnd:(NSString *)fileName ender:(NSString*)ender
+{
+    NSRange header = [fileName rangeOfString:ender options:NSBackwardsSearch];
+    if(header.location < fileName.length && header.location > 0){
+        NSString* prev = [fileName substringToIndex:header.location];
+        NSString* postFix = [fileName substringFromIndex:header.location+ender.length];
+        NSString* combined = [prev stringByAppendingString:postFix];
+        //finalName = [[:combined];
+        return combined;
+    }
+    return fileName;
+}
 
++ (NSString*) appendFileEnd:(NSString *)fileName ender:(NSString*)ender
+{
+    NSString* finalName = nil;
+    
+    NSRange header = [fileName rangeOfString:@"." options:NSBackwardsSearch];
+        
+    if(header.location < fileName.length && header.location > 0){
+        NSString* prev = [fileName substringToIndex:header.location];
+        NSString* postFix = [fileName substringFromIndex:header.location];
+        NSString* combined = [[prev stringByAppendingString:ender] stringByAppendingString:postFix];
+        //finalName = [[:combined];
+        finalName = combined;
+    }else {
+        //finalName = [[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent:fileName];
+        finalName = [fileName stringByAppendingString:ender];
+    }
+    return finalName;
+}
 
 + (NSString*) bundleToURL:(NSString *)fileName retinaAware:(BOOL)retinaAware
 {

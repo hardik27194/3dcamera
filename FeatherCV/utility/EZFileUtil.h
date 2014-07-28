@@ -28,6 +28,9 @@ static EZLRUMap* imageCaches;
 //NSApplicationDirectory.
 + (NSURL*) fileToURL:(NSString*)fileName;
 
++ (NSString*) removeFileEnd:(NSString *)fileName ender:(NSString*)ender;
+
++ (NSString*) appendFileEnd:(NSString *)fileName ender:(NSString*)ender;
 
 + (NSString*) bundleToURL:(NSString *)fileName retinaAware:(BOOL)retinaAware;
 

@@ -22,9 +22,12 @@
 
 @property (nonatomic, strong) EZEventBlock starClicked;
 
+@property (nonatomic, strong) UIView* tapView;
 //
 - (void) setStarred:(BOOL)starred;
 
 - (void) hideStar:(BOOL)hideStar;
+
+- (void) enableTapView;
 
 @end
