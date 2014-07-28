@@ -477,6 +477,27 @@
     return res;
 }
 
+
+
++ (NSString*) bundleToURL:(NSString *)fileName retinaAware:(BOOL)retinaAware
+{
+    NSString* finalName = nil;
+    if(retinaAware && isRetinaScreen){
+        NSRange header = [fileName rangeOfString:@"." options:NSBackwardsSearch];
+        
+        if(header.location < fileName.length && header.location > 0){
+            NSString* prev = [fileName substringToIndex:header.location];
+            NSString* postFix = [fileName substringFromIndex:header.location];
+            NSString* combined = [[prev stringByAppendingString:@"@2x"] stringByAppendingString:postFix];
+            finalName = [[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent:combined];
+        }else {
+            finalName = [[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent:fileName];
+        }
+    }else{
+        finalName = [[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent:fileName];
+    }
+    return  [@"file://" stringByAppendingString:finalName];
+}
 //This method will use the default type, that is the
 //NSApplicationDirectory.
 //Finally, after 1.5 hours I got the right path name.

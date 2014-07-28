@@ -32,6 +32,11 @@
 #import "EZLoginController.h"
 #import "FaceppAPI.h"
 #import "EZPhotoChat.h"
+#import "EZRecordTypeDesc.h"
+#import "EZTrackRecord.h"
+#import "EZRecordTypeDesc.h"
+#import "EZMenuItem.h"
+#import "EZProfile.h"
 
 
 @implementation EZAlbumResult
@@ -51,6 +56,186 @@
 }
 
 
+- (void) fetchCurrentRecord:(EZTrackRecordType)recordType profileID:(NSString*)profileID success:(EZEventBlock)success failure:(EZEventBlock)failure
+{
+    NSString* key = [NSString stringWithFormat:@"%i,%@", recordType, profileID];
+    EZTrackRecord* res = [_currentRecords objectForKey:key];
+    if(res){
+        EZDEBUG(@"find record for user:%@, type:%i", profileID, recordType);
+        //return res;
+        if(success){
+            success(res);
+        }
+        return;
+    }
+    //Do the network call to query the record back
+}
+
+
+- (NSArray*) getPreferredRecords:(EZProfile *)profile
+{
+    //return [_selectedRecordLists objectForKey:profile.profileID];
+    if(profile.type == kMotherProfile){
+        return _motherPreferLists;
+    }else{
+        return _childPreferLists;
+    }
+}
+
+- (NSString*) recordTypeToName:(EZTrackRecordType)type
+{
+    EZRecordTypeDesc* desc = [_recordTypeDetails objectForKey:@(type)];
+    return desc.name;
+}
+
+- (NSString*) recordTypeToIcon:(EZTrackRecordType)type
+{
+    EZRecordTypeDesc* desc = [_recordTypeDetails objectForKey:@(type)];
+    return desc.iconURL;
+}
+
+- (NSString*) recordTypeToUnit:(EZTrackRecordType)type
+{
+    EZRecordTypeDesc* desc = [_recordTypeDetails objectForKey:@(type)];
+    return desc.unitName;
+}
+
+
+- (NSArray*) getSelectedRecordLists:(NSString*)profileID
+{
+    EZDEBUG(@"get selectedRecordList");
+    return [_selectedRecordLists objectForKey:profileID];
+}
+
+- (NSArray*) getTotalRecordLists:(NSString*)profileID
+{
+    EZDEBUG(@"get totalRecordLists");
+    return [_totalRecordLists objectForKey:profileID];
+}
+
+- (void) getMostRecent:(NSString*)profileID type:(EZTrackRecordType)type success:(EZEventBlock)success failure:(EZEventBlock)block
+{
+    EZTrackRecord* res = [[EZTrackRecord alloc] init];
+    res.type = type;
+    res.measures = rand() % 100;
+    dispatch_later(0.2, ^(){
+        if(success){
+            success(res);
+        }
+    });
+}
+
+- (NSArray*) getCurrentMenuItems
+{
+    return [self getMenuItemByType:[_currentProfiles objectAtIndex:_currentProfilePos]];
+}
+
+- (NSArray*) getMenuItemByType:(EZProfile*)profile
+{
+    if(profile.type == kMotherProfile){
+        return _motherMenuItems;
+    }else{
+        return _childMenuItems;
+    }
+}
+
+
+//Will replace this by using network access later.
+- (void) fetchProfilesForID:(NSString*)personID success:(EZEventBlock)success failure:(EZEventBlock)failure
+{
+    EZDEBUG(@"will fetch profile for personID:%@", personID);
+    _currentProfiles = [[NSMutableArray alloc] initWithObjects:[[EZProfile alloc] initWith:@"天哥" type:kMotherProfile avatar:Bundle2Url(@"demo_avatar_cook.png")], [[EZProfile alloc] initWith:@"侯雪腾" type:kMotherProfile avatar:Bundle2Url(@"demo_avatar_jobs.png")],[[EZProfile alloc] initWith:@"谢辰悦" type:kChildProfile avatar:bundle2url(@"demo_avatar_woz.png")], nil];
+    _currentProfilePos = 0;
+    
+    if(success){
+        dispatch_later(0.1, ^(){
+            success(_currentProfiles);
+        });
+    }
+    
+}
+
+//Which will include both mother and the child list
+- (void) createAllRecordType
+{
+    //NSMutableDictionary* res = [[NSMutableDictionary alloc] init];
+    
+    _childRecordLists = [[NSMutableArray alloc] initWithObjects:[[EZRecordTypeDesc alloc] initWith:@"尿布" type:kUrine icon:bundle2url(@"header_icon_bn_white.png") unitName:@"次" selected:YES],
+    [[EZRecordTypeDesc alloc] initWith:@"便便" type:kPooh icon:bundle2url(@"header_icon_bb_white.png") unitName:@"次" selected:YES],
+    [[EZRecordTypeDesc alloc] initWith:@"睡觉" type:kSleep icon:bundle2url(@"header_icon_sj_white.png") unitName:@"次" selected:YES],
+    [[EZRecordTypeDesc alloc] initWith:@"喂奶" type:kFeeds icon:bundle2url(@"header_icon_wn_white.png") unitName:@"ml" selected:YES],
+    [[EZRecordTypeDesc alloc] initWith:@"母乳" type:kMilk icon:bundle2url(@"header_icon_mr_white.png") unitName:@"ml" selected:NO],
+    [[EZRecordTypeDesc alloc] initWith:@"辅食" type:kAuxFood icon:bundle2url(@"header_icon_fs_white.png") unitName:@"顿" selected:NO],
+    [[EZRecordTypeDesc alloc] initWith:@"身高" type:kHeight icon:bundle2url(@"header_icon_sg_white.png") unitName:@"cm" selected:NO],
+    [[EZRecordTypeDesc alloc] initWith:@"体重" type:kWeight icon:bundle2url(@"header_icon_tz_white.png") unitName:@"kg" selected:NO],
+    [[EZRecordTypeDesc alloc] initWith:@"头围" type:kHeadCycle icon:bundle2url(@"header_icon_tw_white.png") unitName:@"cm" selected:NO],
+    [[EZRecordTypeDesc alloc] initWith:@"胸围" type:kChestCycle icon:bundle2url(@"header_icon_xw_white.png") unitName:@"cm" selected:NO],
+    [[EZRecordTypeDesc alloc] initWith:@"验血数据" type:kBloodExam icon:bundle2url(@"header_icon_xw_white.png") unitName:@"" selected:NO], nil];
+    
+    
+    
+    _motherRecordLists = [[NSMutableArray alloc] initWithObjects:
+                        [[EZRecordTypeDesc alloc] initWith:@"体重" type:kWeight icon:bundle2url(@"header_icon_tz_white.png") unitName:@"kg" selected:YES],
+                          [[EZRecordTypeDesc alloc] initWith:@"腹围" type:kBellyCycle icon:bundle2url(@"header_icon_fw_white.png") unitName:@"cm" selected:YES],
+                          [[EZRecordTypeDesc alloc] initWith:@"计步" type:kWalkCount icon:bundle2url(@"header_icon_jb_white.png") unitName:@"" selected:YES],
+                          [[EZRecordTypeDesc alloc] initWith:@"血压" type:kBloodPressure icon:bundle2url(@"header_icon_xy_white.png") unitName:@"" selected:YES],
+                          [[EZRecordTypeDesc alloc] initWith:@"血糖" type:kBloodSugar icon:bundle2url(@"header_icon_xt_white.png") unitName:@"" selected:NO],
+                          [[EZRecordTypeDesc alloc] initWith:@"食谱" type:kRecipes icon:bundle2url(@"header_icon_sp_white.png") unitName:@"" selected:NO],
+                          [[EZRecordTypeDesc alloc] initWith:@"胎教" type:kInfantTeach icon:bundle2url(@"header_icon_tj_white.png") unitName:@"h" selected:NO],
+                          [[EZRecordTypeDesc alloc] initWith:@"检查记录" type:kExamRecord icon:bundle2url(@"header_icon_jl_white.png") unitName:@"" selected:NO]
+                          , nil];
+    
+    _motherPreferLists = [[NSMutableArray alloc] init];
+    _childPreferLists = [[NSMutableArray alloc] init];
+    for(int i = 0; i < 4; i ++){
+        [_motherPreferLists addObject:[_motherRecordLists objectAtIndex:i]];
+        [_childPreferLists addObject:[_childRecordLists objectAtIndex:i]];
+    }
+    _recordTypeDetails = [[NSMutableDictionary alloc] init];
+    
+    for(EZRecordTypeDesc* rd in _childRecordLists){
+        [_recordTypeDetails setObject:rd forKey:@(rd.type)];
+    }
+    
+    for(EZRecordTypeDesc* rd in _motherRecordLists){
+        [_recordTypeDetails setObject:rd forKey:@(rd.type)];
+    }
+    
+    EZMenuItem* dailyRecord = [[EZMenuItem alloc] initWith:macroControlInfo(@"daily record") iconURL:bundle2url(@"drawer_nav_notes.png") selectedIconURL:bundle2url(@"drawer_nav_notes_sel.png") action:^(id obj){
+        
+    }];
+    //dailyRecord.notesCount = 1;
+    EZMenuItem* pregentJournal = [[EZMenuItem alloc] initWith:macroControlInfo(@"pregnant") iconURL:bundle2url(@"drawer_nav_diary.png")  selectedIconURL:bundle2url(@"drawer_nav_diary_sel.png") action:^(id obj){
+        
+    }];
+    
+    EZMenuItem* relativeCycle = [[EZMenuItem alloc] initWith:macroControlInfo(@"relative cycle") iconURL:bundle2url(@"drawer_nav_chat.png") selectedIconURL:bundle2url(@"drawer_nav_char_sel.png") action:^(id obj){
+        
+    }];
+    
+    EZMenuItem* discussion = [[EZMenuItem alloc] initWith:macroControlInfo(@"discussion") iconURL:bundle2url(@"drawer_nav_group.png") selectedIconURL:bundle2url(@"drawer_nav_group_sel.png") action:^(id obj){
+        
+    }];
+    
+    EZMenuItem* notification = [[EZMenuItem alloc] initWith:macroControlInfo(@"notification") iconURL:bundle2url(@"drawer_nav_notification.png") selectedIconURL:bundle2url(@"drawer_nav_notification_sel.png") action:^(id obj){
+        
+    }];
+    
+    EZMenuItem* setting = [[EZMenuItem alloc] initWith:macroControlInfo(@"settings") iconURL:bundle2url(@"drawer_nav_settings.png") selectedIconURL:bundle2url(@"drawer_nav_setting_sel.png") action:^(id obj){
+        
+    }];
+    
+    EZMenuItem* babyJournal = [[EZMenuItem alloc] initWith:macroControlInfo(@"baby journal") iconURL:bundle2url(@"drawer_nav_diary.png") selectedIconURL:bundle2url(@"drawer_nav_diary_sel.png") action:^(id obj){
+        EZDEBUG(@"baby journal get called");
+    }];
+    
+    EZMenuItem* babyNotification = [[EZMenuItem alloc] initWith:macroControlInfo(@"notification") iconURL:bundle2url(@"drawer_nav_notification.png") selectedIconURL:bundle2url(@"drawer_nav_notification_sel") action:^(id obj){
+    }];
+    
+    _childMenuItems =[[NSMutableArray alloc]initWithObjects:dailyRecord, babyJournal, relativeCycle, discussion, babyNotification, setting, nil];
+    _motherMenuItems = [[NSMutableArray alloc] initWithObjects:dailyRecord, pregentJournal, relativeCycle, discussion, notification, setting, nil];
+    //return res;
+}
 
 - (id) init
 {
@@ -59,6 +244,17 @@
     if (_assetLibaray == nil) {
         _assetLibaray = [[ALAssetsLibrary alloc] init];
     }
+    _recordTypeDetails = [[NSMutableDictionary alloc] init];
+    _childRecordLists = [[NSMutableArray alloc] init];
+    _motherRecordLists = [[NSMutableArray alloc] init];
+    
+    _selectedRecordLists = [[NSMutableDictionary alloc] init];
+    
+    _totalRecordLists = [[NSMutableDictionary alloc] init];
+    
+    _currentRecords = [[NSMutableDictionary alloc] init];
+    [self createAllRecordType];
+    
     _personPhotoCount = [[NSMutableDictionary alloc] init];
     _contacts = [[NSMutableArray alloc] init];
     _isoFormatter = [[NSDateFormatter alloc] init];

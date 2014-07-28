@@ -28,6 +28,9 @@ static EZLRUMap* imageCaches;
 //NSApplicationDirectory.
 + (NSURL*) fileToURL:(NSString*)fileName;
 
+
++ (NSString*) bundleToURL:(NSString *)fileName retinaAware:(BOOL)retinaAware;
+
 //Return the File URL
 //This method will complete following things.
 //1. Split the image into four part.

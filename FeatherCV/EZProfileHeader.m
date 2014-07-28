@@ -14,7 +14,7 @@
 
 + (EZProfileHeader*) createHeader
 {
-    return [[EZProfileHeader alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, 164)];
+    return [[EZProfileHeader alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, EZProfileCellHeight)];
 }
 
 - (id)initWithFrame:(CGRect)frame

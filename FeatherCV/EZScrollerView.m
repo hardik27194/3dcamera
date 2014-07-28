@@ -46,7 +46,7 @@
         [_seperator setY:self.frame.size.height - 1];
         [_seperator setGap:0];
     }else{
-        [_seperator setGap:50];
+        [_seperator setGap:60];
         [_seperator setY:self.frame.size.height - 5];
     }
     

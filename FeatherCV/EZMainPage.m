@@ -15,6 +15,10 @@
 #import "EZFileUtil.h"
 #import "EZDataUtil.h"
 #import "EZMainCell.h"
+#import "EZProfile.h"
+#import "EZRecordTypeDesc.h"
+#import "UIImageView+AFNetworking.h"
+#import "EZTrackRecord.h"
 
 @interface EZMainPage ()
 
@@ -39,21 +43,27 @@
 
 - (void) viewDidLayoutSubviews
 {
-    [_tableView setFrame:CGRectMake(0, 253, CurrentScreenWidth, CurrentScreenHeight - 253)];
+    [_tableView setFrame:CGRectMake(0, 273, CurrentScreenWidth, CurrentScreenHeight - 273)];
 }
 
 - (NSArray*) currentMenu
 {
-    if([EZDataUtil getInstance].currentSelected == kMotherStatus){
-        return _motherMenus;
-    }else{
-        return _childMenus;
-    }
+    return [[EZDataUtil getInstance] getCurrentMenuItems];
 }
+
+- (void) addClicked:(id)obj
+{
+    EZDEBUG(@"add clicked");
+}
+
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    UIImageView* background = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, CurrentScreenHeight)];
+    background.image = [UIImage imageNamed:@"drawer_bg"];
+    background.contentMode = UIViewContentModeScaleAspectFill;
+    [self.view addSubview:background];
     _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
     _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     [self.view addSubview:_tableView];
@@ -61,40 +71,24 @@
     [self.tableView registerClass:[EZMainCell class] forCellReuseIdentifier:@"topInfo"];
     _tableView.delegate = self;
     _tableView.dataSource = self;
-    _tableView.backgroundColor = [UIColor grayColor];
+    _tableView.backgroundColor = [UIColor clearColor];
+    UIButton* button = [[UIButton alloc] initWithFrame:CGRectMake(CurrentScreenWidth - 44, 10, 44, 44)];
+    [button setImage:[UIImage imageNamed:@"header_btn_add"] forState:UIControlStateNormal];
+    button.showsTouchWhenHighlighted = YES;
+    //self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithCustomView:button];
+    [button addTarget:self action:@selector(addClicked:) forControlEvents:UIControlEventTouchUpInside];
+    [self setupMockView];
+    [self.view addSubview:button];
+    [[EZDataUtil getInstance] fetchProfilesForID:currentLoginID success:^(NSArray* profiles){
+        EZDEBUG(@"successfully load profiles");
+        [self showProfiles:profiles];
+    } failure:^(id err){
+        EZDEBUG(@"failed to load profiles");
+    }];
+    
     //_infoCells = [[NSMutableArray alloc] init];
+
     
-    EZMenuItem* dailyRecord = [[EZMenuItem alloc] initWith:macroControlInfo(@"daily record") iconURL:@"record" action:^(id obj){
-        
-    }];
-    dailyRecord.notesCount = 1;
-    EZMenuItem* pregentJournal = [[EZMenuItem alloc] initWith:macroControlInfo(@"pregnant") iconURL:@"dairy" action:^(id obj){
-        
-    }];
-    
-    EZMenuItem* relativeCycle = [[EZMenuItem alloc] initWith:macroControlInfo(@"relative cycle") iconURL:@"cycles" action:^(id obj){
-    
-    }];
-    
-    EZMenuItem* discussion = [[EZMenuItem alloc] initWith:macroControlInfo(@"discussion") iconURL:@"discussion" action:^(id obj){
-    
-    }];
-    
-    EZMenuItem* notification = [[EZMenuItem alloc] initWith:macroControlInfo(@"notification") iconURL:@"notification" action:^(id obj){
-    
-    }];
-    
-    EZMenuItem* setting = [[EZMenuItem alloc] initWith:macroControlInfo(@"settings") iconURL:@"settings" action:^(id obj){
-        
-    }];
-    
-    
-    EZMenuItem* babyJournal = [[EZMenuItem alloc] initWith:macroControlInfo(@"baby journal") iconURL:@"dairy" action:^(id obj){
-        EZDEBUG(@"baby journal get called");
-    }];
-    
-    _childMenus = @[dailyRecord, babyJournal, relativeCycle, discussion, notification, setting];
-    _motherMenus = @[dailyRecord, pregentJournal, relativeCycle, discussion, notification, setting];
     //[_infoCells addObjectsFromArray:@[@"1",@"2",@"3"]];
     
     
@@ -107,57 +101,99 @@
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
 }
 
+- (void) showProfiles:(NSArray*)profiles
+{
+    for(UIView* view in _profileScroll.views){
+        [view removeFromSuperview];
+    }
+    [_profileScroll.views removeAllObjects];
+    if(!_profileScroll.views){
+        _profileScroll.views = [[NSMutableArray alloc] init];
+    }
+    for(EZProfile* profile in profiles){
+        EZProfileHeader* pheader = [EZProfileHeader createHeader];
+        [pheader.avatar setImageWithURL:str2url(profile.avartar)];
+        EZDEBUG(@"avatar url:%@", profile.avartar);
+        pheader.name.text = profile.name;
+        pheader.middleInfo.text = @"";
+        pheader.bottomInfo.text = @"";
+        [_profileScroll.views addObject:pheader];
+        //profile.backgroundColor = [UIColor grayColor];
+    }
+    _profileScroll.views = _profileScroll.views;
+    [self showRecordList:[profiles objectAtIndex:0]];
+}
+
+
+- (void) showRecordList:(EZProfile*)profile
+{
+    NSArray* recordList = [[EZDataUtil getInstance] getPreferredRecords:profile];
+    for(UIView* view in _recorderScroll.views){
+        [view removeFromSuperview];
+    }
+    [_recorderScroll.views removeAllObjects];
+    if(!_recorderScroll.views){
+        _recorderScroll.views = [[NSMutableArray alloc] init];
+    }
+    for(EZRecordTypeDesc* rd in recordList){
+        EZDetailHeader* dheader = [EZDetailHeader createDetailHeader];
+        //[dheader setPosition:CGPointMake(0, profile.bounds.size.height)];
+        
+        dheader.countInfo.text = @"";
+        dheader.countUnit.text = rd.unitName;
+        dheader.detailName.text = rd.name;
+        EZDEBUG(@"will show icon url:%@", rd.iconURL);
+        [dheader.icon setImageWithURL:str2url(rd.iconURL)];
+        [[EZDataUtil getInstance]fetchCurrentRecord:rd.type profileID:profile.profileID success:^(EZTrackRecord* rc){
+            EZDEBUG(@"successfully returned");
+            if(rc.formattedStr){
+                dheader.countInfo.text = rc.formattedStr;
+            }else{
+                dheader.countInfo.text = [NSString stringWithFormat:@"%f", rc.measures];
+            }
+            if(rc.graphURL){
+                [dheader.graph setImageWithURL:str2url(rc.graphURL)];
+            }
+        } failure:^(id err){
+            EZDEBUG(@"error:%@", err);
+        }];
+        [_recorderScroll.views addObject:dheader];
+        //dheader.icon.image = [UIImage imageNamed:@"demo_avatar_jobs"];
+    }
+    
+    //trigger the rearrangements.
+    _recorderScroll.views = _recorderScroll.views;
+}
+
+- (void) switchProfile:(EZProfile*)profile
+{
+    [self showRecordList:profile];
+    [_tableView reloadData];
+}
+
 - (void) setupMockView
 {
-    EZProfileHeader* profile = [EZProfileHeader createHeader];
-    profile.avatar.image = [UIImage imageNamed:@"demo_avatar_cook"];
-    profile.name.text = @"天哥";
-    profile.middleInfo.text = @"还没怀上";
-    profile.bottomInfo.text = @"顺产之王";
-    profile.backgroundColor = [UIColor grayColor];
     
-    EZProfileHeader* profile2 = [EZProfileHeader createHeader];
-    profile2.avatar.image = [UIImage imageNamed:@"demo_avatar_jobs"];
-    profile2.name.text = @"乔班主";
-    profile2.middleInfo.text = @"2年9个月";
-    profile2.bottomInfo.text = @"好养";
-    profile2.backgroundColor = [UIColor grayColor];
-    
-    EZScrollerView* scrollerView = [[EZScrollerView alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, profile2.bounds.size.height)];
-    
-    scrollerView.views = @[profile, profile2];
-    scrollerView.scrolledTo = ^(NSDictionary* dict){
+    _profileScroll = [[EZScrollerView alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, EZProfileCellHeight)];
+    __weak EZMainPage* weakSelf = self;
+    _profileScroll.scrolledTo = ^(NSDictionary* dict){
         EZDEBUG(@"scrollTo get called:%@", dict);
+        NSInteger cur = [[dict objectForKey:@"curr"] intValue];
+        [EZDataUtil getInstance].currentProfilePos = cur;
+        EZProfile* curProfile = [[EZDataUtil getInstance].currentProfiles objectAtIndex:cur];
+        [weakSelf switchProfile:curProfile];
     };
     
-    EZDetailHeader* dheader = [EZDetailHeader createDetailHeader];
-    //[dheader setPosition:CGPointMake(0, profile.bounds.size.height)];
-    dheader.countInfo.text = int2str(100);
-    dheader.countUnit.text = @"公斤";
-    dheader.detailName.text = @"体重";
-    dheader.icon.image = [UIImage imageNamed:@"demo_avatar_jobs"];
-    
-    dheader.graph.image = [UIImage imageNamed:@"demo_avatar_woz"];
-    dheader.backgroundColor = [UIColor grayColor];
-    
-    EZDetailHeader* dheader2 = [EZDetailHeader createDetailHeader];
-    //[dheader2 setPosition:CGPointMake(0, 0)];
-    dheader2.countInfo.text = int2str(100);
-    dheader2.countUnit.text = @"公斤2";
-    dheader2.detailName.text = @"体重2";
-    dheader2.icon.image = [UIImage imageNamed:@"demo_avatar_jobs"];
-    
-    dheader2.graph.image = [UIImage imageNamed:@"demo_avatar_woz"];
-    dheader2.backgroundColor = [UIColor grayColor];
+    _recorderScroll = [[EZScrollerView alloc] initWithFrame:CGRectMake(0, _profileScroll.bounds.size.height, CurrentScreenWidth, EZRecordDetailHeight)];
+    [self.view addSubview:_profileScroll];
+    [self.view addSubview:_recorderScroll];
     
     
-    
-    EZScrollerView* scrollerView2 = [[EZScrollerView alloc] initWithFrame:CGRectMake(0, scrollerView.bounds.size.height, CurrentScreenWidth, dheader.bounds.size.height)];
-    scrollerView2.views = @[dheader, dheader2];
-    
-    [self.view addSubview:scrollerView];
-    [self.view addSubview:scrollerView2];
-    
+}
+
+- (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    EZDEBUG(@"selectect:%i", indexPath.row);
     
 }
 
@@ -165,7 +201,7 @@
 {
     [super viewWillAppear:animated];
     
-    [self setupMockView];
+    [self.navigationController setNavigationBarHidden:YES];
     //dispatch_later(0.1, ^(){
     //    EZDEBUG(@"ViewWill appear get called, topView is:%i", (int)TopView);
     //    [TopView addSubview:profile];
@@ -202,13 +238,15 @@
     EZMenuItem* item = [[self currentMenu] objectAtIndex:indexPath.row];
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     cell.title.text = item.menuName;
-    cell.icon.image = [UIImage imageNamed:item.iconURL];
+    //cell.icon.image = [UIImage imageNamed:item.iconURL];
+    [cell.icon setImageWithURL:str2url(item.iconURL)];
     if(!item.notesCount){
         cell.notesCount.hidden = YES;
     }else{
         cell.notesCount.hidden = NO;
         cell.notesCount.text = int2str(item.notesCount);
     }
+    cell.menuItem = item;
     //cell.textLabel.text = int2str(indexPath.row);
     // Configure the cell...
     

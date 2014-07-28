@@ -46,7 +46,32 @@
     //[self testImageProcess];
     //[self testImageStore];
     //[self testIndexOfObject];
+    //[self testFileNameChange];
+}
+
++ (void) testFileNameChange
+{
+    NSString* existDot = @"/cool/coolguy.png";
+
+    NSString* notExistDot = @"/cool/hotgirlhaha";
+    NSRange header = [existDot rangeOfString:@"." options:NSBackwardsSearch];
    
+    NSRange notHeader = [notExistDot rangeOfString:@"." options:NSBackwardsSearch];
+    
+    NSString* resultStr = [EZFileUtil bundleToURL:existDot retinaAware:YES];
+    NSString* nextResult = [EZFileUtil bundleToURL:notExistDot retinaAware:YES];
+    EZDEBUG(@"header location:%i, notHeader:%i, resultStr:%@, %@", header.location, notHeader.location, resultStr, nextResult);
+    assert(false);
+    /**
+    if(header.location < org.length){
+        NSString* prev = [org substringToIndex:header.location];
+        NSString* combined = [prev stringByAppendingPathExtension:replace];
+        return combined;
+    }else {
+        return [org stringByAppendingPathExtension:replace];
+    }
+    **/
+    
 }
 
 + (void) testIndexOfObject

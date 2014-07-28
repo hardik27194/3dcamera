@@ -25,9 +25,41 @@ typedef enum {
 } EZTabType;
 
 
+typedef enum {
+    kPooh,
+    kUrine,
+    kSleep,
+    kFeeds,
+    kMilk,
+    kAuxFood,
+    kHeight,
+    kWeight,
+    kHeadCycle,
+    kChestCycle,
+    kBloodExam,
+    kBellyCycle,
+    kWalkCount,
+    kBloodPressure,
+    kBloodSugar,
+    kRecipes,
+    kInfantTeach,
+    kExamRecord
+} EZTrackRecordType;
+
+#define EZRecordDetailHeight 89
+
+#define EZProfileCellHeight 164
+
 #define EZMainCellHeight 84
 
 #define ToolBarTextColor RGBCOLOR(62, 58, 57)
+
+//turn the track record type to icons
+#define type2icon(typeID)  
+
+#define type2unit(typeID)
+
+#define type2name(typeID)
 
 #define ToolBarBackground RGBCOLOR(237, 240, 245)
 

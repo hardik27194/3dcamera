@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
+@class EZMenuItem;
 @interface EZMainCell : UITableViewCell
 
 @property (nonatomic, strong) UILabel* title;
@@ -17,5 +18,7 @@
 @property (nonatomic, strong) UILabel* notesCount;
 
 @property (nonatomic, strong) UIView* selectIndicator;
+
+@property (nonatomic, strong) EZMenuItem* menuItem;
 
 @end

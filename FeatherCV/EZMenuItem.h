@@ -10,11 +10,13 @@
 
 @interface EZMenuItem : NSObject
 
-- (id) initWith:(NSString*)menuName iconURL:(NSString*)iconURL action:(EZEventBlock)action;
+- (id) initWith:(NSString*)menuName iconURL:(NSString*)iconURL selectedIconURL:(NSString*)selectedURL action:(EZEventBlock)action;
 
 @property (nonatomic, strong) NSString* menuName;
 
 @property (nonatomic, strong) NSString* iconURL;
+
+@property (nonatomic, strong) NSString* selectedIconURL;
 
 @property (nonatomic, assign) NSInteger notesCount;
 

@@ -14,6 +14,7 @@
 #import "EZCombinedPhoto.h"
 #import "EZConversation.h"
 #import "LFGlassView.h"
+#import "EZTrackRecord.h"
 
 
 typedef enum {
@@ -22,6 +23,7 @@ typedef enum {
 }EZPersonSelected;
 @class EZCenterButton;
 @class EZPhotoChat;
+@class EZProfile;
 @interface EZAlbumResult : NSObject
 
 @property (nonatomic, assign) int totalPhoto;
@@ -34,7 +36,63 @@ typedef enum {
 
 + (EZDataUtil*) getInstance;
 
+- (NSString*) recordTypeToName:(EZTrackRecordType)type;
+
+- (NSString*) recordTypeToIcon:(EZTrackRecordType)type;
+
+- (NSString*) recordTypeToUnit:(EZTrackRecordType)type;
+
+//The record which listed on the main page
+- (NSArray*) getSelectedRecordLists:(NSString*)profileID;
+
+- (NSArray*) getTotalRecordLists:(NSString*)profileID;
+
+- (void) fetchCurrentRecord:(EZTrackRecordType)recordType profileID:(NSString*)profileID success:(EZEventBlock)success failure:(EZEventBlock)failure;
+
+//Query the record type detail from server
+- (void) getMostRecent:(NSString*)profileID type:(EZTrackRecordType)type success:(EZEventBlock)success failure:(EZEventBlock)block;
+
+
+- (NSArray*) getPreferredRecords:(EZProfile*)profile;
+
+@property (nonatomic, strong) NSMutableDictionary* recordTypeDetails;
+
+@property (nonatomic, strong) NSMutableDictionary* currentRecords;
+
+//Map the id to the perferred list
+@property (nonatomic, strong) NSMutableDictionary* selectedRecordLists;
+
+@property (nonatomic, strong) NSMutableDictionary* totalRecordLists;
+
+@property (nonatomic, strong) NSMutableArray* childRecordLists;
+
+@property (nonatomic, strong) NSMutableArray* motherRecordLists;
+
+@property (nonatomic, strong) NSMutableArray* childPreferLists;
+
+@property (nonatomic, strong) NSMutableArray* motherPreferLists;
+
+@property (nonatomic, strong) NSMutableArray* motherMenuItems;
+
+@property (nonatomic, strong) NSMutableArray* childMenuItems;
+
 @property (nonatomic, assign) EZPersonSelected currentSelected;
+
+@property (nonatomic, strong) NSMutableArray* currentProfiles;
+
+@property (nonatomic, assign) NSInteger currentProfilePos;
+
+//Which will include both mother and the child list
+- (void) createAllRecordType;
+
+- (void) fetchProfilesForID:(NSString*)personID success:(EZEventBlock)success failure:(EZEventBlock)failure;
+
+- (NSArray*) getMenuItemByType:(EZProfile*)profile;
+
+- (NSArray*) getCurrentMenuItems;
+
+//The id which will be used to query it's status.
+@property (nonatomic, strong) NSString* queryPersonID;
 
 @property (nonatomic, strong) EZEventBlock avatarSuccess;
 

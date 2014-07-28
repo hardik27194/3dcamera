@@ -12,7 +12,7 @@
 
 + (EZDetailHeader*) createDetailHeader
 {
-    return [[EZDetailHeader alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, 89)];
+    return [[EZDetailHeader alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, EZRecordDetailHeight)];
 }
 
 - (id)initWithFrame:(CGRect)frame

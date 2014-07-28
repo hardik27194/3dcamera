@@ -10,11 +10,12 @@
 
 @implementation EZMenuItem
 
-- (id) initWith:(NSString*)menuName iconURL:(NSString*)iconURL action:(EZEventBlock)action
+- (id) initWith:(NSString*)menuName iconURL:(NSString*)iconURL selectedIconURL:(NSString *)selectedURL action:(EZEventBlock)action
 {
     self = [super init];
     _menuName = menuName;
     _iconURL = iconURL;
+    _selectedIconURL = selectedURL;
     _selectedAction = action;
     return self;
 }

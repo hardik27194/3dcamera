@@ -590,10 +590,11 @@
     return YES;
 }
 
-- (EZMainPage*) createMainPage
+- (UINavigationController*) createMainPage
 {
     EZMainPage* mainPage = [[EZMainPage alloc] init];
-    return mainPage;
+    UINavigationController* rootNav = [[UINavigationController alloc] initWithRootViewController:mainPage];
+    return rootNav;
 }
 
 - (BOOL)applicationTestFace:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions

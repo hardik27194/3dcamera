@@ -42,6 +42,11 @@ typedef void (^ EZSearchBlock)(NSString* keyword, NSInteger start, NSInteger lim
 //So it is natural borned once.
 typedef void (^ EZRetryBlock) (id sender, EZOperationBlock retry);
 
+#define isRetinaScreen ([[UIScreen mainScreen] respondsToSelector:@selector(scale)] && [[UIScreen mainScreen] scale] == 2.0)
+
+#define bundle2url(bundleName) [EZFileUtil bundleToURL:bundleName retinaAware:true]
+
+#define Bundle2Url(bundleName) [EZFileUtil bundleToURL:bundleName retinaAware:false]
 //As an old dog, I learnt some new tricks.
 #define SINGLETON_FOR_HEADER(classname) + (classname *)shared##classname;
 

@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
+@class EZScrollerView;
 @interface EZMainPage : UIViewController<UITableViewDataSource, UITableViewDelegate>
 
 //What kind of cell will displayed.
@@ -17,5 +18,8 @@
 
 @property (nonatomic, strong) UITableView* tableView;
 
+@property (nonatomic, strong) EZScrollerView* profileScroll;
+
+@property (nonatomic, strong) EZScrollerView* recorderScroll;
 
 @end

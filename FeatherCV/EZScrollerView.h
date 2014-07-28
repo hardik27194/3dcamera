@@ -25,4 +25,6 @@
 
 @property (nonatomic, assign) BOOL hidePageControl;
 
+- (void) reloadViews;
+
 @end

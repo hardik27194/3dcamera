@@ -7,6 +7,8 @@
 //
 
 #import "EZMainCell.h"
+#import "UIImageView+AFNetworking.h"
+#import "EZMenuItem.h"
 
 #define EZNoteColor RGBCOLOR(52, 163, 195)
 #define EZMainSelectColor RGBCOLOR(255, 27, 129)
@@ -27,7 +29,7 @@
 - (void) setupView
 {
     EZDEBUG(@"setupView get called");
-    _icon = [[UIImageView alloc] initWithFrame:CGRectMake(25, 10, 24, 24)];
+    _icon = [[UIImageView alloc] initWithFrame:CGRectMake(25, 12, 21, 20)];
     _icon.contentMode = UIViewContentModeScaleAspectFill;
     
     [self.contentView addSubview:_icon];
@@ -64,11 +66,14 @@
     if(selected){
         _selectIndicator.hidden = false;
         _title.textColor = EZMainSelectColor;
+        [_icon setImageWithURL:str2url(_menuItem.selectedIconURL)];
         self.contentView.backgroundColor = [UIColor whiteColor];
     }else{
         _selectIndicator.hidden = true;
         _title.textColor = [UIColor whiteColor];
         self.contentView.backgroundColor = [UIColor clearColor];
+        [_icon setImageWithURL:str2url(_menuItem.iconURL)];
+
     }
     // Configure the view for the selected state
 }
