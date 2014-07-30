@@ -10,6 +10,9 @@
 		180ADA5518C1CA1000AB490C /* EZChatRegion.m in Sources */ = {isa = PBXBuildFile; fileRef = 180ADA5418C1CA1000AB490C /* EZChatRegion.m */; };
 		180ADA5A18C1CA2500AB490C /* EZChatUnit.m in Sources */ = {isa = PBXBuildFile; fileRef = 180ADA5918C1CA2500AB490C /* EZChatUnit.m */; };
 		180ADA5D18C4247F00AB490C /* EZCenterButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 180ADA5C18C4247F00AB490C /* EZCenterButton.m */; };
+		180E78F91987C7A700D85AD3 /* EZPopupView.m in Sources */ = {isa = PBXBuildFile; fileRef = 180E78F81987C7A700D85AD3 /* EZPopupView.m */; };
+		180E78FE1987DA8000D85AD3 /* EZPopupInput.m in Sources */ = {isa = PBXBuildFile; fileRef = 180E78FD1987DA8000D85AD3 /* EZPopupInput.m */; };
+		180E79011987DB2900D85AD3 /* EZInputItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 180E79001987DB2900D85AD3 /* EZInputItem.m */; };
 		1814A39A195A913900FA0D6A /* EZPinchController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1814A399195A913900FA0D6A /* EZPinchController.m */; };
 		1814A39F195AA5FE00FA0D6A /* EZPhotoDetail.m in Sources */ = {isa = PBXBuildFile; fileRef = 1814A39E195AA5FE00FA0D6A /* EZPhotoDetail.m */; };
 		181608C718B4E38600DD5995 /* EZAnimationUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 181608C618B4E38600DD5995 /* EZAnimationUtil.m */; };
@@ -276,6 +279,14 @@
 		1870B02619852E41005A663A /* EZRecordMain.m in Sources */ = {isa = PBXBuildFile; fileRef = 1870B02519852E41005A663A /* EZRecordMain.m */; };
 		1870B0291985313A005A663A /* EZRecorderCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 1870B0281985313A005A663A /* EZRecorderCell.m */; };
 		1870B02C19860657005A663A /* EZCustomButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 1870B02B19860657005A663A /* EZCustomButton.m */; };
+		1870B06D19866FB4005A663A /* CKCalendarView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1870B06719866FB4005A663A /* CKCalendarView.m */; };
+		1870B06E19866FB4005A663A /* CKViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1870B06919866FB4005A663A /* CKViewController.m */; };
+		1870B06F19866FB4005A663A /* CKAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1870B06B19866FB4005A663A /* CKAppDelegate.m */; };
+		1870B07419867FDC005A663A /* header_btn_back_blue@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1870B07019867FDC005A663A /* header_btn_back_blue@2x.png */; };
+		1870B07519867FDC005A663A /* header_btn_back_blue.png in Resources */ = {isa = PBXBuildFile; fileRef = 1870B07119867FDC005A663A /* header_btn_back_blue.png */; };
+		1870B07619867FDC005A663A /* header_btn_forth_blue.png in Resources */ = {isa = PBXBuildFile; fileRef = 1870B07219867FDC005A663A /* header_btn_forth_blue.png */; };
+		1870B07719867FDC005A663A /* header_btn_forth_blue@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1870B07319867FDC005A663A /* header_btn_forth_blue@2x.png */; };
+		1870B07A19877864005A663A /* EZGraphDetail.m in Sources */ = {isa = PBXBuildFile; fileRef = 1870B07919877864005A663A /* EZGraphDetail.m */; };
 		1874D9D71867F57E005743FC /* EZSaturationFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 1874D9D61867F57E005743FC /* EZSaturationFilter.m */; };
 		1879BE23190BB1B60084FB27 /* EZCopyableLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 1879BE22190BB1B60084FB27 /* EZCopyableLabel.m */; };
 		1879BE28190BB8830084FB27 /* EZLimitTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 1879BE27190BB8830084FB27 /* EZLimitTextField.m */; };
@@ -554,6 +565,12 @@
 		180ADA5918C1CA2500AB490C /* EZChatUnit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZChatUnit.m; sourceTree = "<group>"; };
 		180ADA5B18C4247F00AB490C /* EZCenterButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZCenterButton.h; sourceTree = "<group>"; };
 		180ADA5C18C4247F00AB490C /* EZCenterButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZCenterButton.m; sourceTree = "<group>"; };
+		180E78F71987C7A700D85AD3 /* EZPopupView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZPopupView.h; sourceTree = "<group>"; };
+		180E78F81987C7A700D85AD3 /* EZPopupView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZPopupView.m; sourceTree = "<group>"; };
+		180E78FC1987DA8000D85AD3 /* EZPopupInput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZPopupInput.h; sourceTree = "<group>"; };
+		180E78FD1987DA8000D85AD3 /* EZPopupInput.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZPopupInput.m; sourceTree = "<group>"; };
+		180E78FF1987DB2900D85AD3 /* EZInputItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZInputItem.h; sourceTree = "<group>"; };
+		180E79001987DB2900D85AD3 /* EZInputItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZInputItem.m; sourceTree = "<group>"; };
 		1814A398195A913900FA0D6A /* EZPinchController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZPinchController.h; sourceTree = "<group>"; };
 		1814A399195A913900FA0D6A /* EZPinchController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZPinchController.m; sourceTree = "<group>"; };
 		1814A39D195AA5FE00FA0D6A /* EZPhotoDetail.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZPhotoDetail.h; sourceTree = "<group>"; };
@@ -914,6 +931,18 @@
 		1870B0281985313A005A663A /* EZRecorderCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZRecorderCell.m; sourceTree = "<group>"; };
 		1870B02A19860657005A663A /* EZCustomButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZCustomButton.h; sourceTree = "<group>"; };
 		1870B02B19860657005A663A /* EZCustomButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZCustomButton.m; sourceTree = "<group>"; };
+		1870B06719866FB4005A663A /* CKCalendarView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CKCalendarView.m; sourceTree = "<group>"; };
+		1870B06819866FB4005A663A /* CKCalendarView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CKCalendarView.h; sourceTree = "<group>"; };
+		1870B06919866FB4005A663A /* CKViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CKViewController.m; sourceTree = "<group>"; };
+		1870B06A19866FB4005A663A /* CKViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CKViewController.h; sourceTree = "<group>"; };
+		1870B06B19866FB4005A663A /* CKAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CKAppDelegate.m; sourceTree = "<group>"; };
+		1870B06C19866FB4005A663A /* CKAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CKAppDelegate.h; sourceTree = "<group>"; };
+		1870B07019867FDC005A663A /* header_btn_back_blue@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "header_btn_back_blue@2x.png"; sourceTree = "<group>"; };
+		1870B07119867FDC005A663A /* header_btn_back_blue.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = header_btn_back_blue.png; sourceTree = "<group>"; };
+		1870B07219867FDC005A663A /* header_btn_forth_blue.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = header_btn_forth_blue.png; sourceTree = "<group>"; };
+		1870B07319867FDC005A663A /* header_btn_forth_blue@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "header_btn_forth_blue@2x.png"; sourceTree = "<group>"; };
+		1870B07819877864005A663A /* EZGraphDetail.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZGraphDetail.h; sourceTree = "<group>"; };
+		1870B07919877864005A663A /* EZGraphDetail.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZGraphDetail.m; sourceTree = "<group>"; };
 		1874D9D51867F57E005743FC /* EZSaturationFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZSaturationFilter.h; sourceTree = "<group>"; };
 		1874D9D61867F57E005743FC /* EZSaturationFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZSaturationFilter.m; sourceTree = "<group>"; };
 		1879BE21190BB1B60084FB27 /* EZCopyableLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZCopyableLabel.h; sourceTree = "<group>"; };
@@ -1498,6 +1527,19 @@
 			path = FaceppResult;
 			sourceTree = "<group>";
 		};
+		1870B05119865BFB005A663A /* calendar */ = {
+			isa = PBXGroup;
+			children = (
+				1870B06719866FB4005A663A /* CKCalendarView.m */,
+				1870B06819866FB4005A663A /* CKCalendarView.h */,
+				1870B06919866FB4005A663A /* CKViewController.m */,
+				1870B06A19866FB4005A663A /* CKViewController.h */,
+				1870B06B19866FB4005A663A /* CKAppDelegate.m */,
+				1870B06C19866FB4005A663A /* CKAppDelegate.h */,
+			);
+			name = calendar;
+			sourceTree = "<group>";
+		};
 		18A36FE91855C1470022F0A8 /* camera */ = {
 			isa = PBXGroup;
 			children = (
@@ -1639,6 +1681,14 @@
 				1870B0221984B847005A663A /* EZRecordTypeDesc.m */,
 				1870B02A19860657005A663A /* EZCustomButton.h */,
 				1870B02B19860657005A663A /* EZCustomButton.m */,
+				1870B07819877864005A663A /* EZGraphDetail.h */,
+				1870B07919877864005A663A /* EZGraphDetail.m */,
+				180E78F71987C7A700D85AD3 /* EZPopupView.h */,
+				180E78F81987C7A700D85AD3 /* EZPopupView.m */,
+				180E78FC1987DA8000D85AD3 /* EZPopupInput.h */,
+				180E78FD1987DA8000D85AD3 /* EZPopupInput.m */,
+				180E78FF1987DB2900D85AD3 /* EZInputItem.h */,
+				180E79001987DB2900D85AD3 /* EZInputItem.m */,
 			);
 			name = controllers;
 			sourceTree = "<group>";
@@ -1899,6 +1949,7 @@
 				18E3470A183DFA1A00C9D89D /* EZTestSuites.m */,
 				18E34694183DF54400C9D89D /* Images.xcassets */,
 				18E34691183DF54400C9D89D /* FeatherCV.xcdatamodeld */,
+				1870B05119865BFB005A663A /* calendar */,
 				18E34686183DF54400C9D89D /* Supporting Files */,
 			);
 			name = BabyCare;
@@ -1996,6 +2047,10 @@
 		18E346D4183DF90600C9D89D /* images */ = {
 			isa = PBXGroup;
 			children = (
+				1870B07019867FDC005A663A /* header_btn_back_blue@2x.png */,
+				1870B07119867FDC005A663A /* header_btn_back_blue.png */,
+				1870B07219867FDC005A663A /* header_btn_forth_blue.png */,
+				1870B07319867FDC005A663A /* header_btn_forth_blue@2x.png */,
 				1870AED119829484005A663A /* header_icon_xt_white.png */,
 				1870AED219829484005A663A /* header_icon_xt_white@2x.png */,
 				1870AED319829484005A663A /* icon_xt_white@2x.png */,
@@ -2539,6 +2594,7 @@
 				1870AF8819829485005A663A /* header_icon_nb_white.png in Resources */,
 				18A3701D1855C2A40022F0A8 /* library.png in Resources */,
 				1870AFAB19829485005A663A /* icon_jb_white.png in Resources */,
+				1870B07719867FDC005A663A /* header_btn_forth_blue@2x.png in Resources */,
 				1870AFD419829485005A663A /* icon_star.png in Resources */,
 				1870B01919829485005A663A /* drawer_nav_chat.png in Resources */,
 				1870AFDB19829485005A663A /* icon_bb@2x.png in Resources */,
@@ -2629,6 +2685,7 @@
 				1870AFE919829485005A663A /* headerbg@2x.png in Resources */,
 				1870AFC919829485005A663A /* header_btn_add@2x.png in Resources */,
 				184DBE7C18BC909000239F0F /* UIControlInfo.strings in Resources */,
+				1870B07419867FDC005A663A /* header_btn_back_blue@2x.png in Resources */,
 				1870AFAE19829485005A663A /* icon_fs@2x.png in Resources */,
 				1870AFA719829485005A663A /* icon_mr@2x.png in Resources */,
 				1870AFD619829485005A663A /* icon_bb.png in Resources */,
@@ -2670,6 +2727,7 @@
 				1870AFA919829485005A663A /* icon_jc_white.png in Resources */,
 				1870AFDC19829485005A663A /* icon_nb.png in Resources */,
 				1870AFA419829485005A663A /* icon_mr_white.png in Resources */,
+				1870B07519867FDC005A663A /* header_btn_back_blue.png in Resources */,
 				18DE98F419404734008C1B3F /* bubble@2x.png in Resources */,
 				18A36FF61855C2700022F0A8 /* DLCImagePicker.xib in Resources */,
 				1870AFBF19829485005A663A /* icon_jb@2x.png in Resources */,
@@ -2717,6 +2775,7 @@
 				1870AFFF19829485005A663A /* drawer_icon_milk.png in Resources */,
 				1870AFEA19829485005A663A /* btn_s_sel.png in Resources */,
 				18E346F6183DF9C400C9D89D /* whole_love@2x.png in Resources */,
+				1870B07619867FDC005A663A /* header_btn_forth_blue.png in Resources */,
 				18DE98F919404734008C1B3F /* bubble_stroked.png in Resources */,
 				1870B00B19829485005A663A /* drawer_nav_notification 2.png in Resources */,
 				1870AF9719829485005A663A /* icon_xw@2x.png in Resources */,
@@ -2835,6 +2894,7 @@
 				186EC006193731310011C145 /* EZChatCell.m in Sources */,
 				18DE992E19404A6F008C1B3F /* JSQDemoViewController.m in Sources */,
 				1823DA3318D5674F00E6E8B3 /* EZLoginController.m in Sources */,
+				1870B06D19866FB4005A663A /* CKCalendarView.m in Sources */,
 				18E3477B183DFAA400C9D89D /* EZExtender.m in Sources */,
 				184ADD7418C4B40D00367527 /* EZAvatarView.m in Sources */,
 				18DE990519404734008C1B3F /* JSQSystemSoundPlayer+JSQMessages.m in Sources */,
@@ -2874,6 +2934,7 @@
 				1823DA3618D5A1E000E6E8B3 /* EZKeyboardController.m in Sources */,
 				18DE990A19404734008C1B3F /* JSQMessagesKeyboardController.m in Sources */,
 				18F58B7F187AF540006CB966 /* EZFaceUtilWrapper.mm in Sources */,
+				180E79011987DB2900D85AD3 /* EZInputItem.m in Sources */,
 				18A370411859B7C20022F0A8 /* EZContactTableCell.m in Sources */,
 				1874D9D71867F57E005743FC /* EZSaturationFilter.m in Sources */,
 				18E3483D18433FC000C9D89D /* UIImage+ResizeMagick.m in Sources */,
@@ -2897,6 +2958,7 @@
 				1866ADC71898F0DB00DB46E2 /* LFGlassView.m in Sources */,
 				18E34724183DFA3300C9D89D /* EZAlbumTablePage.m in Sources */,
 				184ADD8D18CDA96200367527 /* EZDownloadHolder.m in Sources */,
+				1870B06E19866FB4005A663A /* CKViewController.m in Sources */,
 				1866ADAA18966E7000DB46E2 /* BaseAnimation.m in Sources */,
 				184DBE7218B8D8A400239F0F /* EZSkinSharpen.m in Sources */,
 				181608DA18B714B900DD5995 /* EZModalDissolveAnimation.m in Sources */,
@@ -2912,6 +2974,7 @@
 				18E746EB18A4A26A0023967B /* AFHTTPRequestOperationManager.m in Sources */,
 				18DE990D19404734008C1B3F /* JSQMessagesAvatarFactory.m in Sources */,
 				18E3482C183F03A600C9D89D /* EZFaceTestPage.mm in Sources */,
+				1870B06F19866FB4005A663A /* CKAppDelegate.m in Sources */,
 				18E34779183DFAA400C9D89D /* EZClickImage.m in Sources */,
 				18E34739183DFA5800C9D89D /* APLStackLayout.m in Sources */,
 				18B3651D1920926900092AB8 /* EZMotionImage.m in Sources */,
@@ -2936,6 +2999,7 @@
 				18E746F818A4A26A0023967B /* UIProgressView+AFNetworking.m in Sources */,
 				18E3472C183DFA3300C9D89D /* EZViewContainer.m in Sources */,
 				184EB9CC19825D590024A495 /* EZScrollerView.m in Sources */,
+				180E78F91987C7A700D85AD3 /* EZPopupView.m in Sources */,
 				18DE991819404734008C1B3F /* JSQMessagesCollectionViewCellIncoming.m in Sources */,
 				1870AED0198283A5005A663A /* EZMenuItem.m in Sources */,
 				18E746EC18A4A26A0023967B /* AFHTTPSessionManager.m in Sources */,
@@ -2967,6 +3031,7 @@
 				184EC693192F1BA4004B32A0 /* EZImageAsset.m in Sources */,
 				18E746FC18A4BBBC0023967B /* EZFeatherAPIClient.m in Sources */,
 				18E34737183DFA5800C9D89D /* EZTransitionLayout.m in Sources */,
+				1870B07A19877864005A663A /* EZGraphDetail.m in Sources */,
 				18E34788183DFAA400C9D89D /* EZImageFileCache.m in Sources */,
 				18E746EE18A4A26A0023967B /* AFSecurityPolicy.m in Sources */,
 				1870B0201984B340005A663A /* EZTrackRecord.m in Sources */,
@@ -3026,6 +3091,7 @@
 				184ADD9518D045BA00367527 /* LocalPersons.m in Sources */,
 				18E34726183DFA3300C9D89D /* EZScrollContainer.m in Sources */,
 				186EC12F193869FD0011C145 /* FaceppResult.m in Sources */,
+				180E78FE1987DA8000D85AD3 /* EZPopupInput.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3117,6 +3183,11 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					/Users/apple/Documents/open_source/tapkulibraryupdate/src/TapkuLibrary,
+				);
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = YES;
 				PROVISIONING_PROFILE = "39E3B331-8956-4934-AFF4-DC05A38A86C5";
@@ -3153,6 +3224,11 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					/Users/apple/Documents/open_source/tapkulibraryupdate/src/TapkuLibrary,
+				);
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = YES;
 				PROVISIONING_PROFILE = "39E3B331-8956-4934-AFF4-DC05A38A86C5";
@@ -3179,6 +3255,7 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					/Users/apple/Documents/open_source/MNCalendarView/MNCalendarView,
 					"/Users/apple/Documents/open_source/GPUImageCV/framework/**",
 				);
 				INFOPLIST_FILE = "FeatherCV/BabyCare-Info.plist";
@@ -3212,6 +3289,7 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					/Users/apple/Documents/open_source/MNCalendarView/MNCalendarView,
 					"/Users/apple/Documents/open_source/GPUImageCV/framework/**",
 				);
 				INFOPLIST_FILE = "FeatherCV/BabyCare-Info.plist";

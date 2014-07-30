@@ -167,7 +167,7 @@ static char kAFResponseSerializerKey;
     [self cancelImageRequestOperation];
 
     UIImage *cachedImage = [[[self class] sharedImageCache] cachedImageForRequest:urlRequest];
-    EZDEBUG(@"load image from url:%@, %i, cache pointer:%i",urlRequest.URL.absoluteString, (int)cachedImage, (int) [[self class] sharedImageCache]);
+    //EZDEBUG(@"load image from url:%@, %i, cache pointer:%i",urlRequest.URL.absoluteString, (int)cachedImage, (int) [[self class] sharedImageCache]);
     if (cachedImage) {
         if (success) {
             success(nil, nil, cachedImage);

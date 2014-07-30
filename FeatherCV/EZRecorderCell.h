@@ -16,13 +16,17 @@
 
 @property (nonatomic, strong) UILabel* measurement;
 
-@property (nonatomic, strong) UILabel* name;
+@property (nonatomic, strong) UIButton* name;
 
 @property (nonatomic, strong) EZEventBlock iconClicked;
 
 @property (nonatomic, strong) EZEventBlock starClicked;
 
+@property (nonatomic, strong) EZEventBlock nameClicked;
+
 @property (nonatomic, strong) UIView* tapView;
+
+@property (nonatomic, strong) UIImageView* starImg;
 //
 - (void) setStarred:(BOOL)starred;
 

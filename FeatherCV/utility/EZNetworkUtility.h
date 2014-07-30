@@ -72,7 +72,6 @@
 
 
 
-
 - (void) uploadImage:(NSString*)uploadURL file:(NSString*)videoFile parameters:(NSDictionary*)parameters  complete:(EZEventBlock)completed error:(EZEventBlock)errorBlk retry:(BOOL)retry onlyWifi:(BOOL)onlyWifi method:(NSString*)method;
 
 
@@ -97,13 +96,15 @@
 //Set session cookie back
 + (void) setSessionCookie:(NSString*)sessionid;
 
+@property (nonatomic, strong) NSString* sessionID;
+
 @property (nonatomic, strong) NSMutableArray* pendingRequest;
 
 @property (nonatomic, assign) BOOL isPauseRequest;
 
 @property (nonatomic, strong) dispatch_queue_t backgroundQueue;
 
-
++ (void) postParameterFullURL:(NSString *)url parameters:(id)params complete:(EZEventBlock)completed failblk:(EZEventBlock)errorBlk isBackground:(BOOL)background;
 //Will post the
 + (void) postParameterAsJson:(NSString*)url parameters:(id)params complete:(EZEventBlock)complete failblk:(EZEventBlock)block;
 

@@ -1075,6 +1075,20 @@ NSString* doubleString(NSString* str)
     [self addTarget:bw action:@selector(invokeMethod:) forControlEvents:UIControlEventTouchUpInside];
 }
 
++ (UIButton*) createButton:(CGRect)frame font:(UIFont*)font color:(UIColor*)color align:(NSTextAlignment)align
+{
+    UIButton* res = [[UIButton alloc] initWithFrame:frame];
+    [res setTitleColor:color forState:UIControlStateNormal];
+    res.showsTouchWhenHighlighted = YES;
+    //res.font = font;
+    //res.textColor = color;
+    [res.titleLabel setFont:font];
+    res.titleLabel.textAlignment = align;
+    //res.backgroundColor = [UIColor clearColor];
+    return  res;
+}
+
+
 //I can add gradient effects to wherever UIView I want.
 //I really love this.
 - (void) addGradient:(NSArray*)colors points:(NSArray*)points corner:(CGFloat)corner
@@ -1447,6 +1461,101 @@ NSString* doubleString(NSString* str)
 
 
 @implementation NSDate(EZPrivate)
+
+
+- (NSComparisonResult)compareByDay:(NSDate *)otherDate {
+    NSCalendar* calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
+    NSDateComponents *day = [calendar components:NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit fromDate:self];
+    NSDateComponents *day2 = [calendar components:NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit fromDate:otherDate];
+    //EZDEBUG(@"%i/%i/%i: %i/%i/%i", day.year, day.month, day.day, day2.year, day2.month, day2.day);
+    if (day.year < day2.year) {
+        return NSOrderedAscending;
+    } else if (day.year > day2.year) {
+        return NSOrderedDescending;
+    } else if (day.month < day2.month) {
+        return NSOrderedAscending;
+    } else if (day.month > day2.month) {
+        return NSOrderedDescending;
+    } else if(day.day < day2.day){
+        return NSOrderedAscending;
+    }else if(day.day > day2.day){
+        return NSOrderedDescending;
+    }else{
+        return NSOrderedSame;
+    }
+}
+
+
+
+- (NSComparisonResult)compareByMonth:(NSDate *)otherDate {
+    NSCalendar* calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
+    NSDateComponents *day = [calendar components:NSYearCalendarUnit|NSMonthCalendarUnit fromDate:self];
+    NSDateComponents *day2 = [calendar components:NSYearCalendarUnit|NSMonthCalendarUnit fromDate:otherDate];
+    
+    if (day.year < day2.year) {
+        return NSOrderedAscending;
+    } else if (day.year > day2.year) {
+        return NSOrderedDescending;
+    } else if (day.month < day2.month) {
+        return NSOrderedAscending;
+    } else if (day.month > day2.month) {
+        return NSOrderedDescending;
+    } else {
+        return NSOrderedSame;
+    }
+}
+
+- (NSInteger)placeInWeekForDate{
+    NSCalendar* calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
+    NSDateComponents *compsFirstDayInMonth = [calendar components:NSWeekdayCalendarUnit fromDate:self];
+    return (compsFirstDayInMonth.weekday - 1 - calendar.firstWeekday + 8) % 7;
+}
+
+- (BOOL)dateIsToday{
+    return [self isSameDayAsDate:[NSDate date]];
+}
+
+
+
+- (BOOL)isSameDayAsDate:(NSDate *)date {
+    // Both dates must be defined, or they're not the same
+    if (date == nil) {
+        return NO;
+    }
+    NSCalendar* calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
+    NSDateComponents *day = [calendar components:NSEraCalendarUnit|NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit fromDate:self];
+    NSDateComponents *day2 = [calendar components:NSEraCalendarUnit|NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit fromDate:date];
+    return ([day2 day] == [day day] &&
+            [day2 month] == [day month] &&
+            [day2 year] == [day year] &&
+            [day2 era] == [day era]);
+}
+
+- (NSInteger)numberOfWeeksInMonthContainingDate:(NSDate *)date {
+    NSCalendar* calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
+    return [calendar rangeOfUnit:NSWeekCalendarUnit inUnit:NSMonthCalendarUnit forDate:self].length;
+}
+
+- (NSDate *)nextDay{
+    NSDateComponents *comps = [[NSDateComponents alloc] init];
+    NSCalendar* calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
+    [comps setDay:1];
+    return [calendar dateByAddingComponents:comps toDate:self options:0];
+}
+
+- (NSDate *)previousDay{
+    NSCalendar* calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
+    NSDateComponents *comps = [[NSDateComponents alloc] init];
+    [comps setDay:-1];
+    return [calendar dateByAddingComponents:comps toDate:self options:0];
+}
+
+- (NSInteger) numberOfDaysToDate:(NSDate *)endDate {
+    NSCalendar* calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
+    NSInteger startDay = [calendar ordinalityOfUnit:NSDayCalendarUnit inUnit:NSEraCalendarUnit forDate:self];
+    NSInteger endDay = [calendar ordinalityOfUnit:NSDayCalendarUnit inUnit:NSEraCalendarUnit forDate:endDate];
+    return endDay - startDay;
+}
 
 
 - (BOOL) isPassed:(NSDate*)date

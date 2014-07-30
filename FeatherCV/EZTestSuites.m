@@ -15,6 +15,7 @@
 #import "EZClickView.h"
 #import "EZFileUtil.h"
 #import "EZHomeBlendFilter.h"
+#import "EZNetworkUtility.h"
 #import <GPUImageFilter.h>
 
 @interface ReleasedObj : NSObject
@@ -47,6 +48,12 @@
     //[self testImageStore];
     //[self testIndexOfObject];
     //[self testFileNameChange];
+    [self testFullFetchBack];
+}
+
++ (void) testFullFetchBack
+{
+    [[EZDataUtil getInstance] queryInitialSettings:nil failure:nil];
 }
 
 + (void) testFileNameChange

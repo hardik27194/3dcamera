@@ -30,7 +30,7 @@
         _seperator = [[EZSeperator alloc] initWithFrame:CGRectMake(0, frame.size.height - 5, CurrentScreenWidth, 1)];
         [self addSubview:_seperator];
         _seperator.color = RGBA(255, 255, 255, 80);
-        _seperator.gap = 50;
+        _seperator.gap = 70;
         _scrollView.delegate = self;
     }
     return self;

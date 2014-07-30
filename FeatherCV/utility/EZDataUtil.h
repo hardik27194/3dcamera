@@ -37,6 +37,8 @@ typedef enum {
 
 + (EZDataUtil*) getInstance;
 
+- (NSString*) createDetailURL:(EZRecordTypeDesc*)desc date:(NSDate*)date;
+
 - (NSString*) recordTypeToName:(EZTrackRecordType)type;
 
 - (NSString*) recordTypeToIcon:(EZTrackRecordType)type;
@@ -58,7 +60,10 @@ typedef enum {
 
 - (void) saveTypeSelectedStatus:(EZTrackRecordType)type selected:(BOOL)selected;
 
-
+//What's the purpose of this class
+//I will recorder back. and adjust the setting accordingly
+//If I keep the setting on person wise, then things could be much more simpler.
+- (void) queryInitialSettings:(EZEventBlock)success failure:(EZEventBlock)failure;
 
 //Query the current list out
 - (void) queryRecordByList:(NSArray*)list success:(EZEventBlock)success failure:(EZEventBlock)failure;
@@ -70,8 +75,11 @@ typedef enum {
 //Query the record type detail from server
 - (void) getMostRecent:(NSString*)profileID type:(EZTrackRecordType)type success:(EZEventBlock)success failure:(EZEventBlock)block;
 
+- (NSArray*) getPreferredRecords:(EZProfile *)profile;
 
-- (NSArray*) getPreferredRecords:(EZProfile*)profile;
+
+
+@property (nonatomic, strong) NSDateFormatter* titleFormatter;
 
 @property (nonatomic, strong) NSMutableDictionary* recordTypeDetails;
 
@@ -86,9 +94,9 @@ typedef enum {
 
 @property (nonatomic, strong) NSMutableArray* motherRecordLists;
 
-@property (nonatomic, strong) NSMutableArray* childPreferLists;
+//@property (nonatomic, strong) NSMutableArray* childPreferLists;
 
-@property (nonatomic, strong) NSMutableArray* motherPreferLists;
+//@property (nonatomic, strong) NSMutableArray* motherPreferLists;
 
 @property (nonatomic, strong) NSMutableArray* motherMenuItems;
 

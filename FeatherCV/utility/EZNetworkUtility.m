@@ -422,7 +422,12 @@ static EZNetworkUtility* instance;
 
 + (NSString*) getCurrentSession
 {
-    return [[NSUserDefaults standardUserDefaults] objectForKey:EZCurrentSessionID];
+    EZNetworkUtility* nu = [EZNetworkUtility getInstance];
+    if(nu.sessionID){
+        return nu.sessionID;
+    }
+    nu.sessionID = [[NSUserDefaults standardUserDefaults] objectForKey:EZCurrentSessionID];
+    return nu.sessionID;
 }
 
 
@@ -641,6 +646,45 @@ static EZNetworkUtility* instance;
  operation.successCallbackQueue = backgroundQueue;
  **/
 
+
++ (void) postParameterFullURL:(NSString *)url parameters:(id)params complete:(EZEventBlock)completed failblk:(EZEventBlock)errorBlk isBackground:(BOOL)background
+{
+    //NSMutableURLRequest* request =
+    
+    AFJSONRequestSerializer* serializer = [AFJSONRequestSerializer serializer];
+    [serializer setValue:[EZDataUtil getInstance].currentPersonID forHTTPHeaderField:EZSessionHeader];
+    [serializer setValue:EZProductFlag forHTTPHeaderField:EZProductionHeader];
+    
+    NSMutableURLRequest* request = [serializer requestWithMethod:@"POST" URLString:url parameters:params error:nil];
+    
+    //[[EZFeatherAPIClient sharedClient] ]
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    //manager.requestSerializer = [AFJSONRequestSerializer serializer];
+    
+    
+    //AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    AFHTTPRequestOperation *operation =
+    [manager HTTPRequestOperationWithRequest:request
+                                     success:^(AFHTTPRequestOperation *operation, id responseObject) {
+                                         //NSLog(@"Success %@", responseObject);
+                                         //EZDEBUG(@"post success");
+                                         if(completed){
+                                             completed(responseObject);
+                                         }
+                                     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+                                         //NSLog(@"Failure %@", error.description);
+                                         if(errorBlk){
+                                             errorBlk(error);
+                                         }
+                                     }];
+    
+    if(background){
+        dispatch_queue_t backgroundQueue = dispatch_queue_create("com.name.bgqueue", NULL);
+        //AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
+        operation.completionQueue = backgroundQueue;
+    }
+    [operation start];
+}
 
 + (void) postParameterAsJson:(NSString *)url parameters:(id)params complete:(EZEventBlock)completed failblk:(EZEventBlock)errorBlk isBackground:(BOOL)background
 {

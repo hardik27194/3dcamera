@@ -16,6 +16,9 @@
 #import "UIImageView+AFNetworking.h"
 #import "EZProfile.h"
 #import "EZMessageCenter.h"
+#import "EZGraphDetail.h"
+
+
 
 #define CELL_ID @"cellID"
 @interface EZRecordMain ()
@@ -25,6 +28,20 @@
 
 
 @implementation EZRecordMain
+
+- (BOOL)calendar:(CKCalendarView *)calendar willSelectDate:(NSDate *)date
+{
+    if([date compareByDay:[NSDate date]] == NSOrderedDescending){
+        return false;
+    }
+    return true;
+}
+- (void)calendar:(CKCalendarView *)calendar didSelectDate:(NSDate *)date
+{
+    EZDEBUG(@"will show the right date:%@", date);
+    _dateLabel.text = [[EZDataUtil getInstance].titleFormatter stringFromDate:date];
+    [calendar dismiss:YES delay:0.3];
+}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -45,6 +62,7 @@
     _recorders = record;
        //self.collectionView.backgroundColor = [UIColor whiteColor];
     _mode = mode;
+    _date = [NSDate date];
     //if(_mode == kAdjustSetting){
     for(EZRecordTypeDesc* rd in arr){
         rd.tmpSelected = rd.selected;
@@ -92,6 +110,8 @@
 - (void) invokeCalendar:(id)obj
 {
     EZDEBUG(@"calendar clicked");
+    CKCalendarView* calender = [CKCalendarView createCalendar:CGRectMake(0, 20, CurrentScreenWidth, 320) delegate:self];
+    [calender showInView:self.navigationController.view animated:YES];
 }
 
 - (void) viewDidLoad
@@ -108,7 +128,7 @@
     [self.view addSubview:navView];
     
     
-    EZCustomButton* backBtn = [EZCustomButton createButton:CGRectMake(15, 10, 44, 44) image:_mode==kAdjustSetting?[UIImage imageNamed:@"header_btn_back"]:[UIImage imageNamed:@"nav_drawer"]];
+    EZCustomButton* backBtn = [EZCustomButton createButton:CGRectMake(0, 0, 44, 44) image:_mode==kAdjustSetting?[UIImage imageNamed:@"header_btn_back"]:[UIImage imageNamed:@"nav_drawer"]];
     //UIImageView* imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"nav_drawer"]];
     //backBtn.showsTouchWhenHighlighted = true;
     //[backBtn addSubview:imageView];
@@ -135,18 +155,16 @@
     [headerIcon setImageWithURL:str2url(profile.avartar)];
     [navView addSubview:headerIcon];
     
-    EZCustomButton* starBtn = [EZCustomButton createButton:CGRectMake(CurrentScreenWidth - 44, 10, 44, 44) image:_mode==kAdjustSetting?[UIImage imageNamed:@"header_btn_save"]:[UIImage imageNamed:@"header_btn_star"]];
+    EZCustomButton* starBtn = [EZCustomButton createButton:CGRectMake(CurrentScreenWidth - 44, 0, 44, 44) image:_mode==kAdjustSetting?[UIImage imageNamed:@"header_btn_save"]:[UIImage imageNamed:@"header_btn_star"]];
     [navView addSubview:starBtn];
     [starBtn addTarget:self action:@selector(starClicked:) forControlEvents:UIControlEventTouchUpInside];
- 
-    
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-   
+    EZRecordTypeDesc* rd = [_descs objectAtIndex:indexPath.row];
     if(_mode == kAdjustSetting){
-        EZRecordTypeDesc* rd = [_descs objectAtIndex:indexPath.row];
+        //EZRecordTypeDesc* rd = [_descs objectAtIndex:indexPath.row];
         bool oldTmp = rd.tmpSelected;
         rd.tmpSelected = !rd.tmpSelected;
         EZDEBUG(@"select:%i, tmpSelected:%i", indexPath.row, rd.tmpSelected);
@@ -164,6 +182,9 @@
         if(oldTmp != rd.tmpSelected){
             [_collectionView reloadItemsAtIndexPaths:@[indexPath]];
         }
+    }else{
+        EZGraphDetail* graphDetail = [[EZGraphDetail alloc] initWith:rd date:_date];
+        [self.navigationController pushViewController:graphDetail animated:YES];
     }
 }
 
@@ -178,7 +199,7 @@
 - (void) setupInput:(UIView*)navView
 {
     
-    EZCustomButton* calBtn = [EZCustomButton createButton:CGRectMake(CurrentScreenWidth - 38, 59, 44, 44) image:[UIImage imageNamed:@"header_btn_calendar"]];
+    EZCustomButton* calBtn = [EZCustomButton createButton:CGRectMake(CurrentScreenWidth - 44, 48, 44, 44) image:[UIImage imageNamed:@"header_btn_calendar"]];
     [navView addSubview:calBtn];
     [calBtn addTarget:self action:@selector(invokeCalendar:) forControlEvents:UIControlEventTouchUpInside];
     
@@ -187,7 +208,7 @@
     _dateLabel.textColor = [UIColor whiteColor];
     _dateLabel.font = [UIFont boldSystemFontOfSize:22];
     //_dateLabel.text =
-    _dateLabel.text = @"7.20";
+    _dateLabel.text = [[EZDataUtil getInstance].titleFormatter stringFromDate:_date];
     [navView addSubview:_dateLabel];
 }
 
@@ -239,16 +260,21 @@
 {
     EZRecorderCell* cell = [collectionView dequeueReusableCellWithReuseIdentifier:CELL_ID forIndexPath:indexPath];
     EZDEBUG(@"load cell:%i", indexPath.row);
-    
+    //NSDate* curDate = _date;
     EZRecordTypeDesc* desc = [_descs objectAtIndex:indexPath.row];
     //if(desc.tmpSelected){
-    cell.starButton.hidden = !desc.tmpSelected;
+    cell.starImg.hidden = !desc.tmpSelected;
     //}
     if(_mode == kAdjustSetting){
         [cell enableTapView];
     }
     EZTrackRecord* record = [_recorders objectAtIndex:indexPath.row];
-    cell.name.text = desc.name;
+    [cell.name setTitle:desc.name forState:UIControlStateNormal];
+    __weak EZRecordMain* weakSelf = self;
+    cell.nameClicked = ^(id obj){
+        EZGraphDetail* graphDetail = [[EZGraphDetail alloc] initWith:desc date:weakSelf.date];
+        [weakSelf.navigationController pushViewController:graphDetail animated:YES];
+    };
     [cell.iconButton setImageForState:UIControlStateNormal withURL:str2url(desc.blueIconURL)];
     NSMutableAttributedString* attrStr = nil;
     if(record.formattedStr){

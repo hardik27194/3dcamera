@@ -44,8 +44,8 @@
 #import "EZContactMain.h"
 #import "EZPinchController.h"
 #import "EZPhotoDetail.h"
-
-
+#import "CKCalendarView.h"
+#import "CKViewController.h"
 @implementation EZAppDelegate
 
 @synthesize managedObjectContext = _managedObjectContext;
@@ -141,94 +141,6 @@
 }
 
 
-- (UIViewController*) createTimelineView
-{
-    return nil;
-}
-
-- (UIViewController*) createScrollView
-{
-    [self setupEvent];
-    NSString* currentPersonID = [EZDataUtil getInstance].currentPersonID;
-    EZDEBUG(@"Current personID:%@", currentPersonID);
-    EZQueryBlock qb = ^(NSInteger start, NSInteger limit, EZEventBlock success, EZEventBlock failure){
-        [[EZDataUtil getInstance] loadAlbumPhoto:start limit:limit success:success failure:failure];
-    };
-   
-    EZAlbumTablePage* albumPage = [[EZAlbumTablePage alloc] initWithQueryBlock:qb];
-    UINavigationController* mainNav = [[UINavigationController alloc] initWithRootViewController:albumPage];
-    EZDEBUG(@"original status bar style:%i, navigationBar style:%i, %@", [UIApplication sharedApplication].statusBarStyle, mainNav.navigationBar.barStyle, mainNav.navigationBar.barTintColor);
-    EZUIUtility.sharedEZUIUtility.showMenuItems =[[NSMutableArray alloc] initWithArray:@[
-    @{@"text":@"朋友",
-    @"block":^(id obj){
-        EZDEBUG(@"Friend get clicked");
-        EZContactTablePage* contactPage = [[EZContactTablePage alloc] init];
-        [mainNav pushViewController:contactPage animated:YES];
-        
-        
-    }},
-    @{@"text":@"最近的",
-    @"block":^(id obj){
-        //EZDEBUG(@"Switch to recent");
-        //UIImageView* blurView = [[UIImageView alloc] initWithFrame:albumPage.view.frame];
-        //blurView.image = [[albumPage.view contentAsImage] applyBlurWithRadius:18.0 tintColor:RGBA(220, 220, 220, 100) saturationDeltaFactor:0.5 maskImage:nil];
-        //blurView.image = [[albumPage.view contentAsImage] createCIBlurImage:20.0];
-        //blurView.backgroundColor = [UIColor redColor];
-        [LFDisplayBridge sharedInstance].pauseProcess = ![LFDisplayBridge sharedInstance].pauseProcess;
-        EZDEBUG(@"Current value:%i", [LFDisplayBridge sharedInstance].pauseProcess);
-        static dispatch_once_t onceToken;
-        dispatch_once(&onceToken, ^{
-            LFGlassView* lglass = [[LFGlassView alloc] initWithFrame:CGRectMake(20, 200, 150, 150)];
-            lglass.blurRadius = 5.0;
-            lglass.backgroundColor = RGBA(100, 100, 100, 100);
-            [TopView addSubview:lglass];
-        });
-        
-        //[albumPage.view insertSubview:lglass atIndex:0];
-        //
-        
-        //EZDEBUG(@"image size:%@, frame:%@, view:%@", NSStringFromCGSize(blurView.image.size), NSStringFromCGRect(albumPage.view.frame), NSStringFromCGRect(albumPage.view.frame));
-        //[TopView addSubview:blurView];
-    }
-    }]];
-    EZDEBUG(@"Translucent is:%i, bar style default:%i", mainNav.navigationBar.translucent, mainNav.navigationBar.barStyle);
-  
- 
-    [[EZMessageCenter getInstance] registerEvent:EZCameraCompleted block:^(UIImage* img){
-        EZDEBUG(@"I will slide the image back");
-        //[scrollContainer setIndex:1 animated:YES slide:YES];
-        if(img){
-            //[[EZDataUtil getInstance] saveImage:img success:^(ALAsset* asset){
-            
-                EZDisplayPhoto* ed = [[EZDisplayPhoto alloc] init];
-                ed.isFront = true;
-                EZPhoto* ep = [[EZPhoto alloc] init];
-                //ed.pid = ++photoCount;
-                //ep.asset = asset;
-                ep.isLocal = true;
-                ep.assetURL = [EZFileUtil saveImageToDocument:img];
-                ed.photo = ep;
-                //EZDEBUG(@"Before size");
-                ep.size = img.size;//[asset defaultRepresentation].dimensions;
-                [albumPage addPhoto:ed];
-                //[coverImage setImage:[[asset defaultRepresentation] fullScreenImage]];
-            //} failure:^(NSError* err){
-            //    EZDEBUG(@"Error:%@", err);
-            //}];
-        }
-    }];
-    
-    
-    //[[EZDataUtil getInstance] readAlbumInBackground:5 limit:5];
-    
-    //dispatch_later(10.0, ^(){
-        //[[EZDataUtil getInstance] loadPhotoBooks];
-    //});
-    return mainNav;
-    //return homeNavigationBar;
-    
-}
-
 - (void) setupAppearance
 {
     //Remove the drop shadow
@@ -246,40 +158,6 @@
     [[UIScrollView appearance] setIndicatorStyle:UIScrollViewIndicatorStyleWhite];
     
     [[UILabel appearance] setFont:[UIFont fontWithName:@"HelveticaNeue-UltraLight" size:14.0]];
-    //[[UINavigationBar appearance] setBackgroundImage:ClearBarImage forBarMetrics:UIBarMetricsLandscapePhone];
-    //[[UINavigationBar]]
-    
-    /**
-    [[EZMessageCenter getInstance] registerEvent:EZStatusBarChange block:^(NSNumber* status){
-        EZDEBUG(@"Status bar changed:%i", status.intValue);
-        if(status.intValue == 1){
-            [EZDataUtil getInstance].barBackground.alpha = 0;
-        }else{
-            [EZDataUtil getInstance].barBackground.alpha = 1;
-        }
-    }];
-     **/
-    /**
-    [[UINavigationBar appearance] setTitleTextAttributes:
-     [NSDictionary dictionaryWithObjectsAndKeys:
-      [UIColor whiteColor],
-      NSForegroundColorAttributeName,
-      [UIColor whiteColor],
-      NSForegroundColorAttributeName,
-      [NSValue valueWithUIOffset:UIOffsetMake(0, -1)],
-      NSForegroundColorAttributeName,
-      //[UIFont fontWithName:@"Arial-Bold" size:0.0],
-      //NSFontAttributeName,
-      nil]];
-     **/
-    // //replace "nil" with your method to programmatically create a UIImage object with transparent colors for portrait orientation
-    //UIImage *gradientImage32 = [UIImage imageWithColor:RGBA(0, 0, 0, 128)]; //replace "nil" with your method to programmatically create a UIImage object with transparent colors for landscape orientation
-    //mainNav.navigationBar.hidden = true;
-    //[[UINavigationBar appearance]]
-    //customize the appearance of UINavigationBar
-    //[[UINavigationBar appearance] setBackgroundImage:gradientImage44 forBarMetrics:UIBarMetricsDefault];
-    //[[UINavigationBar appearance] setBackgroundImage:gradientImage32 forBarMetrics:UIBarMetricsLandscapePhone];
-    //[[UINavigationBar appearance] setBarStyle:UIBarStyleBlack];
 }
 
 - (void) setupKeyboard
@@ -357,6 +235,8 @@
 
 - (void) uploadPendingImages:(id)obj
 {
+    
+    /**
     if(currentLoginID){
         if(![EZDataUtil getInstance].networkAvailable){
             EZDEBUG(@"quit for network not available");
@@ -392,6 +272,8 @@
             }
         }
     }
+     
+     **/
     /**
     static int count = 1;
     ++count;
@@ -413,56 +295,6 @@
     }
 }
 
-- (void) createPersonMain:(UIWindow*)window
-{
-    EZPerson* personOne = [[EZPerson alloc] init];
-    personOne.name = @"天哥";
-    personOne.avatar = [EZFileUtil fileToURL:@"demo_avatar_cook.png"].absoluteString;
-    personOne.signature = @"天天向上";
-    EZDEBUG(@"avatar string is:%@", personOne.avatar);
-    
-    EZPerson* personTwo = [[EZPerson alloc] init];
-    personTwo.name = @"云哲";
-    personTwo.signature = @"天天云里";
-    personTwo.avatar = [EZFileUtil fileToURL:@"demo_avatar_jobs.png"].absoluteString;
-    
-    EZPinchController* pincher = [[EZPinchController alloc] initWithView:window];
-    EZDEBUG(@"Th interaction is:%i, name:%@, id:%@", self.window.userInteractionEnabled, currentLoginUser.name, currentLoginUser.personID);
-    window.userInteractionEnabled = true;
-    EZContactMain* contactMain = [[EZContactMain alloc] init];
-    contactMain.person = currentLoginUser;
-    
-    EZDEBUG(@"login user is:%@, avatar:%@", currentLoginUser.name, currentLoginUser.avatar);
-    UINavigationController* navCtrl = [[UINavigationController alloc] initWithRootViewController:contactMain];
-    navCtrl.transitioningDelegate = pincher;
-    navCtrl.delegate = pincher;
-    [EZUIUtility sharedEZUIUtility].pinchControl = pincher;
-    pincher.pushBlock = ^(NSNumber* s){
-        NSInteger ops = s.intValue;
-        if(ops == EZInteractionOperationPush){
-            EZPhotoDetail* detail = [[EZPhotoDetail alloc] init];
-            [navCtrl pushViewController:detail animated:YES];
-        }else if(ops == EZInteractionOperationPop){
-            [navCtrl popViewControllerAnimated:YES];
-        }
-    };
-    
-    /**
-    dispatch_later(0.3,^(){
-        UILabel* largeLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 100, 200, 100)];
-        largeLabel.font = [UIFont fontWithName:@"HiraMinProN-W6" size:30];
-        largeLabel.textColor = [UIColor blackColor];
-        largeLabel.text = @"我爱你爱的深";
-        [window addSubview:largeLabel];
-
-    });
-    **/
-    window.rootViewController = navCtrl;
-    dispatch_later(0.1,
-                   (^(){
-    contactMain.persons = [[NSMutableArray alloc] initWithArray:@[personOne, personTwo]];
-                   }));
-}
 
 
 - (void) listAllFonts
@@ -506,30 +338,6 @@
     }
     [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
 
-    //NSString* thumb = url2thumb(@"http://cool.guy/cool.jpg");
-    //EZDEBUG(@"The thumb url is:%@", thumb);
-    //CFTimeInterval startTime = CACurrentMediaTime();
-    //perform some action
-    //EZDEBUG(@"first value:%f", startTime);
-    //CFTimeInterval elapsedTime = CACurrentMediaTime() - startTime;
-    //EZDEBUG(@"elipsed time:%f", elapsedTime);
-    
-    /**
-    [[EZDataUtil getInstance] loginUser:@{
-                                          @"mobile":@"15216727142",
-                                          @"password":@"i love you"
-                                          } success:^(EZPerson* ps){
-                                              EZDEBUG(@"login success");
-                                          } error:^(NSError* err){
-                                          }];
-    **/
-    //[EZDataUtil getInstance].currentPersonID = nil;
-    //[EZDataUtil getInstance].currentPersonID = @"5325944f21ae7a427d586ae7";
-    //[EZDataUtil getInstance].currentPersonID = @"532585b321ae7a2e53522fa0";
-    //[EZDataUtil getInstance].currentPersonID = @"531e7cd5e7b5b9f911342692";
-    //EZDEBUG("Fonts %@", [UIFont familyNames]);
-    
-    //[EZCoreAccessor cleanClientDB];
     EZDEBUG(@"login info:%@", [[EZDataUtil getInstance] getCurrentPersonID]);
     if(![[EZDataUtil getInstance] getCurrentPersonID]){
         [[EZDataUtil getInstance]cleanAllLoginInfo];
@@ -546,24 +354,13 @@
         } failure:nil];
     }
     
-    /**
-    dispatch_later(0.1, ^(){
-        EZRegisterCtrl* login = [[EZRegisterCtrl alloc] init];
-        UINavigationController* navi = [[UINavigationController alloc] initWithRootViewController:login];
-        [navi setNavigationBarHidden:YES animated:NO];
-        UIViewController* presenter = [EZUIUtility topMostController];
-        [presenter presentViewController:navi animated:YES completion:nil];
-    });
-     **/
-    //[[EZAnimationUtil sharedEZAnimationUtil] addAnimation:self];
-    
     [self setupAppearance];
     [self setupNetwork];
     //[self enableProximate:YES];
     //[self setupKeyboard];
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     //[[UIDevice currentDevice] setProximityMonitoringEnabled:YES];
-    self.window.backgroundColor = [UIColor greenColor];
+    //self.window.backgroundColor = //[UIColor greenColor];
     //[[EZDataUtil getInstance] loadAlbumPhoto:0 limit:100 success:^(NSArray* phs){
     //    EZDEBUG(@"returned size:%i", phs.count);
     //} failure:^(NSError* err){
@@ -592,23 +389,16 @@
 
 - (UINavigationController*) createMainPage
 {
+    
+    //TKCalendarMonthTableViewController* calendar = [[TKCalendarMonthTableViewController alloc] initWithSunday:YES];
+    
     EZMainPage* mainPage = [[EZMainPage alloc] init];
+    //EZCalendarPicker* cp = [[EZCalendarPicker alloc] init];
+    //CKViewController* ck = [[CKViewController alloc] init];
     UINavigationController* rootNav = [[UINavigationController alloc] initWithRootViewController:mainPage];
     return rootNav;
 }
 
-- (BOOL)applicationTestFace:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
-{
-    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    // Override point for customization after application launch.
-    //cv::Mat mat;
-    //GPUImageFilter* fg = [[GPUImageFilter alloc] init];
-    EZFaceTestPage* ft = [[EZFaceTestPage alloc] init];
-    self.window.rootViewController = ft;
-    self.window.backgroundColor = [UIColor whiteColor];
-    [self.window makeKeyAndVisible];
-    return YES;
-}
 
 - (void)applicationWillResignActive:(UIApplication *)application
 {

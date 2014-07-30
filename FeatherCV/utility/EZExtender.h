@@ -264,6 +264,8 @@ typedef void  (^ IterateOperation)(id obj);
 
 @interface UIButton(EZPrivate)
 
++ (UIButton*) createButton:(CGRect)frame font:(UIFont*)font color:(UIColor*)color align:(NSTextAlignment)align;
+
 - (void) addBlockWrapper:(EZBlockWrapper*)bw;
 
 @end
@@ -382,6 +384,18 @@ typedef void  (^ IterateOperation)(id obj);
 @end
 
 @interface NSDate(EZPrivate) 
+
+- (NSComparisonResult)compareByDay:otherDate;
+- (NSComparisonResult)compareByMonth:(NSDate *)otherDate;
+- (NSInteger)placeInWeekForDate;
+- (BOOL)dateIsToday;
+- (BOOL)isSameDayAsDate:(NSDate *)date;
+- (NSInteger)numberOfWeeksInMonthContainingDate:(NSDate *)date;
+- (NSDate *)nextDay;
+- (NSDate *)previousDay;
+
+- (NSInteger) numberOfDaysToDate:(NSDate *)endDate;
+
 
 - (NSInteger) convertDays;
 

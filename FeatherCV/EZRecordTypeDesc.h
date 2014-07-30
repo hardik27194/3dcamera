@@ -10,7 +10,7 @@
 
 @interface EZRecordTypeDesc : NSObject
 
-- (id) initWith:(NSString*) name type:(EZTrackRecordType)type icon:(NSString*)iconURL blueIcon:(NSString*)blueIcon headerIcon:(NSString*)headerIcon unitName:(NSString*)unitName  selected:(BOOL)selected;
+- (id) initWith:(NSString*)name type:(EZTrackRecordType)type source:(NSString*)source unitName:(NSString*)unitName  selected:(BOOL)selected;
 
 @property (nonatomic, assign) EZTrackRecordType type;
 
@@ -29,5 +29,16 @@
 @property (nonatomic, assign) BOOL selected;
 
 @property (nonatomic, assign) BOOL tmpSelected;
+
+//It is the type from the server side.
+//But the priority will be determined by the server side.
+@property (nonatomic, strong) NSString* source;
+
+//The url to get into the detail image
+@property (nonatomic, strong) NSString* detailURL;
+
+//The graphURL will display the latest graph
+@property (nonatomic, strong) NSString* graphURL;
+
 
 @end

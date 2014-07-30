@@ -43,8 +43,15 @@ typedef enum {
     kBloodSugar,
     kRecipes,
     kInfantTeach,
-    kExamRecord
+    kExamRecord,
+    kMotherWeight
 } EZTrackRecordType;
+
+typedef enum {
+    kDateValue,
+    kFloatValue,
+    kStringValue
+} EZinputValueType;
 
 #define EZListChangedEvent @"EZListChangedEvent"
 
@@ -256,8 +263,9 @@ typedef enum {
 
 //#define baseServiceURL @"http://172.13.0.127:8080/"
 //#define baseServiceURL @"http://10.0.1.6:8080/"
-#define baseServiceURL @"http://www.enjoyxue.com:8080/"
-//#define baseServiceURL @"http://192.168.0.150:8080/"
+//every request need to have session with it.
+//#define baseServiceURL @"http://www.enjoyxue.com:8080/%@;jsessionid=%@?"
+#define baseServiceURL @"http://192.168.0.150:8080/"
 //#define baseServiceURL @"http://192.168.1.101:8080/"
 //#define baseServiceURL @"http://192.168.1.101:8080/"
 

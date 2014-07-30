@@ -7,13 +7,14 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "CKCalendarView.h"
 
 typedef enum{
     kInputMode,
     kAdjustSetting
 } EZOperationMode;
 
-@interface EZRecordMain : UIViewController<UICollectionViewDataSource, UICollectionViewDelegate>//UICollectionViewController
+@interface EZRecordMain : UIViewController<UICollectionViewDataSource, UICollectionViewDelegate, CKCalendarDelegate>//UICollectionViewController
 
 @property (nonatomic, strong) NSArray* descs;
 
@@ -26,6 +27,8 @@ typedef enum{
 @property (nonatomic, assign) EZOperationMode mode;
 
 @property (nonatomic, assign) NSInteger selectedCount;
+
+@property (nonatomic, strong) NSDate* date;
 
 - (EZRecordMain*) initPage:(NSArray*)arr records:(NSArray*)record mode:(EZOperationMode)mode;
 

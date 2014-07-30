@@ -55,6 +55,25 @@
     return instance;
 }
 
+//The desc will store the latest value
+//But what will display?
+//Latest, doesn't mean today.
+- (void) queryInitialSettings:(EZEventBlock)success failure:(EZEventBlock)failure
+{
+    [EZNetworkUtility postParameterFullURL:@"http://115.29.178.202:8080/babyproject/service/MobileClientGetUserRecordSummary;jsessionid=:sessionid?" parameters:@{} complete:^(NSDictionary* dict){
+        EZDEBUG(@"all result:%@", dict);
+        NSInteger code = [[dict objectForKey:@"code"] intValue];
+        EZDEBUG(@"code is:%i", code);
+        
+        NSArray* sources = [[dict objectForKey:@"result"] objectForKey:@"sources"];
+        for(NSDictionary* dict in sources){
+            EZDEBUG(@"dict is:%@", dict);
+        }
+    } failblk:^(id err){
+        EZDEBUG(@"error detail:%@", err);
+    } isBackground:NO];
+}
+
 
 - (BOOL) getTypeSelectStatus:(EZTrackRecordType)type
 {
@@ -106,6 +125,12 @@
         }
     }
     return res;
+}
+
+//Just a mock implementation to make sure things work as expected.
+- (NSString*)createDetailURL:(EZRecordTypeDesc *)desc date:(NSDate *)date
+{
+    return @"http://115.29.178.202:8080/bb_day.html";
 }
 
 - (NSString*) recordTypeToName:(EZTrackRecordType)type
@@ -232,23 +257,26 @@
         EZRecordTypeDesc* desc2 = [_childRecordLists objectAtIndex:i];
         [self saveTypeSelectedStatus:desc.type selected:TRUE];
         [self saveTypeSelectedStatus:desc2.type selected:TRUE];
-        [_motherPreferLists addObject:[_motherRecordLists objectAtIndex:i]];
-        [_childPreferLists addObject:[_childRecordLists objectAtIndex:i]];
+        //[_motherPreferLists addObject:[_motherRecordLists objectAtIndex:i]];
+        //[_childPreferLists addObject:[_childRecordLists objectAtIndex:i]];
     }
 }
 
 - (void) loadSavedList
 {
+    
     for(EZRecordTypeDesc* desc in _motherRecordLists){
-        if([self getTypeSelectStatus:desc.type]){
-            [_motherPreferLists addObject:desc];
-        }
+        desc.selected = [self getTypeSelectStatus:desc.type];
+        //if([self getTypeSelectStatus:desc.type]){
+        //    [_motherPreferLists addObject:desc];
+        //}
     }
     
     for(EZRecordTypeDesc* desc in _childRecordLists){
-        if([self getTypeSelectStatus:desc.type]){
-            [_childPreferLists addObject:desc];
-        }
+        //if([self getTypeSelectStatus:desc.type]){
+        //    [_childPreferLists addObject:desc];
+        //}
+        desc.selected = [self getTypeSelectStatus:desc.type];
     }
     
 }
@@ -276,72 +304,81 @@
     BOOL everSaved = [[NSUserDefaults standardUserDefaults] boolForKey:EZEverSaved];
     
     _childRecordLists = [[NSMutableArray alloc] initWithObjects:[[EZRecordTypeDesc alloc] initWith:@"尿布" type:kUrine
-                                                                                              icon:bundle2url(@"icon_bb_white.png")
-                                                                 blueIcon:bundle2url(@"icon_bb.png")
-        headerIcon:bundle2url(@"header_icon_bn_white.png") unitName:@"次" selected:YES],
+                                                                 source:@"nb"
+                                                                                               unitName:@"次" selected:YES],
     [[EZRecordTypeDesc alloc]
      initWith:@"便便"
      type:kPooh
-     icon:bundle2url(@"icon_bb_white.png") blueIcon:@"icon_bb.png"
-     headerIcon:bundle2url(@"header_icon_bb_white.png") unitName:@"次" selected:YES],
+     source:@"bb"
+     unitName:@"次" selected:YES],
     [[EZRecordTypeDesc alloc]
      initWith:@"睡觉" type:kSleep
-     icon:bundle2url(@"icon_sj_white.png")
-     blueIcon:bundle2url(@"icon_sj.png")
-     headerIcon:bundle2url(@"header_icon_sj_white.png") unitName:@"次" selected:YES],
+     source:@"sj"
+     unitName:@"次" selected:YES],
     [[EZRecordTypeDesc alloc]
-     initWith:@"喂奶"
+     initWith:@"奶粉"
      type:kFeeds
-     icon:bundle2url(@"icon_wn_white.png")
-     blueIcon:bundle2url(@"icon_wn.png")
-     headerIcon:bundle2url(@"header_icon_wn_white.png") unitName:@"ml" selected:YES],
+     source:@"nf"
+     unitName:@"ml" selected:YES],
     [[EZRecordTypeDesc alloc]
      initWith:@"母乳" type:kMilk
-     icon:bundle2url(@"icon_mr_white.png")
-     blueIcon:bundle2url(@"icon_mr.png")
-     headerIcon:bundle2url(@"header_icon_mr_white.png")
+     source:@"mr"
      unitName:@"ml" selected:NO],
     [[EZRecordTypeDesc alloc]
      initWith:@"辅食" type:kAuxFood
-    icon:bundle2url(@"icon_fs_white.png")
-     blueIcon:bundle2url(@"icon_fs.png") headerIcon:@"header_icon_fs_white.png"
+    source:@"fs"
      unitName:@"顿" selected:NO],
     [[EZRecordTypeDesc alloc]
      initWith:@"身高" type:kHeight
-     icon:bundle2url(@"icon_sg_white.png") blueIcon:bundle2url(@"icon_sg.png")
-    headerIcon:bundle2url(@"header_icon_sg_white.png") unitName:@"cm" selected:NO],
+     source:@"sg"
+     unitName:@"cm" selected:NO],
     [[EZRecordTypeDesc alloc]
      initWith:@"体重" type:kWeight
-     icon:bundle2url(@"icon_tz_white.png") blueIcon:bundle2url(@"icon_tz.png")
-     headerIcon:bundle2url(@"header_icon_tz_white.png") unitName:@"kg" selected:NO],
+     source:@"tz"
+     unitName:@"kg" selected:NO],
     [[EZRecordTypeDesc alloc]
      initWith:@"头围" type:kHeadCycle
-     icon:bundle2url(@"icon_tw_white.png") blueIcon:bundle2url(@"icon_tw.png")
-     headerIcon:bundle2url(@"header_icon_tw_white.png") unitName:@"cm" selected:NO],
+     source:@"tw"
+     unitName:@"cm" selected:NO],
     [[EZRecordTypeDesc alloc]
      initWith:@"胸围" type:kChestCycle
-     icon:bundle2url(@"icon_xw_white.png")
-     blueIcon:bundle2url(@"icon_white.png")
-     headerIcon:bundle2url(@"header_icon_xw_white.png") unitName:@"cm" selected:NO],
+     source:@"xw"
+     unitName:@"cm" selected:NO],
     [[EZRecordTypeDesc alloc]
      initWith:@"验血数据" type:kBloodExam
-     icon:bundle2url(@"icon_xw_white.png")
-     blueIcon:bundle2url(@"icon_xw.png")
-     headerIcon:bundle2url(@"header_icon_xw_white.png") unitName:@"" selected:NO], nil];
+     source:@"yx"
+     unitName:@"" selected:NO], nil];
     
     _motherRecordLists = [[NSMutableArray alloc] initWithObjects:
-                          [[EZRecordTypeDesc alloc] initWith:@"体重" type:kWeight icon:bundle2url(@"icon_tz_white.png") blueIcon:bundle2url(@"icon_tz.png") headerIcon:bundle2url(@"header_icon_tz_white.png") unitName:@"kg" selected:YES],
-                          [[EZRecordTypeDesc alloc] initWith:@"腹围" type:kBellyCycle icon:bundle2url(@"icon_fw_white.png") blueIcon:bundle2url(@"icon_fw.png") headerIcon:bundle2url(@"header_icon_fw_white.png") unitName:@"cm" selected:YES],
-                          [[EZRecordTypeDesc alloc] initWith:@"计步" type:kWalkCount icon:bundle2url(@"header_icon_jb_white.png") blueIcon:bundle2url(@"icon_jb.png") headerIcon:bundle2url(@"header_icon_jb_white.png") unitName:@"" selected:YES],
-                          [[EZRecordTypeDesc alloc] initWith:@"血压" type:kBloodPressure icon:bundle2url(@"icon_xy_white.png") blueIcon:bundle2url(@"icon_xy.png") headerIcon:bundle2url(@"header_icon_xy_white.png") unitName:@"" selected:YES],
-                          [[EZRecordTypeDesc alloc] initWith:@"血糖" type:kBloodSugar icon:bundle2url(@"icon_xt_white.png") blueIcon:bundle2url(@"icon_xt.png") headerIcon:bundle2url(@"header_icon_xt_white.png") unitName:@"" selected:NO],
-                          [[EZRecordTypeDesc alloc] initWith:@"食谱" type:kRecipes icon:bundle2url(@"icon_sp_white.png") blueIcon:bundle2url(@"icon_sp.png") headerIcon:bundle2url(@"header_icon_sp_white.png") unitName:@"" selected:NO],
-                          [[EZRecordTypeDesc alloc] initWith:@"胎教" type:kInfantTeach icon:bundle2url(@"icon_tj_white.png") blueIcon:bundle2url(@"icon_tj.png") headerIcon:bundle2url(@"header_icon_tj_white.png") unitName:@"h" selected:NO],
-                          [[EZRecordTypeDesc alloc] initWith:@"检查记录" type:kExamRecord icon:bundle2url(@"icon_jl_white.png") blueIcon:bundle2url(@"icon_jl.png") headerIcon:bundle2url(@"header_icon_jl_white.png") unitName:@"" selected:NO]
+                          [[EZRecordTypeDesc alloc] initWith:@"体重" type:kMotherWeight
+                                                      source:@"tz"
+                                                    unitName:@"kg" selected:YES],
+                          [[EZRecordTypeDesc alloc] initWith:@"腹围" type:kBellyCycle
+                                                      source:@"fw"
+                                                    unitName:@"cm" selected:YES],
+                          [[EZRecordTypeDesc alloc] initWith:@"计步" type:kWalkCount
+                                                      source:@"jb"
+                                                    unitName:@"" selected:YES],
+                          [[EZRecordTypeDesc alloc] initWith:@"血压" type:kBloodPressure
+                                                      source:@"xy"
+                                                    unitName:@"" selected:YES],
+                          [[EZRecordTypeDesc alloc] initWith:@"血糖" type:kBloodSugar
+                                                      source:@"xt"
+                                                    unitName:@"" selected:NO],
+                          [[EZRecordTypeDesc alloc] initWith:@"食谱" type:kRecipes
+                                                      source:@"sp"
+                                                    unitName:@"" selected:NO],
+                          [[EZRecordTypeDesc alloc] initWith:@"胎教" type:kInfantTeach
+                           source:@"tj"
+                                                    unitName:@"h" selected:NO],
+                          [[EZRecordTypeDesc alloc] initWith:@"检查记录" type:kExamRecord
+                                                      source:@"jl"
+                                                    unitName:@"" selected:NO]
                           , nil];
     
-    _motherPreferLists = [[NSMutableArray alloc] init];
-    _childPreferLists = [[NSMutableArray alloc] init];
+    //_motherPreferLists = [[NSMutableArray alloc] init];
+    //_childPreferLists = [[NSMutableArray alloc] init];
+    EZDEBUG(@"ever saved is:%i", everSaved);
     if(!everSaved){
         [self getInitialListAndSave];
     }else{
@@ -413,6 +450,11 @@
     
     _personPhotoCount = [[NSMutableDictionary alloc] init];
     _contacts = [[NSMutableArray alloc] init];
+    
+    
+    _titleFormatter = [[NSDateFormatter alloc] init];
+    [_titleFormatter setDateFormat:@"MM.dd"];
+    
     _isoFormatter = [[NSDateFormatter alloc] init];
     _isoFormatter.dateFormat = @"yyyy-MM-dd' 'HH:mm:ss.S";
     
