@@ -113,6 +113,23 @@ NSString* doubleString(NSString* str)
 }
 
 
+- (void) fitContent:(BOOL)left
+{
+    CGFloat width = [self.text sizeWithAttributes:@{NSFontAttributeName:self.font}].width;
+    EZDEBUG(@"adjusted width:%f", width);
+    //[inputName setWidth:width];
+    width = width + 40.0;
+    
+    if(left){
+        [self setWidth:width];
+    }else{
+        CGFloat rightPos = self.frame.origin.x + self.width;
+        CGFloat adjustedX = rightPos - width;
+        [self setWidth:width];
+        [self setX:adjustedX];
+    }
+}
+
 /**
 - (void) enableTextWrap
 {
@@ -294,6 +311,23 @@ NSString* doubleString(NSString* str)
 }
 
 **/
+
+- (void) fitContent:(BOOL)left
+{
+    CGFloat width = [self.text sizeWithAttributes:@{NSFontAttributeName:self.font}].width;
+    //EZDEBUG(@"adjusted width:%f", width);
+    //[inputName setWidth:width];
+    width = width + 20.0;
+    
+    if(left){
+        [self setWidth:width];
+    }else{
+        CGFloat rightPos = self.frame.origin.x + self.width;
+        CGFloat adjustedX = rightPos - width;
+        [self setWidth:width];
+        [self setX:adjustedX];
+    }
+}
 
 - (void) enableTextWrap
 {

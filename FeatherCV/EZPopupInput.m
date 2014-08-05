@@ -9,6 +9,8 @@
 #import "EZPopupInput.h"
 #import "EZInputItem.h"
 #import "EZCustomButton.h"
+#import "EZTextField.h"
+#import "EZDataUtil.h"
 
 
 #define EZGrayInputTextColor RGBCOLOR(110,110, 110)
@@ -34,6 +36,10 @@
 - (void) deleteCalled:(id)obj
 {
     EZDEBUG(@"delete get called");
+    if(_deleteBlock){
+        _deleteBlock(nil);
+        [self dismiss:YES];
+    }
 }
 
 - (void) renderInputs
@@ -64,7 +70,7 @@
 - (UIView*) renderToView:(EZInputItem*)item
 {
     UIView* inputView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.bounds.size.width, EZInputItemHeight)];
-    inputView.backgroundColor = randBack(nil);
+    //inputView.backgroundColor = randBack(nil);
     UILabel* inputName = [UILabel createLabel:CGRectMake(14, (EZInputItemHeight - 17)/2.0, 150, 17) font:[UIFont systemFontOfSize:15] color:EZGrayInputTextColor];
     [inputView addSubview:inputName];
     inputName.text = item.inputName;
@@ -72,12 +78,7 @@
     EZDEBUG(@"adjusted width:%f", width);
     [inputName setWidth:width];
     if(item.type == kFloatValue || item.type == kStringValue){
-        UITextField* textField = [[UITextField alloc] initWithFrame:CGRectMake(self.bounds.size.width - 110, (EZInputItemHeight - 30)/2.0, 100, 30)];
-        textField.textColor = EZGrayInputTextColor;
-        textField.font = [UIFont systemFontOfSize:17];
-        textField.textAlignment = NSTextAlignmentRight;
-        textField.layer.cornerRadius = 5;
-        textField.layer.borderColor = EZBorderColor.CGColor;
+        UITextField* textField = [EZTextField creatTextField:CGRectMake(self.bounds.size.width - 110, (EZInputItemHeight - 30)/2.0, 100, 30) textColor:EZGrayInputTextColor font:[UIFont systemFontOfSize:17] alignment:NSTextAlignmentRight borderColor:EZBorderColor padding:CGSizeMake(10, 0)];
         if(item.type == kFloatValue){
             textField.keyboardType = UIKeyboardTypeNumberPad;
             NSNumber* num = item.defaultValue;
@@ -86,26 +87,42 @@
             }else{
                 textField.text = @"0";
             }
-            textField.keyboardType = UIKeyboardTypeDefault;
+           
         }else{
+            textField.keyboardType = UIKeyboardTypeDefault;
             if(item.defaultValue){
                 textField.text = [NSString stringWithFormat:@"%@", item.defaultValue];
             }else{
                 textField.text = @"";
             }
-            
         }
         textField.returnKeyType = UIReturnKeyDone;
         textField.delegate = item;
+        [textField fitContent:NO];
         [inputView addSubview:textField];
         
     }else if(item.type == kDateValue){
-        UIButton* dateButton = [UIButton createButton:CGRectMake(self.bounds.size.width - 170, 5, 160, 30) font:[UIFont systemFontOfSize:17] color:EZGrayInputTextColor align:NSTextAlignmentRight];
-        [dateButton addTarget:item action:@selector(raiseDatePicker:) forControlEvents:UIControlEventTouchUpInside];
-        [inputView addSubview:dateButton];
+        UITextField* textField = [EZTextField creatTextField:CGRectMake(self.bounds.size.width - 110, (EZInputItemHeight - 30)/2.0, 100, 30) textColor:EZGrayInputTextColor font:[UIFont systemFontOfSize:17] alignment:NSTextAlignmentRight borderColor:EZBorderColor padding:CGSizeMake(10, 0)];
+        
+        textField.text = [[EZDataUtil getInstance].inputDateFormatter stringFromDate:item.defaultValue];
+        [textField fitContent:NO];
+        UIDatePicker *datePicker = [[UIDatePicker alloc] init];
+        datePicker.datePickerMode = UIDatePickerModeDateAndTime;
+        datePicker.date = item.defaultValue;
+        [datePicker addTarget:item action:@selector(valueChanged:) forControlEvents:UIControlEventValueChanged];
+        //datePicker.tag = indexPath.row;
+        textField.inputView = datePicker;
+        __weak EZInputItem* weakItem = item;
+        item.valueChanged = ^(UIDatePicker* picker){
+            EZDEBUG(@"Value changed to:%@", picker.date);
+            textField.text = [[EZDataUtil getInstance].inputDateFormatter stringFromDate:picker.date];
+            weakItem.changedValue = picker.date;
+        };
+        [inputView addSubview:textField];
     }
     return inputView;
 }
+
 
 - (id) initWithTitle:(NSString*)title  inputItems:(NSArray*)inputItems haveDelete:(BOOL)haveDelete saveBlock:(EZEventBlock)saveBlock deleteBlock:(EZEventBlock)deleteBlock
 {
@@ -124,7 +141,10 @@
     self = [super initWithFrame:CGRectMake(0, 0, EZInputViewWidth, bodyHeight + EZPopHeaderHeight)];
     EZDEBUG(@"final height:%f, bounds:%f, bodyHeight:%f, count:%i", bodyHeight+EZPopHeaderHeight, self.bounds.size.height, bodyHeight, count);
     self.title.text = title;
+    self.saveBlock = saveBlock;
     _inputItems = inputItems;
+    _deleteBlock = deleteBlock;
+    
     [self renderInputs];
     return self;
 }

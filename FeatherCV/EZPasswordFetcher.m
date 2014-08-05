@@ -7,6 +7,7 @@
 //
 
 #import "EZPasswordFetcher.h"
+#import "EZTextField.h"
 
 @interface EZPasswordFetcher ()
 
@@ -23,91 +24,132 @@
     return self;
 }
 
+- (UIView*) createWrap:(CGRect)frame background:(UIImage*)background
+{
+    //UIView* wrapView = [[UIView alloc] initWithFrame:CGRectMake(frame.origin.x - 19.0, frame.origin.y + 1.0, frame.size.width + 38.0, 38)];
+    UIImageView* wrapView = [[UIImageView alloc] initWithFrame:CGRectMake(22, frame.origin.y, frame.size.width, frame.size.height)];
+    wrapView.contentMode = UIViewContentModeScaleToFill;
+    //UIImageView* iconView = [[UIImageView alloc] initWithImage:icon];
+    //[iconView setPosition:CGPointMake(16, (frame.size.height - icon.size.height)/2.0)];
+    //[wrapView addSubview:iconView];
+    wrapView.image = [background resizableImageWithCapInsets:UIEdgeInsetsMake(10, 10, 10, 10)];
+    return wrapView;
+}
+
+- (BOOL) textFieldShouldReturn:(UITextField *)textField
+{
+    if([textField.text isNotEmpty]){
+        int nextTag = textField.tag + 1;
+        UITextField* nextField = (UITextField*)[textField.superview viewWithTag:nextTag];
+        if(nextField){
+            [nextField becomeFirstResponder];
+            self.currentFocused = nextField;
+            [self liftWithBottom:self.prevKeyboard isSmall:NO time:0.3 complete:nil];
+        }else{
+            [textField resignFirstResponder];
+            [self sendRequest:nil];
+        }
+    }
+    return true;
+}
+
+
+- (void) sendSmsCode:(id)obj
+{
+    //EZDEBUG(@"Sms code send");
+    _sendSmsCode.enabled = false;
+    _countDown.hidden = false;
+    _smsCodeCounter = 60;
+    [self updateCounter];
+    
+}
+
+- (void) updateCounter
+{
+    if(_smsCodeCounter > 0){
+        --_smsCodeCounter;
+        _countDown.text = int2str(_smsCodeCounter);
+    }else{
+        _sendSmsCode.enabled = true;
+        _countDown.hidden = true;
+        return;
+    }
+    
+    dispatch_later(1.0, ^(){
+        [self updateCounter];
+    });
+}
+
+- (void) sendRequest:(id)obj
+{
+    EZDEBUG(@"send request");
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     EZDEBUG(@"start view did load");
-    self.view.backgroundColor = VinesGray;
+    //self.view.backgroundColor = VinesGray;
     CGFloat startGap = 0;
     if(!isRetina4){
         startGap = -40.0;
     }
-    //__weak EZRegisterCtrl* weakSelf = self;
-    _titleInfo = [[UILabel alloc] initWithFrame:CGRectMake(0, 65.0 + startGap, CurrentScreenWidth, 40)];
-    _titleInfo.textAlignment = NSTextAlignmentCenter;
-    _titleInfo.textColor = [UIColor whiteColor];
-    _titleInfo.font = [UIFont systemFontOfSize:35];
-    _titleInfo.text = macroControlInfo(@"羽毛");
+    UIView* navBar = [self createNavHeader:@"忘记密码"];
+    [self.view addSubview:navBar];
     
-    _introduction = [[UITextView alloc] initWithFrame:CGRectMake(30, 110.0 + startGap, CurrentScreenWidth - 30.0 * 2, 55)];
-    _introduction.textAlignment = NSTextAlignmentCenter;
-    _introduction.textColor = [UIColor whiteColor];
-    //_introduction.font = [UIFont systemFontOfSize:8];
-    _introduction.backgroundColor = [UIColor clearColor];
+    UIView* holder = [[UIView alloc] initWithFrame:CGRectMake(0, 64, CurrentScreenWidth, CurrentScreenHeight - 64)];
+    holder.backgroundColor = [UIColor whiteColor];
+    [self.view addSubview:holder];
     
-    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
-    //paragraphStyle.lineHeightMultiple = 15.0f;
-    paragraphStyle.maximumLineHeight = 15.0f;
-    paragraphStyle.minimumLineHeight = 15.0f;
-    paragraphStyle.alignment = NSTextAlignmentCenter;
-    NSString *content =  EZSetPasswordInfo; //macroControlInfo(@"Feather is a flying organ. Imagination can free you from the physical limitation");
-    NSDictionary *attribute = @{
-                                NSParagraphStyleAttributeName : paragraphStyle,
-                                NSForegroundColorAttributeName: [UIColor whiteColor],
-                                NSFontAttributeName:[UIFont systemFontOfSize:12]
-                                };
+    _mobileNumber = [self createTextField:CGRectMake(22, 20, 180, EZPasswordInputHeight) holderText:@"手机号" keyboardType:UIKeyboardTypeNumbersAndPunctuation returnType:UIReturnKeyNext];
+    _mobileNumber.tag = 1;
+    [holder addSubview:_mobileNumber];
     
-    //[_introduction enableTextWrap];
-    _introduction.attributedText = [[NSAttributedString alloc] initWithString:content attributes:attribute];
-    [self.view addSubview:_titleInfo];
-    [self.view addSubview:_introduction];
-    _introduction.editable = FALSE;
+    _sendSmsCode = [UIButton createButton:CGRectMake(210, 25, 100, 34) font:[UIFont systemFontOfSize:15] color:[UIColor whiteColor] align:NSTextAlignmentCenter];
+    _sendSmsCode.layer.cornerRadius = 17;
+    [_sendSmsCode setBackgroundColor:RGBCOLOR(211, 211, 211)];
+    [_sendSmsCode setTitle:@"发送验证码" forState:UIControlStateNormal];
+    [_sendSmsCode addTarget:self action:@selector(sendSmsCode:) forControlEvents:UIControlEventTouchUpInside];
+    [holder addSubview:_sendSmsCode];
     
-    _scrollContainer = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, CurrentScreenHeight)];
-    _scrollContainer.backgroundColor = [UIColor clearColor];
-    _scrollContainer.pagingEnabled = YES;
-    _scrollContainer.delegate = self;
+    _mobileSmsCode = [self createTextField:CGRectMake(22, _mobileNumber.bottom + 12 , 180, EZPasswordInputHeight) holderText:@"手机验证码" keyboardType:UIKeyboardTypeNumbersAndPunctuation returnType:UIReturnKeyNext];
+    _mobileNumber.tag = 2;
+    [holder addSubview:_mobileSmsCode];
     
-    _scrollContainer.contentSize = CGSizeMake(CurrentScreenWidth* 2, CurrentScreenHeight);
-    _scrollContainer.showsHorizontalScrollIndicator = NO;
-    _scrollContainer.showsVerticalScrollIndicator = NO;
-    [self.view addSubview:_scrollContainer];
+    _countDown = [UILabel createLabel:CGRectMake(210, _mobileNumber.bottom + 12, 80, EZPasswordInputHeight) font:[UIFont systemFontOfSize:16] color:RGBCOLOR(54, 193, 191)];
+    _countDown.textAlignment = NSTextAlignmentCenter;
+    [holder addSubview:_countDown];
     
-    //[_scrollContainer addSubview:_smsCodeView];
+    _password = [self createTextField:CGRectMake(22, _mobileSmsCode.bottom + 12, 276, EZPasswordInputHeight) holderText:@"密码" keyboardType:UIKeyboardTypeDefault returnType:UIReturnKeyNext];
+    _password.tag = 3;
+    [holder addSubview:_password];
     
-    _smsCodeView = [self createSMSCodeView:startGap];
-    [_scrollContainer addSubview:_smsCodeView];
+    _confirmPassword = [self createTextField:CGRectMake(22, _password.bottom + 12, 276, EZPasswordInputHeight) holderText:@"重复密码" keyboardType:UIKeyboardTypeDefault returnType:UIReturnKeySend];
+    _confirmPassword.tag = 4;
+    [holder addSubview:_confirmPassword];
     
-    _passwordView = [self createPasswordView:startGap];
-    [_scrollContainer addSubview:_passwordView];
-    _pageControl = [[UIPageControl alloc] initWithFrame:CGRectMake(0, CurrentScreenHeight - 30.0, CurrentScreenWidth, 10.0)];
-    [self.view addSubview:_pageControl];
-    _pageControl.numberOfPages = 2;
-    _pageControl.currentPage = 0;
-
+    _sendBtn = [UIButton createButton:CGRectMake(22, _confirmPassword.bottom + 24, 276, EZPasswordInputHeight) font:[UIFont boldSystemFontOfSize:18] color:[UIColor whiteColor] align:NSTextAlignmentCenter];
+    [_sendBtn setTitle:@"确  认" forState:UIControlStateNormal];
+    [_sendBtn setBackgroundImage:[UIImage imageNamed:@"btn"] forState:UIControlStateNormal];
+    [_sendBtn setBackgroundImage:[UIImage imageNamed:@"btn_sel"] forState:UIControlStateHighlighted];
+    [_sendBtn addTarget:self action:@selector(sendRequest:) forControlEvents:UIControlEventTouchUpInside];
+    [holder addSubview:_sendBtn];
 }
 
-- (UIView*) createSMSCodeView:(CGFloat)startGap
+- (UITextField*) createTextField:(CGRect)frame holderText:(NSString*)holderText keyboardType:(UIKeyboardType)keyboardType returnType:(UIReturnKeyType)returnType
 {
-    UIView* containerView = [[UIView alloc] initWithFrame:CGRectMake(0, 180.0 + startGap, CurrentScreenWidth, CurrentScreenHeight - 175.0 - startGap)];
-    containerView.backgroundColor = [UIColor greenColor];
-    
-    return containerView;
-}
-
-- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
-{
-    int pos = scrollView.contentOffset.x/CurrentScreenWidth;
-    EZDEBUG(@"Position %i", pos);
-    _pageControl.currentPage = pos;
-}
-
-- (UIView*) createPasswordView:(CGFloat)startGap
-{
-    UIView* containerView = [[UIView alloc] initWithFrame:CGRectMake(CurrentScreenWidth, 180.0 + startGap, CurrentScreenWidth, CurrentScreenHeight - 175.0 - startGap)];
-    containerView.backgroundColor = [UIColor yellowColor];
-    return containerView;
+    UITextField* mobileField = [EZTextField creatTextField:frame textColor:EZLoginInputTextColor font:[UIFont systemFontOfSize:14] alignment:NSTextAlignmentLeft borderColor:nil padding:CGSizeMake(10, 0)];
+    mobileField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:holderText attributes:@{NSForegroundColorAttributeName: EZLoginInputTextColor}];
+    [mobileField setBackground:[[UIImage imageNamed:@"inputbox_s"] resizableImageWithCapInsets:UIEdgeInsetsMake(10, 10, 10, 10)]];
+    mobileField.keyboardType = keyboardType;
+    mobileField.returnKeyType = returnType;
+    mobileField.delegate = self;
+    //UILabel* mobilePlaceHolder = [self createPlaceHolder:mobileField];
+    //mobilePlaceHolder.text = holderText;
+    //mobileField.placeholder = holderText;
+    //[self.view addSubview:mobilePlaceHolder];
+    return mobileField;
 }
 
 - (void)didReceiveMemoryWarning

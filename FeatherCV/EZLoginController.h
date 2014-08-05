@@ -12,6 +12,8 @@
 @interface EZLoginController : EZKeyboardController<UIActionSheetDelegate>
 
 
+
+@property (nonatomic, strong) UIImageView* mobileIcon;
 @property (nonatomic, strong) UILabel* titleInfo;
 
 //@property (nonatomic, strong) UILabel* introduction;

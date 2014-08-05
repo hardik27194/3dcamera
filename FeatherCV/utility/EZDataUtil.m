@@ -372,7 +372,7 @@
                            source:@"tj"
                                                     unitName:@"h" selected:NO],
                           [[EZRecordTypeDesc alloc] initWith:@"检查记录" type:kExamRecord
-                                                      source:@"jl"
+                                                      source:@"jc"
                                                     unitName:@"" selected:NO]
                           , nil];
     
@@ -454,6 +454,9 @@
     
     _titleFormatter = [[NSDateFormatter alloc] init];
     [_titleFormatter setDateFormat:@"MM.dd"];
+    
+    _inputDateFormatter = [[NSDateFormatter alloc] init];
+    [_inputDateFormatter setDateFormat:@"MM'月'dd'日 'HH':'mm"];
     
     _isoFormatter = [[NSDateFormatter alloc] init];
     _isoFormatter.dateFormat = @"yyyy-MM-dd' 'HH:mm:ss.S";

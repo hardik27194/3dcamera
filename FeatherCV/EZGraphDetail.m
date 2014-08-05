@@ -51,8 +51,15 @@
     //[popView showInView:self.navigationController.view animated:YES];
     EZInputItem* item1 = [[EZInputItem alloc] initWithName:@"奶量超大" type:kFloatValue defaultValue:@(65)];
     EZInputItem* item2 = [[EZInputItem alloc] initWithName:@"疑似病例" type:kFloatValue defaultValue:@"有病没有"];
-    EZPopupInput* popInput = [[EZPopupInput alloc] initWithTitle:@"奶妈" inputItems:@[item1, item2] haveDelete:YES saveBlock:^(id obj){
-        EZDEBUG(@"save called");
+    
+    EZInputItem* item3 = [[EZInputItem alloc] initWithName:@"出生日期" type:kDateValue defaultValue:[NSDate date]];
+    
+    NSArray* items = @[item1, item2, item3];
+    EZPopupInput* popInput = [[EZPopupInput alloc] initWithTitle:@"奶妈" inputItems:items  haveDelete:YES saveBlock:^(id obj){
+        //EZDEBUG(@"save called");
+        for(EZInputItem* it in items){
+            EZDEBUG(@"updated value:%@", it.changedValue);
+        }
     }  deleteBlock:^(id obj){
         EZDEBUG(@"delete called");
     }];

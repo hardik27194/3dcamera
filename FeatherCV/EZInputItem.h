@@ -23,6 +23,10 @@
 
 @property (nonatomic, strong) EZEventBlock pickerRaiser;
 
+@property (nonatomic, strong) EZEventBlock valueChanged;
+
+- (void) valueChanged:(id)obj;
+
 - (void) raiseDatePicker:(id)obj;
 
 @end

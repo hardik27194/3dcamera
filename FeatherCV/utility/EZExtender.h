@@ -95,6 +95,7 @@ typedef void  (^ IterateOperation)(id obj);
 
 - (CGFloat) adjustHorizonDelta;
 
+- (void) fitContent:(BOOL)left;
 //It based on the mistunderstand I have. Let's fix the misunderstand. 
 - (CGSize) calcRegion:(NSString*)string size:(CGSize)size;
 
@@ -273,6 +274,8 @@ typedef void  (^ IterateOperation)(id obj);
 @interface UITextField(EZPrivate)
 
 - (void) enableTextWrap;
+
+- (void) fitContent:(BOOL)left;
 
 @end
 /**

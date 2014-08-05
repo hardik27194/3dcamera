@@ -113,6 +113,7 @@ typedef enum {
 
 - (void) fetchProfilesForID:(NSString*)personID success:(EZEventBlock)success failure:(EZEventBlock)failure;
 
+
 - (NSArray*) getMenuItemByType:(EZProfile*)profile;
 
 - (NSArray*) getCurrentMenuItems;
@@ -163,6 +164,8 @@ typedef enum {
 
 //The person are login to the server.
 @property (nonatomic, strong) NSString* currentPersonID;
+
+@property (nonatomic, strong) NSDateFormatter* inputDateFormatter;
 
 @property (nonatomic, strong) NSDateFormatter* isoFormatter;
 

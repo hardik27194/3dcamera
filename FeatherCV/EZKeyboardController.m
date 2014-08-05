@@ -10,6 +10,7 @@
 #import "EZKeyboadUtility.h"
 #import "EZMessageCenter.h"
 #import "UIImage+ImageEffects.h"
+#import "EZCustomButton.h"
 
 
 @interface EZKeyboardController ()
@@ -39,13 +40,13 @@
     self.navigationController.transitioningDelegate = self;
     
     UIImageView* imageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-    imageView.image = [UIImage imageNamed:@"background.png"]; //createBlurImage:20];
+    imageView.image = [UIImage imageNamed:@"login_bg"]; //createBlurImage:20];
     _cameraNaviAnim = [[EZCameraNaviAnimation alloc] init];
     UIView* blackCover = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
     blackCover.backgroundColor = ClickedColor;//RGBA(0, 0, 0, 50);
-    //[self.view addSubview:imageView];
-    self.view.backgroundColor = ClickedColor;
-    [self.view addSubview:blackCover];
+    [self.view addSubview:imageView];
+    //self.view.backgroundColor = ClickedColor;
+    //[self.view addSubview:blackCover];
 	// Do any additional setup after loading the view.
 }
 
@@ -77,6 +78,30 @@
 }
 
 
+- (UIView*) createNavHeader:(NSString*)title
+{
+    UIImageView* navBar = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, 64)];
+    navBar.image = [UIImage imageNamed:@"headerbg"];
+    EZCustomButton* backBtn = [EZCustomButton createButton:CGRectMake(0, 20, 44, 44) image:[UIImage imageNamed:@"header_btn_back"]];
+    navBar.userInteractionEnabled = YES;
+    //UIImageView* imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"nav_drawer"]];
+    //backBtn.showsTouchWhenHighlighted = true;
+    //[backBtn addSubview:imageView];
+    UILabel* label = [UILabel createLabel:CGRectMake(60, 20, 200, 44) font:[UIFont boldSystemFontOfSize:20] color:[UIColor whiteColor]];
+    label.textAlignment = NSTextAlignmentCenter;
+    label.text = title;
+    [navBar addSubview:label];
+    [navBar addSubview:backBtn];
+    [backBtn addTarget:self action:@selector(backClicked:) forControlEvents:UIControlEventTouchUpInside];
+    return navBar;
+}
+
+- (void) backClicked:(id)obj
+{
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
+
 - (UIView*) createWrap:(CGRect)frame
 {
     UIView* wrapView = [[UIView alloc] initWithFrame:CGRectMake(frame.origin.x - 19.0, frame.origin.y + 1.0, frame.size.width + 38.0, 38)];
@@ -92,6 +117,7 @@
 - (UILabel*) createPlaceHolder:(UITextField*)textField
 {
     UILabel* placeHolder = [[UILabel alloc] initWithFrame:textField.frame];
+    [placeHolder moveX:10];
     placeHolder.textAlignment = textField.textAlignment;
     placeHolder.textColor = textField.textColor;
     placeHolder.font = textField.font;
@@ -215,7 +241,7 @@
         if(_haveDelta){
             delta = leftGap - deltaGap - _smallGap;
         }
-        //EZDEBUG(@"The focused frame is:%@, leftGap:%f,deltaGap:%f,delta:%f  smallGap:%f, haveDelta:%i", NSStringFromCGRect(focusFrame), leftGap,deltaGap,delta,_smallGap, _haveDelta);
+        EZDEBUG(@"The focused frame is:%@, leftGap:%f,deltaGap:%f,delta:%f  smallGap:%f, haveDelta:%i", NSStringFromCGRect(focusFrame), leftGap,deltaGap,delta,_smallGap, _haveDelta);
         if(delta < 0){
             //textFieldShouldReturn
             [UIView animateWithDuration:timeval delay:0.0 options:UIViewAnimationOptionCurveLinear  animations:^(){

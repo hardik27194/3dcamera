@@ -339,12 +339,13 @@
     [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
 
     EZDEBUG(@"login info:%@", [[EZDataUtil getInstance] getCurrentPersonID]);
+    [[EZDataUtil getInstance] setCurrentPersonID:nil];
     if(![[EZDataUtil getInstance] getCurrentPersonID]){
         [[EZDataUtil getInstance]cleanAllLoginInfo];
         dispatch_later(0.1, ^(){
             [[EZDataUtil getInstance] triggerLogin:^(EZPerson* ps){
                 [[EZDataUtil getInstance] getMatchUsers:nil failure:nil];
-            } failure:^(id err){} reason:@"请注册" isLogin:NO];
+            } failure:^(id err){} reason:@"请注册" isLogin:YES];
         });
     }else{
         [[EZDataUtil getInstance] loadAllPersons];

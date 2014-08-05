@@ -20,6 +20,25 @@
     return true;
 }
 
+- (void) textFieldDidEndEditing:(UITextField *)textField
+{
+    _changedValue = textField.text;
+}
+
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
+{
+    [textField fitContent:NO];
+    return true;
+}
+
+
+- (void) valueChanged:(id)obj
+{
+    if(_valueChanged){
+        _valueChanged(obj);
+    }
+}
+
 - (id) initWithName:(NSString*)inputName type:(EZinputValueType)type defaultValue:(id)defaultValue
 {
     self = [super init];

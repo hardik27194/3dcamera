@@ -12,6 +12,8 @@
 #import "EZKeyboadUtility.h"
 #import "EZExtender.h"
 #import "EZRegisterCtrl.h"
+#import "EZPasswordFetcher.h"
+
 
 @interface EZLoginController ()
 
@@ -30,53 +32,80 @@
 
 
 
+- (UIView*) createWrap:(CGRect)frame icon:(UIImage*)icon background:(UIImage*)background
+{
+    //UIView* wrapView = [[UIView alloc] initWithFrame:CGRectMake(frame.origin.x - 19.0, frame.origin.y + 1.0, frame.size.width + 38.0, 38)];
+    UIImageView* wrapView = [[UIImageView alloc] initWithFrame:CGRectMake(22, frame.origin.y, CurrentScreenWidth - 44, frame.size.height)];
+    wrapView.contentMode = UIViewContentModeScaleToFill;
+    UIImageView* iconView = [[UIImageView alloc] initWithImage:icon];
+    [iconView setPosition:CGPointMake(16, (frame.size.height - icon.size.height)/2.0)];
+    [wrapView addSubview:iconView];
+    wrapView.image = [background resizableImageWithCapInsets:UIEdgeInsetsMake(10, 10, 10, 10)];
+    return wrapView;
+}
+
+- (void) qqLogin:(id)obj
+{
+    EZDEBUG(@"qq login get called");
+}
+
+- (void) weLogin:(id)obj
+{
+    EZDEBUG(@"we chat login");
+}
+
+- (void) forgetClicked:(id)obj
+{
+    EZDEBUG(@"forget clicked");
+    EZPasswordFetcher* psFetcher = [[EZPasswordFetcher alloc] init];
+    [self.navigationController pushViewController:psFetcher animated:YES];
+}
+
+- (UIButton*) createIconButton:(CGRect)frame icon:(NSString*)icon text:(NSString*)text
+{
+    UIButton* qqLogin = [[UIButton alloc] initWithFrame:frame];
+    UIImageView* qqIcon = [[UIImageView alloc] initWithImage:[UIImage imageNamed:icon]];
+    [qqIcon setPosition:CGPointMake(16, (40-qqIcon.image.size.height)/2.0)];
+    UILabel* titleText = [UILabel createLabel:CGRectMake(50, 0, 70, 40) font:[UIFont boldSystemFontOfSize:14] color:[UIColor whiteColor]];
+    titleText.text = text;
+    [qqLogin addSubview:qqIcon];
+    [qqLogin addSubview:titleText];
+    [self.view addSubview:qqLogin];
+    [qqLogin setBackgroundColor:RGBA(255, 255, 255, 80)];
+    qqLogin.layer.cornerRadius = qqLogin.height/2.0;
+    qqLogin.clipsToBounds = YES;
+    //[qqLogin addTarget:self action:@selector(qqLogin:) forControlEvents:UIControlEventTouchUpInside];
+    return qqLogin;
+}
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.view.backgroundColor = VinesGray;
+    //self.view.backgroundColor = VinesGray;
     CGFloat startGap = 0;
+    CGFloat shinkage = 0;
     if(!isRetina4){
         startGap = -30.0;
+        shinkage = - 50;
     }
-    _titleInfo = [[UILabel alloc] initWithFrame:CGRectMake(0, 65.0 + startGap, CurrentScreenWidth, 37)];
-    _titleInfo.textAlignment = NSTextAlignmentCenter;
-    _titleInfo.textColor = [UIColor whiteColor];
-    _titleInfo.font = [UIFont systemFontOfSize:35];
-    _titleInfo.text = macroControlInfo(@"羽毛");
     
-    _introduction = [[UITextView alloc] initWithFrame:CGRectMake(37, 110.0 + startGap, CurrentScreenWidth - 37.0 * 2, 55)];
-    _introduction.textAlignment = NSTextAlignmentCenter;
-    _introduction.textColor = [UIColor whiteColor];
-    //_introduction.font = [UIFont systemFontOfSize:8];
-    _introduction.backgroundColor = [UIColor clearColor];
     
-    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
-    //paragraphStyle.lineHeightMultiple = 15.0f;
-    paragraphStyle.maximumLineHeight = 15.0f;
-    paragraphStyle.minimumLineHeight = 15.0f;
-    paragraphStyle.alignment = NSTextAlignmentCenter;
-    NSString *content = EZPurposeInfo;
-    NSDictionary *attribute = @{
-                                NSParagraphStyleAttributeName : paragraphStyle,
-                                NSForegroundColorAttributeName: [UIColor whiteColor],
-                                NSFontAttributeName:[UIFont systemFontOfSize:12]
-                                };
+    _mobileIcon = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
+    _mobileIcon.contentMode = UIViewContentModeScaleAspectFill;
+    _mobileIcon.image = [UIImage imageNamed:@"demo_avatar_jobs"];
+    [_mobileIcon setPosition:CGPointMake((CurrentScreenWidth - _mobileIcon.width)/2.0, 83.0 + startGap)];
+    [_mobileIcon enableRoundImage];
+    [self.view addSubview:_mobileIcon];
     
-    //[_introduction enableTextWrap];
-    _introduction.attributedText = [[NSAttributedString alloc] initWithString:content attributes:attribute];
-    [self.view addSubview:_titleInfo];
-    [self.view addSubview:_introduction];
-    _introduction.editable = FALSE;
     
-    _mobileField = [[UITextField alloc] initWithFrame:CGRectMake((CurrentScreenWidth - 206.0)/2.0, 195.0 + startGap, 206.0, 40)];
-    UIView* mobileWrap = [self createWrap:_mobileField.frame];
+    _mobileField = [[UITextField alloc ]initWithFrame:CGRectMake(62, 195.0 + startGap, 200.0, 45)];
+    UIView* mobileWrap = [self createWrap:_mobileField.frame icon:[UIImage imageNamed:@"icon_user"] background:[UIImage imageNamed:@"inputbox_s"]];
     [self.view addSubview:mobileWrap];
     [self.view addSubview:_mobileField];
     
-    _mobileField.textAlignment = NSTextAlignmentCenter;
-    _mobileField.textColor = [UIColor whiteColor];
-    _mobileField.font = [UIFont systemFontOfSize:12];
+    _mobileField.textAlignment = NSTextAlignmentLeft;
+    _mobileField.textColor = EZLoginInputTextColor;
+    _mobileField.font = [UIFont systemFontOfSize:14];
     _mobileField.keyboardType = UIKeyboardTypeNumbersAndPunctuation;
     _mobileField.returnKeyType = UIReturnKeyNext;
     _mobileField.delegate = self;
@@ -84,55 +113,67 @@
     _mobilePlaceHolder.text = macroControlInfo(@"Mobile Number");
     [self.view addSubview:_mobilePlaceHolder];
     
-    UIButton* _sendVerifyCode;
-    _sendVerifyCode = [[UIButton alloc] initWithFrame:CGRectMake((CurrentScreenWidth - 246.0)/2.0, 250.0 + startGap, 246.0, 40.0)];
-    //[_registerButton enableRoundImage];
-    _sendVerifyCode.layer.cornerRadius = _sendVerifyCode.height/2.0;
-    _sendVerifyCode.backgroundColor = ButtonWhiteColor;//EZButtonGreen;
-    [_sendVerifyCode setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    [_sendVerifyCode.titleLabel setFont:[UIFont systemFontOfSize:13]];
-    [_sendVerifyCode setTitle:macroControlInfo(@"请求短信验证码") forState:UIControlStateNormal];
-    [_sendVerifyCode addTarget:self action:@selector(sendCode:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:_sendVerifyCode];
-    self.sendVerifyCode = _sendVerifyCode;
     
-    _passwordField = [[UITextField alloc] initWithFrame:CGRectMake((CurrentScreenWidth - 206.0)/2.0, 310.0 + startGap, 206, 40)];
-    
-    UIView* passWrap = [self createWrap:_passwordField.frame];
-    _passwordField.textAlignment = NSTextAlignmentCenter;
-    _passwordField.textColor = [UIColor whiteColor];
+    _passwordField = [[UITextField alloc] initWithFrame:CGRectMake(62, 253 + startGap, 200, 45)];
+    UIView* passWrap = [self createWrap:_passwordField.frame icon:[UIImage imageNamed:@"icon_pw"] background:[UIImage imageNamed:@"inputbox_s"]];
+    _passwordField.textAlignment = NSTextAlignmentLeft;
+    _passwordField.textColor = EZLoginInputTextColor;
     //_passwordField.autocapitalizationType = UITextAutocapitalizationTypeNone;
-    _passwordField.font = [UIFont systemFontOfSize:13];
+    _passwordField.font = [UIFont systemFontOfSize:14];
     _passwordField.delegate = self;
     _passwordField.returnKeyType = UIReturnKeyDone;
-    [_passwordField setPlainPassword];
+    //[_passwordField setPlainPassword];
     _passwordPlaceHolder = [self createPlaceHolder:_passwordField];
-    _passwordPlaceHolder.text = macroControlInfo(@"PassCode");
+    _passwordPlaceHolder.text = macroControlInfo(@"Password");
     [self.view addSubview:passWrap];
     [self.view addSubview:_passwordPlaceHolder];
     [self.view addSubview:_passwordField];
     
     
-    _registerButton = [[UIButton alloc] initWithFrame:CGRectMake((CurrentScreenWidth - 246.0)/2.0, 370.0 + startGap, 246.0, 40.0)];
-    //[_registerButton enableRoundImage];
-    _registerButton.layer.cornerRadius = _registerButton.height/2.0;
-    _registerButton.backgroundColor = ButtonWhiteColor;
-    [_registerButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    [_registerButton.titleLabel setFont:[UIFont systemFontOfSize:13]];
+    _registerButton = [UIButton  createButton:CGRectMake(22, 322 + startGap, 276, 45.0) font:[UIFont boldSystemFontOfSize:18] color:[UIColor whiteColor] align:NSTextAlignmentCenter];
+    [_registerButton setBackgroundImage:[UIImage imageNamed:@"btn"] forState:UIControlStateNormal];
+    [_registerButton setBackgroundImage:[UIImage imageNamed:@"btn_sel"] forState:UIControlStateHighlighted];
     [_registerButton setTitle:macroControlInfo(@"Login") forState:UIControlStateNormal];
     [_registerButton addTarget:self action:@selector(registerClicked:) forControlEvents:UIControlEventTouchUpInside];
-    
     [self.view addSubview:_registerButton];
     
-    _loginButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 430 + startGap, CurrentScreenWidth, 40)];
+    
+    UIButton* qqLogin = [self createIconButton:CGRectMake(22, 390 + startGap, 128, 40) icon:@"logo_qq" text:@"QQ登录"];
+    [qqLogin addTarget:self action:@selector(qqLogin:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:qqLogin];
+    
+    
+    UIButton* wechatLogin = [self createIconButton:CGRectMake(170, 390 + startGap, 128, 40) icon:@"logo_wechat" text:@"微信登录"];
+    [wechatLogin addTarget:self action:@selector(weLogin:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:wechatLogin];
+    
+    
+    UIView* buttonRegion = [[UIView alloc] initWithFrame:CGRectMake(0, 505+startGap, CurrentScreenWidth, 40)];
+    buttonRegion.backgroundColor = [UIColor clearColor];
+    [self.view addSubview:buttonRegion];
+    
+    UIView* sep = [[UIView alloc] initWithFrame:CGRectMake(CurrentScreenWidth/2.0, 9, 1, 22)];
+    sep.backgroundColor = RGBA(255, 255, 255, 80);
+    [buttonRegion addSubview:sep];
+    
+    _loginButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth/2.0, 40)];
     [_loginButton setTitle:macroControlInfo(@"Register") forState:UIControlStateNormal];
-    [_loginButton.titleLabel setFont:[UIFont systemFontOfSize:11]];
+    [_loginButton.titleLabel setFont:[UIFont boldSystemFontOfSize:16]];
     _loginButton.titleLabel.textAlignment = NSTextAlignmentCenter;
     [_loginButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [_loginButton addTarget:self action:@selector(registerSwitch:) forControlEvents:UIControlEventTouchUpInside];
+    [buttonRegion addSubview:_loginButton];
+    
+    UIButton* forgetPassword = [[UIButton alloc] initWithFrame:CGRectMake(CurrentScreenWidth/2.0, 0, CurrentScreenWidth/2.0, 40)];
+    [forgetPassword setTitle:macroControlInfo(@"Forget Password") forState:UIControlStateNormal];
+    [forgetPassword.titleLabel setFont:[UIFont boldSystemFontOfSize:16]];
+    forgetPassword.titleLabel.textAlignment = NSTextAlignmentCenter;
+    [forgetPassword setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [forgetPassword addTarget:self action:@selector(forgetClicked:) forControlEvents:UIControlEventTouchUpInside];
     //[self.view addSubview:_registerButton];
-    [self.view addSubview:_passwordButton];
-    [self.view addSubview:_loginButton];
+    //[self.view addSubview:_passwordButton];
+    [buttonRegion addSubview:forgetPassword];
+    [self.view addSubview:buttonRegion];
     
     //[self.view addSubview:_seperator];
     //[self setupKeyboard];

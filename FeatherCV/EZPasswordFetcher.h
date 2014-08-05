@@ -8,18 +8,22 @@
 
 #import "EZKeyboardController.h"
 
-@interface EZPasswordFetcher : EZKeyboardController<UIScrollViewDelegate>
+@interface EZPasswordFetcher : EZKeyboardController<UIScrollViewDelegate, UITextFieldDelegate>
 
-@property (nonatomic, strong) UILabel* titleInfo;
+@property (nonatomic, strong) UITextField* mobileNumber;
 
-@property (nonatomic, strong) UITextView* introduction;
+@property (nonatomic, strong) UITextField* mobileSmsCode;
 
-@property (nonatomic, strong) UIView* smsCodeView;
+@property (nonatomic, strong) UITextField* password;
 
-@property (nonatomic, strong) UIView* passwordView;
+@property (nonatomic, strong) UITextField* confirmPassword;
 
-@property (nonatomic, strong) UIScrollView* scrollContainer;
+@property (nonatomic, strong) UIButton* sendSmsCode;
 
-@property (nonatomic, strong) UIPageControl* pageControl;
+@property (nonatomic, strong) UILabel* countDown;
+
+@property (nonatomic, assign) NSInteger smsCodeCounter;
+
+@property (nonatomic, strong) UIButton* sendBtn;
 
 @end

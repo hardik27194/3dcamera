@@ -1,646 +1,162 @@
 //
-//  EZRegisterCtrl.m
-//  FeatherCV
+//  EZRegisterPage.m
+//  BabyCare
 //
-//  Created by xietian on 14-3-16.
+//  Created by xietian on 14-8-4.
 //  Copyright (c) 2014年 tiange. All rights reserved.
 //
 
 #import "EZRegisterCtrl.h"
-#import "EZDataUtil.h"
-#import "EZPerson.h"
-#import "EZMessageCenter.h"
-#import "EZClickImage.h"
-#import "EZLoginController.h"
+//#import "EZExtender.h"
+#import "EZTextField.h"
 
-@interface EZRegisterCtrl ()
+#define EZSmsCodeColor RGBCOLOR(65, 210, 193)
+
+@interface EZRegisterCtrl()
 
 @end
 
 @implementation EZRegisterCtrl
 
-
-- (id) init
-{
-    return [self initWithNibName:nil bundle:nil];
-}
-
-- (void) dealloc
-{
-    EZDEBUG(@"register dealloc");
-}
-
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
-    EZDEBUG(@"init called");
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         // Custom initialization
     }
-    EZDEBUG(@"init completed");
     return self;
 }
 
-- (void) updateImage:(UIImage*)image
+- (BOOL) textFieldShouldReturn:(UITextField *)textField
 {
-    [_uploadAvatar setImage:image];
-    _uploadingAvatar = TRUE;
-    [[EZDataUtil getInstance] uploadAvatarImage:image success:^(NSString* url){
-        EZDEBUG(@"avatar url:%@", url);
-        currentLoginUser.avatar = url;
-        _avatarURL = url;
-        _uploadingAvatar = false;
-        if(_registerBlock){
-            _registerBlock(nil);
+    if([textField.text isNotEmpty]){
+        int nextTag = textField.tag + 1;
+        UITextField* nextField = (UITextField*)[textField.superview viewWithTag:nextTag];
+        if(nextField){
+            [nextField becomeFirstResponder];
+            self.currentFocused = nextField;
+            [self liftWithBottom:100 isSmall:NO time:0.3 complete:nil];
+        }else{
+            [textField resignFirstResponder];
+            [self sendRequest:nil];
         }
-       
-    } failed:^(id sender){
-        //[[EZUIUtility sharedEZUIUtility] raiseInfoWindow:macroControlInfo(@"Upload avatar failed") info:@"Please try avatar upload later"];
-        _uploadingAvatar = false;
-    }];
+    }
+    return true;
 }
 
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
+- (UIView*) createWrap:(CGRect)frame background:(UIImage*)background
 {
-    EZDEBUG(@"index:%i", buttonIndex);
-    if(buttonIndex == 2){
+    //UIView* wrapView = [[UIView alloc] initWithFrame:CGRectMake(frame.origin.x - 19.0, frame.origin.y + 1.0, frame.size.width + 38.0, 38)];
+    UIImageView* wrapView = [[UIImageView alloc] initWithFrame:CGRectMake(22, frame.origin.y, frame.size.width, frame.size.height)];
+    wrapView.contentMode = UIViewContentModeScaleToFill;
+    //UIImageView* iconView = [[UIImageView alloc] initWithImage:icon];
+    //[iconView setPosition:CGPointMake(16, (frame.size.height - icon.size.height)/2.0)];
+    //[wrapView addSubview:iconView];
+    wrapView.image = [background resizableImageWithCapInsets:UIEdgeInsetsMake(10, 10, 10, 10)];
+    return wrapView;
+}
+
+- (void) sendSmsCode:(id)obj
+{
+    //EZDEBUG(@"Sms code send");
+    _sendSmsCode.enabled = false;
+    _countDown.hidden = false;
+    _smsCodeCounter = 60;
+    [self updateCounter];
+    
+}
+
+- (void) updateCounter
+{
+    if(_smsCodeCounter > 0){
+        --_smsCodeCounter;
+        _countDown.text = int2str(_smsCodeCounter);
+    }else{
+        _sendSmsCode.enabled = true;
+        _countDown.hidden = true;
         return;
     }
     
-    __weak EZRegisterCtrl* weakSelf = self;
-    [[EZUIUtility sharedEZUIUtility] raiseCamera:buttonIndex controller:self completed:^(UIImage* image){
-        EZDEBUG(@"will upload image:%@", NSStringFromCGSize(image.size));
-        [weakSelf updateImage:[image resizedImageWithMinimumSize:CGSizeMake(90, 90) antialias:YES]];
-        
-    } allowEditing:YES];
-    
+    dispatch_later(1.0, ^(){
+        [self updateCounter];
+    });
 }
 
-- (void) setInputField:(UITextField*)textField container:(UIView*)container
+- (void) sendRequest:(id)obj
 {
-    textField.textAlignment = NSTextAlignmentCenter;
-    textField.textColor = [UIColor whiteColor];
-    textField.font = [UIFont systemFontOfSize:12];
-    //textField.keyboardType = UIKeyboardTypeNumbersAndPunctuation;
-    textField.returnKeyType = UIReturnKeyNext;
-    textField.delegate = self;
-    
-    UIView* mobileWrap = [self createWrap:textField.frame];
-    [container addSubview:mobileWrap];
-    [container addSubview:textField];
-    
-    
-}
-
-
-- (UIView*) createRegisterView:(CGFloat)startGap
-{
-    UIView* containerView = [[UIView alloc] initWithFrame:CGRectMake(0, 175.0 + startGap, CurrentScreenWidth, CurrentScreenHeight - 175.0 - startGap)];
-    containerView.backgroundColor = [UIColor clearColor];
-    __weak EZRegisterCtrl* weakSelf = self;
-    _uploadAvatar = [[EZClickImage alloc] initWithFrame:CGRectMake((CurrentScreenWidth - 64.0)/2.0, 0, 64.0, 64.0)];
-    UILabel* addTitle = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 64, 20)];
-    addTitle.center = CGPointMake(32, 32);
-    addTitle.textAlignment = NSTextAlignmentCenter;
-    addTitle.textColor = [UIColor whiteColor];
-    addTitle.font = [UIFont systemFontOfSize:12];
-    addTitle.text = macroControlInfo(@"添加头像");
-    addTitle.center = _uploadAvatar.center;
-    [containerView addSubview:addTitle];
-
-    _uploadAvatar.layer.borderColor = [UIColor whiteColor].CGColor;
-    _uploadAvatar.layer.borderWidth = 1.0;
-    [_uploadAvatar enableRoundImage];
-    _uploadAvatar.pressedBlock = ^(id obj){
-        //[weakSelf uploadAvatar];
-        UIActionSheet* action = [[UIActionSheet alloc] initWithTitle:macroControlInfo(@"Choose Avatar") delegate:weakSelf cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Camera",@"Album", nil];
-        [action showInView:weakSelf.view];
-    };
-    
-    [containerView addSubview:_uploadAvatar];
-    
-    _smsCodeField = [[UITextField alloc] initWithFrame:CGRectMake((CurrentScreenWidth - 206.0)/2.0, 88.0, 206.0, 40)];
-    
-    [self setInputField:_smsCodeField container:containerView];
-    _smsCodeField.keyboardType = UIKeyboardTypeNumbersAndPunctuation;
-    _smsCodeField.returnKeyType = UIReturnKeyNext;
-    _smsCodePlaceHolder = [self createPlaceHolder:_smsCodeField];
-    _smsCodePlaceHolder.text = macroControlInfo(@"PassCode");
-    [containerView addSubview:_smsCodePlaceHolder];
-
-    
-    
-    _name = [[UITextField alloc] initWithFrame:CGRectMake((CurrentScreenWidth - 206.0)/2.0, 148.0, 206.0, 40)];
-    [self setInputField:_name container:containerView];
-    _name.keyboardType = UIKeyboardTypeDefault;
-    _namePlaceHolder = [self createPlaceHolder:_name];
-    _namePlaceHolder.text = macroControlInfo(@"Name");
-    [containerView addSubview:_namePlaceHolder];
-    
-    //NSString* deviceName = [[UIDevice currentDevice] name];
-    //if([deviceName isNotEmpty]){
-    //    _name.text = deviceName;
-    //    _namePlaceHolder.hidden = YES;
-    //}
-    
-    
-    /**
-    _mobileField = [[UITextField alloc] initWithFrame:CGRectMake((CurrentScreenWidth - 206.0)/2.0, 131.0, 206.0, 40)];
-    [self setInputField:_mobileField];
-    _mobilePlaceHolder = [self createPlaceHolder:_mobileField];
-    _mobileField.keyboardType = UIKeyboardTypeNumbersAndPunctuation;
-    _mobilePlaceHolder.text = macroControlInfo(@"Mobile Number");
-    [self.view addSubview:_mobilePlaceHolder];
-    **/
-    
-    _passwordField = [[UITextField alloc] initWithFrame:CGRectMake((CurrentScreenWidth - 206.0)/2.0, 208, 206, 40)];
-    [self setInputField:_passwordField container:containerView];
-    _passwordField.returnKeyType = UIReturnKeyJoin;
-    [_passwordField setPlainPassword];
-    _passwordPlaceHolder = [self createPlaceHolder:_passwordField];
-    _passwordPlaceHolder.text = macroControlInfo(@"Password");
-    [containerView addSubview:_passwordPlaceHolder];
-    
-    
-    
-    _registerButton = [[UIButton alloc] initWithFrame:CGRectMake((CurrentScreenWidth - 246.0)/2.0, 268.0, 246.0, 40.0)];
-    //[_registerButton enableRoundImage];
-    _registerButton.layer.cornerRadius = _registerButton.height/2.0;
-    _registerButton.backgroundColor = ButtonWhiteColor;//EZButtonGreen;
-    [_registerButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    [_registerButton.titleLabel setFont:[UIFont systemFontOfSize:13]];
-    [_registerButton setTitle:macroControlInfo(@"Complete") forState:UIControlStateNormal];
-    [_registerButton addTarget:self action:@selector(registerClicked:) forControlEvents:UIControlEventTouchUpInside];
-    [containerView addSubview:_registerButton];
-    /**
-    _passwordButton = [[UIButton alloc] initWithFrame:CGRectMake(60, 468 + startGap, 100, 40)];//400
-    [_passwordButton setTitle:macroControlInfo(@"Password") forState:UIControlStateNormal];
-    [_passwordButton.titleLabel setFont:[UIFont systemFontOfSize:13]];
-    [_passwordButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    [_passwordButton addTarget:self action:@selector(passwordSwitch:) forControlEvents:UIControlEventTouchUpInside];
-    
-    _seperator = [[UIView alloc] initWithFrame:CGRectMake(160, 468 + startGap + 13, 1, 14)];
-    _seperator.backgroundColor = [UIColor whiteColor];
-    //_loginButton = [[UIButton alloc] initWithFrame:CGRectMake(160, 353 + startGap, 100, 40)];
-    
-    _loginButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 211.0, CurrentScreenWidth, 40.0)];//455
-    [_loginButton setTitle:macroControlInfo(@"Login") forState:UIControlStateNormal];
-    [_loginButton.titleLabel setFont:[UIFont systemFontOfSize:13]];
-    [_loginButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    [_loginButton addTarget:self action:@selector(registerSwitch:) forControlEvents:UIControlEventTouchUpInside];
-    
-    [containerView addSubview:_loginButton];
-     **/
-    //[containerView addSubview:_seperator];
-    //[containerView addSubview:_passwordButton];
-    return containerView;
-}
-
-
-- (UIView*) createSmsView:(CGFloat)startGap
-{
-    UIView* containerView = [[UIView alloc] initWithFrame:CGRectMake(0, 180.0 + startGap, CurrentScreenWidth, CurrentScreenHeight - 175.0 - startGap)];
-    containerView.backgroundColor = [UIColor clearColor];
-    __weak EZRegisterCtrl* weakSelf = self;
-    
-     _mobileField = [[UITextField alloc] initWithFrame:CGRectMake((CurrentScreenWidth - 206.0)/2.0, 50, 206.0, 40)];
-     [self setInputField:_mobileField container:containerView];
-     _mobilePlaceHolder = [self createPlaceHolder:_mobileField];
-     _mobileField.keyboardType = UIKeyboardTypeNumbersAndPunctuation;
-     _mobileField.returnKeyType = UIReturnKeyDone;
-     _mobilePlaceHolder.text = macroControlInfo(@"Mobile Number");
-    
-     [containerView addSubview:_mobilePlaceHolder];
-     
-    
-    UIButton* _sendVerifyCode = nil;
-    _sendVerifyCode = [[UIButton alloc] initWithFrame:CGRectMake((CurrentScreenWidth - 246.0)/2.0, 110.0, 246.0, 40.0)];
-    //[_registerButton enableRoundImage];
-    _sendVerifyCode.layer.cornerRadius = _sendVerifyCode.height/2.0;
-    _sendVerifyCode.backgroundColor = ButtonWhiteColor;//EZButtonGreen;
-    [_sendVerifyCode setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    [_sendVerifyCode.titleLabel setFont:[UIFont systemFontOfSize:13]];
-    [_sendVerifyCode setTitle:macroControlInfo(@"请求短信验证码") forState:UIControlStateNormal];
-    [_sendVerifyCode addTarget:self action:@selector(sendCode:) forControlEvents:UIControlEventTouchUpInside];
-    [containerView addSubview:_sendVerifyCode];
-    self.sendVerifyCode = _sendVerifyCode;
-    _loginButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 170.0, CurrentScreenWidth, 40.0)];//455
-    [_loginButton setTitle:macroControlInfo(@"Login") forState:UIControlStateNormal];
-    [_loginButton.titleLabel setFont:[UIFont systemFontOfSize:11]];
-    [_loginButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    _loginButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-    [_loginButton addTarget:self action:@selector(registerSwitch:) forControlEvents:UIControlEventTouchUpInside];
-    
-    [containerView addSubview:_loginButton];
-
-    
-    /**
-     _passwordField = [[UITextField alloc] initWithFrame:CGRectMake((CurrentScreenWidth - 206.0)/2.0, 170, 206, 40)];
-     [self setInputField:_passwordField container:containerView];
-     _passwordField.returnKeyType = UIReturnKeyDone;
-     _passwordPlaceHolder = [self createPlaceHolder:_passwordField];
-     _passwordPlaceHolder.text = macroControlInfo(@"短信验证码");
-     //_passwordField.delegate = self;
-     [containerView addSubview:_passwordPlaceHolder];
-    
-    
-    _confirmCode = [[UIButton alloc] initWithFrame:CGRectMake((CurrentScreenWidth - 246.0)/2.0, 230.0, 246.0, 40.0)];
-    //[_registerButton enableRoundImage];
-    _confirmCode.layer.cornerRadius = _confirmCode.height/2.0;
-    _confirmCode.backgroundColor = ButtonWhiteColor;//EZButtonGreen;
-    [_confirmCode setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    [_confirmCode.titleLabel setFont:[UIFont systemFontOfSize:13]];
-    [_confirmCode setTitle:macroControlInfo(@"确认验证码") forState:UIControlStateNormal];
-    [_confirmCode addTarget:self action:@selector(confirmCode:) forControlEvents:UIControlEventTouchUpInside];
-     **/
-    [containerView addSubview:_confirmCode];
-    /**
-     _passwordButton = [[UIButton alloc] initWithFrame:CGRectMake(60, 468 + startGap, 100, 40)];//400
-     [_passwordButton setTitle:macroControlInfo(@"Password") forState:UIControlStateNormal];
-     [_passwordButton.titleLabel setFont:[UIFont systemFontOfSize:13]];
-     [_passwordButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-     [_passwordButton addTarget:self action:@selector(passwordSwitch:) forControlEvents:UIControlEventTouchUpInside];
-     
-     _seperator = [[UIView alloc] initWithFrame:CGRectMake(160, 468 + startGap + 13, 1, 14)];
-     _seperator.backgroundColor = [UIColor whiteColor];
-     //_loginButton = [[UIButton alloc] initWithFrame:CGRectMake(160, 353 + startGap, 100, 40)];
-     
-     _loginButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 211.0, CurrentScreenWidth, 40.0)];//455
-     [_loginButton setTitle:macroControlInfo(@"Login") forState:UIControlStateNormal];
-     [_loginButton.titleLabel setFont:[UIFont systemFontOfSize:13]];
-     [_loginButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-     [_loginButton addTarget:self action:@selector(registerSwitch:) forControlEvents:UIControlEventTouchUpInside];
-     
-     [containerView addSubview:_loginButton];
-     **/
-    //[containerView addSubview:_seperator];
-    //[containerView addSubview:_passwordButton];
-    return containerView;
-}
-
-
-- (void) switchToNext
-{
-    //[UIView animateWithDuration:0.3 animations:^(){
-        //_smsView.x = -CurrentScreenWidth;
-        //_originalView.x = 0;
-    [_scrollContainer scrollRectToVisible:CGRectMake(CurrentScreenWidth, 0, CurrentScreenWidth, CurrentScreenHeight) animated:YES];
-    //} completion:^(BOOL completed){
-        //UIPageControl*
-        
-    //}];
-}
-
-- (void) sendCode:(id)obj
-{
-    //EZDEBUG(@"Send code get called");
-    __weak EZRegisterCtrl* weakSelf = self;
-    if([_mobileField.text isNotEmpty]){
-    [self startActivity];
-    if([_mobileField.text isNotEmpty]){
-        [[EZDataUtil getInstance] requestSmsCode:_mobileField.text success:^(id obj){
-            [weakSelf stopActivity];
-            [weakSelf switchToNext];
-            weakSelf.timer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(timerTick:) userInfo:nil repeats:YES];
-            weakSelf.counter = 0;
-            weakSelf.sendVerifyCode.enabled = NO;
-        } failure:^(id err){
-            [weakSelf stopActivity];
-            EZDEBUG(@"The error detail:%@", err);
-        }];
-    }else{
-        EZDEBUG(@"empty mobile field");
-    }
-    }else{
-        [_mobileField becomeFirstResponder];
-    }
-}
-
-- (void) confirmCode:(id)obj
-{
-    EZDEBUG(@"Confirm code get called");
-}
-
-- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
-{
-    int pos = scrollView.contentOffset.x/CurrentScreenWidth;
-    EZDEBUG(@"Position %i", pos);
-    _pageControl.currentPage = pos;
+    EZDEBUG(@"send request");
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    // Do any additional setup after loading the view.
     EZDEBUG(@"start view did load");
-    self.view.backgroundColor = VinesGray;
+    //self.view.backgroundColor = VinesGray;
     CGFloat startGap = 0;
     if(!isRetina4){
         startGap = -40.0;
     }
-    __weak EZRegisterCtrl* weakSelf = self;
-    _titleInfo = [[UILabel alloc] initWithFrame:CGRectMake(0, 65.0 + startGap, CurrentScreenWidth, 40)];
-    _titleInfo.textAlignment = NSTextAlignmentCenter;
-    _titleInfo.textColor = [UIColor whiteColor];
-    _titleInfo.font = [UIFont systemFontOfSize:35];
-    _titleInfo.text = macroControlInfo(@"羽毛");
+    UIView* navBar = [self createNavHeader:@"注册"];
+    [self.view addSubview:navBar];
+    UIView* holder = [[UIView alloc] initWithFrame:CGRectMake(0, 64, CurrentScreenWidth, CurrentScreenHeight - 64)];
+    holder.backgroundColor = [UIColor whiteColor];
+    [self.view addSubview:holder];
     
-    _introduction = [[UITextView alloc] initWithFrame:CGRectMake(30, 110.0 + startGap, CurrentScreenWidth - 30.0 * 2, 55)];
-    _introduction.textAlignment = NSTextAlignmentCenter;
-    _introduction.textColor = [UIColor whiteColor];
-    //_introduction.font = [UIFont systemFontOfSize:8];
-    _introduction.backgroundColor = [UIColor clearColor];
+    _nickName = [self createTextField:CGRectMake(22, 20, 180, EZPasswordInputHeight) holderText:@"昵称" keyboardType:UIKeyboardTypeDefault returnType:UIReturnKeyNext];
+    _nickName.tag = 1;
+    [holder addSubview:_nickName];
+    _nickName.delegate = self;
     
-    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
-    //paragraphStyle.lineHeightMultiple = 15.0f;
-    paragraphStyle.maximumLineHeight = 15.0f;
-    paragraphStyle.minimumLineHeight = 15.0f;
-    paragraphStyle.alignment = NSTextAlignmentCenter;
-    NSString *content =  EZPurposeInfo; //macroControlInfo(@"Feather is a flying organ. Imagination can free you from the physical limitation");
-    NSDictionary *attribute = @{
-                                NSParagraphStyleAttributeName : paragraphStyle,
-                                NSForegroundColorAttributeName: [UIColor whiteColor],
-                                NSFontAttributeName:[UIFont systemFontOfSize:12]
-                                };
-    
-    //[_introduction enableTextWrap];
-    _introduction.attributedText = [[NSAttributedString alloc] initWithString:content attributes:attribute];
-    [self.view addSubview:_titleInfo];
-    [self.view addSubview:_introduction];
-    _introduction.editable = FALSE;
+    _mobileNumber = [self createTextField:CGRectMake(22, _nickName.bottom + 12, 180, EZPasswordInputHeight) holderText:@"手机号" keyboardType:UIKeyboardTypeNumbersAndPunctuation returnType:UIReturnKeyNext];
+    [holder addSubview:_mobileNumber];
+    _mobileNumber.tag = 2;
+    _sendSmsCode = [UIButton createButton:CGRectMake(210, _nickName.bottom + 17, 100, 34) font:[UIFont systemFontOfSize:15] color:[UIColor whiteColor] align:NSTextAlignmentCenter];
+    _sendSmsCode.layer.cornerRadius = 17;
+    [_sendSmsCode setBackgroundColor:EZSmsCodeColor];
+    [_sendSmsCode setTitle:@"发送验证码" forState:UIControlStateNormal];
+    [_sendSmsCode addTarget:self action:@selector(sendSmsCode:) forControlEvents:UIControlEventTouchUpInside];
+    //_sendSmsCode.tag = 3;
+    [holder addSubview:_sendSmsCode];
     
     
-    _originalView = [self createRegisterView:startGap];
-    _originalView.x = CurrentScreenWidth;
+    _mobileSmsCode = [self createTextField:CGRectMake(22, _mobileNumber.bottom + 12 , 180, EZPasswordInputHeight) holderText:@"手机验证码" keyboardType:UIKeyboardTypeNumbersAndPunctuation returnType:UIReturnKeyNext];
+    _mobileSmsCode.tag = 3;
+    [holder addSubview:_mobileSmsCode];
     
-    _scrollContainer = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, CurrentScreenHeight)];
-    _scrollContainer.backgroundColor = [UIColor clearColor];
-    _scrollContainer.pagingEnabled = YES;
-    _scrollContainer.delegate = self;
+    _countDown = [UILabel createLabel:CGRectMake(210, _mobileNumber.bottom + 12, 80, EZPasswordInputHeight) font:[UIFont systemFontOfSize:16] color:RGBCOLOR(54, 193, 191)];
+    _countDown.textAlignment = NSTextAlignmentCenter;
+    [holder addSubview:_countDown];
     
-    _scrollContainer.contentSize = CGSizeMake(CurrentScreenWidth* 2, CurrentScreenHeight);
-    _scrollContainer.showsHorizontalScrollIndicator = NO;
-    _scrollContainer.showsVerticalScrollIndicator = NO;
-    [self.view addSubview:_scrollContainer];
+    _password = [self createTextField:CGRectMake(22, _mobileSmsCode.bottom + 12, 276, EZPasswordInputHeight) holderText:@"密码" keyboardType:UIKeyboardTypeDefault returnType:UIReturnKeyNext];
+    _password.tag = 4;
+    [holder addSubview:_password];
     
-    [_scrollContainer addSubview:_originalView];
+    _confirmPassword = [self createTextField:CGRectMake(22, _password.bottom + 12, 276, EZPasswordInputHeight) holderText:@"重复密码" keyboardType:UIKeyboardTypeDefault returnType:UIReturnKeySend];
+    _confirmPassword.tag = 5;
+    [holder addSubview:_confirmPassword];
     
-    _smsView = [self createSmsView:startGap];
-    [_scrollContainer addSubview:_smsView];
-    _pageControl = [[UIPageControl alloc] initWithFrame:CGRectMake(0, CurrentScreenHeight - 30.0, CurrentScreenWidth, 10.0)];
-    [self.view addSubview:_pageControl];
-    _pageControl.numberOfPages = 2;
-    _pageControl.currentPage = 0;
-    
-    
-    //__weak EZRegisterCtrl* weakSelf = self;
-   /**
-    EZClickView* quitView = [[EZClickView alloc] initWithFrame:CGRectMake(100, 0, 100, 100)];
-    quitView.backgroundColor = [UIColor whiteColor];
-    quitView.releasedBlock = ^(id obj){
-        EZDEBUG(@"quit clicked");
-        [weakSelf.navigationController dismissViewControllerAnimated:YES completion:nil];
-    };
-    [self.view addSubview:quitView];
-   **/
-    /**
-     _passwordButton = [[UIButton alloc] initWithFrame:CGRectMake(60, 400 + startGap, 100, 40)];
-     [_passwordButton setTitle:macroControlInfo(@"Password") forState:UIControlStateNormal];
-     [_passwordButton.titleLabel setFont:[UIFont systemFontOfSize:13]];
-     [_passwordButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-     [_passwordButton addTarget:self action:@selector(passwordSwitch:) forControlEvents:UIControlEventTouchUpInside];
-     
-     _seperator = [[UIView alloc] initWithFrame:CGRectMake(160, 400 + startGap + 13, 1, 14)];
-     _seperator.backgroundColor = [UIColor whiteColor];
-     _loginButton = [[UIButton alloc] initWithFrame:CGRectMake(160, 400 + startGap, 100, 40)];
-     [_loginButton setTitle:macroControlInfo(@"Register") forState:UIControlStateNormal];
-     [_loginButton.titleLabel setFont:[UIFont systemFontOfSize:13]];
-     [_loginButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-     [_loginButton addTarget:self action:@selector(registerSwitch:) forControlEvents:UIControlEventTouchUpInside];
-     [self.view addSubview:_registerButton];
-     [self.view addSubview:_passwordButton];
-     [self.view addSubview:_loginButton];
-     [self.view addSubview:_seperator];
-     **/
-    //[self setupKeyboard];
-	// Do any additional setup after loading the view.
+    _sendBtn = [UIButton createButton:CGRectMake(22, _confirmPassword.bottom + 24, 276, EZPasswordInputHeight) font:[UIFont boldSystemFontOfSize:18] color:[UIColor whiteColor] align:NSTextAlignmentCenter];
+    [_sendBtn setTitle:@"确  认" forState:UIControlStateNormal];
+    [_sendBtn setBackgroundImage:[UIImage imageNamed:@"btn"] forState:UIControlStateNormal];
+    [_sendBtn setBackgroundImage:[UIImage imageNamed:@"btn_sel"] forState:UIControlStateHighlighted];
+    [_sendBtn addTarget:self action:@selector(sendRequest:) forControlEvents:UIControlEventTouchUpInside];
+    [holder addSubview:_sendBtn];
 }
 
-- (void) registerClicked:(id)obj
+- (UITextField*) createTextField:(CGRect)frame holderText:(NSString*)holderText keyboardType:(UIKeyboardType)keyboardType returnType:(UIReturnKeyType)returnType
 {
-    //EZDEBUG(@"Register get clicked");
-    [self startRegister:_name.text mobile:_mobileField.text smsCode:_smsCodeField.text password:_passwordField.text];
-}
-
-- (void) passwordSwitch:(id)obj
-{
-    EZDEBUG(@"password switch get called");
-}
-
-- (void) registerSwitch:(id)obj
-{
-    EZDEBUG(@"register called %@", self.presentingViewController);
-    if(self.navigationController.viewControllers.count > 1){
-        EZDEBUG(@"Mean this is a register");
-        //[self dismissViewControllerAnimated:YES completion:nil];
-        [self.navigationController popViewControllerAnimated:YES];
-    }else{
-    
-        EZLoginController* login = [[EZLoginController alloc] init];
-        //login.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-        //[self dismissViewControllerAnimated:NO completion:^(){
-        //[self presentViewController:login animated:YES completion:nil];
-        [self.navigationController pushViewController:login animated:YES];
-       // }];
-    }
-    //[self presentViewController:login animated:YES completion:nil];
-}
-
-
-
-- (BOOL) textFieldShouldReturn:(UITextField *)textField
-{
-    if([textField.text isNotEmpty]){
-        if(textField == _smsCodeField){
-            [_name becomeFirstResponder];
-            self.currentFocused = _name;
-            [self liftWithBottom:self.prevKeyboard isSmall:NO time:0.3 complete:nil];
-        }else
-        if(textField == _name){
-            [_passwordField becomeFirstResponder];
-            self.currentFocused = _passwordField;
-            [self liftWithBottom:self.prevKeyboard isSmall:NO time:0.3 complete:nil];
-        }
-        if(textField == _mobileField){
-            //[_passwordField becomeFirstResponder];
-            //self.currentFocused = _passwordField;
-            //[self liftWithBottom:self.prevKeyboard isSmall:NO time:0.3 complete:nil];
-            [textField resignFirstResponder];
-            [self sendCode:_mobileField.text];
-        }else if(textField == _passwordField){
-            //[_password becomeFirstResponder];
-            [self startRegister:_name.text mobile:_mobileField.text smsCode:_smsCodeField.text password:_passwordField.text];
-            [textField resignFirstResponder];
-        }
-    }
-    return true;
-}
-
-
-- (void) textFieldDidBeginEditing:(UITextField *)textField{
-    //_currentFocused = textField;
-    [super textFieldDidBeginEditing:textField];
-    //[self shouldHideCheck:textField];
-    [self hidePlaceHolder:textField];
-}
-
-- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
-{
-    //[self shouldHideCheck:textField];
-    return true;
-}
-
-- (void) hidePlaceHolder:(UITextField*)textField
-{
-    if(_name == textField){
-        _namePlaceHolder.hidden = YES;
-    }else if(_passwordField == textField){
-        _passwordPlaceHolder.hidden = YES;
-    }else if(_mobileField == textField){
-        _mobilePlaceHolder.hidden = YES;
-    }else if(_smsCodeField == textField){
-        _smsCodePlaceHolder.hidden = YES;
-    }
-}
-
-- (void) shouldHideCheck:(UITextField*)textField
-{
-    //[super textFieldShouldEndEditing:textField];
-    if(_name == textField){
-        if([_name.text isEmpty]){
-            _namePlaceHolder.hidden = NO;
-        }
-    }else if(_passwordField == textField){
-        if([_passwordField.text isEmpty]){
-            _passwordPlaceHolder.hidden = NO;
-        }
-    }else if(_mobileField == textField){
-        if([_mobileField.text isEmpty]){
-            _mobilePlaceHolder.hidden = NO;
-        }
-    }
-
-}
-
-- (BOOL)textFieldShouldEndEditing:(UITextField *)textField
-{
-    //[self shouldHideCheck:textField];
-    if(_name == textField){
-        if([_name.text isEmpty]){
-            _namePlaceHolder.hidden = NO;
-        }
-    }else if(_passwordField == textField){
-        if([_passwordField.text isEmpty]){
-            _passwordPlaceHolder.hidden = NO;
-        }
-    }else if(_mobileField == textField){
-        if([_mobileField.text isEmpty]){
-            _mobilePlaceHolder.hidden = NO;
-        }
-    }
-    return true;
-}
-
-
-
-
-- (void) startRegister:(NSString*)name mobile:(NSString*)mobile smsCode:(NSString*)smsCode password:(NSString*)password
-{
-    
-    __weak EZRegisterCtrl* weakSelf = self;
-    if(![name isNotEmpty]){
-        [_name becomeFirstResponder];
-        return;
-    }
-    if(![mobile isNotEmpty]){
-        [_mobileField becomeFirstResponder];
-        return;
-    }
-    if(![password isNotEmpty]){
-        [_passwordField becomeFirstResponder];
-        return;
-    }
-    if(![smsCode isNotEmpty]){
-        [_smsCodeField becomeFirstResponder];
-    }
-    
-    
-    if(!_uploadAvatar.image){
-        [[EZUIUtility sharedEZUIUtility] raiseInfoWindow:@"请上传头像" info:nil];
-        return;
-    }
-    
-    [self startActivity];
-    
-    _registerBlock = ^(id obj){
-        
-        NSString* currentID = [EZDataUtil getInstance].currentPersonID;
-        NSDictionary* registerInfo = @{
-                                       @"name":name,
-                                       @"mobile":mobile,
-                                       @"passCode":smsCode,
-                                       @"password":password,
-                                       @"personID":currentID?currentID:@"",
-                                       @"avatar":weakSelf.avatarURL?weakSelf.avatarURL:@"",
-                                       @"prodFlag":EZProductFlag
-                                       };
-        
-        
-            [[EZDataUtil getInstance] registerUser:registerInfo success:^(EZPerson* person){
-            //[self dismissViewControllerAnimated:YES completion:nil];
-            //_registerTitle.text = macroControlInfo(@"Register success");
-            //[[EZUIUtility sharedEZUIUtility] raiseInfoWindow:macroControlInfo(@"Register success") info: macroControlInfo(@"Congradulation")];
-            
-            //[weakSelf dismissViewControllerAnimated:YES completion:nil];
-            //[[EZDataUtil getInstance] setCurrentLoginPerson:person];
-            //[[EZDataUtil]]
-            [[EZMessageCenter getInstance] postEvent:EZUserAuthenticated attached:person];
-            person.joined = true;
-            [weakSelf startActivity];
-                
-            //if([EZDataUtil getInstance].avatarURL){
-            //}
-            [weakSelf.navigationController dismissViewControllerAnimated:YES completion:^(){
-                [[EZMessageCenter getInstance] postEvent:EZAlbumImageUpdate attached:nil];
-            }];
-        } error:^(id err){
-            [weakSelf stopActivity];
-            NSInteger errorCode = err2StatusCode(err);
-            EZDEBUG(@"Register error:%@, errorCode:%i", err, errorCode);
-            NSString* errorMsg = macroControlInfo(@"请检查后重试");
-            if(errorCode == 406){
-                errorMsg = macroControlInfo(@"填写手机号");
-            }else if(errorCode == 407){
-                errorMsg = macroControlInfo(@"短信验证码错");
-            }else if(errorCode == 408){
-                errorMsg = macroControlInfo(@"该手机已注册");
-            }
-            [[EZUIUtility sharedEZUIUtility] raiseInfoWindow:macroControlInfo(@"注册失败") info:errorMsg];
-        }];
-    };
-
-    
-    if(_avatarURL == nil){
-        //[[EZUIUtility sharedEZUIUtility] raiseInfoWindow:@"请上传头像" info:nil];
-        if(_uploadingAvatar){
-            EZDEBUG(@"Are uploading the url");
-        }else{
-            _registerBlock(nil);
-        }
-        return;
-    }
-    _registerBlock(nil);
-    
-    
+    UITextField* mobileField = [EZTextField creatTextField:frame textColor:EZLoginInputTextColor font:[UIFont systemFontOfSize:14] alignment:NSTextAlignmentLeft borderColor:nil padding:CGSizeMake(10, 0)];
+    mobileField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:holderText attributes:@{NSForegroundColorAttributeName: EZLoginInputTextColor}];
+    [mobileField setBackground:[[UIImage imageNamed:@"inputbox_s"] resizableImageWithCapInsets:UIEdgeInsetsMake(10, 10, 10, 10)]];
+    mobileField.keyboardType = keyboardType;
+    mobileField.returnKeyType = returnType;
+    mobileField.delegate = self;
+    //UILabel* mobilePlaceHolder = [self createPlaceHolder:mobileField];
+    //mobilePlaceHolder.text = holderText;
+    //mobileField.placeholder = holderText;
+    //[self.view addSubview:mobilePlaceHolder];
+    return mobileField;
 }
 
 - (void)didReceiveMemoryWarning
@@ -649,4 +165,14 @@
     // Dispose of any resources that can be recreated.
 }
 
+/*
+ #pragma mark - Navigation
+ 
+ // In a storyboard-based application, you will often want to do a little preparation before navigation
+ - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+ {
+ // Get the new view controller using [segue destinationViewController].
+ // Pass the selected object to the new view controller.
+ }
+ */
 @end
