@@ -46,6 +46,9 @@
 #import "EZPhotoDetail.h"
 #import "CKCalendarView.h"
 #import "CKViewController.h"
+#import "EZShotTask.h"
+#import "EZStoredPhoto.h"
+
 @implementation EZAppDelegate
 
 @synthesize managedObjectContext = _managedObjectContext;
@@ -150,7 +153,7 @@
     //[[UINavigationBar appearance] set]
     //[[UINavigationBar appearance] setBarTintColor:RGBCOLOR(0, 197, 213)];
     //[[UINavigationBar appearance] setBarTintColor:[UIColor clearColor]];
-    [[UIBarButtonItem appearance] setTintColor:[UIColor whiteColor]];
+    [[UIBarButtonItem appearance] setTintColor:EZBarButtonColor];
     //UIImage *gradientImage44 =
     
     [[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
@@ -338,6 +341,7 @@
     }
     [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
 
+    /**
     EZDEBUG(@"login info:%@", [[EZDataUtil getInstance] getCurrentPersonID]);
     [[EZDataUtil getInstance] setCurrentPersonID:nil];
     if(![[EZDataUtil getInstance] getCurrentPersonID]){
@@ -354,7 +358,7 @@
             [[EZMessageCenter getInstance] postEvent:EZNoteCountSet attached:nil];
         } failure:nil];
     }
-    
+    **/
     [self setupAppearance];
     [self setupNetwork];
     //[self enableProximate:YES];
@@ -392,8 +396,14 @@
 {
     
     //TKCalendarMonthTableViewController* calendar = [[TKCalendarMonthTableViewController alloc] initWithSunday:YES];
+    EZStoredPhoto* storedPhoto = [[EZStoredPhoto alloc] init];
+    storedPhoto.remoteURL = [EZFileUtil bundleToURL:@"demo_avatar_cook.png" retinaAware:YES];
+    EZShotTask* task  = [[EZShotTask alloc] init];
+    task.name = @"测试照片";
+    task.shotDate = [NSDate date];
+    task.photos = @[storedPhoto];
+    EZMainPage* mainPage = [[EZMainPage alloc] initPage:@[task]];
     
-    EZMainPage* mainPage = [[EZMainPage alloc] init];
     //EZCalendarPicker* cp = [[EZCalendarPicker alloc] init];
     //CKViewController* ck = [[CKViewController alloc] init];
     UINavigationController* rootNav = [[UINavigationController alloc] initWithRootViewController:mainPage];

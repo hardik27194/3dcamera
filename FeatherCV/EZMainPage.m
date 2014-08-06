@@ -21,6 +21,12 @@
 #import "EZTrackRecord.h"
 #import "EZRecordMain.h"
 #import "EZMessageCenter.h"
+#import "EZMainPhotoCell.h"
+#import "EZShotTask.h"
+#import "EZStoredPhoto.h"
+#import "SCCaptureCameraController.h"
+
+#define CELL_ID @"CELL_ID"
 
 @interface EZMainPage ()
 
@@ -28,195 +34,137 @@
 
 @implementation EZMainPage
 
-- (id)initWithStyle:(UITableViewStyle)style
+- (BOOL)calendar:(CKCalendarView *)calendar willSelectDate:(NSDate *)date
 {
-    self = [super init];
+    if([date compareByDay:[NSDate date]] == NSOrderedDescending){
+        return false;
+    }
+    return true;
+}
+- (void)calendar:(CKCalendarView *)calendar didSelectDate:(NSDate *)date
+{
+    EZDEBUG(@"will show the right date:%@", date);
+    _dateLabel.text = [[EZDataUtil getInstance].titleFormatter stringFromDate:date];
+    [calendar dismiss:YES delay:0.3];
+}
+
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+{
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         // Custom initialization
     }
     return self;
 }
-
-
-- (CGFloat) tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+- (EZMainPage*) initPage:(NSArray*)arr
 {
-    return 46;
+    UICollectionViewFlowLayout* grid = [[UICollectionViewFlowLayout alloc] init];
+    grid.itemSize = CGSizeMake(106.0, 114.0);
+    //grid.sectionInset = UIEdgeInsetsMake(1, 1, 0, 0);
+    grid.minimumInteritemSpacing = 0;
+    grid.minimumLineSpacing = 1;
+    _date = [NSDate date];
+    _uploadedPhotos = [[NSMutableArray alloc] initWithArray:arr];
+    return [self initWithCollectionViewLayout:grid];
 }
 
-- (void) viewDidLayoutSubviews
+- (void) viewWillLayoutSubviews
 {
-    [_tableView setFrame:CGRectMake(0, 273, CurrentScreenWidth, CurrentScreenHeight - 273)];
-}
-
-- (NSArray*) currentMenu
-{
-    return [[EZDataUtil getInstance] getCurrentMenuItems];
+    [super viewWillLayoutSubviews];
+    self.collectionView.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height);
+    self.collectionView.backgroundColor = [UIColor whiteColor];
 }
 
 - (void) addClicked:(id)obj
 {
-    EZDEBUG(@"add clicked");
+    //[self raiseCamera:nil personID:nil];
+    SCCaptureCameraController *cam = [[SCCaptureCameraController alloc] init];
+    [self.navigationController pushViewController:cam animated:YES];
+    
 }
 
-
-- (void)viewDidLoad
+- (void)takePicture:(DLCImagePickerController*)picker imageInfo:(NSDictionary*)info
 {
-    [super viewDidLoad];
-    UIImageView* background = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, CurrentScreenHeight)];
-    background.image = [UIImage imageNamed:@"drawer_bg"];
-    background.contentMode = UIViewContentModeScaleAspectFill;
-    [self.view addSubview:background];
-    _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
-    _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    [self.view addSubview:_tableView];
-    
-    [self.tableView registerClass:[EZMainCell class] forCellReuseIdentifier:@"topInfo"];
-    _tableView.delegate = self;
-    _tableView.dataSource = self;
-    _tableView.backgroundColor = [UIColor clearColor];
-    UIButton* button = [[UIButton alloc] initWithFrame:CGRectMake(CurrentScreenWidth - 44, 10, 44, 44)];
-    [button setImage:[UIImage imageNamed:@"header_btn_add"] forState:UIControlStateNormal];
-    button.showsTouchWhenHighlighted = YES;
-    //self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithCustomView:button];
-    [button addTarget:self action:@selector(addClicked:) forControlEvents:UIControlEventTouchUpInside];
-    [self setupMockView];
-    [self.view addSubview:button];
-    [[EZDataUtil getInstance] fetchProfilesForID:currentLoginID success:^(NSArray* profiles){
-        EZDEBUG(@"successfully load profiles");
-        [self showProfiles:profiles];
-    } failure:^(id err){
-        EZDEBUG(@"failed to load profiles");
-    }];
-    
-    
-    [[EZMessageCenter getInstance] registerEvent:EZUpdateSelection block:^(id obj){
-        [self showRecordList:[EZDataUtil getInstance].getCurrentProfile];
-    }];
-    //_infoCells = [[NSMutableArray alloc] init];
-
-    
-    //[_infoCells addObjectsFromArray:@[@"1",@"2",@"3"]];
-    
-    
-    //[self.tableView addSubview:profile];
-    
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
-    
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    EZDEBUG(@"Take picture:%@",info);
+}
+- (void)imagePickerController:(DLCImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
+{
+    EZDEBUG(@"Take photo:%@",info);
+    //[self raiseCamera:nil personID:nil];
 }
 
-- (void) showProfiles:(NSArray*)profiles
+- (void) raiseCamera:(NSString *)photo personID:(NSString*)personID
 {
-    for(UIView* view in _profileScroll.views){
-        [view removeFromSuperview];
-    }
-    [_profileScroll.views removeAllObjects];
-    if(!_profileScroll.views){
-        _profileScroll.views = [[NSMutableArray alloc] init];
-    }
-    for(EZProfile* profile in profiles){
-        EZProfileHeader* pheader = [EZProfileHeader createHeader];
-        [pheader.avatar setImageWithURL:str2url(profile.avartar)];
-        EZDEBUG(@"avatar url:%@", profile.avartar);
-        pheader.name.text = profile.name;
-        pheader.middleInfo.text = @"";
-        pheader.bottomInfo.text = @"";
-        [_profileScroll.views addObject:pheader];
-        //profile.backgroundColor = [UIColor grayColor];
-    }
-    _profileScroll.views = _profileScroll.views;
-    [self showRecordList:[profiles objectAtIndex:0]];
-}
 
-- (void) showRecordList:(EZProfile*)profile
-{
-    NSArray* recordList = [[EZDataUtil getInstance] getPreferredRecords:profile];
-    for(UIView* view in _recorderScroll.views){
-        [view removeFromSuperview];
-    }
-    [_recorderScroll.views removeAllObjects];
-    if(!_recorderScroll.views){
-        _recorderScroll.views = [[NSMutableArray alloc] init];
-    }
-    for(EZRecordTypeDesc* rd in recordList){
-        EZDetailHeader* dheader = [EZDetailHeader createDetailHeader];
-        //[dheader setPosition:CGPointMake(0, profile.bounds.size.height)];
         
-        dheader.countInfo.text = @"";
-        dheader.countUnit.text = rd.unitName;
-        dheader.detailName.text = rd.name;
-        EZDEBUG(@"will show icon url:%@", rd.iconURL);
-        [dheader.icon setImageWithURL:str2url(rd.iconURL)];
-        [[EZDataUtil getInstance]fetchCurrentRecord:rd.type profileID:profile.profileID success:^(EZTrackRecord* rc){
-            EZDEBUG(@"successfully returned");
-            if(rc.formattedStr){
-                dheader.countInfo.text = rc.formattedStr;
-            }else{
-                dheader.countInfo.text = [NSString stringWithFormat:@"%f", rc.measures];
-            }
-            if(rc.graphURL){
-                [dheader.graph setImageWithURL:str2url(rc.graphURL)];
-            }
-        } failure:^(id err){
-            EZDEBUG(@"error:%@", err);
-        }];
-        [_recorderScroll.views addObject:dheader];
-        //dheader.icon.image = [UIImage imageNamed:@"demo_avatar_jobs"];
-    }
-    
-    //trigger the rearrangements.
-    _recorderScroll.views = _recorderScroll.views;
+    DLCImagePickerController* camera = [[DLCImagePickerController alloc] initWithFront:false];
+    camera.delegate = self;
+    camera.personID = personID;
+    [self.navigationController pushViewController:camera animated:YES];
 }
 
-- (void) switchProfile:(EZProfile*)profile
-{
-    [self showRecordList:profile];
-    [_tableView reloadData];
-}
 
-- (void) setupMockView
+- (void) viewDidLoad
 {
-    
-    _profileScroll = [[EZScrollerView alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, EZProfileCellHeight)];
-    __weak EZMainPage* weakSelf = self;
-    _profileScroll.scrolledTo = ^(NSDictionary* dict){
-        EZDEBUG(@"scrollTo get called:%@", dict);
-        NSInteger cur = [[dict objectForKey:@"curr"] intValue];
-        [EZDataUtil getInstance].currentProfilePos = cur;
-        EZProfile* curProfile = [[EZDataUtil getInstance].currentProfiles objectAtIndex:cur];
-        [weakSelf switchProfile:curProfile];
-    };
-    
-    _recorderScroll = [[EZScrollerView alloc] initWithFrame:CGRectMake(0, _profileScroll.bounds.size.height, CurrentScreenWidth, EZRecordDetailHeight)];
-    [self.view addSubview:_profileScroll];
-    [self.view addSubview:_recorderScroll];
-    
-    
-}
-
-- (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    EZDEBUG(@"selectect:%i", indexPath.row);
-    if(indexPath.row == 0){
-        NSArray* currentOrder = [[EZDataUtil getInstance] getCurrentTotalRecordLists];
-        EZRecordMain* rcMain = [[EZRecordMain alloc] initPage:currentOrder records:nil mode:kInputMode];
-        [self.navigationController pushViewController:rcMain animated:YES];
-    }
-    
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addClicked:)];
 }
 
 - (void) viewWillAppear:(BOOL)animated
 {
-    [super viewWillAppear:animated];
-    
-    [self.navigationController setNavigationBarHidden:YES];
-    //dispatch_later(0.1, ^(){
-    //    EZDEBUG(@"ViewWill appear get called, topView is:%i", (int)TopView);
-    //    [TopView addSubview:profile];
-    //    [TopView addSubview:dheader];
-    //});
+    //[self.navigationController]
+    [self.navigationController setNavigationBarHidden:NO animated:YES];
+}
+
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    //EZRecordTypeDesc* rd = [_descs objectAtIndex:indexPath.row];
+    EZDEBUG(@"Selected: %i",indexPath.row);
+}
+
+
+-(id)initWithCollectionViewLayout:(UICollectionViewFlowLayout *)layout
+{
+    if (self = [super init])
+    {
+        _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layout];
+        [self.collectionView registerClass:[EZMainPhotoCell class] forCellWithReuseIdentifier:CELL_ID];
+        _collectionView.delegate = self;
+        _collectionView.dataSource = self;
+        //_collectionView.backgroundColor = [UIColor clearColor];
+        [self.view addSubview:_collectionView];
+    }
+    return self;
+}
+
+
+- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    EZMainPhotoCell* cell = [collectionView dequeueReusableCellWithReuseIdentifier:CELL_ID forIndexPath:indexPath];
+    EZDEBUG(@"load cell:%i", indexPath.row);
+    //NSDate* curDate = _date;
+    EZShotTask* shotTask = [_uploadedPhotos objectAtIndex:indexPath.row];
+    //EZTrackRecord* record = [_recorders objectAtIndex:indexPath.row];
+    //[cell.name setTitle:desc.name forState:UIControlStateNormal];
+    cell.name.text = shotTask.name;
+    cell.updateDate.text = [[EZDataUtil getInstance].titleFormatter stringFromDate:shotTask.shotDate];
+    EZStoredPhoto* storePhoto = [shotTask.photos objectAtIndex:0];
+    [cell.photo setImageWithURL:str2url(storePhoto.remoteURL)];
+    //cell.editBtn
+    return cell;
+}
+
+
+
+
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
+{
+    return _uploadedPhotos.count;
+}
+
+
+- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
+{
+    return 1;
 }
 
 - (void)didReceiveMemoryWarning
@@ -224,93 +172,5 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
-
-#pragma mark - Table view data source
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
-//#warning Potentially incomplete method implementation.
-    // Return the number of sections.
-    return 1;
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-//#warning Incomplete method implementation.
-    // Return the number of rows in the section.
-    return [self currentMenu].count;
-}
-
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    EZMainCell *cell = [tableView dequeueReusableCellWithIdentifier:@"topInfo" forIndexPath:indexPath];
-    EZMenuItem* item = [[self currentMenu] objectAtIndex:indexPath.row];
-    cell.selectionStyle = UITableViewCellSelectionStyleNone;
-    cell.title.text = item.menuName;
-    //cell.icon.image = [UIImage imageNamed:item.iconURL];
-    [cell.icon setImageWithURL:str2url(item.iconURL)];
-    if(!item.notesCount){
-        cell.notesCount.hidden = YES;
-    }else{
-        cell.notesCount.hidden = NO;
-        cell.notesCount.text = int2str(item.notesCount);
-    }
-    cell.menuItem = item;
-    //cell.textLabel.text = int2str(indexPath.row);
-    // Configure the cell...
-    
-    return cell;
-}
-
-
-/*
-// Override to support conditional editing of the table view.
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
-}
-*/
-
-/*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
-}
-*/
-
-/*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
-{
-}
-*/
-
-/*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end

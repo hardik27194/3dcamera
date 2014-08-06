@@ -7,20 +7,23 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "DLCImagePickerController.h"
 
 @class EZScrollerView;
-@interface EZMainPage : UIViewController<UITableViewDataSource, UITableViewDelegate>
+@interface EZMainPage : UIViewController<UICollectionViewDataSource, UICollectionViewDelegate, DLCImagePickerDelegate>//UICollectionViewController
 
-//What kind of cell will displayed.
-@property (nonatomic, strong) NSArray* motherMenus;
+- (EZMainPage*) initPage:(NSArray*)arr;
 
-@property (nonatomic, strong) NSArray* childMenus;
+@property (nonatomic, strong) NSMutableArray* uploadedPhotos;
 
-@property (nonatomic, strong) UITableView* tableView;
+@property (nonatomic, strong) UICollectionView* collectionView;
 
-@property (nonatomic, strong) EZScrollerView* profileScroll;
+@property (nonatomic, strong) UILabel* dateLabel;
 
-@property (nonatomic, strong) EZScrollerView* recorderScroll;
+@property (nonatomic, assign) NSInteger selectedCount;
 
+@property (nonatomic, strong) NSDate* date;
+
+//@property (nonatomic, strong) NSMutableArray* uploadedPhotos;
 
 @end

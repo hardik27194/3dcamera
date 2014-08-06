@@ -279,6 +279,8 @@ typedef enum {
 
 #define ClickedColor RGBCOLOR(62, 192, 216)
 
+#define EZBarButtonColor RGBCOLOR(62, 192, 216)
+
 #define EZEmptyColor RGBA(255,255,255,120)//[UIColor whiteColor]
 #define EZOwnColor RGBCOLOR(101, 247, 231)
 #define EZOtherColor RGBCOLOR(247, 231, 101)
