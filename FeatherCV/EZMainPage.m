@@ -25,6 +25,8 @@
 #import "EZShotTask.h"
 #import "EZStoredPhoto.h"
 #import "SCCaptureCameraController.h"
+#import "EZMessageCenter.h"
+#import "EZPreviewView.h"
 
 #define CELL_ID @"CELL_ID"
 
@@ -59,7 +61,7 @@
 - (EZMainPage*) initPage:(NSArray*)arr
 {
     UICollectionViewFlowLayout* grid = [[UICollectionViewFlowLayout alloc] init];
-    grid.itemSize = CGSizeMake(106.0, 114.0);
+    grid.itemSize = CGSizeMake(CurrentScreenWidth/2.0 - 1, (CurrentScreenWidth * 2.0)/3.0 - 1);
     //grid.sectionInset = UIEdgeInsetsMake(1, 1, 0, 0);
     grid.minimumInteritemSpacing = 0;
     grid.minimumLineSpacing = 1;
@@ -79,34 +81,27 @@
 {
     //[self raiseCamera:nil personID:nil];
     SCCaptureCameraController *cam = [[SCCaptureCameraController alloc] init];
+    cam.proposedNumber = 4;
     [self.navigationController pushViewController:cam animated:YES];
     
 }
 
-- (void)takePicture:(DLCImagePickerController*)picker imageInfo:(NSDictionary*)info
-{
-    EZDEBUG(@"Take picture:%@",info);
-}
-- (void)imagePickerController:(DLCImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
-{
-    EZDEBUG(@"Take photo:%@",info);
-    //[self raiseCamera:nil personID:nil];
-}
-
-- (void) raiseCamera:(NSString *)photo personID:(NSString*)personID
-{
-
-        
-    DLCImagePickerController* camera = [[DLCImagePickerController alloc] initWithFront:false];
-    camera.delegate = self;
-    camera.personID = personID;
-    [self.navigationController pushViewController:camera animated:YES];
-}
 
 
 - (void) viewDidLoad
 {
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addClicked:)];
+    
+    [[EZMessageCenter getInstance] registerEvent:EZShotPhotos block:^(EZShotTask* task){
+        EZDEBUG(@"I receieved photo");
+        [_uploadedPhotos addObject:task];
+        //if(_uploadedPhotos.count){
+        //    [self.collectionView insertItemsAtIndexPaths:@[[[NSIndexPath alloc] initWithIndex:_uploadedPhotos.count-1]]];
+        //}else{
+        [_collectionView reloadData];
+        //}
+        
+    }];
 }
 
 - (void) viewWillAppear:(BOOL)animated
@@ -140,8 +135,7 @@
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     EZMainPhotoCell* cell = [collectionView dequeueReusableCellWithReuseIdentifier:CELL_ID forIndexPath:indexPath];
-    EZDEBUG(@"load cell:%i", indexPath.row);
-    //NSDate* curDate = _date;
+        //NSDate* curDate = _date;
     EZShotTask* shotTask = [_uploadedPhotos objectAtIndex:indexPath.row];
     //EZTrackRecord* record = [_recorders objectAtIndex:indexPath.row];
     //[cell.name setTitle:desc.name forState:UIControlStateNormal];
@@ -149,6 +143,17 @@
     cell.updateDate.text = [[EZDataUtil getInstance].titleFormatter stringFromDate:shotTask.shotDate];
     EZStoredPhoto* storePhoto = [shotTask.photos objectAtIndex:0];
     [cell.photo setImageWithURL:str2url(storePhoto.remoteURL)];
+    __weak EZMainPage* weakSelf = self;
+    
+    cell.editClicked = ^(id obj){
+        NSMutableArray* photoURLs = [[NSMutableArray alloc] init];
+        for(EZStoredPhoto* sp in shotTask.photos){
+            [photoURLs addObject:sp.localFileName];
+        }
+        [EZPreviewView showPreview:photoURLs inCtrl:weakSelf complete:nil edit:nil];
+    };
+    EZDEBUG(@"load cell:%i, remoteURL:%@, localFile:%@", indexPath.row, storePhoto.remoteURL, storePhoto.localFileName);
+
     //cell.editBtn
     return cell;
 }

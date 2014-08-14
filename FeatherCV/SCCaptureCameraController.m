@@ -11,7 +11,9 @@
 #import "SCCommon.h"
 #import "SVProgressHUD.h"
 #import "EZFileUtil.h"
-
+#import "EZMessageCenter.h"
+#import "EZSoundEffect.h"
+#import "RBVolumeButtons.h"
 #import "SCNavigationController.h"
 
 //static void * CapturingStillImageContext = &CapturingStillImageContext;
@@ -94,7 +96,7 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
-    
+    __weak SCCaptureCameraController* weakSelf = self;
     //navigation bar
     if (self.navigationController && !self.navigationController.navigationBarHidden) {
         self.navigationController.navigationBarHidden = YES;
@@ -103,10 +105,21 @@
     //notification
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kNotificationOrientationChange object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orientationDidChange:) name:kNotificationOrientationChange object:nil];
-    
+     _shotPrepareVoice = [[EZSoundEffect alloc] initWithSoundNamed:@"shot_voice.aiff"];
     //session manager
     SCCaptureSessionManager *manager = [[SCCaptureSessionManager alloc] init];
     
+    
+    _buttonStealer = [[RBVolumeButtons alloc] init];
+    _buttonStealer.upBlock = ^{
+        EZDEBUG(@"volume up");
+        [weakSelf takePictureBtnPressed:nil];
+    };
+    _buttonStealer.downBlock = ^{
+        EZDEBUG(@"volume down");
+        [weakSelf takePictureBtnPressed:nil];
+    };
+    //[_buttonStealer startStealingVolumeButtonEvents];
     //AvcaptureManager
     if (CGRectEqualToRect(_previewRect, CGRectZero)) {
         self.previewRect = CGRectMake(0, 0, SC_APP_SIZE.width, SC_APP_SIZE.width + CAMERA_TOPVIEW_HEIGHT);
@@ -137,6 +150,7 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    [_buttonStealer startStealingVolumeButtonEvents];
 }
 
 
@@ -165,6 +179,7 @@
 #endif
     
     self.captureManager = nil;
+    [_buttonStealer stopStealingVolumeButtonEvents];
 }
 
 #pragma mark -------------UI---------------
@@ -467,12 +482,26 @@ void c_slideAlpha() {
     }
     EZStoredPhoto* storedPhoto = [[EZStoredPhoto alloc] init];
     storedPhoto.localFileName = photoFile;
-    storedPhoto.remoteURL = file2url(photoFile);
+    storedPhoto.remoteURL = photoFile;
     storedPhoto.priority = _currentCount;
     [_shotTask.photos addObject:storedPhoto];
     
 }
-- (void)takePictureBtnPressed:(UIButton*)sender {
+- (void)takePictureBtnPressed:(UIButton*)sender
+{
+    if(_areCapturing){
+        return;
+    }
+    _areCapturing = true;
+    [_shotPrepareVoice play];
+    dispatch_later(3.0, ^(){
+        [self innerShot:sender];
+    });
+
+}
+
+- (void) innerShot:(UIButton*)sender
+{
 #if SWITCH_SHOW_DEFAULT_IMAGE_FOR_NONE_CAMERA
     if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
         [SVProgressHUD showErrorWithStatus:@"设备不支持拍照功能T_T"];
@@ -494,6 +523,21 @@ void c_slideAlpha() {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             //[SCCommon saveImageToPhotoAlbum:stillImage];//存至本机
             [self appendPhoto:file2url([EZFileUtil saveImageToDocument:stillImage])];
+            //_currentCount ++;
+            EZDEBUG(@"_currentCount: %i, proposedNumber:%i",_currentCount,_proposedNumber);
+            if(_currentCount < _proposedNumber){
+                [_shotPrepareVoice play];
+                dispatch_later(3.0, ^(){
+                    [self innerShot:sender];
+                });
+            }else{
+                EZDEBUG(@"complete shot");
+                _areCapturing = false;
+                [[EZMessageCenter getInstance] postEvent:EZShotPhotos attached:_shotTask];
+                _shotTask = nil;
+                _currentCount = 0;
+                dispatch_main( ^(){_shotText.text = @"0";});
+            }
         });
         
         [actiView stopAnimating];

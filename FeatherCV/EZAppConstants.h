@@ -53,6 +53,8 @@ typedef enum {
     kStringValue
 } EZinputValueType;
 
+#define EZShotPhotos @"EZShottedPhotos"
+
 #define EZPasswordInputHeight 45.0
 
 #define EZLoginInputTextColor RGBCOLOR(107, 107, 107)

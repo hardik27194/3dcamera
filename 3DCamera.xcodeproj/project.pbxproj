@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		180302D1199848B000563D03 /* RBVolumeButtons.m in Sources */ = {isa = PBXBuildFile; fileRef = 180302D0199848B000563D03 /* RBVolumeButtons.m */; };
+		180A57A01998B213003F017D /* EZPreviewView.m in Sources */ = {isa = PBXBuildFile; fileRef = 180A579F1998B213003F017D /* EZPreviewView.m */; };
 		180ADA5518C1CA1000AB490C /* EZChatRegion.m in Sources */ = {isa = PBXBuildFile; fileRef = 180ADA5418C1CA1000AB490C /* EZChatRegion.m */; };
 		180ADA5A18C1CA2500AB490C /* EZChatUnit.m in Sources */ = {isa = PBXBuildFile; fileRef = 180ADA5918C1CA2500AB490C /* EZChatUnit.m */; };
 		180ADA5D18C4247F00AB490C /* EZCenterButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 180ADA5C18C4247F00AB490C /* EZCenterButton.m */; };
@@ -605,6 +607,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		180302CF199848B000563D03 /* RBVolumeButtons.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RBVolumeButtons.h; sourceTree = "<group>"; };
+		180302D0199848B000563D03 /* RBVolumeButtons.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RBVolumeButtons.m; sourceTree = "<group>"; };
+		180A579E1998B213003F017D /* EZPreviewView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZPreviewView.h; sourceTree = "<group>"; };
+		180A579F1998B213003F017D /* EZPreviewView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZPreviewView.m; sourceTree = "<group>"; };
 		180ADA5318C1CA1000AB490C /* EZChatRegion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZChatRegion.h; sourceTree = "<group>"; };
 		180ADA5418C1CA1000AB490C /* EZChatRegion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZChatRegion.m; sourceTree = "<group>"; };
 		180ADA5818C1CA2500AB490C /* EZChatUnit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZChatUnit.h; sourceTree = "<group>"; };
@@ -1475,6 +1481,8 @@
 		180E2CB81990E11C00DE2AFA /* sccamera */ = {
 			isa = PBXGroup;
 			children = (
+				180302CF199848B000563D03 /* RBVolumeButtons.h */,
+				180302D0199848B000563D03 /* RBVolumeButtons.m */,
 				180E2CE61990E40E00DE2AFA /* images */,
 				180E2CD71990E1A200DE2AFA /* SCNavigationController.h */,
 				180E2CD81990E1A200DE2AFA /* SCNavigationController.m */,
@@ -1856,14 +1864,16 @@
 		18D760D5198235EC00F9D63B /* controllers */ = {
 			isa = PBXGroup;
 			children = (
+				180A579E1998B213003F017D /* EZPreviewView.h */,
+				180A579F1998B213003F017D /* EZPreviewView.m */,
+				18D760D6198236A100F9D63B /* EZMainPage.h */,
+				18D760D7198236A100F9D63B /* EZMainPage.m */,
 				1870B0271985313A005A663A /* EZRecorderCell.h */,
 				1870B0281985313A005A663A /* EZRecorderCell.m */,
 				1870B02419852E41005A663A /* EZRecordMain.h */,
 				1870B02519852E41005A663A /* EZRecordMain.m */,
 				180E2CB51990C61E00DE2AFA /* EZMainPhotoCell.h */,
 				180E2CB61990C61E00DE2AFA /* EZMainPhotoCell.m */,
-				18D760D6198236A100F9D63B /* EZMainPage.h */,
-				18D760D7198236A100F9D63B /* EZMainPage.m */,
 				180E2CAF1990BFF700DE2AFA /* EZShotTask.h */,
 				180E2CB01990BFF700DE2AFA /* EZShotTask.m */,
 				180E2CB21990C10500DE2AFA /* EZStoredPhoto.h */,
@@ -3220,6 +3230,7 @@
 				18E746EB18A4A26A0023967B /* AFHTTPRequestOperationManager.m in Sources */,
 				18DE990D19404734008C1B3F /* JSQMessagesAvatarFactory.m in Sources */,
 				18E3482C183F03A600C9D89D /* EZFaceTestPage.mm in Sources */,
+				180A57A01998B213003F017D /* EZPreviewView.m in Sources */,
 				180E2CCB1990E16800DE2AFA /* SVProgressHUD.m in Sources */,
 				1870B06F19866FB4005A663A /* CKAppDelegate.m in Sources */,
 				18E34779183DFAA400C9D89D /* EZClickImage.m in Sources */,
@@ -3317,6 +3328,7 @@
 				181608D218B5B1A300DD5995 /* EZShapeCover.m in Sources */,
 				18E746F218A4A26A0023967B /* AFURLSessionManager.m in Sources */,
 				184DBE8218BDA16E00239F0F /* EZSharpenGaussian.m in Sources */,
+				180302D1199848B000563D03 /* RBVolumeButtons.m in Sources */,
 				18E4FBB818F584DF00FA6C21 /* UIScrollView+ScrollIndicator.m in Sources */,
 				18E34784183DFAA400C9D89D /* EZGeoUtility.m in Sources */,
 				18E746F018A4A26A0023967B /* AFURLRequestSerialization.m in Sources */,

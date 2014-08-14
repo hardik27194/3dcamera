@@ -18,6 +18,7 @@
         //_starButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 44, 44)];
         //_starButton.showsTouchWhenHighlighted = YES;
         _photo = [[UIImageView alloc] initWithFrame:self.bounds];
+        _photo.contentMode = UIViewContentModeScaleAspectFit;
         //[_starImg setPosition:CGPointMake(3, 4)];
         //[_starButton addSubview:starImg];
         //_starImg.tag = 1677;

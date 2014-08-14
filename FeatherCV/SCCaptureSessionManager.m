@@ -191,13 +191,13 @@
         
         CFDictionaryRef exifAttachments = CMGetAttachment(imageDataSampleBuffer, kCGImagePropertyExifDictionary, NULL);
         if (exifAttachments) {
-            SCDLog(@"attachements: %@", exifAttachments);
+            //SCDLog(@"attachements: %@", exifAttachments);
         } else {
-            SCDLog(@"no attachments");
+            //SCDLog(@"no attachments");
         }
         NSData *imageData = [AVCaptureStillImageOutput jpegStillImageNSDataRepresentation:imageDataSampleBuffer];
         UIImage *image = [[UIImage alloc] initWithData:imageData];
-        SCDLog(@"originImage:%@", [NSValue valueWithCGSize:image.size]);
+        //SCDLog(@"originImage:%@", [NSValue valueWithCGSize:image.size]);
 //        [SCCommon saveImageToPhotoAlbum:image];
         
         CGFloat squareLength = SC_APP_SIZE.width;
