@@ -25,6 +25,8 @@ typedef enum {
 @class EZPhotoChat;
 @class EZProfile;
 @class EZRecordTypeDesc;
+@class EZStoredPhoto;
+@class EZShotTask;
 @interface EZAlbumResult : NSObject
 
 @property (nonatomic, assign) int totalPhoto;
@@ -36,6 +38,17 @@ typedef enum {
 @interface EZDataUtil : NSObject
 
 + (EZDataUtil*) getInstance;
+
+
+- (void) createTaskID:(EZEventBlock)success failure:(EZEventBlock)failure;
+
+- (void) uploadStoredPhoto:(EZStoredPhoto*)photo success:(EZEventBlock)success failure:(EZEventBlock)failure;
+
+//Normally just update the sequences
+- (void) updateTaskSequence:(EZShotTask*)task success:(EZEventBlock)success failure:(EZEventBlock)failure;
+
+
+- (void) queryByTaskID:(NSString*)taskID success:(EZEventBlock)success failure:(EZEventBlock)failure;
 
 - (NSString*) createDetailURL:(EZRecordTypeDesc*)desc date:(NSDate*)date;
 

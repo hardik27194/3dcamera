@@ -20,7 +20,7 @@
 #import "EZExtender.h"
 #import "UIImageView+AFNetworking.h"
 #import "EZRegisterCtrl.h"
-#import "EZCenterButton.h"
+//#import "EZCenterButton.h"
 #import "EZDownloadHolder.h"
 #import "AFNetworking.h"
 
@@ -37,6 +37,8 @@
 #import "EZRecordTypeDesc.h"
 #import "EZMenuItem.h"
 #import "EZProfile.h"
+#import "EZStoredPhoto.h"
+#import "EZShotTask.h"
 
 
 @implementation EZAlbumResult
@@ -88,6 +90,82 @@
 - (EZProfile*) getCurrentProfile
 {
     return [_currentProfiles objectAtIndex:_currentProfilePos];
+}
+
+
+- (void) createTaskID:(EZEventBlock)success failure:(EZEventBlock)failure
+{
+    [EZNetworkUtility getJson:@"p3d/id/create" parameters:nil complete:^(NSDictionary* dict){
+        if(success){
+            success([dict objectForKey:@"id"]);
+        }
+    } failblk:failure];
+}
+
+- (void) uploadStoredPhoto:(EZStoredPhoto*)photo success:(EZEventBlock)success failure:(EZEventBlock)failure
+{
+    NSDictionary* parameters =
+                  [[NSMutableDictionary alloc] initWithDictionary:@{
+                   @"taskID":photo.taskID,
+                   @"sequence":@(photo.sequence)
+                   }];
+    if(photo.taskID){
+        [parameters setValue:photo.taskID forKey:@"taskID"];
+    }
+    [EZNetworkUtility upload:relativeUploadURL parameters:parameters fileURL:photo.localFileURL complete:^(NSDictionary* dict){
+        //EZDEBUG(@"uploaded success result object:%@", dict);
+        NSString* photoID = [dict objectForKey:@"photoID"];
+        NSString* remoteURL = [dict objectForKey:@"remoteURL"];
+        photo.photoID = photoID;
+        photo.remoteURL = remoteURL;
+        photo.uploadStatus = kUploadDone;
+        if(success){
+            success(photo);
+        }
+    } error:^(id err){
+        EZDEBUG(@"err:%@", err);
+        photo.uploadStatus = kUpdateFailure;
+        if(failure){
+            failure(err);
+        }
+    } progress:nil];
+}
+
+//Normally just update the sequences
+- (void) updateTaskSequence:(EZShotTask*)task success:(EZEventBlock)success failure:(EZEventBlock)failure
+{
+    NSMutableString* photoIDs = [[NSMutableString alloc] init];
+    for(int i = 0; i < task.photos.count; i++){
+        EZStoredPhoto* sp = [task.photos objectAtIndex:i];
+        [photoIDs appendString:sp.photoID];
+        if(i < task.photos.count - 1){
+            [photoIDs appendString:@","];
+        }
+    }
+    EZDEBUG(@"the sequence is:%@", photoIDs);
+    [EZNetworkUtility getJson:@"p3d/upload" parameters:@{@"cmd":@"update", @"photoID":photoIDs} complete:^(id obj){
+        EZDEBUG(@"change sequence success:%@", obj);
+        if(success){
+            success(obj);
+        }
+    } failblk:failure];
+}
+
+- (void) queryByTaskID:(NSString*)taskID success:(EZEventBlock)success failure:(EZEventBlock)failure
+{
+    [EZNetworkUtility getJson:@"p3d/id/query" parameters:@{@"id":taskID} complete:^(NSDictionary* dict){
+        EZShotTask* shotTask = [[EZShotTask alloc] init];
+        [shotTask populateTask:dict];
+        if(success){
+            success(shotTask);
+        }
+    } failblk:failure];
+}
+
+
+- (void) updateStoredPhoto:(EZStoredPhoto*)photo success:(EZEventBlock)success failure:(EZEventBlock)failure
+{
+    
 }
 
 - (void) fetchCurrentRecord:(EZTrackRecordType)recordType profileID:(NSString*)profileID success:(EZEventBlock)success failure:(EZEventBlock)failure
@@ -590,46 +668,6 @@
     }
     [_personPhotoCount setValue:@(_mainPhotos.count) forKey:currentLoginID];
     return _personPhotoCount;
-}
-
-- (void) jumpCycleAnimation:(EZEventBlock)callBack
-{
-    if(!_contactButton){
-        _contactButton = [[EZClickView alloc] initWithFrame:CGRectMake(0, 0, 35, 35)];
-        _contactButton.backgroundColor = randBack(nil);
-        [_contactButton enableRoundImage];
-        //[TopView addSubview:_contactButton];
-    }
-    _contactButton.center = _centerButton.center;
-    [TopView addSubview:_totalCover];
-    [TopView addSubview:_contactButton];
-    __weak EZDataUtil* weakSelf = self;
-    [UIView animateWithDuration:0.3 delay:0.0 usingSpringWithDamping:.5 initialSpringVelocity:.5 options:UIViewAnimationOptionCurveEaseOut animations:^(){
-        [_contactButton moveY:-100];
-    } completion:nil];
-    
-    
-    
-    EZEventBlock animateBlock = ^(id obj){
-        [weakSelf.totalCover removeFromSuperview];
-        [UIView animateWithDuration:0.3 delay:0.0 usingSpringWithDamping:0.5 initialSpringVelocity:0.5 options:UIViewAnimationOptionCurveEaseOut animations:^(){
-            weakSelf.contactButton.center = weakSelf.centerButton.center;
-        } completion:^(BOOL completed){
-            [weakSelf.contactButton removeFromSuperview];
-        }];
-    };
-    _totalCover.pressedBlock = ^(UIView* sender){
-        EZDEBUG(@"_total cover clicked");
-        animateBlock(nil);
-    };
-    
-    EZEventBlock localCallBack = callBack;
-    _contactButton.pressedBlock = ^(UIView* sender){
-        animateBlock(nil);
-        localCallBack(nil);
-    };
-  
-    
 }
 
 - (void) callPendingQuery:(EZPerson*)ps
@@ -1372,7 +1410,7 @@
 {
     
     NSString* storedFile =[EZFileUtil saveImageToCache:img];
-    [EZNetworkUtility upload:baseUploadURL parameters:@{} file:storedFile complete:^(id obj){
+    [EZNetworkUtility upload:@"avatar" parameters:@{} fileURL:storedFile complete:^(id obj){
         NSString* screenURL = [obj objectForKey:@"avatar"];
         EZDEBUG(@"uploaded avatar URL:%@", screenURL);
         currentLoginUser.avatar = screenURL;
@@ -1415,7 +1453,7 @@
     EZDEBUG(@"upload id:%@, storedFile:%@",photo.photoID, photo.assetURL);
     NSString* storedFile =  photo.assetURL;//[EZFileUtil saveImageToCache:[photo getScreenImage]];
     if(photo.photoID && [photo.assetURL isNotEmpty]){
-        [EZNetworkUtility upload:baseUploadURL parameters:@{@"photoID":photo.photoID} file:storedFile complete:^(id obj){
+        [EZNetworkUtility upload:@"avatar" parameters:@{@"photoID":photo.photoID} fileURL:storedFile complete:^(id obj){
             NSString* screenURL = [obj objectForKey:@"screenURL"];
             photo.screenURL = screenURL;
             photo.uploaded = TRUE;
@@ -1455,7 +1493,7 @@
 //Login or register can 
 - (void) triggerLogin:(EZEventBlock)success failure:(EZEventBlock)failure reason:(NSString*)reason isLogin:(BOOL)isLogin
 {
-    [EZDataUtil getInstance].centerButton.hidden = YES;
+    //[EZDataUtil getInstance].centerButton.hidden = YES;
 
     //if(isLogin){
     //    EZLoginController* loginCtl = [[EZLoginController alloc] init];
@@ -2005,7 +2043,7 @@
         return;
     }
     _uploadingAvatar = true;
-    [EZNetworkUtility upload:baseUploadURL parameters:@{} file:_avatarFile complete:^(id obj){
+    [EZNetworkUtility upload:@"avatar" parameters:@{} fileURL:_avatarFile complete:^(id obj){
         NSString* screenURL = [obj objectForKey:@"avatar"];
         _avatarFile = nil;
         EZDEBUG(@"uploaded avatar URL:%@", screenURL);

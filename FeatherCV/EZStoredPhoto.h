@@ -8,16 +8,23 @@
 
 #import <Foundation/Foundation.h>
 
+
 @interface EZStoredPhoto : NSObject
 
-@property (nonatomic, strong) NSString* localFileName;
+@property (nonatomic, strong) NSString* localFileURL;
 
 //You can put it into status
 @property (nonatomic, strong) NSString* remoteURL;
 
 //Can be used to adjust the sequence of the photos
-@property (nonatomic, assign) NSInteger priority;
+@property (nonatomic, assign) NSInteger sequence;
 
-@property (nonatomic, assign) BOOL uploadStatus;
+@property (nonatomic, strong) NSString* taskID;
+
+@property (nonatomic, strong) NSString* photoID;
+
+@property (nonatomic, assign) EZUploadStatus uploadStatus;
+
+- (void) populate:(NSDictionary*)dict;
 
 @end

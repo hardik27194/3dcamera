@@ -30,5 +30,4 @@
 #import "LiveFrost.h"
 #import "EZResult.h"
 #import "MobClick.h"
-#import "EZImageAsset.h"
 #endif

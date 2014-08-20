@@ -182,6 +182,11 @@
     [_buttonStealer stopStealingVolumeButtonEvents];
 }
 
+- (void) confirmClicked:(id)obj
+{
+    
+}
+
 #pragma mark -------------UI---------------
 //顶部标题
 - (void)addTopViewWithText:(NSString*)text {
@@ -204,6 +209,15 @@
         _shotText.textColor = [UIColor whiteColor];
         _shotText.font = [UIFont systemFontOfSize:22.f];
         [_topContainerView addSubview:_shotText];
+        
+        _statusText = [UILabel createLabel:CGRectMake(100, 0, 120, topFrame.size.height) font:[UIFont systemFontOfSize:22] color:[UIColor whiteColor]];
+        [_topContainerView addSubview:_statusText];
+        
+        _confirmButton = [UIButton createButton:CGRectMake(CurrentScreenWidth - 70, 0, 60, 44) font:[UIFont systemFontOfSize:17] color:[UIColor whiteColor] align:NSTextAlignmentCenter];
+        [_confirmButton setTitle:@"确定" forState:UIControlStateNormal];
+        [_confirmButton addTarget:self action:@selector(confirmClicked:) forControlEvents:UIControlEventTouchUpInside];
+        [_topContainerView addSubview:_confirmButton];
+        
         self.topLbl = _shotText;
     }
     _topLbl.text = text;
@@ -477,14 +491,19 @@ void c_slideAlpha() {
 
 - (void) appendPhoto:(NSString*)photoFile
 {
-    if(!_shotTask){
-        _shotTask = [[EZShotTask alloc] init];
+    
+    if(_shotType == kNormalShotTask){
+        if(!_shotTask){
+            _shotTask = [[EZShotTask alloc] init];
+        }
+        EZStoredPhoto* storedPhoto = [[EZStoredPhoto alloc] init];
+        storedPhoto.localFileURL = photoFile;
+        storedPhoto.remoteURL = photoFile;
+        storedPhoto.sequence = _currentCount;
+        [_shotTask.photos addObject:storedPhoto];
+    }else if(_shotType == kShotToReplace){
+        _photo.localFileURL = photoFile;
     }
-    EZStoredPhoto* storedPhoto = [[EZStoredPhoto alloc] init];
-    storedPhoto.localFileName = photoFile;
-    storedPhoto.remoteURL = photoFile;
-    storedPhoto.priority = _currentCount;
-    [_shotTask.photos addObject:storedPhoto];
     
 }
 - (void)takePictureBtnPressed:(UIButton*)sender
@@ -500,6 +519,17 @@ void c_slideAlpha() {
 
 }
 
+- (void) updateShotStatusText
+{
+    if(_shotStatus == kShotInit){
+        _shotText.text = @"";
+    }else if(_shotStatus == kShotPaused){
+        _shotText.text = @"暂停";
+    }else if(_shotStatus == kShotting){
+        _shotText.text = @"正在拍摄....";
+    }
+}
+
 - (void) innerShot:(UIButton*)sender
 {
 #if SWITCH_SHOW_DEFAULT_IMAGE_FOR_NONE_CAMERA
@@ -508,7 +538,8 @@ void c_slideAlpha() {
         return;
     }
 #endif
-    
+    _shotStatus = kShotting;
+    [self updateShotStatusText];
     sender.userInteractionEnabled = NO;
     
     [self showCameraCover:YES];
@@ -525,18 +556,23 @@ void c_slideAlpha() {
             [self appendPhoto:file2url([EZFileUtil saveImageToDocument:stillImage])];
             //_currentCount ++;
             EZDEBUG(@"_currentCount: %i, proposedNumber:%i",_currentCount,_proposedNumber);
-            if(_currentCount < _proposedNumber){
+            
+            if(_shotType == kNormalShotTask && _currentCount < _proposedNumber){
                 [_shotPrepareVoice play];
                 dispatch_later(3.0, ^(){
                     [self innerShot:sender];
                 });
             }else{
                 EZDEBUG(@"complete shot");
+                _shotStatus = kShotInit;
                 _areCapturing = false;
-                [[EZMessageCenter getInstance] postEvent:EZShotPhotos attached:_shotTask];
-                _shotTask = nil;
+                //[[EZMessageCenter getInstance] postEvent:EZShotPhotos attached:_shotTask];
+                //_shotTask = nil;
                 _currentCount = 0;
-                dispatch_main( ^(){_shotText.text = @"0";});
+                dispatch_main( ^(){
+                    _shotText.text = @"";
+                    [self updateShotStatusText];
+                });
             }
         });
         
@@ -559,8 +595,17 @@ void c_slideAlpha() {
     [self.navigationController popViewControllerAnimated:YES];
 }
 
+
 //拍照页面，"X"按钮
 - (void)dismissBtnPressed:(id)sender {
+    if(_confirmClicked){
+        if(_shotType == kShotToReplace){
+            _confirmClicked(_photo);
+        }else{
+            _confirmClicked(_shotTask);
+        }
+    }
+    
     if (self.navigationController) {
         if (self.navigationController.viewControllers.count == 1) {
             [self.navigationController dismissViewControllerAnimated:YES completion:nil];

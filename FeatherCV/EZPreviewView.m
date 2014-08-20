@@ -8,6 +8,7 @@
 
 #import "EZPreviewView.h"
 #import "UIImageView+AFNetworking.h"
+#import "EZStoredPhoto.h"
 
 @implementation EZPreviewView
 
@@ -19,8 +20,9 @@
         _imageView.contentMode = UIViewContentModeScaleAspectFit;
         if(images){
             _images = [[NSMutableArray alloc] initWithArray:images];
+            EZStoredPhoto* storePhoto = [images objectAtIndex:_currentPos];
             _currentPos = 0;
-            [_imageView setImageWithURL:str2url([images objectAtIndex:_currentPos])];
+            [_imageView setImageWithURL:str2url(storePhoto.remoteURL)];
             
         }else{
             _images = [[NSMutableArray alloc] init];
@@ -38,13 +40,35 @@
     EZDEBUG(@"Tapped get called");
     [self dismiss];
 }
+//增加，删除，替换，分享
+- (UIView*) createToolBar
+{
+    UIView* toolbar = [[UIView alloc] initWithFrame:CGRectMake(0, CurrentScreenHeight - 44, CurrentScreenWidth, 44)];
+    toolbar.backgroundColor = [UIColor clearColor];
+    UIButton* addPhoto = [UIButton createButton:CGRectMake(0, 0, CurrentScreenWidth/4, 44) font:[UIFont systemFontOfSize:16] color:[UIColor whiteColor] align:NSTextAlignmentCenter];
+    [addPhoto setTitle:@"添加" forState:UIControlStateNormal];
+    [toolbar addSubview:addPhoto];
+    
+    UIButton* delButton = [UIButton createButton:CGRectMake(addPhoto.right, 0, CurrentScreenWidth/4, 44) font:[UIFont systemFontOfSize:16] color:[UIColor whiteColor] align:NSTextAlignmentCenter];
+    [addPhoto setTitle:@"删除" forState:UIControlStateNormal];
+    [toolbar addSubview:delButton];
+    
+    UIButton* changeSequence = [UIButton createButton:CGRectMake(delButton.right, 0, CurrentScreenWidth/4, 44) font:[UIFont systemFontOfSize:16] color:[UIColor whiteColor] align:NSTextAlignmentCenter];
+    [changeSequence setTitle:@"改顺序" forState:UIControlStateNormal];
+    [toolbar addSubview:changeSequence];
+    
+    UIButton* replace = [UIButton createButton:CGRectMake(changeSequence.right, 0, CurrentScreenWidth/4, 44) font:[UIFont systemFontOfSize:16] color:[UIColor whiteColor] align:NSTextAlignmentCenter];
+    [replace setTitle:@"更换" forState:UIControlStateNormal];
+    [toolbar addSubview:replace];
+    return toolbar;
+}
 
 + (void) showPreview:(NSArray*)images inCtrl:(UIViewController*)controller complete:(EZEventBlock)complete edit:(EZEventBlock)edit
 {
     UIView* view = controller.view;
     EZPreviewView* preView = [[EZPreviewView alloc] initWithFrame:view.bounds images:images];
     UIView* overLay = [[UIView alloc] initWithFrame:view.bounds];
-    overLay.backgroundColor = RGBA(0, 0, 0, 0.7);
+    overLay.backgroundColor = RGBACOLOR(0, 0, 0, 0.8);
     [view addSubview:overLay];
     preView.overLay = overLay;
     EZDEBUG(@"The view rect:%@, overlay bound:%@", NSStringFromCGRect(view.bounds), NSStringFromCGRect(overLay.frame));
@@ -55,6 +79,7 @@
         preView.transform = CGAffineTransformMakeScale(1.0, 1.0);
     } completion:^(BOOL completed){
     }];
+    
 }
 
 - (void) dismiss
@@ -97,7 +122,8 @@
 
 - (void) reloadImage
 {
-    [_imageView setImageWithURL:str2url([_images objectAtIndex:_currentPos])];
+    EZStoredPhoto* photo = [_images objectAtIndex:_currentPos];
+    [_imageView setImageWithURL:str2url(photo.remoteURL)];
 }
 
 - (id)initWithFrame:(CGRect)frame

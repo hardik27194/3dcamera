@@ -27,6 +27,8 @@
 #import "SCCaptureCameraController.h"
 #import "EZMessageCenter.h"
 #import "EZPreviewView.h"
+#import "EZDetailPage.h"
+#import "RAViewController.h"
 
 #define CELL_ID @"CELL_ID"
 
@@ -81,7 +83,22 @@
 {
     //[self raiseCamera:nil personID:nil];
     SCCaptureCameraController *cam = [[SCCaptureCameraController alloc] init];
-    cam.proposedNumber = 4;
+    cam.proposedNumber = 7;
+    cam.shotType = kNormalShotTask;
+    cam.confirmClicked = ^(EZShotTask* task){
+        [[EZMessageCenter getInstance] postEvent:EZShotPhotos attached:task];
+        [[EZDataUtil getInstance] createTaskID:^(NSString* taskID){
+            task.taskID = taskID;
+            for(EZStoredPhoto* sp in task.photos){
+                sp.taskID = taskID;
+                [[EZDataUtil getInstance] uploadStoredPhoto:sp success:^(EZStoredPhoto* uploaded){
+                    EZDEBUG(@"successfully updated:%@, remoteURL:%@", sp.photoID, sp.remoteURL);
+                } failure:nil];
+            }
+        } failure:^(id obj){
+            EZDEBUG(@"failed to get taskID:%@", obj);
+        }];
+    };
     [self.navigationController pushViewController:cam animated:YES];
     
 }
@@ -94,6 +111,9 @@
     
     [[EZMessageCenter getInstance] registerEvent:EZShotPhotos block:^(EZShotTask* task){
         EZDEBUG(@"I receieved photo");
+        if(!task){
+            return;
+        }
         [_uploadedPhotos addObject:task];
         //if(_uploadedPhotos.count){
         //    [self.collectionView insertItemsAtIndexPaths:@[[[NSIndexPath alloc] initWithIndex:_uploadedPhotos.count-1]]];
@@ -114,6 +134,10 @@
 {
     //EZRecordTypeDesc* rd = [_descs objectAtIndex:indexPath.row];
     EZDEBUG(@"Selected: %i",indexPath.row);
+    
+    EZShotTask* task = [_uploadedPhotos objectAtIndex:indexPath.row];
+    EZDetailPage* dp = [[EZDetailPage alloc] initWithTask:task];
+    [self.navigationController pushViewController:dp animated:YES];
 }
 
 
@@ -146,13 +170,25 @@
     __weak EZMainPage* weakSelf = self;
     
     cell.editClicked = ^(id obj){
-        NSMutableArray* photoURLs = [[NSMutableArray alloc] init];
-        for(EZStoredPhoto* sp in shotTask.photos){
-            [photoURLs addObject:sp.localFileName];
-        }
-        [EZPreviewView showPreview:photoURLs inCtrl:weakSelf complete:nil edit:nil];
+        //NSMutableArray* photoURLs = [[NSMutableArray alloc] init];
+        //for(EZStoredPhoto* sp in shotTask.photos){
+        //    [photoURLs addObject:sp.localFileName];
+        //}
+        //[EZPreviewView showPreview:shotTask.photos inCtrl:weakSelf.navigationController complete:nil edit:nil];
+        RAViewController* editorView = [[RAViewController alloc] initWithTask:shotTask];
+        [self.navigationController pushViewController:editorView animated:YES];
+        editorView.confirmClicked = ^(RAViewController* raView){
+            EZDEBUG(@"editor confirm get called");
+            shotTask.photos = raView.storedPhotos;
+            [[EZDataUtil getInstance] updateTaskSequence:shotTask success:^(id info){
+                EZDEBUG(@"successfully change sequence");
+                [weakSelf.collectionView reloadItemsAtIndexPaths:@[indexPath]];
+                } failure:^(id err){
+                EZDEBUG(@"failed to update the sequence");
+            }];
+        };
     };
-    EZDEBUG(@"load cell:%i, remoteURL:%@, localFile:%@", indexPath.row, storePhoto.remoteURL, storePhoto.localFileName);
+    EZDEBUG(@"load cell:%i, remoteURL:%@, localFile:%@", indexPath.row, storePhoto.remoteURL, storePhoto.localFileURL);
 
     //cell.editBtn
     return cell;

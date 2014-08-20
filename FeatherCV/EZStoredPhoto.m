@@ -10,4 +10,12 @@
 
 @implementation EZStoredPhoto
 
+- (void) populate:(NSDictionary*)dict
+{
+    _remoteURL = [dict objectForKey:@"remoteURL"];
+    _taskID = [dict objectForKey:@"taskID"];
+    _photoID = [dict objectForKey:@"photoID"];
+    _sequence = [[dict objectForKey:@"sequence"] integerValue];
+}
+
 @end

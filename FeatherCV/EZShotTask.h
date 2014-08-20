@@ -20,4 +20,8 @@
 
 @property (nonatomic, strong) NSString* name;
 
+@property (nonatomic, strong) NSString* taskID;
+
+- (void) populateTask:(NSDictionary*) dict;
+
 @end

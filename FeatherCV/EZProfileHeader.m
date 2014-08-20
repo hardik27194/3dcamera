@@ -7,7 +7,7 @@
 //
 
 #import "EZProfileHeader.h"
-#import "EZShapeCover.h"
+//#import "EZShapeCover.h"
 
 @implementation EZProfileHeader
 

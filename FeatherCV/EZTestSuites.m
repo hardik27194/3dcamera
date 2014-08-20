@@ -14,9 +14,12 @@
 #import "EZSoundEffect.h"
 #import "EZClickView.h"
 #import "EZFileUtil.h"
-#import "EZHomeBlendFilter.h"
+//#import "EZHomeBlendFilter.h"
 #import "EZNetworkUtility.h"
-#import <GPUImageFilter.h>
+//#import <GPUImageFilter.h>
+#import "EZShotTask.h"
+#import "EZStoredPhoto.h"
+
 
 @interface ReleasedObj : NSObject
 
@@ -48,7 +51,63 @@
     //[self testImageStore];
     //[self testIndexOfObject];
     //[self testFileNameChange];
-    [self testFullFetchBack];
+    //[self testFullFetchBack];
+    //[self testUploadTask];
+}
+
++ (void) testUploadTask
+{
+    [[EZDataUtil getInstance] createTaskID:^(NSString* taskID){
+        EZDEBUG(@"The taskID is:%@", taskID);
+        //NSMutableArray* storedPhoto = [[NSMutableArray alloc] init];
+        EZShotTask* task = [[EZShotTask alloc] init];
+        task.taskID = taskID;
+        EZStoredPhoto* photo = [[EZStoredPhoto alloc] init];
+        photo.taskID = taskID;
+        photo.localFileURL = [EZFileUtil bundleToURL:@"tiange.jpg" retinaAware:NO];
+        photo.sequence = 2;
+        [[EZDataUtil getInstance] uploadStoredPhoto:photo success:^(EZStoredPhoto* ph){
+            EZDEBUG(@"The returned photoID:%@, remoteURL:%@", ph.photoID,ph.remoteURL);
+            [task.photos addObject:ph];
+        } failure:^(id err){
+            EZDEBUG(@"error:%@", err);
+        }];
+        
+        
+        
+        
+        EZStoredPhoto* photo2 = [[EZStoredPhoto alloc] init];
+        photo2.taskID = taskID;
+        photo2.localFileURL = [EZFileUtil bundleToURL:@"wall.jpg" retinaAware:NO];
+        photo2.sequence = 3;
+        
+        [[EZDataUtil getInstance] uploadStoredPhoto:photo2 success:^(EZStoredPhoto* ph){
+            EZDEBUG(@"The second returned photoID:%@, remoteURL:%@", ph.photoID,ph.remoteURL);
+            [task.photos addObject:ph];
+        } failure:^(id err){
+            EZDEBUG(@"error:%@", err);
+        }];
+        
+        dispatch_later(1.0, ^(){
+            //EZShotTask* task =
+            EZDEBUG(@"before sequence adjust:%@, count:%i", task.taskID, task.photos.count);
+            [task.photos removeObject:photo];
+            [task.photos addObject:photo];
+            [[EZDataUtil getInstance] updateTaskSequence:task success:^(id obj){
+                EZDEBUG(@"change sequence success, query task back:%@", taskID);
+                [[EZDataUtil getInstance] queryByTaskID:taskID success:^(EZShotTask* tk){
+                    EZDEBUG(@"query photo back:%@, photo count:%i", tk.taskID, tk.photos.count);
+                    for(EZStoredPhoto* sp in tk.photos){
+                        EZDEBUG(@"new sequence id:%@", sp.photoID);
+                    }
+                    
+                } failure:^(id err){}];
+            } failure:^(id err){}];
+        });
+        
+    } failure:^(id err){
+        EZDEBUG(@"error:%@", err);
+    }];
 }
 
 + (void) testFullFetchBack
@@ -128,13 +187,7 @@
 
 + (void) testImageProcess
 {
-    UIImage* testImg = [UIImage imageNamed:@"smile_face.png"];
-    EZHomeBlendFilter* filter = [[EZHomeBlendFilter alloc] init];
-    GPUImageFilter* imageFilter = [[GPUImageFilter alloc] init];
-    
-    UIImage* processed = [EZFileUtil saveEffectsImage:testImg effects:@[filter, imageFilter] piece:6 orientation:0];
-    [EZFileUtil saveToAlbum:processed meta:@{}];
-    EZDEBUG(@"Successfully completed the image process");
+   
 }
 
 + (void) testClickView:(UIView *)parentView

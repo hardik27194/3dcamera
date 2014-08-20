@@ -21,6 +21,7 @@
 @property (nonatomic, strong) EZEventBlock completeBlock;
 @property (nonatomic, strong) EZEventBlock editBlock;
 @property (nonatomic, weak) UIView* overLay;
+@property (nonatomic, strong) UIView* toolBar;
 
 //Once edit selected, this view will quit, not necessarily, you can use currentPosition to recover
 //This is really great

@@ -7,12 +7,12 @@
 //
 
 #import <AssetsLibrary/AssetsLibrary.h>
-#import <GPUImage.h>
+//#import <GPUImage.h>
 #import "EZFileUtil.h"
 #import "EZConstants.h"
 #import "EZExtender.h"
 #import "EZThreadUtility.h"
-#import "EZHomeBlendFilter.h"
+//#import "EZHomeBlendFilter.h"
 
 
 @implementation EZFileUtil
@@ -282,34 +282,7 @@
 }
 //I could use this to generate gaussian effects now.
 //Cool.
-+ (UIImage*) processImages:(UIImage*)img effects:(NSArray*)effects
-{
-    if(effects.count){
-        GPUImagePicture* gp = [[GPUImagePicture alloc] initWithImage:img smoothlyScaleOutput:YES];
-        GPUImageFilter* filter = nil;
-        EZHomeBlendFilter* homeBlender = nil;
-        for(GPUImageFilter* gf in effects){
-            [gf removeAllTargets];
-            if(!filter){
-                [gp addTarget:gf];
-            }else{
-                [filter addTarget:gf];
-            }
-            if([gf isKindOfClass:[EZHomeBlendFilter class]]){
-                //EZDEBUG(@"Found home blend filter, set up the texel width");
-                //[((EZHomeBlendFilter*)gf).edgeFilter setupFilterForSize:img.size];
-                homeBlender = (EZHomeBlendFilter*)gf;
-            }
-            filter = gf;
-        }
-        //[filter prepareForImageCapture];
-        //[gp processImage];
-        //[homeBlender.edgeFilter setupFilterForSize:img.size];
-        [gp processImage];
-        return [filter imageFromCurrentlyProcessedOutputWithOrientation:img.imageOrientation];
-    }
-    return img;
-}
+
 
 + (void) removeFile:(NSString*)file dirType:(NSSearchPathDirectory)type
 {

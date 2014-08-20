@@ -9,10 +9,10 @@
 #import "EZUIUtility.h"
 #import <MobileCoreServices/UTCoreTypes.h>
 #import "EZMessageCenter.h"
-#import "EZShapeCover.h"
+//#import "EZShapeCover.h"
 #import <MessageUI/MessageUI.h>
 #import "EZClickImage.h"
-#import "EZHairButton.h"
+//#import "EZHairButton.h"
 #import "EZDataUtil.h"
 
 #define ColorTransparent 80
@@ -181,10 +181,7 @@ SINGLETON_FOR_CLASS(EZUIUtility)
 
 - (UIView*) createHoleView
 {
-    EZShapeCover* shapeCover = [[EZShapeCover alloc] initWithFrame:[UIScreen mainScreen].bounds];
-    CGPoint centerPoint = CGPointMake(CurrentScreenWidth/2.0, CurrentScreenHeight/2.0 + CenterUpShift);
-    [shapeCover digHole:310 center:centerPoint color:[UIColor blackColor] opacity:1.0];
-    return shapeCover;
+    return nil;
 }
 
 - (void) gravityDrop:(UIView*)container from:(UIView*)fromView to:(UIView*)toView
@@ -300,8 +297,8 @@ SINGLETON_FOR_CLASS(EZUIUtility)
 
 - (EZHairButton*) createShotButton
 {
-    EZHairButton* clickView =  [[EZHairButton alloc] initWithFrame:CGRectMake(CurrentScreenWidth - 46 - 10, 30, 46, 46)];
-    return clickView;
+    //EZHairButton* clickView =  [[EZHairButton alloc] initWithFrame:CGRectMake(CurrentScreenWidth - 46 - 10, 30, 46, 46)];
+    return nil;
 }
 
 - (EZClickImage*) createShotButtonOld

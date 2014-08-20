@@ -25,7 +25,7 @@
 
 + (void) getJson:(NSString*)url parameters:(id)params complete:(EZEventBlock)complete failblk:(EZEventBlock)block;
 
-+ (void) upload:(NSString*)uploadURL parameters:(NSDictionary*)parameters file:(NSString*)fullPath complete:(EZEventBlock)completed error:(EZEventBlock)errorBlk progress:(EZProgressCheck)progress;
++ (void) upload:(NSString*)uploadURL parameters:(NSDictionary*)parameters fileURL:(NSString*)fileURL complete:(EZEventBlock)completed error:(EZEventBlock)errorBlk progress:(EZProgressCheck)progress;
 
 //The purpose of this method is to move the json combination out of the execution queue
 + (void) postJson:(NSURL*)url action:(NSString*)action parameters:(NSDictionary*)dicts complete:(EZEventBlock)complete failblk:(EZEventBlock)block callbackQueue:(dispatch_queue_t)callbackQueue;

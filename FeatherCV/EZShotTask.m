@@ -7,6 +7,7 @@
 //
 
 #import "EZShotTask.h"
+#import "EZStoredPhoto.h"
 
 @implementation EZShotTask
 
@@ -15,6 +16,18 @@
     self = [super init];
     _photos = [[NSMutableArray alloc] init];
     return self;
+}
+
+- (void) populateTask:(NSDictionary *)dict
+{
+    _taskID = [dict objectForKey:@"taskID"];
+    _name = [dict objectForKey:@"name"];
+    NSArray* photos = [dict objectForKey:@"photos"];
+    for(NSDictionary* pt in photos){
+        EZStoredPhoto* storedPhoto = [[EZStoredPhoto alloc] init];
+        [storedPhoto populate:pt];
+        [_photos addObject:storedPhoto];
+    }
 }
 
 @end

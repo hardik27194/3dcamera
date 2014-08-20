@@ -16,12 +16,6 @@ typedef enum {
 } EZShareStatus;
 
 
-typedef enum {
-    kUploadInit,
-    kUploadStart,
-    kUploadFailure,
-    kUploadDone
-} EZUploadStatus;
 
 typedef enum {
     kUpdateNone,

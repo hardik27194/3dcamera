@@ -167,35 +167,36 @@ static EZNetworkUtility* instance;
     **/
 }
 
-+ (void) upload:(NSString *)uploadURL parameters:(NSDictionary *)parameters file:(NSString *)fullPath complete:(EZEventBlock)completed error:(EZEventBlock)errorBlk progress:(EZProgressCheck)progress
++ (void) upload:(NSString *)uploadURL parameters:(NSDictionary *)parameters fileURL:(NSString *)fileURL complete:(EZEventBlock)completed error:(EZEventBlock)errorBlk progress:(EZProgressCheck)progress
 {
     // 1. Create `AFHTTPRequestSerializer` which will create your request.
     AFHTTPRequestSerializer *serializer = [AFHTTPRequestSerializer serializer];
     
+    NSString* completeURL = [NSString stringWithFormat:@"%@%@", baseServiceURL, uploadURL];
+    NSArray* fileNames = [fileURL componentsSeparatedByString:@"/"];
     
-    NSArray* fileNames = [fullPath componentsSeparatedByString:@"/"];
-    
-    NSString* fileName = fileNames.count > 0?[fileNames objectAtIndex:fileNames.count - 1]:fullPath;
+    //EZDEBUG(@"The complete URL is:%@", completeURL);
+    NSString* fileName = fileNames.count > 0?[fileNames objectAtIndex:fileNames.count - 1]:fileURL;
     // 2. Create an `NSMutableURLRequest`.
-    [serializer setValue:[EZDataUtil getInstance].currentPersonID forHTTPHeaderField:EZSessionHeader];
-    [serializer setValue:EZProductFlag forHTTPHeaderField:EZProductionHeader];
+    //[serializer setValue:[EZDataUtil getInstance].currentPersonID forHTTPHeaderField:EZSessionHeader];
+    //[serializer setValue:EZProductFlag forHTTPHeaderField:EZProductionHeader];
     NSMutableURLRequest *request =
-    [serializer multipartFormRequestWithMethod:@"POST" URLString:baseUploadURL
+    [serializer multipartFormRequestWithMethod:@"POST" URLString:completeURL
                                     parameters:parameters
                      constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
-                         [formData appendPartWithFileURL:[NSURL fileURLWithPath:fullPath] name:@"myfile" fileName:fileName mimeType:@"image/jpeg" error:nil];
+                         [formData appendPartWithFileURL:str2url(fileURL) name:@"myfile" fileName:fileName mimeType:@"image/jpeg" error:nil];
                      }];
     // 3. Create and use `AFHTTPRequestOperationManager` to create an `AFHTTPRequestOperation` from the `NSMutableURLRequest` that we just created.
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     AFHTTPRequestOperation *operation =
     [manager HTTPRequestOperationWithRequest:request
                                      success:^(AFHTTPRequestOperation *operation, id responseObject) {
-                                         NSLog(@"Success %@", responseObject);
+                                         //NSLog(@"Success %@", responseObject);
                                          if(completed){
                                              completed(responseObject);
                                          }
                                      } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-                                         NSLog(@"Failure %@", error.description);
+                                         EZDEBUG(@"Failure %@", error.description);
                                          if(errorBlk){
                                              errorBlk(error);
                                          }
@@ -227,7 +228,7 @@ static EZNetworkUtility* instance;
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     //NSDictionary *parameters = @{@"foo": @"bar"};
     NSURL *filePath = [NSURL fileURLWithPath:fullPath];
-    [manager POST:baseUploadURL parameters:parameters constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
+    [manager POST:uploadURL parameters:parameters constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
         [formData appendPartWithFileURL:filePath name:@"myfile" error:nil];
     } success:^(AFHTTPRequestOperation *operation, id responseObject) {
         EZDEBUG(@"Success: %@", responseObject);

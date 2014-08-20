@@ -7,10 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "DLCImagePickerController.h"
+//#import "DLCImagePickerController.h"
 
 @class EZScrollerView;
-@interface EZMainPage : UIViewController<UICollectionViewDataSource, UICollectionViewDelegate, DLCImagePickerDelegate>//UICollectionViewController
+@interface EZMainPage : UIViewController<UICollectionViewDataSource, UICollectionViewDelegate>//UICollectionViewController
 
 - (EZMainPage*) initPage:(NSArray*)arr;
 

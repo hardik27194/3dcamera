@@ -6,7 +6,7 @@
 //  Copyright (c) 2013年 tiange. All rights reserved.
 //
 
-#import <GPUImage.h>
+#import <AVFoundation/AVFoundation.h>
 #import "EZAppDelegate.h"
 #import "EZFaceTestPage.h"
 #import "EZCombinedPhoto.h"
@@ -17,17 +17,17 @@
 #import "EZUIUtility.h"
 #import "EZMessageCenter.h"
 #import "EZDataUtil.h"
-#import "EZAlbumTablePage.h"
-#import "EZScrollContainer.h"
+//#import "EZAlbumTablePage.h"
+//#import "EZScrollContainer.h"
 #import "EZDisplayPhoto.h"
-#import "EZStyleImage.h"
+//#import "EZStyleImage.h"
 #import "EZTestSuites.h"
-#import "EZViewContainer.h"
-#import "EZTiltMainView.h"
-#import "EZContactsPage.h"
+//#import "EZViewContainer.h"
+//#import "EZTiltMainView.h"
+//#import "EZContactsPage.h"
 #import "EZMainPage.h"
-#import "DLCImagePickerController.h"
-#import "EZContactTablePage.h"
+//#import "DLCImagePickerController.h"
+//#import "EZContactTablePage.h"
 #import "ILTranslucentView.h"
 #import "EZUIUtility.h"
 #import "AFNetworkActivityIndicatorManager.h"
@@ -37,11 +37,11 @@
 #import "UIImageView+AFNetworking.h"
 #import "EZCoreAccessor.h"
 #import "EZNote.h"
-#import "EZDummyPage.h"
+//#import "EZDummyPage.h"
 #import "EZLoginController.h"
 #import "EZRegisterCtrl.h"
 #import "FaceppAPI.h"
-#import "EZContactMain.h"
+//#import "EZContactMain.h"
 #import "EZPinchController.h"
 #import "EZPhotoDetail.h"
 #import "CKCalendarView.h"
@@ -128,6 +128,7 @@
 - (void) setupEvent
 {
     
+    
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(cameraIsReady:)
                                                  name:AVCaptureSessionDidStartRunningNotification object:nil];
@@ -155,8 +156,14 @@
     //[[UINavigationBar appearance] setBarTintColor:[UIColor clearColor]];
     [[UIBarButtonItem appearance] setTintColor:EZBarButtonColor];
     //UIImage *gradientImage44 =
+    NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                                ClickedColor,NSForegroundColorAttributeName,
+                                nil];
     
-    [[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
+    [[UIBarButtonItem appearance] setTitleTextAttributes:attributes
+                                                forState:UIControlStateNormal];
+    
+    [[UINavigationBar appearance] setTintColor:ClickedColor];
     //[[UINavigationBar appearance] setBackgroundImage:ClearBarImage forBarMetrics:UIBarMetricsDefault];
     [[UIScrollView appearance] setIndicatorStyle:UIScrollViewIndicatorStyleWhite];
     
