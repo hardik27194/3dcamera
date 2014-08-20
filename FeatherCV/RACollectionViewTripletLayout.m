@@ -19,8 +19,8 @@
 @property (nonatomic, assign) UIEdgeInsets insets;
 @property (nonatomic, assign) CGRect oldRect;
 @property (nonatomic, strong) NSArray *oldArray;
-@property (nonatomic, strong) NSMutableArray *largeCellSizeArray;
-@property (nonatomic, strong) NSMutableArray *smallCellSizeArray;
+//@property (nonatomic, strong) NSMutableArray *largeCellSizeArray;
+//@property (nonatomic, strong) NSMutableArray *smallCellSizeArray;
 
 @end
 
@@ -53,14 +53,12 @@
     if ([self.delegate respondsToSelector:@selector(insetsForCollectionView:)]) {
         _insets = [self.delegate insetsForCollectionView:self.collectionView];
     }
+    CGFloat cellSize = [self calCellSize];
+    _smallCellSize = CGSizeMake(cellSize, cellSize);
 }
 
 - (CGFloat)contentHeight
 {
-    CGFloat contentHeight = 0;
-    NSInteger numberOfSections = self.collectionView.numberOfSections;
-    CGSize collectionViewSize = self.collectionView.bounds.size;
-    
     UIEdgeInsets insets = UIEdgeInsetsZero;
     if ([self.delegate respondsToSelector:@selector(insetsForCollectionView:)]) {
         insets = [self.delegate insetsForCollectionView:self.collectionView];
@@ -77,35 +75,8 @@
     if ([self.delegate respondsToSelector:@selector(minimumLineSpacingForCollectionView:)]) {
        lineSpacing = [self.delegate minimumLineSpacingForCollectionView:self.collectionView];
     }
-    
-    contentHeight += insets.top + insets.bottom + sectionSpacing * (numberOfSections - 1);
-    
-    CGFloat lastSmallCellHeight = 0;
-    for (NSInteger i = 0; i < numberOfSections; i++) {
-        NSInteger numberOfLines = ceil((CGFloat)[self.collectionView numberOfItemsInSection:i] / 3.f);
-        
-        CGFloat largeCellSideLength = (2.f * (collectionViewSize.width - insets.left - insets.right) - itemSpacing) / 3.f;
-        CGFloat smallCellSideLength = (largeCellSideLength - itemSpacing) / 2.f;
-        CGSize largeCellSize = CGSizeMake(largeCellSideLength, largeCellSideLength);
-        CGSize smallCellSize = CGSizeMake(smallCellSideLength, smallCellSideLength);
-        if ([self.delegate respondsToSelector:@selector(collectionView:sizeForLargeItemsInSection:)]) {
-            if (!CGSizeEqualToSize([self.delegate collectionView:self.collectionView sizeForLargeItemsInSection:i], RACollectionViewTripletLayoutStyleSquare)) {
-                largeCellSize = [self.delegate collectionView:self.collectionView sizeForLargeItemsInSection:i];
-                smallCellSize = CGSizeMake(collectionViewSize.width - largeCellSize.width - itemSpacing - insets.left - insets.right, (largeCellSize.height / 2.f) - (itemSpacing / 2.f));
-            }
-        }
-        lastSmallCellHeight = smallCellSize.height;
-        CGFloat largeCellHeight = largeCellSize.height;
-        CGFloat lineHeight = numberOfLines * (largeCellHeight + lineSpacing) - lineSpacing;
-        contentHeight += lineHeight;
-    }
-    
-    NSInteger numberOfItemsInLastSection = [self.collectionView numberOfItemsInSection:numberOfSections -1];
-    if ((numberOfItemsInLastSection - 1) % 3 == 0 && (numberOfItemsInLastSection - 1) % 6 != 0) {
-        contentHeight -= lastSmallCellHeight + itemSpacing;
-    }
-    NSLog(@"content height:%i", (int)contentHeight);
-    return contentHeight;
+    EZDEBUG(@"contentHeight get called");
+    return [self collectionViewContentSize].height;
 }
 
 - (id<RACollectionViewDelegateTripletLayout>)delegate
@@ -117,18 +88,12 @@
 {
     
     CGSize contentSize = CGSizeMake(_collectionViewSize.width, 0);
-    for (NSInteger i = 0; i < self.collectionView.numberOfSections; i++) {
-        NSInteger numberOfLines = ceil((CGFloat)[self.collectionView numberOfItemsInSection:i] / 3.f);
-        CGFloat lineHeight = numberOfLines * ([_largeCellSizeArray[i] CGSizeValue].height + _lineSpacing) - _lineSpacing;
-        contentSize.height += lineHeight;
-    }
-    contentSize.height += _insets.top + _insets.bottom + _sectionSpacing * (self.collectionView.numberOfSections - 1);
-    NSInteger numberOfItemsInLastSection = [self.collectionView numberOfItemsInSection:self.collectionView.numberOfSections - 1];
-    if ((numberOfItemsInLastSection - 1) % 3 == 0 && (numberOfItemsInLastSection - 1) % 6 != 0) {
-        contentSize.height -= [_smallCellSizeArray[self.collectionView.numberOfSections - 1] CGSizeValue].height + _itemSpacing;
-    }
-    
-    NSLog(@"the content size is:%@", NSStringFromCGSize(contentSize));
+    NSInteger totalItems = [self.collectionView numberOfItemsInSection:0];
+    NSInteger rows = totalItems / 3;
+    NSInteger remain = totalItems % 3?rows + 1:rows;
+    NSInteger lineNum = remain - 1 > 0?remain - 1:0;
+    contentSize.height =  remain * [self calCellSize] + lineNum * _lineSpacing + _insets.top + _insets.bottom;
+    NSLog(@"the content size is:%@, total items:%i", NSStringFromCGSize(contentSize), totalItems);
     return contentSize;
 }
 
@@ -160,52 +125,27 @@
     return NO;
 }
 
+- (CGFloat) calCellSize
+{
+    return (_collectionViewSize.width - _insets.left - _insets.right - 2 * _itemSpacing)/3.f;
+}
+
+
+
 - (UICollectionViewLayoutAttributes *)layoutAttributesForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     UICollectionViewLayoutAttributes *attribute = [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:indexPath];
 
     //cellSize
-    CGFloat largeCellSideLength = (_collectionViewSize.width - _insets.left - _insets.right - 2 * _itemSpacing)/3.f;
-    CGFloat smallCellSideLength = largeCellSideLength;
-    _largeCellSize = CGSizeMake(largeCellSideLength, largeCellSideLength);
-    _smallCellSize = CGSizeMake(smallCellSideLength, smallCellSideLength);
-    if ([self.delegate respondsToSelector:@selector(collectionView:sizeForLargeItemsInSection:)]) {
-        if (!CGSizeEqualToSize([self.delegate collectionView:self.collectionView sizeForLargeItemsInSection:indexPath.section], RACollectionViewTripletLayoutStyleSquare)) {
-            _largeCellSize = [self.delegate collectionView:self.collectionView sizeForLargeItemsInSection:indexPath.section];
-            _smallCellSize = CGSizeMake(_collectionViewSize.width - _largeCellSize.width - _itemSpacing - _insets.left - _insets.right, (_largeCellSize.height / 2.f) - (_itemSpacing / 2.f));
-        }
-    }
-    if (!_largeCellSizeArray) {
-        _largeCellSizeArray = [NSMutableArray array];
-    }
-    if (!_smallCellSizeArray) {
-        _smallCellSizeArray = [NSMutableArray array];
-    }
-    _largeCellSizeArray[indexPath.section] = [NSValue valueWithCGSize:_largeCellSize];
-    _smallCellSizeArray[indexPath.section] = [NSValue valueWithCGSize:_smallCellSize];
-    
-    //section height
-    CGFloat sectionHeight = 0;
-    for (NSInteger i = 0; i <= indexPath.section - 1; i++) {
-        NSInteger cellsCount = [self.collectionView numberOfItemsInSection:i];
-        CGFloat largeCellHeight = [_largeCellSizeArray[i] CGSizeValue].height;
-        CGFloat smallCellHeight = [_smallCellSizeArray[i] CGSizeValue].height;
-        NSInteger lines = ceil((CGFloat)cellsCount / 3.f);
-        sectionHeight += lines * (_lineSpacing + largeCellHeight) + _sectionSpacing;
-        if ((cellsCount - 1) % 3 == 0 && (cellsCount - 1) % 6 != 0) {
-            sectionHeight -= smallCellHeight + _itemSpacing;
-        }
-    }
-    if (sectionHeight > 0) {
-        sectionHeight -= _lineSpacing;
-    }
-
-    NSInteger line = indexPath.item / 3;
+    CGFloat largeCellLength = [self calCellSize];
+       CGFloat sectionHeight = 0;
+    NSInteger line = indexPath.item / 3; //+ (indexPath.item % 3?1:0);
+    //line = (line - 1) > 0?line - 1:0;
     CGFloat lineSpaceForIndexPath = _lineSpacing * line;
-    CGFloat lineOriginY = _largeCellSize.height * line + sectionHeight + lineSpaceForIndexPath + _insets.top;
+    CGFloat lineOriginY = largeCellLength * line + sectionHeight + lineSpaceForIndexPath + _insets.top;
     NSInteger col = indexPath.item % 3;
-    attribute.frame = CGRectMake(_insets.left + col * (_smallCellSize.width+_itemSpacing), lineOriginY, _smallCellSize.width, _smallCellSize.height);
-    
+    attribute.frame = CGRectMake(_insets.left + col * (largeCellLength+_itemSpacing), lineOriginY, largeCellLength, largeCellLength);
+    EZDEBUG(@"%i attribute frame:%@",indexPath.item, NSStringFromCGRect(attribute.frame));
     return attribute;
 }
 

@@ -408,7 +408,7 @@
     EZShotTask* task  = [[EZShotTask alloc] init];
     task.name = @"测试照片";
     task.shotDate = [NSDate date];
-    task.photos = @[storedPhoto];
+    task.photos = @[storedPhoto, storedPhoto, storedPhoto, storedPhoto, storedPhoto, storedPhoto];
     EZMainPage* mainPage = [[EZMainPage alloc] initPage:@[task]];
     
     //EZCalendarPicker* cp = [[EZCalendarPicker alloc] init];

@@ -172,7 +172,7 @@
         [cell.imageView setImageWithURL:str2url(sp.remoteURL)];
 
     }
-    EZDEBUG(@"item:%i cell bounds:%@, localURL:%@, remoteURL:%@",indexPath.item, NSStringFromCGRect(cell.bounds), sp.localFileURL, sp.remoteURL);
+    EZDEBUG(@"item:%i cell bounds:%@, localURL:%@, remoteURL:%@",indexPath.item, NSStringFromCGRect(cell.frame), sp.localFileURL, sp.remoteURL);
     return cell;
     
 }
@@ -191,7 +191,8 @@
         [self.collectionView reloadData];
     }];
      **/
-    EZDEBUG(@"Did select indexPath:%i", indexPath.item);
+    UICollectionViewCell* cell = [self.collectionView cellForItemAtIndexPath:indexPath];
+    EZDEBUG(@"Did select indexPath:%i, frame:%@", indexPath.item, NSStringFromCGRect(cell.frame));
 }
 
 - (IBAction)refresh:(UIBarButtonItem *)sender

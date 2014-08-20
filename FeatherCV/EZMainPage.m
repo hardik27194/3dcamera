@@ -83,7 +83,7 @@
 {
     //[self raiseCamera:nil personID:nil];
     SCCaptureCameraController *cam = [[SCCaptureCameraController alloc] init];
-    cam.proposedNumber = 7;
+    cam.proposedNumber = 4;
     cam.shotType = kNormalShotTask;
     cam.confirmClicked = ^(EZShotTask* task){
         [[EZMessageCenter getInstance] postEvent:EZShotPhotos attached:task];
