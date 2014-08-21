@@ -11,6 +11,8 @@
 #import "UIImageView+AFNetworking.h"
 #import "EZShotTask.h"
 #import "EZStoredPhoto.h"
+#import "EZMessageCenter.h"
+#import "EZPhotoEditPage.h"
 
 
 
@@ -59,12 +61,18 @@
     [self.view addSubview:collectionView];
     self.collectionView.backgroundColor = [UIColor whiteColor];
     //[self setupPhotosArray];
+    
+    [[EZMessageCenter getInstance] registerEvent:EZShotTaskChanged block:^(EZStoredPhoto* pt){
+        //[_collectionView reloadData];
+        [self refresh:nil];
+    }];
 }
 
 
 
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
 {
+   
     return 1;
 }
 
@@ -125,9 +133,18 @@
     return .3f;
 }
 
+
 - (void)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout didEndDraggingItemAtIndexPath:(NSIndexPath *)indexPath
 {
+    EZDEBUG(@"end dragging get called:%i, row:%i", indexPath.item, indexPath.row);
+    RACollectionViewCell* cell = [collectionView cellForItemAtIndexPath:indexPath];
+    
     [self.collectionView reloadData];
+}
+
+- (void)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout willBeginDraggingItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    
 }
 
 - (void)collectionView:(UICollectionView *)collectionView itemAtIndexPath:(NSIndexPath *)fromIndexPath didMoveToIndexPath:(NSIndexPath *)toIndexPath
@@ -191,13 +208,16 @@
         [self.collectionView reloadData];
     }];
      **/
-    UICollectionViewCell* cell = [self.collectionView cellForItemAtIndexPath:indexPath];
-    EZDEBUG(@"Did select indexPath:%i, frame:%@", indexPath.item, NSStringFromCGRect(cell.frame));
+    //UICollectionViewCell* cell = [self.collectionView cellForItemAtIndexPath:indexPath];
+    //EZDEBUG(@"Did select indexPath:%i, frame:%@", indexPath.item, NSStringFromCGRect(cell.frame));
+    //EZPhotoEditPage* ep = [[EZPhotoEditPage alloc] initWithPhotos:_storedPhotos pos:indexPath.item];
+    //[self.navigationController pushViewController:ep animated:YES];
 }
 
 - (IBAction)refresh:(UIBarButtonItem *)sender
 {
     //[self setupPhotosArray];
+    [_collectionView.collectionViewLayout invalidateLayout];
     [self.collectionView reloadData];
 }
 

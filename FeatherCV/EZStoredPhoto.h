@@ -23,6 +23,8 @@
 
 @property (nonatomic, strong) NSString* photoID;
 
+@property (nonatomic, strong) NSDate* createdTime;
+
 @property (nonatomic, assign) EZUploadStatus uploadStatus;
 
 - (void) populate:(NSDictionary*)dict;

@@ -92,6 +92,29 @@
     return [_currentProfiles objectAtIndex:_currentProfilePos];
 }
 
+- (void) deleteLocalFile:(EZStoredPhoto*)photo
+{
+    [EZFileUtil deleteFile:url2fullpath(photo.localFileURL)];
+}
+
+- (void) deleteStoredPhoto:(EZStoredPhoto*)photo success:(EZEventBlock)success failed:(EZEventBlock)failed
+{
+    if(photo.photoID){
+        [EZNetworkUtility getJson:@"p3d/upload" parameters:@{@"photoID":photo.photoID, @"cmd":@"del"}  complete:^(id obj){
+            [EZFileUtil deleteFile:url2fullpath(photo.localFileURL)];
+            if(success){
+                success(nil);
+            }
+        } failblk:failed];
+    }else{//mean not uploaded yet.
+        [EZFileUtil deleteFile:url2fullpath(photo.localFileURL)];
+        if(success){
+            dispatch_main(^(){
+                success(nil);
+            });
+        }
+    }
+}
 
 - (void) createTaskID:(EZEventBlock)success failure:(EZEventBlock)failure
 {
@@ -109,11 +132,12 @@
                    @"taskID":photo.taskID,
                    @"sequence":@(photo.sequence)
                    }];
-    if(photo.taskID){
-        [parameters setValue:photo.taskID forKey:@"taskID"];
+    if(photo.photoID){
+        [parameters setValue:photo.photoID forKey:@"photoID"];
     }
+    photo.uploadStatus = kUploadStart;
     [EZNetworkUtility upload:relativeUploadURL parameters:parameters fileURL:photo.localFileURL complete:^(NSDictionary* dict){
-        //EZDEBUG(@"uploaded success result object:%@", dict);
+        EZDEBUG(@"uploaded success result object:%@", dict);
         NSString* photoID = [dict objectForKey:@"photoID"];
         NSString* remoteURL = [dict objectForKey:@"remoteURL"];
         photo.photoID = photoID;

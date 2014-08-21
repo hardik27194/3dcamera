@@ -63,6 +63,13 @@
     }
 }
 
+- (void) viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    self.navigationBarHidden = NO;
+    //[self  ]
+}
+
 #pragma mark - action(s)
 - (void)showCameraWithParentController:(UIViewController*)parentController {
     SCCaptureCameraController *con = [[SCCaptureCameraController alloc] init];

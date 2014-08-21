@@ -40,7 +40,10 @@ typedef enum {
 @property (nonatomic, assign) NSInteger currentCount;
 @property (nonatomic, strong) UIImageView* shotImages;
 
+
+@property (nonatomic, strong) UIButton* shotBtn;
 @property (nonatomic, assign) BOOL areCapturing;
+@property (nonatomic, assign) BOOL isPaused;
 @property (nonatomic, assign) EZCameraShotStatus shotStatus;
 @property (nonatomic, assign) EZShotTaskType shotType;
 @property (nonatomic, strong) EZStoredPhoto* photo;
@@ -51,6 +54,7 @@ typedef enum {
 
 @property (nonatomic, strong) EZEventBlock confirmClicked;
 
+@property (nonatomic, strong) NSString* shottedPhotoURL;
 //@property (nonatomic, strong) UIButton* confirmButton;
 
 

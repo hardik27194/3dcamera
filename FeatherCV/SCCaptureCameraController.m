@@ -213,10 +213,19 @@
         _statusText = [UILabel createLabel:CGRectMake(100, 0, 120, topFrame.size.height) font:[UIFont systemFontOfSize:22] color:[UIColor whiteColor]];
         [_topContainerView addSubview:_statusText];
         
+        /**
         _confirmButton = [UIButton createButton:CGRectMake(CurrentScreenWidth - 70, 0, 60, 44) font:[UIFont systemFontOfSize:17] color:[UIColor whiteColor] align:NSTextAlignmentCenter];
         [_confirmButton setTitle:@"确定" forState:UIControlStateNormal];
         [_confirmButton addTarget:self action:@selector(confirmClicked:) forControlEvents:UIControlEventTouchUpInside];
         [_topContainerView addSubview:_confirmButton];
+        **/
+        [self buildButton:CGRectMake(CurrentScreenWidth - 44, 0, 44, 44)
+             normalImgStr:@"flashing_off.png"
+          highlightImgStr:@""
+           selectedImgStr:@""
+                   action:@selector(flashBtnPressed:)
+               parentView:_topContainerView];
+        
         
         self.topLbl = _shotText;
     }
@@ -235,13 +244,26 @@
     self.bottomContainerView = view;
 }
 
+
+- (void) savePressed:(id)obj
+{
+    if(_confirmClicked){
+        if(_shotType == kShotToReplace){
+            //_confirmClicked(_photo);
+            _confirmClicked(_shottedPhotoURL);
+        }else{
+            _confirmClicked(_shotTask);
+        }
+    }
+    [self dismissBtnPressed:nil];
+}
 //拍照菜单栏
 - (void)addCameraMenuView {
     
     //拍照按钮
     CGFloat downH = (isHigherThaniPhone4_SC ? CAMERA_MENU_VIEW_HEIGH : 0);
     CGFloat cameraBtnLength = 90;
-    [self buildButton:CGRectMake((SC_APP_SIZE.width - cameraBtnLength) / 2, (_bottomContainerView.frame.size.height - downH - cameraBtnLength) / 2 , cameraBtnLength, cameraBtnLength)
+    _shotBtn = [self buildButton:CGRectMake((SC_APP_SIZE.width - cameraBtnLength) / 2, (_bottomContainerView.frame.size.height - downH - cameraBtnLength) / 2 , cameraBtnLength, cameraBtnLength)
          normalImgStr:@"shot.png"
       highlightImgStr:@"shot_h.png"
        selectedImgStr:@""
@@ -266,15 +288,18 @@
 
 //拍照菜单栏上的按钮
 - (void)addMenuViewButtons {
-    NSMutableArray *normalArr = [[NSMutableArray alloc] initWithObjects:@"close_cha.png", @"camera_line.png", @"switch_camera.png", @"flashing_off.png", nil];
-    NSMutableArray *highlightArr = [[NSMutableArray alloc] initWithObjects:@"close_cha_h.png", @"", @"", @"", nil];
+    NSMutableArray *normalArr = [[NSMutableArray alloc] initWithObjects:@"header_btn_cancel.png", @"camera_line.png", @"switch_camera.png", @"header_btn_save.png", nil];
+    NSMutableArray *highlightArr = [[NSMutableArray alloc] initWithObjects:@"", @"", @"", @"", nil];
     NSMutableArray *selectedArr = [[NSMutableArray alloc] initWithObjects:@"", @"camera_line_h.png", @"switch_camera_h.png", @"", nil];
     
-    NSMutableArray *actionArr = [[NSMutableArray alloc] initWithObjects:@"dismissBtnPressed:", @"gridBtnPressed:", @"switchCameraBtnPressed:", @"flashBtnPressed:", nil];
+    NSMutableArray *actionArr = [[NSMutableArray alloc] initWithObjects:@"dismissBtnPressed:", @"gridBtnPressed:", @"switchCameraBtnPressed:", @"savePressed:", nil];
     
+    //@"flashBtnPressed:"
     CGFloat eachW = SC_APP_SIZE.width / actionArr.count;
     
     [SCCommon drawALineWithFrame:CGRectMake(eachW, 0, 1, CAMERA_MENU_VIEW_HEIGH) andColor:rgba_SC(102, 102, 102, 1.0000) inLayer:_cameraMenuView.layer];
+    
+    [SCCommon drawALineWithFrame:CGRectMake(eachW * 3, 0, 1, CAMERA_MENU_VIEW_HEIGH) andColor:rgba_SC(102, 102, 102, 1.0000) inLayer:_cameraMenuView.layer];
     
     
     //屏幕高度大于480的，后退按钮放在_cameraMenuView；小于480的，放在_bottomContainerView
@@ -491,7 +516,7 @@ void c_slideAlpha() {
 
 - (void) appendPhoto:(NSString*)photoFile
 {
-    
+    EZDEBUG(@"shot type:%i", _shotType);
     if(_shotType == kNormalShotTask){
         if(!_shotTask){
             _shotTask = [[EZShotTask alloc] init];
@@ -502,12 +527,24 @@ void c_slideAlpha() {
         storedPhoto.sequence = _currentCount;
         [_shotTask.photos addObject:storedPhoto];
     }else if(_shotType == kShotToReplace){
-        _photo.localFileURL = photoFile;
+        //_photo.localFileURL = photoFile;
+        if(_shottedPhotoURL){
+            [EZFileUtil deleteFile:url2fullpath(_shottedPhotoURL)];
+        }
+        _shottedPhotoURL = photoFile;
     }
     
 }
 - (void)takePictureBtnPressed:(UIButton*)sender
 {
+    
+    
+    EZDEBUG(@"Capturing is:%i, isPaused:%i", _areCapturing, _isPaused);
+    
+    //[self setIsPaused:!_isPaused];
+    //if(_shotType == kShotSingle){
+        
+    //}else{
     if(_areCapturing){
         return;
     }
@@ -516,7 +553,24 @@ void c_slideAlpha() {
     dispatch_later(3.0, ^(){
         [self innerShot:sender];
     });
+    //}
+}
 
+- (void) setIsPaused:(BOOL)pause
+{
+    _isPaused = pause;
+    //[_cameraBtnSet]
+    if(_shotStatus == kShotting){
+        if(_isPaused){
+            [_shotBtn setImage:[UIImage  imageNamed:@"shot"] forState:UIControlStateNormal];
+        }else{
+            [_shotBtn setImage:[UIImage  imageNamed:@"shot_pause"] forState:UIControlStateNormal];
+        }
+    }else{
+        _isPaused = false;
+        //[_shotBtn setImage:@"shot" forState:];
+        [_shotBtn setImage:[UIImage imageNamed:@"shot_pause"] forState:UIControlStateNormal];
+    }
 }
 
 - (void) updateShotStatusText
@@ -532,6 +586,12 @@ void c_slideAlpha() {
 
 - (void) innerShot:(UIButton*)sender
 {
+    
+    if(_isPaused){
+        _shotText.text = @"暂停";
+        return;
+    }
+    
 #if SWITCH_SHOW_DEFAULT_IMAGE_FOR_NONE_CAMERA
     if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
         [SVProgressHUD showErrorWithStatus:@"设备不支持拍照功能T_T"];
@@ -540,7 +600,7 @@ void c_slideAlpha() {
 #endif
     _shotStatus = kShotting;
     [self updateShotStatusText];
-    sender.userInteractionEnabled = NO;
+    //sender.userInteractionEnabled = NO;
     
     [self showCameraCover:YES];
     
@@ -555,17 +615,19 @@ void c_slideAlpha() {
             //[SCCommon saveImageToPhotoAlbum:stillImage];//存至本机
             [self appendPhoto:file2url([EZFileUtil saveImageToDocument:stillImage])];
             //_currentCount ++;
-            EZDEBUG(@"_currentCount: %i, proposedNumber:%i",_currentCount,_proposedNumber);
+            EZDEBUG(@"_currentCount: %i, proposedNumber:%i, _shotType:%i",_currentCount,_proposedNumber, _shotType);
             
-            if(_shotType == kNormalShotTask && _currentCount < _proposedNumber){
+            if(_shotType == kNormalShotTask && _currentCount < _proposedNumber && !_isPaused){
                 [_shotPrepareVoice play];
                 dispatch_later(3.0, ^(){
                     [self innerShot:sender];
                 });
             }else{
+                _areCapturing = false;
+                [_shotBtn setImage:[UIImage imageNamed:@"shot"] forState:UIControlStateNormal];
                 EZDEBUG(@"complete shot");
                 _shotStatus = kShotInit;
-                _areCapturing = false;
+                
                 //[[EZMessageCenter getInstance] postEvent:EZShotPhotos attached:_shotTask];
                 //_shotTask = nil;
                 _currentCount = 0;
@@ -598,13 +660,6 @@ void c_slideAlpha() {
 
 //拍照页面，"X"按钮
 - (void)dismissBtnPressed:(id)sender {
-    if(_confirmClicked){
-        if(_shotType == kShotToReplace){
-            _confirmClicked(_photo);
-        }else{
-            _confirmClicked(_shotTask);
-        }
-    }
     
     if (self.navigationController) {
         if (self.navigationController.viewControllers.count == 1) {

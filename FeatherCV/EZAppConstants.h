@@ -62,6 +62,8 @@ typedef enum {
 
 #define EZShotPhotos @"EZShottedPhotos"
 
+#define EZShotTaskChanged @"EZShotTaskChanged"
+
 #define EZPasswordInputHeight 45.0
 
 #define EZLoginInputTextColor RGBCOLOR(107, 107, 107)

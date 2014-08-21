@@ -12,4 +12,9 @@
 
 @property (nonatomic, strong) UIImageView *imageView;
 
+@property (nonatomic, strong) UIButton* delBtn;
+
+@property (nonatomic, strong) EZEventBlock deleteClicked;
+
+
 @end

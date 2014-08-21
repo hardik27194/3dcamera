@@ -29,6 +29,7 @@
 #import "EZPreviewView.h"
 #import "EZDetailPage.h"
 #import "RAViewController.h"
+#import "EZPhotoEditPage.h"
 
 #define CELL_ID @"CELL_ID"
 
@@ -79,11 +80,17 @@
     self.collectionView.backgroundColor = [UIColor whiteColor];
 }
 
-- (void) addClicked:(id)obj
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
 {
-    //[self raiseCamera:nil personID:nil];
+    EZDEBUG(@"button index:%i", buttonIndex);
+    //NSInteger shotBase = 12;
+    if(buttonIndex == 4){
+        return;
+    }
+    NSInteger total = 12 + buttonIndex * 6;
+    
     SCCaptureCameraController *cam = [[SCCaptureCameraController alloc] init];
-    cam.proposedNumber = 4;
+    cam.proposedNumber = total;
     cam.shotType = kNormalShotTask;
     cam.confirmClicked = ^(EZShotTask* task){
         [[EZMessageCenter getInstance] postEvent:EZShotPhotos attached:task];
@@ -103,12 +110,37 @@
     
 }
 
+- (void) addClicked:(id)obj
+{
+    //[self raiseCamera:nil personID:nil];
+    UIActionSheet* actionSheet = [[UIActionSheet alloc] initWithTitle:@"选择拍摄数量" delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:nil otherButtonTitles:@"12",@"18",@"24",@"32", nil];
+    
+    [actionSheet showInView:self.view];
+}
+
+- (void) shareClicked:(EZShotTask*)shotTask
+{
+    
+    NSString* url = [NSString stringWithFormat:@"%@p3d/show3d?taskID=%@", baseServiceURL, shotTask.taskID];
+    NSArray *activityItems = @[@"P3D", str2url(url)];
+    UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:nil];
+    
+    [self presentViewController:activityVC animated:YES completion:nil];
+    
+    
+    [activityVC setCompletionHandler:^(NSString *activityType, BOOL completed)
+     {
+         NSLog(@"Activity = %@",activityType);
+         NSLog(@"Completed Status = %d",completed);
+         
+    }];
+}
 
 
 - (void) viewDidLoad
 {
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addClicked:)];
-    
+    self.title = @"P3D";
     [[EZMessageCenter getInstance] registerEvent:EZShotPhotos block:^(EZShotTask* task){
         EZDEBUG(@"I receieved photo");
         if(!task){
@@ -121,6 +153,10 @@
         [_collectionView reloadData];
         //}
         
+    }];
+    
+    [[EZMessageCenter getInstance] registerEvent:EZShotTaskChanged block:^(EZShotTask* task){
+        [_collectionView reloadData];
     }];
 }
 
@@ -165,6 +201,7 @@
     //[cell.name setTitle:desc.name forState:UIControlStateNormal];
     cell.name.text = shotTask.name;
     cell.updateDate.text = [[EZDataUtil getInstance].titleFormatter stringFromDate:shotTask.shotDate];
+    cell.photoCount.text = [NSString stringWithFormat:@"共%i张", shotTask.photos.count];
     EZStoredPhoto* storePhoto = [shotTask.photos objectAtIndex:0];
     [cell.photo setImageWithURL:str2url(storePhoto.remoteURL)];
     __weak EZMainPage* weakSelf = self;
@@ -175,21 +212,15 @@
         //    [photoURLs addObject:sp.localFileName];
         //}
         //[EZPreviewView showPreview:shotTask.photos inCtrl:weakSelf.navigationController complete:nil edit:nil];
-        RAViewController* editorView = [[RAViewController alloc] initWithTask:shotTask];
-        [self.navigationController pushViewController:editorView animated:YES];
-        editorView.confirmClicked = ^(RAViewController* raView){
-            EZDEBUG(@"editor confirm get called");
-            shotTask.photos = raView.storedPhotos;
-            [[EZDataUtil getInstance] updateTaskSequence:shotTask success:^(id info){
-                EZDEBUG(@"successfully change sequence");
-                [weakSelf.collectionView reloadItemsAtIndexPaths:@[indexPath]];
-                } failure:^(id err){
-                EZDEBUG(@"failed to update the sequence");
-            }];
+        EZPhotoEditPage* ep = [[EZPhotoEditPage alloc] initWithTask:shotTask pos:0];
+        [self.navigationController pushViewController:ep animated:YES];
+        
         };
-    };
-    EZDEBUG(@"load cell:%i, remoteURL:%@, localFile:%@", indexPath.row, storePhoto.remoteURL, storePhoto.localFileURL);
+    EZDEBUG(@"load cell:%i, remoteURL:%@, localFile:%@", indexPath.item, storePhoto.remoteURL, storePhoto.localFileURL);
 
+    cell.shareClicked = ^(id obj){
+        [weakSelf shareClicked:shotTask];
+    };
     //cell.editBtn
     return cell;
 }

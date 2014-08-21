@@ -20,7 +20,7 @@
 
 @property (nonatomic, strong) EZEventBlock confirmClicked;
 
-
+//@property (nonatomic, strong) UIButton* delBtn;
 - (id) initWithTask:(EZShotTask*)task;
 
 @end
