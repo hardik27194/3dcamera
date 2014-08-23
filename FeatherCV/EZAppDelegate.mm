@@ -347,7 +347,13 @@
         [self handleNotification:remoteNote isLive:NO];
     }
     [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
-
+    //[[EZDataUtil getInstance] setCurrentPersonID:nil];
+    if(![[EZDataUtil getInstance] getCurrentPersonID]){
+        [[EZDataUtil getInstance] createPersonID:^(EZPerson* ps){
+        } failed:^(id obj){
+            EZDEBUG(@"failed to get person:%@", obj);
+        }];
+    }
     /**
     EZDEBUG(@"login info:%@", [[EZDataUtil getInstance] getCurrentPersonID]);
     [[EZDataUtil getInstance] setCurrentPersonID:nil];
@@ -403,13 +409,15 @@
 {
     
     //TKCalendarMonthTableViewController* calendar = [[TKCalendarMonthTableViewController alloc] initWithSunday:YES];
+    /**
     EZStoredPhoto* storedPhoto = [[EZStoredPhoto alloc] init];
     storedPhoto.remoteURL = [EZFileUtil bundleToURL:@"demo_avatar_cook.png" retinaAware:YES];
     EZShotTask* task  = [[EZShotTask alloc] init];
     task.name = @"测试照片";
     task.shotDate = [NSDate date];
     task.photos = @[storedPhoto, storedPhoto, storedPhoto, storedPhoto, storedPhoto, storedPhoto];
-    EZMainPage* mainPage = [[EZMainPage alloc] initPage:@[task]];
+    **/
+    EZMainPage* mainPage = [[EZMainPage alloc] initPage:@[]];
     
     //EZCalendarPicker* cp = [[EZCalendarPicker alloc] init];
     //CKViewController* ck = [[CKViewController alloc] init];

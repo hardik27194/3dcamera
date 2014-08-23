@@ -38,7 +38,7 @@ typedef enum {
 @property (nonatomic, strong) UILabel* statusText;
 @property (nonatomic, assign) NSInteger proposedNumber;
 @property (nonatomic, assign) NSInteger currentCount;
-@property (nonatomic, strong) UIImageView* shotImages;
+@property (nonatomic, strong) UIButton* shotImages;
 
 
 @property (nonatomic, strong) UIButton* shotBtn;

@@ -14,6 +14,8 @@
 
 - (EZMainPage*) initPage:(NSArray*)arr;
 
+@property (nonatomic, strong) UICollectionViewFlowLayout* layout;
+
 @property (nonatomic, strong) NSMutableArray* uploadedPhotos;
 
 @property (nonatomic, strong) UICollectionView* collectionView;

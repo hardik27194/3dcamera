@@ -26,6 +26,10 @@
 
 @property (nonatomic, strong) UIButton* addButton;
 
+@property (nonatomic, assign) CGFloat prevX;
+
+@property (nonatomic, assign) CGPoint touchBegin;
+
 //@property (nonatomic, strong) EZS
 @property (nonatomic, assign) NSInteger currentPos;
 

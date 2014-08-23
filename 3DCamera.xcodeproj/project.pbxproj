@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		18018E6219A5DF7A004ECEE0 /* shot_pause.png in Resources */ = {isa = PBXBuildFile; fileRef = 18018E6019A5DF7A004ECEE0 /* shot_pause.png */; };
 		18018E6319A5DF7A004ECEE0 /* shot_pause@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 18018E6119A5DF7A004ECEE0 /* shot_pause@2x.png */; };
+		18018E6619A6FD58004ECEE0 /* camera_btn.png in Resources */ = {isa = PBXBuildFile; fileRef = 18018E6419A6FD58004ECEE0 /* camera_btn.png */; };
+		18018E6719A6FD58004ECEE0 /* camera_btn@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 18018E6519A6FD58004ECEE0 /* camera_btn@2x.png */; };
 		180302D1199848B000563D03 /* RBVolumeButtons.m in Sources */ = {isa = PBXBuildFile; fileRef = 180302D0199848B000563D03 /* RBVolumeButtons.m */; };
 		180A57A01998B213003F017D /* EZPreviewView.m in Sources */ = {isa = PBXBuildFile; fileRef = 180A579F1998B213003F017D /* EZPreviewView.m */; };
 		180E2CB11990BFF700DE2AFA /* EZShotTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 180E2CB01990BFF700DE2AFA /* EZShotTask.m */; };
@@ -510,6 +512,8 @@
 /* Begin PBXFileReference section */
 		18018E6019A5DF7A004ECEE0 /* shot_pause.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = shot_pause.png; sourceTree = "<group>"; };
 		18018E6119A5DF7A004ECEE0 /* shot_pause@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "shot_pause@2x.png"; sourceTree = "<group>"; };
+		18018E6419A6FD58004ECEE0 /* camera_btn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = camera_btn.png; sourceTree = "<group>"; };
+		18018E6519A6FD58004ECEE0 /* camera_btn@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "camera_btn@2x.png"; sourceTree = "<group>"; };
 		180302CF199848B000563D03 /* RBVolumeButtons.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RBVolumeButtons.h; sourceTree = "<group>"; };
 		180302D0199848B000563D03 /* RBVolumeButtons.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RBVolumeButtons.m; sourceTree = "<group>"; };
 		180A579E1998B213003F017D /* EZPreviewView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZPreviewView.h; sourceTree = "<group>"; };
@@ -1842,9 +1846,9 @@
 		18E34685183DF54400C9D89D /* 3DCamera */ = {
 			isa = PBXGroup;
 			children = (
-				18E1AF7219A47AAF002F8A37 /* dragdrop */,
 				18E3468E183DF54400C9D89D /* EZAppDelegate.h */,
 				18E3468F183DF54400C9D89D /* EZAppDelegate.mm */,
+				18E1AF7219A47AAF002F8A37 /* dragdrop */,
 				180E2CB81990E11C00DE2AFA /* sccamera */,
 				18D760D5198235EC00F9D63B /* controllers */,
 				181FC36819540F1000442AF3 /* new controllers */,
@@ -1910,6 +1914,8 @@
 		18E346D4183DF90600C9D89D /* images */ = {
 			isa = PBXGroup;
 			children = (
+				18018E6419A6FD58004ECEE0 /* camera_btn.png */,
+				18018E6519A6FD58004ECEE0 /* camera_btn@2x.png */,
 				1870B07019867FDC005A663A /* header_btn_back_blue@2x.png */,
 				1870B07119867FDC005A663A /* header_btn_back_blue.png */,
 				1870B07219867FDC005A663A /* header_btn_forth_blue.png */,
@@ -2425,6 +2431,7 @@
 				180E2D0C1990E42600DE2AFA /* close_cha@2x.png in Resources */,
 				1870B01919829485005A663A /* drawer_nav_chat.png in Resources */,
 				1870AFDB19829485005A663A /* icon_bb@2x.png in Resources */,
+				18018E6619A6FD58004ECEE0 /* camera_btn.png in Resources */,
 				1870AFB819829485005A663A /* icon_jc.png in Resources */,
 				1870AFA819829485005A663A /* icon_jb_white@2x.png in Resources */,
 				18DE990119404734008C1B3F /* typing.png in Resources */,
@@ -2458,6 +2465,7 @@
 				1870AFA319829485005A663A /* icon_nb_white@2x.png in Resources */,
 				1870AFD319829485005A663A /* header_btn_star@2x.png in Resources */,
 				1870B00019829485005A663A /* drawer_icon_milk@2x.png in Resources */,
+				18018E6719A6FD58004ECEE0 /* camera_btn@2x.png in Resources */,
 				1870AFE719829485005A663A /* icon_user@2x.png in Resources */,
 				1870AFF619829485005A663A /* header_btn_back.png in Resources */,
 				180E2D1A1990E42600DE2AFA /* switch_camera@2x.png in Resources */,
@@ -2990,8 +2998,8 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Tian Xie (GC586ZT7D3)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Tian Xie (GC586ZT7D3)";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Tian Xie (FA67K5H8WD)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Tian Xie (FA67K5H8WD)";
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -3014,7 +3022,7 @@
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = YES;
-				PROVISIONING_PROFILE = "39E3B331-8956-4934-AFF4-DC05A38A86C5";
+				PROVISIONING_PROFILE = "1404e0fd-47ce-41f6-bffd-8d1467da3699";
 				SDKROOT = iphoneos;
 				VALID_ARCHS = "armv7 armv7s";
 			};
@@ -3036,8 +3044,8 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Tian Xie (GC586ZT7D3)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Tian Xie (GC586ZT7D3)";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Tian Xie (FA67K5H8WD)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Tian Xie (FA67K5H8WD)";
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -3054,7 +3062,7 @@
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = YES;
-				PROVISIONING_PROFILE = "39E3B331-8956-4934-AFF4-DC05A38A86C5";
+				PROVISIONING_PROFILE = "1404e0fd-47ce-41f6-bffd-8d1467da3699";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 				VALID_ARCHS = "armv7 armv7s";
@@ -3067,8 +3075,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Tian Xie (FA67K5H8WD)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Tian Xie (FA67K5H8WD)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					/Users/apple/Dropbox/FeatherCV,
@@ -3087,7 +3095,7 @@
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = 3DCamera;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "1404e0fd-47ce-41f6-bffd-8d1467da3699";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv7 armv7s arm64";
 				WRAPPER_EXTENSION = app;
@@ -3100,8 +3108,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Tian Xie (FA67K5H8WD)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Tian Xie (FA67K5H8WD)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					/Users/apple/Dropbox/FeatherCV,
@@ -3120,7 +3128,7 @@
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = 3DCamera;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "1404e0fd-47ce-41f6-bffd-8d1467da3699";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv7 armv7s arm64";
 				WRAPPER_EXTENSION = app;

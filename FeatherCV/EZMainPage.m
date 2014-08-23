@@ -139,6 +139,14 @@
 
 - (void) viewDidLoad
 {
+    
+    _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:_layout];
+    [self.collectionView registerClass:[EZMainPhotoCell class] forCellWithReuseIdentifier:CELL_ID];
+    _collectionView.delegate = self;
+    _collectionView.dataSource = self;
+    //_collectionView.backgroundColor = [UIColor clearColor];
+    [self.view addSubview:_collectionView];
+
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addClicked:)];
     self.title = @"P3D";
     [[EZMessageCenter getInstance] registerEvent:EZShotPhotos block:^(EZShotTask* task){
@@ -154,6 +162,28 @@
         //}
         
     }];
+    UIImage* iconImage = [UIImage imageNamed:@"camera_btn"];
+    
+    UIButton* shotBtn = [UIButton createButton:CGRectMake((CurrentScreenWidth - iconImage.size.width)/2, CurrentScreenHeight - iconImage.size.height - 5, iconImage.size.width, iconImage.size.height) font:[UIFont systemFontOfSize:10] color:[UIColor whiteColor] align:NSTextAlignmentCenter];
+    
+    [shotBtn setImage:iconImage forState:UIControlStateNormal];
+    [shotBtn addTarget:self action:@selector(addClicked:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:shotBtn];
+    [[EZMessageCenter getInstance] registerEvent:EZLoginSuccess block:^(EZPerson* ps){
+        [[EZDataUtil getInstance] queryTaskByPersonID:currentLoginID success:^(NSArray* tasks){
+            _uploadedPhotos = [[NSMutableArray alloc] initWithArray:tasks];
+            [_collectionView reloadData];
+        } failed:^(id err){}];
+    }];
+    EZDEBUG(@"loginID:%@", currentLoginID);
+    
+    if(currentLoginID){
+        [[EZDataUtil getInstance] queryTaskByPersonID:currentLoginID success:^(NSArray* tasks){
+            _uploadedPhotos = [[NSMutableArray alloc] initWithArray:tasks];
+            [_collectionView reloadData];
+        } failed:^(id err){}];
+    }
+    
     
     [[EZMessageCenter getInstance] registerEvent:EZShotTaskChanged block:^(EZShotTask* task){
         [_collectionView reloadData];
@@ -181,12 +211,7 @@
 {
     if (self = [super init])
     {
-        _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layout];
-        [self.collectionView registerClass:[EZMainPhotoCell class] forCellWithReuseIdentifier:CELL_ID];
-        _collectionView.delegate = self;
-        _collectionView.dataSource = self;
-        //_collectionView.backgroundColor = [UIColor clearColor];
-        [self.view addSubview:_collectionView];
+        _layout = layout;
     }
     return self;
 }

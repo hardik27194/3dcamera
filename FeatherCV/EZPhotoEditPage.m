@@ -41,28 +41,33 @@
     return self;
 }
 
+
 - (void) panned:(UIPanGestureRecognizer*)panGesturer
 {
     CGPoint tranlation = [panGesturer translationInView:self.view];
     CGPoint velocity = [panGesturer velocityInView:self.view];
-    EZDEBUG(@"translation:%@, velocity:%@", NSStringFromCGPoint(tranlation), NSStringFromCGPoint(velocity));
+   
     
     if(_photos.count < 2){
         return;
     }
     
     CGFloat pixelPerImage = self.imageView.bounds.size.width/2.0/_photos.count;
-    int imageMovePos = tranlation.x/pixelPerImage;
-    imageMovePos = imageMovePos % _photos.count;
-    if(imageMovePos < 0){
-        imageMovePos = imageMovePos + _photos.count;
-    }
-    if(imageMovePos == _currentPos){
+    int imageMovePos = (tranlation.x - _prevX)/pixelPerImage;
+    if(ABS(imageMovePos) > 0){
+        _prevX = tranlation.x;
+    }else{
         return;
     }
+    //imageMovePos = imageMovePos % _photos.count;
+    _currentPos += imageMovePos;
+    _currentPos = _currentPos % _photos.count;
+    if(_currentPos < 0){
+        _currentPos = _currentPos + _photos.count;
+    }
     
+    EZDEBUG(@"translation:%@, velocity:%@, prevX:%f, _currentPos:%i", NSStringFromCGPoint(tranlation), NSStringFromCGPoint(velocity), _prevX, _currentPos);
     //EZDEBUG(@"translation:%@, velocity:%@, imagePos:%i, currentPos:%i", NSStringFromCGPoint(tranlation), NSStringFromCGPoint(velocity), imageMovePos, _currentPos);
-    _currentPos = imageMovePos;
     [self loadImage];
     //[self reloadImage];
 }
@@ -204,7 +209,53 @@
     }
 }
 
+- (void) touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    UITouch* touch = [touches anyObject];
+    _touchBegin = [touch locationInView:_imageView];
+    _prevX = _touchBegin.x;
+}
 
+- (void) touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    UITouch* touch = [touches anyObject];
+    CGPoint curPoint = [touch locationInView:_imageView];
+    if(_photos.count < 2){
+        return;
+    }
+    
+    CGFloat pixelPerImage = self.imageView.bounds.size.width/2.0/_photos.count;
+    int imageMovePos = (curPoint.x - _prevX)/pixelPerImage;
+    EZDEBUG(@"imageMovePos:%i", imageMovePos);
+    if(ABS(imageMovePos) > 0){
+        _prevX = curPoint.x;
+    }else{
+        return;
+    }
+    //imageMovePos = imageMovePos % _photos.count;
+    _currentPos += imageMovePos;
+    //_currentPos = _currentPos % _photos.count;
+    EZDEBUG(@"currPos:%i", _currentPos);
+    if(_currentPos < 0){
+        _currentPos = _currentPos + _photos.count;
+    }
+    _currentPos = _currentPos % _photos.count;
+    
+    EZDEBUG(@"point:%@, prevX:%f, _currentPos:%i", NSStringFromCGPoint(curPoint), _prevX, _currentPos);
+    //EZDEBUG(@"translation:%@, velocity:%@, imagePos:%i, currentPos:%i", NSStringFromCGPoint(tranlation), NSStringFromCGPoint(velocity), imageMovePos, _currentPos);
+    [self loadImage];
+
+}
+
+- (void) touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    EZDEBUG(@"touch cancelled");
+}
+
+- (void) touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    EZDEBUG(@"touch ended");
+}
 
 - (void)viewDidLoad
 {
@@ -215,8 +266,9 @@
     _imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, MIN(CurrentScreenWidth, CurrentScreenHeight))];
     _imageView.contentMode = UIViewContentModeScaleAspectFill;
     _imageView.userInteractionEnabled = YES;
-     UIPanGestureRecognizer* panGesturer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panned:)];
-    [_imageView addGestureRecognizer:panGesturer];
+     //UIPanGestureRecognizer* panGesturer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panned:)];
+    //[_imageView addGestureRecognizer:panGesturer];
+    //panGesturer.delegate = self;
     [self loadImage];
     
     _posText = [UILabel createLabel:CGRectMake(20, 0, CurrentScreenWidth - 2*20, 20) font:[UIFont boldSystemFontOfSize:18] color:[UIColor whiteColor]];

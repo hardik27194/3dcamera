@@ -38,11 +38,11 @@
         **/
         
         
-        _editBtn = [UIButton createButton:CGRectMake(5, self.bounds.size.height - 48, 60, 40) font:[UIFont boldSystemFontOfSize:18] color:EZBarButtonColor align:NSTextAlignmentLeft];
+        _editBtn = [UIButton createButton:CGRectMake(5, self.bounds.size.height - 48, 60, 40) font:[UIFont boldSystemFontOfSize:16] color:EZBarButtonColor align:NSTextAlignmentLeft];
         [_editBtn addTarget:self action:@selector(editClicked:) forControlEvents:UIControlEventTouchUpInside];
         [_editBtn setTitle:@"编辑" forState:UIControlStateNormal];
         
-        _shareBtn = [UIButton createButton:CGRectMake(self.bounds.size.width - 60 - 5, self.bounds.size.height - 48, 60, 40) font:[UIFont boldSystemFontOfSize:18] color:EZBarButtonColor align:NSTextAlignmentRight];
+        _shareBtn = [UIButton createButton:CGRectMake(self.bounds.size.width - 60 - 5, self.bounds.size.height - 48, 60, 40) font:[UIFont boldSystemFontOfSize:16] color:EZBarButtonColor align:NSTextAlignmentRight];
         [_shareBtn addTarget:self action:@selector(shareClicked:) forControlEvents:UIControlEventTouchUpInside];
         [_shareBtn setTitle:@"分享" forState:UIControlStateNormal];
         [self.contentView addSubview:_photo];

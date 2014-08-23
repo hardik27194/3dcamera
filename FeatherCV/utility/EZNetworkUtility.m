@@ -606,9 +606,9 @@ static EZNetworkUtility* instance;
 
 + (void) getJson:(NSString*)url parameters:(id)dicts complete:(EZEventBlock)complete failblk:(EZEventBlock)block
 {
-    [[EZFeatherAPIClient sharedClient].requestSerializer setValue:[EZDataUtil getInstance].currentPersonID forHTTPHeaderField:EZSessionHeader];
+    //[[EZFeatherAPIClient sharedClient].requestSerializer setValue:[EZDataUtil getInstance].currentPersonID forHTTPHeaderField:EZSessionHeader];
     
-    [[EZFeatherAPIClient sharedClient].requestSerializer setValue:EZProductFlag forHTTPHeaderField:EZProductionHeader];
+    //[[EZFeatherAPIClient sharedClient].requestSerializer setValue:EZProductFlag forHTTPHeaderField:EZProductionHeader];
     [[EZFeatherAPIClient sharedClient] GET:url parameters:dicts success:^(NSURLSessionDataTask * __unused task, id JSON) {
         if(complete){
             complete(JSON);
@@ -623,8 +623,8 @@ static EZNetworkUtility* instance;
 
 + (void) postJson:(NSString*)url parameters:(id)dicts complete:(EZEventBlock)complete failblk:(EZEventBlock)block
 {
-    [[EZFeatherAPIClient sharedClient].requestSerializer setValue:[EZDataUtil getInstance].currentPersonID forHTTPHeaderField:EZSessionHeader];
-    [[EZFeatherAPIClient sharedClient].requestSerializer setValue:EZProductFlag forHTTPHeaderField:EZProductionHeader];
+    //[[EZFeatherAPIClient sharedClient].requestSerializer setValue:[EZDataUtil getInstance].currentPersonID forHTTPHeaderField:EZSessionHeader];
+    //[[EZFeatherAPIClient sharedClient].requestSerializer setValue:EZProductFlag forHTTPHeaderField:EZProductionHeader];
 
     [[EZFeatherAPIClient sharedClient] POST:url parameters:dicts success:^(NSURLSessionDataTask * __unused task, id JSON) {
         if(complete){

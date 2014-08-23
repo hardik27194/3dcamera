@@ -270,7 +270,8 @@
                action:@selector(takePictureBtnPressed:)
            parentView:_bottomContainerView];
     
-    _shotImages = [[UIImageView alloc] initWithFrame:CGRectMake(20, _bottomContainerView.frame.size.height - downH - cameraBtnLength, 45 , 45)];
+    
+    _shotImages = [UIButton createButton:CGRectMake(20, (_bottomContainerView.frame.size.height - 45)/2.0, 45, 45) font:[UIFont systemFontOfSize:10] color:[UIColor whiteColor] align:NSTextAlignmentCenter];//[[UIImageView alloc] initWithFrame:CGRectMake(20, _bottomContainerView.frame.size.height - downH - cameraBtnLength, 45 , 45)];
     _shotImages.layer.cornerRadius = 5;
     _shotImages.clipsToBounds = TRUE;
     _shotImages.backgroundColor = [UIColor clearColor];
@@ -588,9 +589,10 @@ void c_slideAlpha() {
 {
     
     if(_isPaused){
-        _shotText.text = @"暂停";
+        //_shotText.text = @"暂停";
         return;
     }
+    
     
 #if SWITCH_SHOW_DEFAULT_IMAGE_FOR_NONE_CAMERA
     if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
@@ -615,17 +617,17 @@ void c_slideAlpha() {
             //[SCCommon saveImageToPhotoAlbum:stillImage];//存至本机
             [self appendPhoto:file2url([EZFileUtil saveImageToDocument:stillImage])];
             //_currentCount ++;
-            EZDEBUG(@"_currentCount: %i, proposedNumber:%i, _shotType:%i",_currentCount,_proposedNumber, _shotType);
+            //EZDEBUG(@"_currentCount: %i, proposedNumber:%i, _shotType:%i",_currentCount,_proposedNumber, _shotType);
             
             if(_shotType == kNormalShotTask && _currentCount < _proposedNumber && !_isPaused){
-                [_shotPrepareVoice play];
+               
                 dispatch_later(3.0, ^(){
                     [self innerShot:sender];
                 });
             }else{
                 _areCapturing = false;
                 [_shotBtn setImage:[UIImage imageNamed:@"shot"] forState:UIControlStateNormal];
-                EZDEBUG(@"complete shot");
+                //EZDEBUG(@"complete shot");
                 _shotStatus = kShotInit;
                 
                 //[[EZMessageCenter getInstance] postEvent:EZShotPhotos attached:_shotTask];
@@ -641,7 +643,7 @@ void c_slideAlpha() {
         [actiView stopAnimating];
         [actiView removeFromSuperview];
         actiView = nil;
-        _shotImages.image = [stillImage resizedImageByHeight:80];
+        [_shotImages setImage:[stillImage resizedImageByHeight:80] forState:UIControlStateNormal];
         ++_currentCount;
         _shotText.text = int2str(_currentCount);
         double delayInSeconds = 2.f;

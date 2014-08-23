@@ -39,6 +39,10 @@ typedef enum {
 
 + (EZDataUtil*) getInstance;
 
+- (void) createPersonID:(EZEventBlock)success failed:(EZEventBlock)failure;
+
+- (void) queryTaskByPersonID:(NSString*)pid success:(EZEventBlock)success failed:(EZEventBlock)failure;
+
 
 - (void) createTaskID:(EZEventBlock)success failure:(EZEventBlock)failure;
 

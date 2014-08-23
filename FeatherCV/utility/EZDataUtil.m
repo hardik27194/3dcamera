@@ -57,6 +57,42 @@
     return instance;
 }
 
+- (void) queryTaskByPersonID:(NSString*)pid success:(EZEventBlock)success failed:(EZEventBlock)failure
+{
+    [EZNetworkUtility postJson:[NSString stringWithFormat:@"p3d/account/query?personID=%@", currentLoginID] parameters:nil complete:^(NSArray* arr){
+        EZDEBUG(@"returned value:%@", arr);
+        NSMutableArray* res = [[NSMutableArray alloc] init];
+        for(NSDictionary* dict in arr){
+            EZShotTask* task = [[EZShotTask alloc] init];
+            [task populateTask:dict];
+            [res addObject:task];
+        }
+        if(success){
+            success(res);
+        }
+        
+    } failblk:failure];
+     
+}
+
+- (void) createPersonID:(EZEventBlock)success failed:(EZEventBlock)failure
+{
+    [EZNetworkUtility postJson:@"p3d/account/create" parameters:nil complete:^(NSDictionary* dict){
+        NSString* personID = [dict objectForKey:@"personID"];
+        EZDEBUG(@"create success:%@", dict);
+        [self setCurrentPersonID:personID];
+        EZPerson* person = [[EZPerson alloc] init];
+        person.personID = personID;
+        [self setCurrentLoginPerson:person];
+        [[EZMessageCenter getInstance] postEvent:EZLoginSuccess attached:person];
+        if(success){
+            success(person);
+        }
+    } failblk:^(id obj){
+        EZDEBUG(@"failed to create user");
+    }];
+}
+
 //The desc will store the latest value
 //But what will display?
 //Latest, doesn't mean today.
@@ -118,7 +154,7 @@
 
 - (void) createTaskID:(EZEventBlock)success failure:(EZEventBlock)failure
 {
-    [EZNetworkUtility getJson:@"p3d/id/create" parameters:nil complete:^(NSDictionary* dict){
+    [EZNetworkUtility getJson:@"p3d/id/create" parameters:@{@"personID":currentLoginID} complete:^(NSDictionary* dict){
         if(success){
             success([dict objectForKey:@"id"]);
         }
@@ -1612,6 +1648,7 @@
     if(!_currentPersonID){
         _currentPersonID = [[NSUserDefaults standardUserDefaults] objectForKey:@"CurrentSessionID"];
     }
+    /**
     if(_currentPersonID && !_currentLoginPerson){
         [self getPersonByID:_currentPersonID success:^(EZPerson* ps){
             //EZDEBUG(@"loaded person count:%i", ps.count);
@@ -1619,6 +1656,7 @@
             _currentLoginPerson = ps;
         }];
     }
+     **/
     //EZDEBUG(@"Current PersonID:%@, person name:%@", _currentPersonID, _currentLoginPerson.name);
     return _currentPersonID;
 }
