@@ -257,6 +257,11 @@
     }
     [self dismissBtnPressed:nil];
 }
+
+- (void) showResult:(id)sender
+{
+    
+}
 //拍照菜单栏
 - (void)addCameraMenuView {
     
@@ -265,7 +270,7 @@
     CGFloat cameraBtnLength = 90;
     _shotBtn = [self buildButton:CGRectMake((SC_APP_SIZE.width - cameraBtnLength) / 2, (_bottomContainerView.frame.size.height - downH - cameraBtnLength) / 2 , cameraBtnLength, cameraBtnLength)
          normalImgStr:@"shot.png"
-      highlightImgStr:@"shot_h.png"
+      highlightImgStr:@""//"shot_h.png"
        selectedImgStr:@""
                action:@selector(takePictureBtnPressed:)
            parentView:_bottomContainerView];
@@ -277,6 +282,7 @@
     _shotImages.backgroundColor = [UIColor clearColor];
     _shotImages.contentMode = UIViewContentModeScaleAspectFill;
     [_bottomContainerView addSubview:_shotImages];
+    [_shotImages addTarget:self action:@selector(showResult:) forControlEvents:UIControlEventTouchUpInside];
     
     //拍照的菜单栏view（屏幕高度大于480的，此view在上面，其他情况在下面）
     CGFloat menuViewY = (isHigherThaniPhone4_SC ? SC_DEVICE_SIZE.height - CAMERA_MENU_VIEW_HEIGH : 0);
@@ -540,20 +546,25 @@ void c_slideAlpha() {
 {
     
     
-    EZDEBUG(@"Capturing is:%i, isPaused:%i", _areCapturing, _isPaused);
+    EZDEBUG(@"Capturing is:%i, isPaused:%i", _shotStatus, _isPaused);
     
-    //[self setIsPaused:!_isPaused];
+    //Mean click for the first time
+    if(_shotStatus == kShotInit){
+        _isPaused = true;
+    }
+    [self setIsPaused:!_isPaused];
     //if(_shotType == kShotSingle){
         
     //}else{
-    if(_areCapturing){
+    if(_shotStatus == kShotting){
         return;
     }
-    _areCapturing = true;
-    [_shotPrepareVoice play];
-    dispatch_later(3.0, ^(){
-        [self innerShot:sender];
-    });
+    [self innerShot:sender];
+    //_areCapturing = true;
+    //[_shotPrepareVoice play];
+    //dispatch_later(3.0, ^(){
+    //    [self innerShot:sender];
+    //});
     //}
 }
 
@@ -561,17 +572,17 @@ void c_slideAlpha() {
 {
     _isPaused = pause;
     //[_cameraBtnSet]
-    if(_shotStatus == kShotting){
-        if(_isPaused){
-            [_shotBtn setImage:[UIImage  imageNamed:@"shot"] forState:UIControlStateNormal];
-        }else{
-            [_shotBtn setImage:[UIImage  imageNamed:@"shot_pause"] forState:UIControlStateNormal];
-        }
+    //if(_shotStatus == kShotting){
+    if(_isPaused){
+        [_shotBtn setImage:[UIImage  imageNamed:@"shot"] forState:UIControlStateNormal];
     }else{
-        _isPaused = false;
-        //[_shotBtn setImage:@"shot" forState:];
-        [_shotBtn setImage:[UIImage imageNamed:@"shot_pause"] forState:UIControlStateNormal];
+        [_shotBtn setImage:[UIImage  imageNamed:@"shot_pause"] forState:UIControlStateNormal];
     }
+    //}else{
+    //    _isPaused = false;
+        //[_shotBtn setImage:@"shot" forState:];
+    //    [_shotBtn setImage:[UIImage imageNamed:@"shot_pause"] forState:UIControlStateNormal];
+    //}
 }
 
 - (void) updateShotStatusText
@@ -585,32 +596,22 @@ void c_slideAlpha() {
     }
 }
 
-- (void) innerShot:(UIButton*)sender
+- (void) realShot:(UIButton*)sender
 {
-    
-    if(_isPaused){
-        //_shotText.text = @"暂停";
-        return;
-    }
-    
-    
 #if SWITCH_SHOW_DEFAULT_IMAGE_FOR_NONE_CAMERA
     if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
         [SVProgressHUD showErrorWithStatus:@"设备不支持拍照功能T_T"];
         return;
     }
 #endif
-    _shotStatus = kShotting;
     [self updateShotStatusText];
     //sender.userInteractionEnabled = NO;
-    
     [self showCameraCover:YES];
     
     __block UIActivityIndicatorView *actiView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
     actiView.center = CGPointMake(self.view.center.x, self.view.center.y - CAMERA_TOPVIEW_HEIGHT);
     [actiView startAnimating];
     [self.view addSubview:actiView];
-    
     WEAKSELF_SC
     [_captureManager takePicture:^(UIImage *stillImage) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -619,24 +620,14 @@ void c_slideAlpha() {
             //_currentCount ++;
             //EZDEBUG(@"_currentCount: %i, proposedNumber:%i, _shotType:%i",_currentCount,_proposedNumber, _shotType);
             
-            if(_shotType == kNormalShotTask && _currentCount < _proposedNumber && !_isPaused){
-               
-                dispatch_later(3.0, ^(){
-                    [self innerShot:sender];
-                });
+            if(_shotType == kNormalShotTask && _currentCount < _proposedNumber){
+                [self innerShot:sender];
             }else{
-                _areCapturing = false;
+                _shotStatus = kShotDone;
+                //_areCapturing = false;
                 [_shotBtn setImage:[UIImage imageNamed:@"shot"] forState:UIControlStateNormal];
                 //EZDEBUG(@"complete shot");
-                _shotStatus = kShotInit;
-                
-                //[[EZMessageCenter getInstance] postEvent:EZShotPhotos attached:_shotTask];
-                //_shotTask = nil;
                 _currentCount = 0;
-                dispatch_main( ^(){
-                    _shotText.text = @"";
-                    [self updateShotStatusText];
-                });
             }
         });
         
@@ -653,16 +644,46 @@ void c_slideAlpha() {
             [weakSelf_SC showCameraCover:NO];
         });
     }];
+
+}
+
+//Show the count down message
+- (void) showCountDown
+{
+    
+}
+
+- (void) innerShot:(UIButton*)sender
+{
+    
+    if(_isPaused){
+        //_shotText.text = @"暂停";
+        EZDEBUG(@"Quit for paused");
+        _shotStatus = kShotPaused;
+        return;
+    }
+    _shotStatus = kShotting;
+    [_shotPrepareVoice play];
+    [self showCountDown];
+    dispatch_later(3.0, ^(){
+        [self realShot:sender];
+    });
+    
 }
 
 - (void)tmpBtnPressed:(id)sender {
+    
     [self.navigationController popViewControllerAnimated:YES];
 }
 
 
 //拍照页面，"X"按钮
 - (void)dismissBtnPressed:(id)sender {
-    
+    if(_shotStatus == kShotting){
+        UIAlertView* waiting = [[UIAlertView alloc] initWithTitle:@"等待拍摄结束"  message:@"拍摄结束后退出" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil];
+        [waiting show];
+        return;
+    }
     if (self.navigationController) {
         if (self.navigationController.viewControllers.count == 1) {
             [self.navigationController dismissViewControllerAnimated:YES completion:nil];

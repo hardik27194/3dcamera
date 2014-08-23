@@ -20,7 +20,8 @@ typedef enum {
 typedef enum {
     kShotInit, //When paused and have no images. for handy tools, I need to make it very fast to edit staff
     kShotPaused,//When would this happen, when user paused for adjust angle
-    kShotting
+    kShotting,
+    kShotDone//mean I have completed one round of shot
 }EZCameraShotStatus;
 
 typedef enum {

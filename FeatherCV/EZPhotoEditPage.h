@@ -37,6 +37,12 @@
 
 @property (nonatomic, strong) EZShotTask* task;
 
+@property (nonatomic, assign) BOOL showShot;
+
+@property (nonatomic, strong) EZEventBlock deletedClicked;
+
 - (id) initWithTask:(EZShotTask*)tasks pos:(NSInteger)pos;
+
+- (id) initWithShot:(NSArray*)photos pos:(NSInteger)pos deletedBlock:(EZEventBlock)deletedBlock;
 
 @end

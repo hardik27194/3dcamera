@@ -2998,8 +2998,8 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Distribution: Tian Xie (FA67K5H8WD)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Tian Xie (FA67K5H8WD)";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Tian Xie (GC586ZT7D3)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Tian Xie (GC586ZT7D3)";
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -3022,7 +3022,7 @@
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = YES;
-				PROVISIONING_PROFILE = "1404e0fd-47ce-41f6-bffd-8d1467da3699";
+				PROVISIONING_PROFILE = "204de17b-9064-45c1-b947-8909fc924e97";
 				SDKROOT = iphoneos;
 				VALID_ARCHS = "armv7 armv7s";
 			};
@@ -3044,8 +3044,8 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Distribution: Tian Xie (FA67K5H8WD)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Tian Xie (FA67K5H8WD)";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Tian Xie (GC586ZT7D3)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Tian Xie (GC586ZT7D3)";
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -3062,7 +3062,7 @@
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = YES;
-				PROVISIONING_PROFILE = "1404e0fd-47ce-41f6-bffd-8d1467da3699";
+				PROVISIONING_PROFILE = "204de17b-9064-45c1-b947-8909fc924e97";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 				VALID_ARCHS = "armv7 armv7s";
@@ -3075,8 +3075,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Distribution: Tian Xie (FA67K5H8WD)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Tian Xie (FA67K5H8WD)";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Tian Xie (GC586ZT7D3)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Tian Xie (GC586ZT7D3)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					/Users/apple/Dropbox/FeatherCV,
@@ -3095,7 +3095,7 @@
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = 3DCamera;
-				PROVISIONING_PROFILE = "1404e0fd-47ce-41f6-bffd-8d1467da3699";
+				PROVISIONING_PROFILE = "204de17b-9064-45c1-b947-8909fc924e97";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv7 armv7s arm64";
 				WRAPPER_EXTENSION = app;
@@ -3108,8 +3108,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Distribution: Tian Xie (FA67K5H8WD)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Tian Xie (FA67K5H8WD)";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Tian Xie (GC586ZT7D3)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Tian Xie (GC586ZT7D3)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					/Users/apple/Dropbox/FeatherCV,
@@ -3128,7 +3128,7 @@
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = 3DCamera;
-				PROVISIONING_PROFILE = "1404e0fd-47ce-41f6-bffd-8d1467da3699";
+				PROVISIONING_PROFILE = "204de17b-9064-45c1-b947-8909fc924e97";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv7 armv7s arm64";
 				WRAPPER_EXTENSION = app;

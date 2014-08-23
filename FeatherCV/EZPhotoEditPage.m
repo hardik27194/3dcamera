@@ -41,6 +41,19 @@
     return self;
 }
 
+- (id) initWithShot:(NSArray*)photos pos:(NSInteger)pos deletedBlock:(EZEventBlock)deletedBlock
+{
+    self = [super initWithNibName:nil bundle:nil];
+    //_task = task;
+    self.title = @"编辑";
+    //_task = task;
+    _photos = [[NSMutableArray alloc] initWithArray:photos];
+    _currentPos = pos;
+    _showShot = YES;
+    _deletedClicked = deletedBlock;
+    return self;
+}
+
 
 - (void) panned:(UIPanGestureRecognizer*)panGesturer
 {
@@ -80,6 +93,17 @@
     if(buttonIndex == 1){
         if(_photos.count>0){
             EZStoredPhoto* storedPhoto = [_photos objectAtIndex:_currentPos];
+            int deletePos = _currentPos;
+            if(_showShot){
+                [_photos removeObject:storedPhoto];
+                if(_currentPos > _photos.count - 1){
+                    _currentPos = _photos.count - 1;
+                }
+                [self loadImage];
+                if(_deletedClicked){
+                    _deletedClicked(@(deletePos));
+                }
+            }else{
             [[EZDataUtil getInstance] deleteStoredPhoto:storedPhoto success:^(id obj){
                 [_photos removeObject:storedPhoto];
                 [[EZMessageCenter getInstance] postEvent:EZShotTaskChanged attached:storedPhoto];
@@ -91,7 +115,7 @@
             } failed:^(id err){
                 EZDEBUG(@"error to delete:%@", err);
             }];
-            
+            }
         }
     }
 
@@ -299,11 +323,14 @@
     [_addButton addTarget:self action:@selector(addPhoto:) forControlEvents:UIControlEventTouchUpInside];
 
     
-    
-    [_toolBar addSubview:_replaceBtn];
-    [_toolBar addSubview:_deleteBtn];
-    [_toolBar addSubview:_adjustSequence];
-    [_toolBar addSubview:_addButton];
+    if(_showShot){
+        _deleteBtn.frame = CGRectMake(0, 0, CurrentScreenWidth, 44);
+    }else{
+        [_toolBar addSubview:_replaceBtn];
+        [_toolBar addSubview:_deleteBtn];
+        [_toolBar addSubview:_adjustSequence];
+        [_toolBar addSubview:_addButton];
+    }
     [self.view addSubview:_imageView];
     [self.view addSubview:_posText];
     [self.view addSubview:_toolBar];
