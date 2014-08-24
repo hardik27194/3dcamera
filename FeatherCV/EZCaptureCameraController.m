@@ -1,12 +1,11 @@
 //
-//  SCCaptureCameraController.m
-//  SCCaptureCameraDemo
+//  EZCaptureCameraController.m
+//  3DCamera
 //
-//  Created by Aevitx on 14-1-16.
-//  Copyright (c) 2014年 Aevitx. All rights reserved.
+//  Created by xietian on 14-8-24.
+//  Copyright (c) 2014年 tiange. All rights reserved.
 //
-
-#import "SCCaptureCameraController.h"
+#import "EZCaptureCameraController.h"
 #import "SCSlider.h"
 #import "SCCommon.h"
 #import "SVProgressHUD.h"
@@ -47,7 +46,7 @@
 //    bottomContainerViewTypeAudio     =   1   //录音页面
 //} BottomContainerViewType;
 
-@interface SCCaptureCameraController () {
+@interface EZCaptureCameraController () {
     int alphaTimes;
     CGPoint currTouchPoint;
 }
@@ -74,7 +73,7 @@
 
 @end
 
-@implementation SCCaptureCameraController
+@implementation EZCaptureCameraController
 
 #pragma mark -------------life cycle---------------
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -98,7 +97,7 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
-    __weak SCCaptureCameraController* weakSelf = self;
+    __weak EZCaptureCameraController* weakSelf = self;
     //navigation bar
     if (self.navigationController && !self.navigationController.navigationBarHidden) {
         self.navigationController.navigationBarHidden = YES;
@@ -107,7 +106,7 @@
     //notification
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kNotificationOrientationChange object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orientationDidChange:) name:kNotificationOrientationChange object:nil];
-     _shotPrepareVoice = [[EZSoundEffect alloc] initWithSoundNamed:@"shot_voice.aiff"];
+    _shotPrepareVoice = [[EZSoundEffect alloc] initWithSoundNamed:@"shot_voice.aiff"];
     //session manager
     SCCaptureSessionManager *manager = [[SCCaptureSessionManager alloc] init];
     
@@ -152,6 +151,7 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    [self.navigationController setNavigationBarHidden:YES animated:YES];
     [_buttonStealer startStealingVolumeButtonEvents];
 }
 
@@ -212,11 +212,11 @@
         [_topContainerView addSubview:_statusText];
         
         /**
-        _confirmButton = [UIButton createButton:CGRectMake(CurrentScreenWidth - 70, 0, 60, 44) font:[UIFont systemFontOfSize:17] color:[UIColor whiteColor] align:NSTextAlignmentCenter];
-        [_confirmButton setTitle:@"确定" forState:UIControlStateNormal];
-        [_confirmButton addTarget:self action:@selector(confirmClicked:) forControlEvents:UIControlEventTouchUpInside];
-        [_topContainerView addSubview:_confirmButton];
-        **/
+         _confirmButton = [UIButton createButton:CGRectMake(CurrentScreenWidth - 70, 0, 60, 44) font:[UIFont systemFontOfSize:17] color:[UIColor whiteColor] align:NSTextAlignmentCenter];
+         [_confirmButton setTitle:@"确定" forState:UIControlStateNormal];
+         [_confirmButton addTarget:self action:@selector(confirmClicked:) forControlEvents:UIControlEventTouchUpInside];
+         [_topContainerView addSubview:_confirmButton];
+         **/
         [self buildButton:CGRectMake(CurrentScreenWidth - 44, 0, 44, 44)
              normalImgStr:@"flashing_off.png"
           highlightImgStr:@""
@@ -261,12 +261,16 @@
     if(_shotType == kShotToReplace){
         _shottedPhotoURL = nil;
         [_shotImages setImage:nil forState:UIControlStateNormal];
+        
     }else{
+        --_currentCount;
+        _shotText.text = int2str(_currentCount);
         [_shotTask.photos removeObjectAtIndex:pos];
         if(_shotTask.photos.count){
             EZStoredPhoto* photo = [_shotTask.photos objectAtIndex:_shotTask.photos.count - 1];
             //[_shotImages setImageURL]
             //[_shotImages setImageURL:str2url(photo.localFileURL) forState:UIControlStateNormal];
+            [_shotImages setImageForState:UIControlStateNormal withURL:str2url(photo.localFileURL)];
         }else{
             [_shotImages setImage:nil forState:UIControlStateNormal];
         }
@@ -276,11 +280,10 @@
 
 - (void) showResult:(id)sender
 {
+    NSArray* photos = nil;
     if(_shotStatus == kShotting){
         [self setIsPaused:true];
     }
-    EZDEBUG(@"Paused is:%i", _isPaused);
-    NSArray* photos = nil;
     if(_shotType == kShotToReplace){
         EZStoredPhoto* sp = [[EZStoredPhoto alloc] init];
         sp.localFileURL = _shottedPhotoURL;
@@ -302,11 +305,11 @@
     CGFloat downH = (isHigherThaniPhone4_SC ? CAMERA_MENU_VIEW_HEIGH : 0);
     CGFloat cameraBtnLength = 90;
     _shotBtn = [self buildButton:CGRectMake((SC_APP_SIZE.width - cameraBtnLength) / 2, (_bottomContainerView.frame.size.height - downH - cameraBtnLength) / 2 , cameraBtnLength, cameraBtnLength)
-         normalImgStr:@"shot.png"
-      highlightImgStr:@""//"shot_h.png"
-       selectedImgStr:@""
-               action:@selector(takePictureBtnPressed:)
-           parentView:_bottomContainerView];
+                    normalImgStr:@"shot.png"
+                 highlightImgStr:@""//"shot_h.png"
+                  selectedImgStr:@""
+                          action:@selector(takePictureBtnPressed:)
+                      parentView:_bottomContainerView];
     
     
     _shotImages = [UIButton createButton:CGRectMake(20, (_bottomContainerView.frame.size.height - 45)/2.0, 45, 45) font:[UIFont systemFontOfSize:10] color:[UIColor whiteColor] align:NSTextAlignmentCenter];//[[UIImageView alloc] initWithFrame:CGRectMake(20, _bottomContainerView.frame.size.height - downH - cameraBtnLength, 45 , 45)];
@@ -587,7 +590,7 @@ void c_slideAlpha() {
     }
     [self setIsPaused:!_isPaused];
     //if(_shotType == kShotSingle){
-        
+    
     //}else{
     if(_shotStatus == kShotting){
         return;
@@ -613,13 +616,14 @@ void c_slideAlpha() {
     }
     //}else{
     //    _isPaused = false;
-        //[_shotBtn setImage:@"shot" forState:];
+    //[_shotBtn setImage:@"shot" forState:];
     //    [_shotBtn setImage:[UIImage imageNamed:@"shot_pause"] forState:UIControlStateNormal];
     //}
 }
 
 - (void) updateShotStatusText
 {
+    /**
     if(_shotStatus == kShotInit){
         _shotText.text = @"";
     }else if(_shotStatus == kShotPaused){
@@ -627,6 +631,7 @@ void c_slideAlpha() {
     }else if(_shotStatus == kShotting){
         _shotText.text = @"正在拍摄....";
     }
+     **/
 }
 
 - (void) realShot:(UIButton*)sender
@@ -677,7 +682,7 @@ void c_slideAlpha() {
             [weakSelf_SC showCameraCover:NO];
         });
     }];
-
+    
 }
 
 //Show the count down message

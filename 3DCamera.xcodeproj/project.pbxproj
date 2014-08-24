@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		18018E6219A5DF7A004ECEE0 /* shot_pause.png in Resources */ = {isa = PBXBuildFile; fileRef = 18018E6019A5DF7A004ECEE0 /* shot_pause.png */; };
-		18018E6319A5DF7A004ECEE0 /* shot_pause@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 18018E6119A5DF7A004ECEE0 /* shot_pause@2x.png */; };
 		18018E6619A6FD58004ECEE0 /* camera_btn.png in Resources */ = {isa = PBXBuildFile; fileRef = 18018E6419A6FD58004ECEE0 /* camera_btn.png */; };
 		18018E6719A6FD58004ECEE0 /* camera_btn@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 18018E6519A6FD58004ECEE0 /* camera_btn@2x.png */; };
 		180302D1199848B000563D03 /* RBVolumeButtons.m in Sources */ = {isa = PBXBuildFile; fileRef = 180302D0199848B000563D03 /* RBVolumeButtons.m */; };
@@ -318,6 +316,9 @@
 		18B3651A1920916300092AB8 /* EZMotionRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 18B365191920916300092AB8 /* EZMotionRecorder.m */; };
 		18B3651D1920926900092AB8 /* EZMotionImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 18B3651C1920926900092AB8 /* EZMotionImage.m */; };
 		18B365201920938F00092AB8 /* EZMotionRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 18B3651F1920938F00092AB8 /* EZMotionRecord.m */; };
+		18BF13D219A95CB400D0C56D /* EZCaptureCameraController.m in Sources */ = {isa = PBXBuildFile; fileRef = 18BF13D119A95CB400D0C56D /* EZCaptureCameraController.m */; };
+		18BF13D519A96AF800D0C56D /* shot_pause.png in Resources */ = {isa = PBXBuildFile; fileRef = 18BF13D319A96AF700D0C56D /* shot_pause.png */; };
+		18BF13D619A96AF800D0C56D /* shot_pause@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 18BF13D419A96AF800D0C56D /* shot_pause@2x.png */; };
 		18C0E76B1861A08700D694CE /* page_turn.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 18C0E76A1861A08700D694CE /* page_turn.aiff */; };
 		18C0E76E1861A0FF00D694CE /* EZSoundEffect.m in Sources */ = {isa = PBXBuildFile; fileRef = 18C0E76D1861A0FF00D694CE /* EZSoundEffect.m */; };
 		18C8FA4E19726D4D003D6A77 /* EZTouchDetail.m in Sources */ = {isa = PBXBuildFile; fileRef = 18C8FA4D19726D4D003D6A77 /* EZTouchDetail.m */; };
@@ -510,8 +511,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		18018E6019A5DF7A004ECEE0 /* shot_pause.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = shot_pause.png; sourceTree = "<group>"; };
-		18018E6119A5DF7A004ECEE0 /* shot_pause@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "shot_pause@2x.png"; sourceTree = "<group>"; };
 		18018E6419A6FD58004ECEE0 /* camera_btn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = camera_btn.png; sourceTree = "<group>"; };
 		18018E6519A6FD58004ECEE0 /* camera_btn@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "camera_btn@2x.png"; sourceTree = "<group>"; };
 		180302CF199848B000563D03 /* RBVolumeButtons.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RBVolumeButtons.h; sourceTree = "<group>"; };
@@ -927,6 +926,10 @@
 		18B3651C1920926900092AB8 /* EZMotionImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZMotionImage.m; sourceTree = "<group>"; };
 		18B3651E1920938F00092AB8 /* EZMotionRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZMotionRecord.h; sourceTree = "<group>"; };
 		18B3651F1920938F00092AB8 /* EZMotionRecord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZMotionRecord.m; sourceTree = "<group>"; };
+		18BF13D019A95CB400D0C56D /* EZCaptureCameraController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZCaptureCameraController.h; sourceTree = "<group>"; };
+		18BF13D119A95CB400D0C56D /* EZCaptureCameraController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZCaptureCameraController.m; sourceTree = "<group>"; };
+		18BF13D319A96AF700D0C56D /* shot_pause.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = shot_pause.png; sourceTree = "<group>"; };
+		18BF13D419A96AF800D0C56D /* shot_pause@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "shot_pause@2x.png"; sourceTree = "<group>"; };
 		18C0E76A1861A08700D694CE /* page_turn.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = page_turn.aiff; sourceTree = "<group>"; };
 		18C0E76C1861A0FF00D694CE /* EZSoundEffect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZSoundEffect.h; sourceTree = "<group>"; };
 		18C0E76D1861A0FF00D694CE /* EZSoundEffect.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZSoundEffect.m; sourceTree = "<group>"; };
@@ -1263,6 +1266,8 @@
 		180E2CB81990E11C00DE2AFA /* sccamera */ = {
 			isa = PBXGroup;
 			children = (
+				18BF13D019A95CB400D0C56D /* EZCaptureCameraController.h */,
+				18BF13D119A95CB400D0C56D /* EZCaptureCameraController.m */,
 				180302CF199848B000563D03 /* RBVolumeButtons.h */,
 				180302D0199848B000563D03 /* RBVolumeButtons.m */,
 				180E2CE61990E40E00DE2AFA /* images */,
@@ -1318,8 +1323,8 @@
 		180E2CE61990E40E00DE2AFA /* images */ = {
 			isa = PBXGroup;
 			children = (
-				18018E6019A5DF7A004ECEE0 /* shot_pause.png */,
-				18018E6119A5DF7A004ECEE0 /* shot_pause@2x.png */,
+				18BF13D319A96AF700D0C56D /* shot_pause.png */,
+				18BF13D419A96AF800D0C56D /* shot_pause@2x.png */,
 				180E2CE71990E42600DE2AFA /* meizi.jpg */,
 				180E2CE81990E42600DE2AFA /* touch_focus_x@2x.png */,
 				180E2CE91990E42600DE2AFA /* touch_focus_x.png */,
@@ -2426,7 +2431,6 @@
 				1870AFAB19829485005A663A /* icon_jb_white.png in Resources */,
 				1870B07719867FDC005A663A /* header_btn_forth_blue@2x.png in Resources */,
 				1870AFD419829485005A663A /* icon_star.png in Resources */,
-				18018E6319A5DF7A004ECEE0 /* shot_pause@2x.png in Resources */,
 				180E2D061990E42600DE2AFA /* touch_focus@2x.png in Resources */,
 				180E2D0C1990E42600DE2AFA /* close_cha@2x.png in Resources */,
 				1870B01919829485005A663A /* drawer_nav_chat.png in Resources */,
@@ -2497,7 +2501,6 @@
 				1870AFCA19829485005A663A /* track_btn_zoomin.png in Resources */,
 				1870AFC619829485005A663A /* track_btn_zoomout.png in Resources */,
 				1870AFBB19829485005A663A /* icon_tj@2x.png in Resources */,
-				18018E6219A5DF7A004ECEE0 /* shot_pause.png in Resources */,
 				18E346FD183DF9C400C9D89D /* default-like-btn-pressed@2x.png in Resources */,
 				1870AFF819829485005A663A /* login_bg@2x.png in Resources */,
 				186EE566191C88B500212BF9 /* shot_low.aiff in Resources */,
@@ -2510,6 +2513,7 @@
 				1870B00519829485005A663A /* drawer_nav_diary.png in Resources */,
 				1841DC121907782B00213EB6 /* feather_icon@2x.png in Resources */,
 				1870AF7C19829485005A663A /* header_icon_bb_white.png in Resources */,
+				18BF13D519A96AF800D0C56D /* shot_pause.png in Resources */,
 				1870AF8919829485005A663A /* header_icon_nb_white@2x.png in Resources */,
 				18F58B6C18719071006CB966 /* border_right.png in Resources */,
 				1870AF8219829485005A663A /* header_icon_jb_white.png in Resources */,
@@ -2532,6 +2536,7 @@
 				180E2D021990E42600DE2AFA /* meizi.jpg in Resources */,
 				1870AF9119829485005A663A /* header_icon_tw_white@2x.png in Resources */,
 				1870AF9219829485005A663A /* header_icon_xw_white.png in Resources */,
+				18BF13D619A96AF800D0C56D /* shot_pause@2x.png in Resources */,
 				1870AF9519829485005A663A /* header_icon_xy_white@2x.png in Resources */,
 				180E2D151990E42600DE2AFA /* shot.png in Resources */,
 				1870B00719829485005A663A /* drawer_nav_group_sel.png in Resources */,
@@ -2887,6 +2892,7 @@
 				18E3477D183DFAA400C9D89D /* EZNetworkUtility.m in Sources */,
 				18B3651A1920916300092AB8 /* EZMotionRecorder.m in Sources */,
 				18DE991C19404734008C1B3F /* JSQMessagesComposerTextView.m in Sources */,
+				18BF13D219A95CB400D0C56D /* EZCaptureCameraController.m in Sources */,
 				180E2CCD1990E16800DE2AFA /* DCFrameView.m in Sources */,
 				186EC124193869FD0011C145 /* FaceppAPI.m in Sources */,
 				18E34778183DFAA400C9D89D /* EZMotionUtility.m in Sources */,

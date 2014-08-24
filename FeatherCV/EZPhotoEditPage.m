@@ -12,7 +12,7 @@
 #import "EZShotTask.h"
 #import "EZStoredPhoto.h"
 #import "EZMessageCenter.h"
-#import "SCCaptureCameraController.h"
+#import "EZCaptureCameraController.h"
 #import "RAViewController.h"
 
 @interface EZPhotoEditPage ()
@@ -131,7 +131,7 @@
 - (void) addPhoto:(id)sender
 {
     EZStoredPhoto* storedPhoto = [_photos objectAtIndex:_currentPos];
-    SCCaptureCameraController* sc = [[SCCaptureCameraController alloc] init];
+    EZCaptureCameraController* sc = [[EZCaptureCameraController alloc] init];
     sc.shotType = kShotSingle;
     //sc.photo = storedPhoto;
     
@@ -166,7 +166,7 @@
 - (void) replace:(id)sender
 {
     EZStoredPhoto* storedPhoto = [_photos objectAtIndex:_currentPos];
-    SCCaptureCameraController* sc = [[SCCaptureCameraController alloc] init];
+    EZCaptureCameraController* sc = [[EZCaptureCameraController alloc] init];
     sc.shotType = kShotSingle;
     sc.photo = storedPhoto;
     
@@ -226,7 +226,7 @@
     if(_photos.count > 0){
         EZStoredPhoto* sp = [_photos objectAtIndex:_currentPos];
         [_imageView setImageWithURL:str2url(sp.localFileURL?sp.localFileURL:sp.remoteURL)];
-        _posText.text = [NSString stringWithFormat:@"第%i张", _currentPos];
+        _posText.text = [NSString stringWithFormat:@"第%i张", _currentPos + 1];
     }else{
         _posText.text = @"";
         [_imageView setImage:nil];
@@ -325,6 +325,7 @@
     
     if(_showShot){
         _deleteBtn.frame = CGRectMake(0, 0, CurrentScreenWidth, 44);
+        [_toolBar addSubview:_deleteBtn];
     }else{
         [_toolBar addSubview:_replaceBtn];
         [_toolBar addSubview:_deleteBtn];
@@ -338,7 +339,7 @@
     [[EZMessageCenter getInstance] registerEvent:EZShotTaskChanged block:^(id obj){
         EZDEBUG(@"shot photo changed");
     }];
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addPhoto:)];
+    //self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addPhoto:)];
     // Do any additional setup after loading the view.
 }
 

@@ -24,7 +24,7 @@
 #import "EZMainPhotoCell.h"
 #import "EZShotTask.h"
 #import "EZStoredPhoto.h"
-#import "SCCaptureCameraController.h"
+#import "EZCaptureCameraController.h"
 #import "EZMessageCenter.h"
 #import "EZPreviewView.h"
 #import "EZDetailPage.h"
@@ -89,7 +89,7 @@
     }
     NSInteger total = 12 + buttonIndex * 6;
     
-    SCCaptureCameraController *cam = [[SCCaptureCameraController alloc] init];
+    EZCaptureCameraController *cam = [[EZCaptureCameraController alloc] init];
     cam.proposedNumber = total;
     cam.shotType = kNormalShotTask;
     cam.confirmClicked = ^(EZShotTask* task){
