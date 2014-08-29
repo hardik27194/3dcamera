@@ -76,8 +76,9 @@
 - (void) viewWillLayoutSubviews
 {
     [super viewWillLayoutSubviews];
-    self.collectionView.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height);
-    self.collectionView.backgroundColor = [UIColor whiteColor];
+    self.collectionView.frame = CGRectMake(0, 44, self.view.bounds.size.width, self.view.bounds.size.height-88);
+    self.collectionView.backgroundColor = MainBackgroundColor;//[UIColor whiteColor];
+    _bottomBar.y = self.view.bounds.size.height - 44;
 }
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
@@ -110,6 +111,10 @@
     
 }
 
+-(UIStatusBarStyle)preferredStatusBarStyle{
+    return UIStatusBarStyleLightContent;
+}
+
 - (void) addClicked:(id)obj
 {
     //[self raiseCamera:nil personID:nil];
@@ -136,6 +141,46 @@
     }];
 }
 
+- (void) topClicked:(UIButton*)btn
+{
+    if(btn != _currentTopBtn){
+        //_currentTopBtn
+        int pos = [_topBtns indexOfObject:btn];
+        CGFloat stepLen = CurrentScreenWidth/_topBtns.count;
+        CGFloat nextPos = pos * stepLen + (stepLen - _bottomLine.width)/2.0;
+        
+        [UIView animateWithDuration:0.3 animations:^(){
+            _bottomLine.left = nextPos;
+        } completion:^(BOOL completed){
+            [btn setTitleColor:ClickedColor forState:UIControlStateNormal];
+            [_currentTopBtn setTitleColor:WhiteTitleColor forState:UIControlStateNormal];
+            _currentTopBtn = btn;
+            
+        }];
+        [self btnClicked:pos];
+    }
+}
+
+- (void) btnClicked:(NSInteger)pos
+{
+    EZDEBUG(@"Botton clicked:%i", pos);
+    _currentPos = pos;
+    if(pos == 0 || pos == 1){
+        NSString* pid = pos?nil:currentLoginID;
+        _loadingActivity.hidden = NO;
+        [_loadingActivity startAnimating];
+        [[EZDataUtil getInstance] queryTaskByPersonID:pid success:^(NSArray* tasks){
+            _uploadedPhotos = [[NSMutableArray alloc] initWithArray:tasks];
+            [_collectionView reloadData];
+            [_loadingActivity stopAnimating];
+            _loadingActivity.hidden = YES;
+        } failed:^(id err){
+            [_loadingActivity stopAnimating];
+            _loadingActivity.hidden = YES;
+        }];
+    }else{
+    }
+}
 
 - (void) viewDidLoad
 {
@@ -146,9 +191,35 @@
     _collectionView.dataSource = self;
     //_collectionView.backgroundColor = [UIColor clearColor];
     [self.view addSubview:_collectionView];
+    _loadingActivity = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+    [self.view addSubview:_loadingActivity];
+    _loadingActivity.hidden = YES;
+    //self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addClicked:)];
+    
+    //self.title = @"P3D";
+    NSArray* texts = @[@"我的", @"广场", @"好友"];
+    NSMutableArray* btns = [[NSMutableArray alloc] init];
+    _topBar = [[UIView alloc] initWithFrame:CGRectMake(0, 20, CurrentScreenWidth, 44)];
+    _topBar.backgroundColor = MainBackgroundColor;
+    CGFloat stepLen = CurrentScreenWidth/texts.count;
+    
+    for(int i = 0; i < texts.count; i ++){
+        CGFloat startX = stepLen * i;
+        NSString* title = [texts objectAtIndex:i];
+        UIButton* btn = [UIButton createButton:CGRectMake(startX, 0, stepLen, 44) font:[UIFont boldSystemFontOfSize:20] color:WhiteTitleColor align:NSTextAlignmentCenter];
+        [btn setTitle:title forState:UIControlStateNormal];
+        [btns addObject:btn];
+        [btn addTarget:self action:@selector(topClicked:) forControlEvents:UIControlEventTouchUpInside];
+        [_topBar addSubview:btn];
+    }
+    _topBtns = btns;
+    _bottomLine = [[UIView alloc] initWithFrame:CGRectMake((stepLen - 55)/2.0, 41, 55, 2)];
+    _bottomLine.backgroundColor = ClickedColor;
+    _currentTopBtn = [btns objectAtIndex:0];
+    [_currentTopBtn setTitleColor:ClickedColor forState:UIControlStateNormal];
+    [_topBar addSubview:_bottomLine];
 
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addClicked:)];
-    self.title = @"P3D";
+    [self.view addSubview:_topBar];
     [[EZMessageCenter getInstance] registerEvent:EZShotPhotos block:^(EZShotTask* task){
         EZDEBUG(@"I receieved photo");
         if(!task){
@@ -162,26 +233,45 @@
         //}
         
     }];
+    
+
     UIImage* iconImage = [UIImage imageNamed:@"camera_btn"];
     
-    UIButton* shotBtn = [UIButton createButton:CGRectMake((CurrentScreenWidth - iconImage.size.width)/2, CurrentScreenHeight - iconImage.size.height - 5, iconImage.size.width, iconImage.size.height) font:[UIFont systemFontOfSize:10] color:[UIColor whiteColor] align:NSTextAlignmentCenter];
     
-    [shotBtn setImage:iconImage forState:UIControlStateNormal];
+    _bottomBar = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, 44)];
+    _bottomBar.backgroundColor = MainBackgroundColor;
+    
+    [self.view addSubview:_bottomBar];
+    CGFloat imageWidth = 44 * iconImage.size.width/iconImage.size.height;
+    UIImageView* image = [[UIImageView alloc] initWithFrame:CGRectMake((80-imageWidth)/2.0, 0, imageWidth, 44)];
+  
+    image.image = iconImage;
+    UIButton* shotBtn = [UIButton createButton:CGRectMake((CurrentScreenWidth - 80)/2, 0, 80, 44) font:[UIFont systemFontOfSize:10] color:[UIColor whiteColor] align:NSTextAlignmentCenter];
+    shotBtn.backgroundColor = ClickedColor;
+    [shotBtn addSubview:image];
+    //[shotBtn setImage:iconImage forState:UIControlStateNormal];
     [shotBtn addTarget:self action:@selector(addClicked:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:shotBtn];
+    [_bottomBar addSubview:shotBtn];
+    
     [[EZMessageCenter getInstance] registerEvent:EZLoginSuccess block:^(EZPerson* ps){
+        /**
         [[EZDataUtil getInstance] queryTaskByPersonID:currentLoginID success:^(NSArray* tasks){
             _uploadedPhotos = [[NSMutableArray alloc] initWithArray:tasks];
             [_collectionView reloadData];
         } failed:^(id err){}];
+         **/
+        [self btnClicked:_currentPos];
     }];
     EZDEBUG(@"loginID:%@", currentLoginID);
     
     if(currentLoginID){
+        /**
         [[EZDataUtil getInstance] queryTaskByPersonID:currentLoginID success:^(NSArray* tasks){
             _uploadedPhotos = [[NSMutableArray alloc] initWithArray:tasks];
             [_collectionView reloadData];
         } failed:^(id err){}];
+         **/
+        [self btnClicked:_currentPos];
     }
     
     
@@ -193,7 +283,8 @@
 - (void) viewWillAppear:(BOOL)animated
 {
     //[self.navigationController]
-    [self.navigationController setNavigationBarHidden:NO animated:YES];
+    //[self.navigationController setNavigationBarHidden:NO animated:YES];
+    [self.navigationController setNavigationBarHidden:YES animated:YES];
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
@@ -224,11 +315,16 @@
     EZShotTask* shotTask = [_uploadedPhotos objectAtIndex:indexPath.row];
     //EZTrackRecord* record = [_recorders objectAtIndex:indexPath.row];
     //[cell.name setTitle:desc.name forState:UIControlStateNormal];
-    cell.name.text = shotTask.name;
+    cell.name.text = shotTask.name?shotTask.name:@"未命名";
     cell.updateDate.text = [[EZDataUtil getInstance].titleFormatter stringFromDate:shotTask.shotDate];
     cell.photoCount.text = [NSString stringWithFormat:@"共%i张", shotTask.photos.count];
-    EZStoredPhoto* storePhoto = [shotTask.photos objectAtIndex:0];
-    [cell.photo setImageWithURL:str2url(storePhoto.remoteURL)];
+    EZStoredPhoto* storePhoto = nil;
+    if(shotTask.photos.count){
+        EZStoredPhoto* storePhoto = [shotTask.photos objectAtIndex:0];
+        [cell.photo setImageWithURL:str2url(storePhoto.remoteURL)];
+    }else{
+        [cell.photo setImage:nil];
+    }
     __weak EZMainPage* weakSelf = self;
     
     cell.editClicked = ^(id obj){

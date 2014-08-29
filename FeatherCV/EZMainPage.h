@@ -26,6 +26,20 @@
 
 @property (nonatomic, strong) NSDate* date;
 
+
+@property (nonatomic, strong) UIView* topBar;
+
+@property (nonatomic, strong) NSArray* topBtns;
+
+@property (nonatomic, strong) UIButton* currentTopBtn;
+
+@property (nonatomic, strong) UIView* bottomLine;
+
+@property (nonatomic, strong) UIView* bottomBar;
+
+@property (nonatomic, strong) UIActivityIndicatorView* loadingActivity;
+
+@property (nonatomic, assign) NSInteger currentPos;
 //@property (nonatomic, strong) NSMutableArray* uploadedPhotos;
 
 @end

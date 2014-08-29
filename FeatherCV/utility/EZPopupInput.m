@@ -53,7 +53,8 @@
     }
     if(_haveDelete){
         beginYPos = self.bounds.size.height - EZInputItemHeight;
-        UIView* border = [[UIView alloc] initWithFrame:CGRectMake(0, beginYPos, self.bounds.size.width, 1)];
+        UIView* border = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.bounds.size.width, 1)];
+        border.backgroundColor = EZBorderColor;
         beginYPos++;
         UIButton* deleteButton = [UIButton createButton:CGRectMake(0, beginYPos, self.bounds.size.width, 48) font:[UIFont boldSystemFontOfSize:17] color:EZAlertColor align:NSTextAlignmentCenter];
         
@@ -62,7 +63,7 @@
         UIImageView* garbageCan = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"icon_delete"]];
         [garbageCan setPosition:CGPointMake(CurrentScreenWidth/2.0 - 80.0, (EZInputItemHeight - garbageCan.height)/2.0)];
         [deleteButton addSubview:garbageCan];
-        [self addSubview:border];
+        [deleteButton addSubview:border];
         [self addSubview:deleteButton];
     }
 }
@@ -71,14 +72,29 @@
 {
     UIView* inputView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.bounds.size.width, EZInputItemHeight)];
     //inputView.backgroundColor = randBack(nil);
+
     UILabel* inputName = [UILabel createLabel:CGRectMake(14, (EZInputItemHeight - 17)/2.0, 150, 17) font:[UIFont systemFontOfSize:15] color:EZGrayInputTextColor];
     [inputView addSubview:inputName];
     inputName.text = item.inputName;
+    UILabel* unitName = nil;
     CGFloat width = [inputName.text sizeWithAttributes:@{NSFontAttributeName:inputName.font}].width;
     EZDEBUG(@"adjusted width:%f", width);
     [inputName setWidth:width];
     if(item.type == kFloatValue || item.type == kStringValue){
-        UITextField* textField = [EZTextField creatTextField:CGRectMake(self.bounds.size.width - 110, (EZInputItemHeight - 30)/2.0, 100, 30) textColor:EZGrayInputTextColor font:[UIFont systemFontOfSize:17] alignment:NSTextAlignmentRight borderColor:EZBorderColor padding:CGSizeMake(10, 0)];
+        CGFloat leftGap = 5;
+        /**
+        if(item.unitName){
+            unitName = [UILabel createLabel:CGRectMake(self.bounds.size.width - 22, 0, 20,EZInputItemHeight) font:[UIFont systemFontOfSize:14] color:EZGrayInputTextColor];
+            unitName.text = item.unitName;
+            [unitName fitContent:NO];
+            [inputView addSubview:unitName];
+            leftGap = self.bounds.size.width - unitName.left;
+            //unitName.left
+        }
+         **/
+        EZDEBUG(@"unitIs:%@, left is:%f", item.unitName, unitName.left);
+        UITextField* textField = [EZTextField creatTextField:CGRectMake(self.bounds.size.width - 105 - leftGap, (EZInputItemHeight - 30)/2.0, 100, 30) textColor:EZGrayInputTextColor font:[UIFont systemFontOfSize:17] alignment:NSTextAlignmentRight borderColor:EZBorderColor padding:CGSizeMake(10, 0)];
+        
         if(item.type == kFloatValue){
             textField.keyboardType = UIKeyboardTypeNumberPad;
             NSNumber* num = item.defaultValue;
@@ -96,16 +112,21 @@
                 textField.text = @"";
             }
         }
+        [inputView addSubview:textField];
+       
         textField.returnKeyType = UIReturnKeyDone;
         textField.delegate = item;
-        [textField fitContent:NO];
-        [inputView addSubview:textField];
+        
+        CGFloat limit = textField.right - inputName.right - 10;
+        item.widthLimit = limit;
+        [textField fitContent:NO limit:limit];
+       
         
     }else if(item.type == kDateValue){
         UITextField* textField = [EZTextField creatTextField:CGRectMake(self.bounds.size.width - 110, (EZInputItemHeight - 30)/2.0, 100, 30) textColor:EZGrayInputTextColor font:[UIFont systemFontOfSize:17] alignment:NSTextAlignmentRight borderColor:EZBorderColor padding:CGSizeMake(10, 0)];
         
         textField.text = [[EZDataUtil getInstance].inputDateFormatter stringFromDate:item.defaultValue];
-        [textField fitContent:NO];
+        
         UIDatePicker *datePicker = [[UIDatePicker alloc] init];
         datePicker.datePickerMode = UIDatePickerModeDateAndTime;
         datePicker.date = item.defaultValue;
@@ -119,6 +140,10 @@
             weakItem.changedValue = picker.date;
         };
         [inputView addSubview:textField];
+        CGFloat limit = textField.right - inputName.right - 10;
+        item.widthLimit = limit;
+        [textField fitContent:NO limit:limit];
+
     }
     return inputView;
 }
@@ -140,7 +165,17 @@
     _haveDelete = haveDelete;
     self = [super initWithFrame:CGRectMake(0, 0, EZInputViewWidth, bodyHeight + EZPopHeaderHeight)];
     EZDEBUG(@"final height:%f, bounds:%f, bodyHeight:%f, count:%i", bodyHeight+EZPopHeaderHeight, self.bounds.size.height, bodyHeight, count);
-    self.title.text = title;
+    if(title){
+        self.title.text = title;
+    }else{
+    
+        if(haveDelete){
+            self.title.text = @"添加新记录";
+        }else{
+            self.title.text = @"修改记录";
+        }
+    }
+    
     self.saveBlock = saveBlock;
     _inputItems = inputItems;
     _deleteBlock = deleteBlock;

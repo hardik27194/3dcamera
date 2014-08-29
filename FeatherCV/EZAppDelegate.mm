@@ -168,6 +168,8 @@
     [[UIScrollView appearance] setIndicatorStyle:UIScrollViewIndicatorStyleWhite];
     
     [[UILabel appearance] setFont:[UIFont fontWithName:@"HelveticaNeue-UltraLight" size:14.0]];
+    
+    //[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
 }
 
 - (void) setupKeyboard

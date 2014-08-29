@@ -101,6 +101,22 @@
 
 @implementation UIImage (ImageEffects)
 
+- (UIImage*) changeImageColor:(UIColor *)color
+{
+    
+    CGRect rect = CGRectMake(0, 0, self.size.width, self.size.height);
+    UIGraphicsBeginImageContext(rect.size);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextClipToMask(context, rect, self.CGImage);
+    CGContextSetFillColorWithColor(context, [[UIColor redColor] CGColor]);
+    CGContextFillRect(context, rect);
+    UIImage *img = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    UIImage *flippedImage = [UIImage imageWithCGImage:img.CGImage
+                                                scale:1.0 orientation: UIImageOrientationDownMirrored];
+    return flippedImage;
+}
 
 - (UIImage *)applyLightEffect
 {

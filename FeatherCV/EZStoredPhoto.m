@@ -7,8 +7,16 @@
 //
 
 #import "EZStoredPhoto.h"
+#import "EZPhotoInfo.h"
 
 @implementation EZStoredPhoto
+
+- (id) init
+{
+    self = [super init];
+    _infos = [[NSMutableArray alloc] init];
+    return self;
+}
 
 - (void) populate:(NSDictionary*)dict
 {
@@ -16,6 +24,12 @@
     _taskID = [dict objectForKey:@"taskID"];
     _photoID = [dict objectForKey:@"photoID"];
     _sequence = [[dict objectForKey:@"sequence"] integerValue];
+    NSArray* infos = [dict objectForKey:@"infos"];
+    for(NSDictionary* infoDict in infos){
+        EZPhotoInfo* info = [[EZPhotoInfo alloc] init];
+        [info populate:infoDict];
+        [_infos addObject:info];
+    }
 }
 
 @end

@@ -27,6 +27,7 @@ typedef enum {
 @class EZRecordTypeDesc;
 @class EZStoredPhoto;
 @class EZShotTask;
+@class EZPhotoInfo;
 @interface EZAlbumResult : NSObject
 
 @property (nonatomic, assign) int totalPhoto;
@@ -38,6 +39,10 @@ typedef enum {
 @interface EZDataUtil : NSObject
 
 + (EZDataUtil*) getInstance;
+
+- (void) createPhotoInfo:(EZPhotoInfo*)photoInfo success:(EZEventBlock)success failed:(EZEventBlock)failed;
+
+- (void) updatePhotoInfo:(EZPhotoInfo*)photoInfo success:(EZEventBlock)success failed:(EZEventBlock)failed;
 
 - (void) createPersonID:(EZEventBlock)success failed:(EZEventBlock)failure;
 

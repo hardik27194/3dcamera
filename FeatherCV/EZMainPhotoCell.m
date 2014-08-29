@@ -23,13 +23,14 @@
         //[_starButton addSubview:starImg];
         //_starImg.tag = 1677;
         //[_starButton addTarget:self action:@selector(starClicked:) forControlEvents:UIControlEventTouchUpInside];
-        UIView* grayCover = [[UIView alloc] initWithFrame:self.bounds];
-        grayCover.backgroundColor = RGBA(0, 0, 0, 45);
+        UIView* grayCover = [[UIView alloc] initWithFrame:_photo.frame];
+        grayCover.backgroundColor = RGBA(0, 0, 0, 90);
+        self.contentView.backgroundColor = CellBackgroundColor;
         
-        _name = [UILabel createLabel:CGRectMake(5, 5, frame.size.width - 10, 16) font:[UIFont boldSystemFontOfSize:16] color:[UIColor whiteColor]];
+        _name = [UILabel createLabel:CGRectMake(5, 5, frame.size.width - 10, 16) font:[UIFont boldSystemFontOfSize:16] color:RGBCOLOR(230, 230, 230)];
         _name.textAlignment = NSTextAlignmentLeft;
         
-        _photoCount = [UILabel createLabel:CGRectMake(5, 25, frame.size.width - 10, 14) font:[UIFont systemFontOfSize:12] color:RGBCOLOR(190, 190, 190)];
+        _photoCount = [UILabel createLabel:CGRectMake(5, 25, frame.size.width - 10, 14) font:[UIFont systemFontOfSize:12] color:RGBCOLOR(210, 210, 210)];
         _photoCount.textAlignment = NSTextAlignmentLeft;
         
         /**
@@ -52,7 +53,7 @@
         //[self.contentView addSubview:_updateDate];
         [self.contentView addSubview:_editBtn];
         [self.contentView addSubview:_shareBtn];
-        self.contentView.backgroundColor = [UIColor whiteColor];
+        //self.contentView.backgroundColor = [UIColor whiteColor];
     }
     return self;
 }

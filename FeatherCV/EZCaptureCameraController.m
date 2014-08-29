@@ -83,7 +83,6 @@
         // Custom initialization
         alphaTimes = -1;
         currTouchPoint = CGPointZero;
-        
         _cameraBtnSet = [[NSMutableSet alloc] init];
     }
     return self;
@@ -110,7 +109,7 @@
     //session manager
     SCCaptureSessionManager *manager = [[SCCaptureSessionManager alloc] init];
     
-    
+    /**
     _buttonStealer = [[RBVolumeButtons alloc] init];
     _buttonStealer.upBlock = ^{
         EZDEBUG(@"volume up");
@@ -120,6 +119,7 @@
         EZDEBUG(@"volume down");
         [weakSelf takePictureBtnPressed:nil];
     };
+     **/
     //[_buttonStealer startStealingVolumeButtonEvents];
     //AvcaptureManager
     if (CGRectEqualToRect(_previewRect, CGRectZero)) {
@@ -152,7 +152,7 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     [self.navigationController setNavigationBarHidden:YES animated:YES];
-    [_buttonStealer startStealingVolumeButtonEvents];
+    //[_buttonStealer startStealingVolumeButtonEvents];
 }
 
 
@@ -181,7 +181,7 @@
 #endif
     
     self.captureManager = nil;
-    [_buttonStealer stopStealingVolumeButtonEvents];
+    //[_buttonStealer stopStealingVolumeButtonEvents];
 }
 
 
@@ -305,14 +305,14 @@
     CGFloat downH = (isHigherThaniPhone4_SC ? CAMERA_MENU_VIEW_HEIGH : 0);
     CGFloat cameraBtnLength = 90;
     _shotBtn = [self buildButton:CGRectMake((SC_APP_SIZE.width - cameraBtnLength) / 2, (_bottomContainerView.frame.size.height - downH - cameraBtnLength) / 2 , cameraBtnLength, cameraBtnLength)
-                    normalImgStr:@"shot.png"
+                    normalImgStr:@"shot_s.png"
                  highlightImgStr:@""//"shot_h.png"
                   selectedImgStr:@""
                           action:@selector(takePictureBtnPressed:)
                       parentView:_bottomContainerView];
-    
-    
-    _shotImages = [UIButton createButton:CGRectMake(20, (_bottomContainerView.frame.size.height - 45)/2.0, 45, 45) font:[UIFont systemFontOfSize:10] color:[UIColor whiteColor] align:NSTextAlignmentCenter];//[[UIImageView alloc] initWithFrame:CGRectMake(20, _bottomContainerView.frame.size.height - downH - cameraBtnLength, 45 , 45)];
+    CGFloat pos = (_bottomContainerView.frame.size.height - 45)/2.0;
+    pos = isLongScreenSize?pos:pos - 20;
+    _shotImages = [UIButton createButton:CGRectMake(20, pos, 45, 45) font:[UIFont systemFontOfSize:10] color:[UIColor whiteColor] align:NSTextAlignmentCenter];//[[UIImageView alloc] initWithFrame:CGRectMake(20, _bottomContainerView.frame.size.height - downH - cameraBtnLength, 45 , 45)];
     _shotImages.layer.cornerRadius = 5;
     _shotImages.clipsToBounds = TRUE;
     _shotImages.backgroundColor = [UIColor clearColor];
@@ -610,9 +610,9 @@ void c_slideAlpha() {
     //[_cameraBtnSet]
     //if(_shotStatus == kShotting){
     if(_isPaused){
-        [_shotBtn setImage:[UIImage  imageNamed:@"shot"] forState:UIControlStateNormal];
+        [_shotBtn setImage:[UIImage  imageNamed:@"shot_s"] forState:UIControlStateNormal];
     }else{
-        [_shotBtn setImage:[UIImage  imageNamed:@"shot_pause"] forState:UIControlStateNormal];
+        [_shotBtn setImage:[UIImage  imageNamed:@"shot_pause_s"] forState:UIControlStateNormal];
     }
     //}else{
     //    _isPaused = false;
@@ -663,7 +663,7 @@ void c_slideAlpha() {
             }else{
                 _shotStatus = kShotDone;
                 //_areCapturing = false;
-                [_shotBtn setImage:[UIImage imageNamed:@"shot"] forState:UIControlStateNormal];
+                [_shotBtn setImage:[UIImage imageNamed:@"shot_s"] forState:UIControlStateNormal];
                 //EZDEBUG(@"complete shot");
                 _currentCount = 0;
             }

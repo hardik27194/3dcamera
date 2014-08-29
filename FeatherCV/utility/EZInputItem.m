@@ -7,6 +7,7 @@
 //
 
 #import "EZInputItem.h"
+#import "EZExtender.h"
 
 @implementation EZInputItem
 
@@ -27,7 +28,13 @@
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
 {
-    [textField fitContent:NO];
+    [textField fitContent:NO limit:_widthLimit];
+    EZDEBUG(@"origin:%@, added:%@, range:%@", textField.text, string, NSStringFromRange(range));
+    if(textField.text){
+        _changedValue  = [NSString stringWithFormat:@"%@%@",textField.text,string];
+    }else{
+        _changedValue = string;
+    }
     return true;
 }
 
@@ -39,12 +46,21 @@
     }
 }
 
-- (id) initWithName:(NSString*)inputName type:(EZinputValueType)type defaultValue:(id)defaultValue
+- (id) initWithName:(NSString*)inputName type:(EZInputValueType)type defaultValue:(id)defaultValue
+{
+    return [self initWithName:inputName type:type defaultValue:defaultValue unitName:nil parameterName:nil];
+}
+
+
+- (id) initWithName:(NSString*)inputName type:(EZInputValueType)type defaultValue:(id)defaultValue unitName:(NSString*)unitName parameterName:(NSString*)paramName
 {
     self = [super init];
     _inputName = inputName;
     _type = type;
     _defaultValue = defaultValue;
+    _changedValue = defaultValue;
+    _unitName = unitName;
+    _parameterName = paramName;
     return self;
 }
 //How could I knew to which window to raise it?

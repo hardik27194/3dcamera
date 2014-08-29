@@ -275,7 +275,7 @@ typedef void  (^ IterateOperation)(id obj);
 
 - (void) enableTextWrap;
 
-- (void) fitContent:(BOOL)left;
+- (void) fitContent:(BOOL)left limit:(CGFloat)limit;
 
 @end
 /**

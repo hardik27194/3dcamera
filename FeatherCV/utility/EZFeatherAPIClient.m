@@ -31,7 +31,7 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         _sharedClient = [[EZFeatherAPIClient alloc] initWithBaseURL:[NSURL URLWithString:baseServiceURL]];
-        _sharedClient.requestSerializer = [AFJSONRequestSerializer serializer];
+        _sharedClient.requestSerializer = [AFHTTPRequestSerializer serializer];
     });
     
     return _sharedClient;

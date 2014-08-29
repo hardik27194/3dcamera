@@ -11,6 +11,12 @@
 #include "EZConstants.h"
 //#include <opencv2/opencv.hpp>
 //Will hold the Application related constants.
+typedef enum {
+    kDateValue,
+    kFloatValue,
+    kStringValue,
+    kImageValue
+} EZInputValueType;
 
 typedef enum {
     kUploadInit,
@@ -54,11 +60,6 @@ typedef enum {
     kMotherWeight
 } EZTrackRecordType;
 
-typedef enum {
-    kDateValue,
-    kFloatValue,
-    kStringValue
-} EZinputValueType;
 
 #define EZLoginSuccess @"EZLoginSuccess"
 
@@ -67,6 +68,14 @@ typedef enum {
 #define EZShotTaskChanged @"EZShotTaskChanged"
 
 #define EZPasswordInputHeight 45.0
+
+#define MainBackgroundColor RGBCOLOR(44, 44, 45)
+
+#define CellBackgroundColor RGBCOLOR(60, 60, 60)
+
+#define BottomBarBackgroundColor RGBCOLOR(24, 24, 27)
+
+#define WhiteTitleColor RGBCOLOR(220, 220, 220)
 
 #define EZLoginInputTextColor RGBCOLOR(107, 107, 107)
 
@@ -282,8 +291,8 @@ typedef enum {
 //#define baseServiceURL @"http://10.0.1.6:8080/"
 //every request need to have session with it.
 //#define baseServiceURL @"http://www.enjoyxue.com:8080/%@;jsessionid=%@?"
-//#define baseServiceURL @"http://192.168.1.105:8080/"
-#define baseServiceURL @"http://www.enjoyxue.com:8080/"
+#define baseServiceURL @"http://192.168.1.105:8080/"
+//#define baseServiceURL @"http://www.enjoyxue.com:8080/"
 //#define baseServiceURL @"http://192.168.1.101:8080/"
 
 #define EZButtonGreen RGBCOLOR(56, 216, 116)

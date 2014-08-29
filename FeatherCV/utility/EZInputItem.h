@@ -11,7 +11,9 @@
 
 @interface EZInputItem : NSObject<UITextFieldDelegate>
 
-- (id) initWithName:(NSString*)inputName type:(EZinputValueType)type defaultValue:(id)defaultValue;
+- (id) initWithName:(NSString*)inputName type:(EZInputValueType)type defaultValue:(id)defaultValue;
+
+- (id) initWithName:(NSString*)inputName type:(EZInputValueType)type defaultValue:(id)defaultValue unitName:(NSString*)unitName parameterName:(NSString*)paramName;
 
 @property (nonatomic, strong) NSString* inputName;
 
@@ -19,11 +21,17 @@
 
 @property (nonatomic, strong) id changedValue;
 
-@property (nonatomic, assign) EZinputValueType type;
+@property (nonatomic, assign) EZInputValueType type;
 
 @property (nonatomic, strong) EZEventBlock pickerRaiser;
 
 @property (nonatomic, strong) EZEventBlock valueChanged;
+
+@property (nonatomic, strong) NSString* unitName;
+
+@property (nonatomic, strong) NSString* parameterName;
+
+@property (nonatomic, assign) CGFloat widthLimit;
 
 - (void) valueChanged:(id)obj;
 

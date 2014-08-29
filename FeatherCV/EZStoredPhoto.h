@@ -27,6 +27,8 @@
 
 @property (nonatomic, assign) EZUploadStatus uploadStatus;
 
+@property (nonatomic, strong) NSMutableArray* infos;
+
 - (void) populate:(NSDictionary*)dict;
 
 @end

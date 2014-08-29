@@ -39,6 +39,7 @@
 #import "EZProfile.h"
 #import "EZStoredPhoto.h"
 #import "EZShotTask.h"
+#import "EZPhotoInfo.h"
 
 
 @implementation EZAlbumResult
@@ -57,9 +58,34 @@
     return instance;
 }
 
+- (void) createPhotoInfo:(EZPhotoInfo*)photoInfo success:(EZEventBlock)success failed:(EZEventBlock)failed
+{
+    NSDictionary* params = [photoInfo toDict];
+    EZDEBUG(@"final parameter:%@", params);
+    [EZNetworkUtility postJson:[NSString stringWithFormat:@"%@p3d/info/create", baseServiceURL]  parameters:params complete:^(NSDictionary* dict){
+        photoInfo.infoID = [dict objectForKey:@"infoID"];
+        if(success){
+            success(photoInfo);
+        }
+    } failblk:failed];
+}
+
+- (void) updatePhotoInfo:(EZPhotoInfo*)photoInfo success:(EZEventBlock)success failed:(EZEventBlock)failed
+{
+    NSDictionary* params = [photoInfo toDict];
+    EZDEBUG(@"final parameter:%@", params);
+    [EZNetworkUtility postJson:[NSString stringWithFormat:@"%@p3d/info/update", baseServiceURL]  parameters:params complete:success failblk:failed];
+}
+
+
+
 - (void) queryTaskByPersonID:(NSString*)pid success:(EZEventBlock)success failed:(EZEventBlock)failure
 {
-    [EZNetworkUtility postJson:[NSString stringWithFormat:@"p3d/account/query?personID=%@", currentLoginID] parameters:nil complete:^(NSArray* arr){
+    NSString* queryURL = @"p3d/account/query";
+    if(pid){
+        queryURL = [NSString stringWithFormat:@"p3d/account/query?personID=%@", pid];
+    }
+    [EZNetworkUtility postJson:queryURL parameters:nil complete:^(NSArray* arr){
         EZDEBUG(@"returned value:%@", arr);
         NSMutableArray* res = [[NSMutableArray alloc] init];
         for(NSDictionary* dict in arr){

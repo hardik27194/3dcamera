@@ -113,13 +113,16 @@ NSString* doubleString(NSString* str)
 }
 
 
-- (void) fitContent:(BOOL)left
+- (void) fitContent:(BOOL)left limit:(CGFloat)limit
 {
     CGFloat width = [self.text sizeWithAttributes:@{NSFontAttributeName:self.font}].width;
     EZDEBUG(@"adjusted width:%f", width);
     //[inputName setWidth:width];
     width = width + 40.0;
     
+    if(limit > 0 && width > limit){
+        width = limit;
+    }
     if(left){
         [self setWidth:width];
     }else{

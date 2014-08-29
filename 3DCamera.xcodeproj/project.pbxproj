@@ -24,7 +24,6 @@
 		180E2CD11990E16800DE2AFA /* UIView+DCAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 180E2CC91990E16800DE2AFA /* UIView+DCAdditions.m */; };
 		180E2CD61990E18700DE2AFA /* SCCommon.m in Sources */ = {isa = PBXBuildFile; fileRef = 180E2CD51990E18700DE2AFA /* SCCommon.m */; };
 		180E2CE11990E1A200DE2AFA /* SCNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 180E2CD81990E1A200DE2AFA /* SCNavigationController.m */; };
-		180E2CE21990E1A200DE2AFA /* SCCaptureCameraController.m in Sources */ = {isa = PBXBuildFile; fileRef = 180E2CDA1990E1A200DE2AFA /* SCCaptureCameraController.m */; };
 		180E2CE31990E1A200DE2AFA /* SCCaptureSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 180E2CDC1990E1A200DE2AFA /* SCCaptureSessionManager.m */; };
 		180E2CE41990E1A200DE2AFA /* UIImage+Resize.m in Sources */ = {isa = PBXBuildFile; fileRef = 180E2CDE1990E1A200DE2AFA /* UIImage+Resize.m */; };
 		180E2CE51990E1A200DE2AFA /* SCSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = 180E2CE01990E1A200DE2AFA /* SCSlider.m */; };
@@ -55,10 +54,6 @@
 		180E2D1A1990E42600DE2AFA /* switch_camera@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 180E2CFF1990E42600DE2AFA /* switch_camera@2x.png */; };
 		180E2D1B1990E42600DE2AFA /* switch_camera_h.png in Resources */ = {isa = PBXBuildFile; fileRef = 180E2D001990E42600DE2AFA /* switch_camera_h.png */; };
 		180E2D1C1990E42600DE2AFA /* switch_camera_h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 180E2D011990E42600DE2AFA /* switch_camera_h@2x.png */; };
-		180E78F91987C7A700D85AD3 /* EZPopupView.m in Sources */ = {isa = PBXBuildFile; fileRef = 180E78F81987C7A700D85AD3 /* EZPopupView.m */; };
-		180E78FE1987DA8000D85AD3 /* EZPopupInput.m in Sources */ = {isa = PBXBuildFile; fileRef = 180E78FD1987DA8000D85AD3 /* EZPopupInput.m */; };
-		180E79011987DB2900D85AD3 /* EZInputItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 180E79001987DB2900D85AD3 /* EZInputItem.m */; };
-		180E79041988CF0A00D85AD3 /* EZTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 180E79031988CF0A00D85AD3 /* EZTextField.m */; };
 		180E7907198FB23A00D85AD3 /* EZRegisterCtrl.m in Sources */ = {isa = PBXBuildFile; fileRef = 180E7906198FB23900D85AD3 /* EZRegisterCtrl.m */; };
 		1814A39A195A913900FA0D6A /* EZPinchController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1814A399195A913900FA0D6A /* EZPinchController.m */; };
 		1814A39F195AA5FE00FA0D6A /* EZPhotoDetail.m in Sources */ = {isa = PBXBuildFile; fileRef = 1814A39E195AA5FE00FA0D6A /* EZPhotoDetail.m */; };
@@ -69,6 +64,13 @@
 		181FC36B19540F8B00442AF3 /* EZContactMainCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 181FC36A19540F8B00442AF3 /* EZContactMainCell.m */; };
 		181FC36E1954409700442AF3 /* TLSwipeForOptionsCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 181FC36D1954409700442AF3 /* TLSwipeForOptionsCell.m */; };
 		1820C9CB195ACAE600387052 /* EZContactMain.m in Sources */ = {isa = PBXBuildFile; fileRef = 1820C9CA195ACAE600387052 /* EZContactMain.m */; };
+		182167B519B04647003410B9 /* EZPhotoInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 182167B419B04647003410B9 /* EZPhotoInfo.m */; };
+		182167B819B06541003410B9 /* EZInfoDotView.m in Sources */ = {isa = PBXBuildFile; fileRef = 182167B719B06541003410B9 /* EZInfoDotView.m */; };
+		182167BB19B07030003410B9 /* EZPointEditor.m in Sources */ = {isa = PBXBuildFile; fileRef = 182167BA19B07030003410B9 /* EZPointEditor.m */; };
+		182167C419B07F20003410B9 /* EZPopupView.m in Sources */ = {isa = PBXBuildFile; fileRef = 182167BD19B07F20003410B9 /* EZPopupView.m */; };
+		182167C519B07F20003410B9 /* EZPopupInput.m in Sources */ = {isa = PBXBuildFile; fileRef = 182167BF19B07F20003410B9 /* EZPopupInput.m */; };
+		182167C619B07F20003410B9 /* EZInputItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 182167C119B07F20003410B9 /* EZInputItem.m */; };
+		182167C719B07F20003410B9 /* EZTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 182167C319B07F20003410B9 /* EZTextField.m */; };
 		1823DA3318D5674F00E6E8B3 /* EZLoginController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1823DA3218D5674F00E6E8B3 /* EZLoginController.m */; };
 		1823DA3618D5A1E000E6E8B3 /* EZKeyboardController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1823DA3518D5A1E000E6E8B3 /* EZKeyboardController.m */; };
 		1823DA3918D5B2AF00E6E8B3 /* EZRegisterCtrlOld.m in Sources */ = {isa = PBXBuildFile; fileRef = 1823DA3818D5B2AF00E6E8B3 /* EZRegisterCtrlOld.m */; };
@@ -310,6 +312,10 @@
 		1870B07619867FDC005A663A /* header_btn_forth_blue.png in Resources */ = {isa = PBXBuildFile; fileRef = 1870B07219867FDC005A663A /* header_btn_forth_blue.png */; };
 		1870B07719867FDC005A663A /* header_btn_forth_blue@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1870B07319867FDC005A663A /* header_btn_forth_blue@2x.png */; };
 		1870B07A19877864005A663A /* EZGraphDetail.m in Sources */ = {isa = PBXBuildFile; fileRef = 1870B07919877864005A663A /* EZGraphDetail.m */; };
+		1878491119AC14DD00AE1CEF /* shot_s.png in Resources */ = {isa = PBXBuildFile; fileRef = 1878490D19AC14DD00AE1CEF /* shot_s.png */; };
+		1878491219AC14DD00AE1CEF /* shot_s@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1878490E19AC14DD00AE1CEF /* shot_s@2x.png */; };
+		1878491319AC14DD00AE1CEF /* shot_pause_s.png in Resources */ = {isa = PBXBuildFile; fileRef = 1878490F19AC14DD00AE1CEF /* shot_pause_s.png */; };
+		1878491419AC14DD00AE1CEF /* shot_pause_s@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1878491019AC14DD00AE1CEF /* shot_pause_s@2x.png */; };
 		1879BE23190BB1B60084FB27 /* EZCopyableLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 1879BE22190BB1B60084FB27 /* EZCopyableLabel.m */; };
 		1879BE28190BB8830084FB27 /* EZLimitTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 1879BE27190BB8830084FB27 /* EZLimitTextField.m */; };
 		18A37044185BF97E0022F0A8 /* EZPhotoRelation.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A37043185BF97E0022F0A8 /* EZPhotoRelation.m */; };
@@ -544,8 +550,6 @@
 		180E2CD51990E18700DE2AFA /* SCCommon.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCCommon.m; sourceTree = "<group>"; };
 		180E2CD71990E1A200DE2AFA /* SCNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCNavigationController.h; sourceTree = "<group>"; };
 		180E2CD81990E1A200DE2AFA /* SCNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCNavigationController.m; sourceTree = "<group>"; };
-		180E2CD91990E1A200DE2AFA /* SCCaptureCameraController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCCaptureCameraController.h; sourceTree = "<group>"; };
-		180E2CDA1990E1A200DE2AFA /* SCCaptureCameraController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCCaptureCameraController.m; sourceTree = "<group>"; };
 		180E2CDB1990E1A200DE2AFA /* SCCaptureSessionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCCaptureSessionManager.h; sourceTree = "<group>"; };
 		180E2CDC1990E1A200DE2AFA /* SCCaptureSessionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCCaptureSessionManager.m; sourceTree = "<group>"; };
 		180E2CDD1990E1A200DE2AFA /* UIImage+Resize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Resize.h"; sourceTree = "<group>"; };
@@ -579,14 +583,6 @@
 		180E2CFF1990E42600DE2AFA /* switch_camera@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "switch_camera@2x.png"; sourceTree = "<group>"; };
 		180E2D001990E42600DE2AFA /* switch_camera_h.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = switch_camera_h.png; sourceTree = "<group>"; };
 		180E2D011990E42600DE2AFA /* switch_camera_h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "switch_camera_h@2x.png"; sourceTree = "<group>"; };
-		180E78F71987C7A700D85AD3 /* EZPopupView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZPopupView.h; sourceTree = "<group>"; };
-		180E78F81987C7A700D85AD3 /* EZPopupView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZPopupView.m; sourceTree = "<group>"; };
-		180E78FC1987DA8000D85AD3 /* EZPopupInput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZPopupInput.h; sourceTree = "<group>"; };
-		180E78FD1987DA8000D85AD3 /* EZPopupInput.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZPopupInput.m; sourceTree = "<group>"; };
-		180E78FF1987DB2900D85AD3 /* EZInputItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZInputItem.h; sourceTree = "<group>"; };
-		180E79001987DB2900D85AD3 /* EZInputItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZInputItem.m; sourceTree = "<group>"; };
-		180E79021988CF0900D85AD3 /* EZTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZTextField.h; sourceTree = "<group>"; };
-		180E79031988CF0A00D85AD3 /* EZTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZTextField.m; sourceTree = "<group>"; };
 		180E7905198FB23900D85AD3 /* EZRegisterCtrl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZRegisterCtrl.h; sourceTree = "<group>"; };
 		180E7906198FB23900D85AD3 /* EZRegisterCtrl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZRegisterCtrl.m; sourceTree = "<group>"; };
 		1814A398195A913900FA0D6A /* EZPinchController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZPinchController.h; sourceTree = "<group>"; };
@@ -607,6 +603,20 @@
 		181FC36C1954409700442AF3 /* TLSwipeForOptionsCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TLSwipeForOptionsCell.h; sourceTree = "<group>"; };
 		181FC36D1954409700442AF3 /* TLSwipeForOptionsCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TLSwipeForOptionsCell.m; sourceTree = "<group>"; };
 		1820C9CA195ACAE600387052 /* EZContactMain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZContactMain.m; sourceTree = "<group>"; };
+		182167B319B04647003410B9 /* EZPhotoInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZPhotoInfo.h; sourceTree = "<group>"; };
+		182167B419B04647003410B9 /* EZPhotoInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZPhotoInfo.m; sourceTree = "<group>"; };
+		182167B619B06541003410B9 /* EZInfoDotView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZInfoDotView.h; sourceTree = "<group>"; };
+		182167B719B06541003410B9 /* EZInfoDotView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZInfoDotView.m; sourceTree = "<group>"; };
+		182167B919B07030003410B9 /* EZPointEditor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZPointEditor.h; sourceTree = "<group>"; };
+		182167BA19B07030003410B9 /* EZPointEditor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZPointEditor.m; sourceTree = "<group>"; };
+		182167BC19B07F20003410B9 /* EZPopupView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZPopupView.h; sourceTree = "<group>"; };
+		182167BD19B07F20003410B9 /* EZPopupView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZPopupView.m; sourceTree = "<group>"; };
+		182167BE19B07F20003410B9 /* EZPopupInput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZPopupInput.h; sourceTree = "<group>"; };
+		182167BF19B07F20003410B9 /* EZPopupInput.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZPopupInput.m; sourceTree = "<group>"; };
+		182167C019B07F20003410B9 /* EZInputItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZInputItem.h; sourceTree = "<group>"; };
+		182167C119B07F20003410B9 /* EZInputItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZInputItem.m; sourceTree = "<group>"; };
+		182167C219B07F20003410B9 /* EZTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZTextField.h; sourceTree = "<group>"; };
+		182167C319B07F20003410B9 /* EZTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZTextField.m; sourceTree = "<group>"; };
 		1823DA3118D5674F00E6E8B3 /* EZLoginController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZLoginController.h; sourceTree = "<group>"; };
 		1823DA3218D5674F00E6E8B3 /* EZLoginController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZLoginController.m; sourceTree = "<group>"; };
 		1823DA3418D5A1E000E6E8B3 /* EZKeyboardController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZKeyboardController.h; sourceTree = "<group>"; };
@@ -914,6 +924,10 @@
 		1870B07319867FDC005A663A /* header_btn_forth_blue@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "header_btn_forth_blue@2x.png"; sourceTree = "<group>"; };
 		1870B07819877864005A663A /* EZGraphDetail.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZGraphDetail.h; sourceTree = "<group>"; };
 		1870B07919877864005A663A /* EZGraphDetail.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZGraphDetail.m; sourceTree = "<group>"; };
+		1878490D19AC14DD00AE1CEF /* shot_s.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = shot_s.png; sourceTree = "<group>"; };
+		1878490E19AC14DD00AE1CEF /* shot_s@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "shot_s@2x.png"; sourceTree = "<group>"; };
+		1878490F19AC14DD00AE1CEF /* shot_pause_s.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = shot_pause_s.png; sourceTree = "<group>"; };
+		1878491019AC14DD00AE1CEF /* shot_pause_s@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "shot_pause_s@2x.png"; sourceTree = "<group>"; };
 		1879BE21190BB1B60084FB27 /* EZCopyableLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZCopyableLabel.h; sourceTree = "<group>"; };
 		1879BE22190BB1B60084FB27 /* EZCopyableLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZCopyableLabel.m; sourceTree = "<group>"; };
 		1879BE26190BB8830084FB27 /* EZLimitTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZLimitTextField.h; sourceTree = "<group>"; };
@@ -1273,8 +1287,6 @@
 				180E2CE61990E40E00DE2AFA /* images */,
 				180E2CD71990E1A200DE2AFA /* SCNavigationController.h */,
 				180E2CD81990E1A200DE2AFA /* SCNavigationController.m */,
-				180E2CD91990E1A200DE2AFA /* SCCaptureCameraController.h */,
-				180E2CDA1990E1A200DE2AFA /* SCCaptureCameraController.m */,
 				180E2CDB1990E1A200DE2AFA /* SCCaptureSessionManager.h */,
 				180E2CDC1990E1A200DE2AFA /* SCCaptureSessionManager.m */,
 				180E2CDD1990E1A200DE2AFA /* UIImage+Resize.h */,
@@ -1323,6 +1335,10 @@
 		180E2CE61990E40E00DE2AFA /* images */ = {
 			isa = PBXGroup;
 			children = (
+				1878490D19AC14DD00AE1CEF /* shot_s.png */,
+				1878490E19AC14DD00AE1CEF /* shot_s@2x.png */,
+				1878490F19AC14DD00AE1CEF /* shot_pause_s.png */,
+				1878491019AC14DD00AE1CEF /* shot_pause_s@2x.png */,
 				18BF13D319A96AF700D0C56D /* shot_pause.png */,
 				18BF13D419A96AF800D0C56D /* shot_pause@2x.png */,
 				180E2CE71990E42600DE2AFA /* meizi.jpg */,
@@ -1550,6 +1566,12 @@
 		18D760D5198235EC00F9D63B /* controllers */ = {
 			isa = PBXGroup;
 			children = (
+				182167B919B07030003410B9 /* EZPointEditor.h */,
+				182167BA19B07030003410B9 /* EZPointEditor.m */,
+				182167B619B06541003410B9 /* EZInfoDotView.h */,
+				182167B719B06541003410B9 /* EZInfoDotView.m */,
+				182167B319B04647003410B9 /* EZPhotoInfo.h */,
+				182167B419B04647003410B9 /* EZPhotoInfo.m */,
 				18E1AF7F19A4AC1D002F8A37 /* EZPhotoEditPage.h */,
 				18E1AF8019A4AC1D002F8A37 /* EZPhotoEditPage.m */,
 				180A579E1998B213003F017D /* EZPreviewView.h */,
@@ -1592,14 +1614,6 @@
 				1870B02B19860657005A663A /* EZCustomButton.m */,
 				1870B07819877864005A663A /* EZGraphDetail.h */,
 				1870B07919877864005A663A /* EZGraphDetail.m */,
-				180E78F71987C7A700D85AD3 /* EZPopupView.h */,
-				180E78F81987C7A700D85AD3 /* EZPopupView.m */,
-				180E78FC1987DA8000D85AD3 /* EZPopupInput.h */,
-				180E78FD1987DA8000D85AD3 /* EZPopupInput.m */,
-				180E78FF1987DB2900D85AD3 /* EZInputItem.h */,
-				180E79001987DB2900D85AD3 /* EZInputItem.m */,
-				180E79021988CF0900D85AD3 /* EZTextField.h */,
-				180E79031988CF0A00D85AD3 /* EZTextField.m */,
 			);
 			name = controllers;
 			sourceTree = "<group>";
@@ -2093,6 +2107,14 @@
 		18E346D5183DF91500C9D89D /* utility */ = {
 			isa = PBXGroup;
 			children = (
+				182167BC19B07F20003410B9 /* EZPopupView.h */,
+				182167BD19B07F20003410B9 /* EZPopupView.m */,
+				182167BE19B07F20003410B9 /* EZPopupInput.h */,
+				182167BF19B07F20003410B9 /* EZPopupInput.m */,
+				182167C019B07F20003410B9 /* EZInputItem.h */,
+				182167C119B07F20003410B9 /* EZInputItem.m */,
+				182167C219B07F20003410B9 /* EZTextField.h */,
+				182167C319B07F20003410B9 /* EZTextField.m */,
 				18E34771183DFAA400C9D89D /* EZDataUtil.h */,
 				18E34772183DFAA400C9D89D /* EZDataUtil.m */,
 				18E4FBB618F584DF00FA6C21 /* UIScrollView+ScrollIndicator.h */,
@@ -2427,6 +2449,7 @@
 				1870AF8B19829485005A663A /* header_icon_sg_white@2x.png in Resources */,
 				1870AFDA19829485005A663A /* icon_sj@2x.png in Resources */,
 				1870AFF219829485005A663A /* btn_sel.png in Resources */,
+				1878491319AC14DD00AE1CEF /* shot_pause_s.png in Resources */,
 				1870AF8819829485005A663A /* header_icon_nb_white.png in Resources */,
 				1870AFAB19829485005A663A /* icon_jb_white.png in Resources */,
 				1870B07719867FDC005A663A /* header_btn_forth_blue@2x.png in Resources */,
@@ -2472,6 +2495,7 @@
 				18018E6719A6FD58004ECEE0 /* camera_btn@2x.png in Resources */,
 				1870AFE719829485005A663A /* icon_user@2x.png in Resources */,
 				1870AFF619829485005A663A /* header_btn_back.png in Resources */,
+				1878491119AC14DD00AE1CEF /* shot_s.png in Resources */,
 				180E2D1A1990E42600DE2AFA /* switch_camera@2x.png in Resources */,
 				1870AFCC19829485005A663A /* track_btn_list.png in Resources */,
 				1870AFD219829485005A663A /* header_btn_star.png in Resources */,
@@ -2588,6 +2612,7 @@
 				1870AFF519829485005A663A /* btn@2x.png in Resources */,
 				1870AFED19829485005A663A /* btn_s@2x.png in Resources */,
 				18DE993A19405521008C1B3F /* setting_icon.png in Resources */,
+				1878491419AC14DD00AE1CEF /* shot_pause_s@2x.png in Resources */,
 				18DE98FE19404734008C1B3F /* bubble_tailless@2x.png in Resources */,
 				18DE993919405521008C1B3F /* demo_avatar_jobs@2x.png in Resources */,
 				1870AFAA19829485005A663A /* icon_jc_white@2x.png in Resources */,
@@ -2611,6 +2636,7 @@
 				18E346F6183DF9C400C9D89D /* whole_love@2x.png in Resources */,
 				1870B07619867FDC005A663A /* header_btn_forth_blue.png in Resources */,
 				18DE98F919404734008C1B3F /* bubble_stroked.png in Resources */,
+				1878491219AC14DD00AE1CEF /* shot_s@2x.png in Resources */,
 				1870B00B19829485005A663A /* drawer_nav_notification 2.png in Resources */,
 				1870AF9719829485005A663A /* icon_xw@2x.png in Resources */,
 				1870AFF919829485005A663A /* nav_drawer.png in Resources */,
@@ -2741,6 +2767,7 @@
 				180E2CE31990E1A200DE2AFA /* SCCaptureSessionManager.m in Sources */,
 				18E34747183DFA7300C9D89D /* EZPhoto.m in Sources */,
 				18E746EF18A4A26A0023967B /* AFURLConnectionOperation.m in Sources */,
+				182167B519B04647003410B9 /* EZPhotoInfo.m in Sources */,
 				18E3474B183DFA7300C9D89D /* EZLikeSatus.m in Sources */,
 				1866ADC61898F0DB00DB46E2 /* LFDisplayBridge.m in Sources */,
 				18FE436E19824F1000E975BD /* EZDetailHeader.m in Sources */,
@@ -2763,6 +2790,7 @@
 				18DE992E19404A6F008C1B3F /* JSQDemoViewController.m in Sources */,
 				1823DA3318D5674F00E6E8B3 /* EZLoginController.m in Sources */,
 				1870B06D19866FB4005A663A /* CKCalendarView.m in Sources */,
+				182167B819B06541003410B9 /* EZInfoDotView.m in Sources */,
 				18E3477B183DFAA400C9D89D /* EZExtender.m in Sources */,
 				184ADD7418C4B40D00367527 /* EZAvatarView.m in Sources */,
 				18DE990519404734008C1B3F /* JSQSystemSoundPlayer+JSQMessages.m in Sources */,
@@ -2772,7 +2800,6 @@
 				1823DA4018DA9ABA00E6E8B3 /* EZNote.m in Sources */,
 				18DE991619404734008C1B3F /* JSQMessagesCollectionView.m in Sources */,
 				1866ADB418979C7400DB46E2 /* EZModalRaiseAnimation.m in Sources */,
-				180E79041988CF0A00D85AD3 /* EZTextField.m in Sources */,
 				18E34693183DF54400C9D89D /* FeatherCV.xcdatamodeld in Sources */,
 				184ADD9218CF045A00367527 /* EZCameraNaviAnimation.m in Sources */,
 				181FC36B19540F8B00442AF3 /* EZContactMainCell.m in Sources */,
@@ -2786,7 +2813,6 @@
 				18DE992319404734008C1B3F /* JSQMessagesTypingIndicatorFooterView.m in Sources */,
 				1823DA4318E3CCFE00E6E8B3 /* EZPerosnDetail.m in Sources */,
 				186EC127193869FD0011C145 /* FaceppFaceset.m in Sources */,
-				180E2CE21990E1A200DE2AFA /* SCCaptureCameraController.m in Sources */,
 				184ADD8618CB490E00367527 /* EZBlurAnimator.m in Sources */,
 				180E2CE51990E1A200DE2AFA /* SCSlider.m in Sources */,
 				1857B4C219690D9600ED2632 /* EZPaintRecognizer.m in Sources */,
@@ -2799,7 +2825,6 @@
 				1823DA3618D5A1E000E6E8B3 /* EZKeyboardController.m in Sources */,
 				18DE990A19404734008C1B3F /* JSQMessagesKeyboardController.m in Sources */,
 				18F58B7F187AF540006CB966 /* EZFaceUtilWrapper.mm in Sources */,
-				180E79011987DB2900D85AD3 /* EZInputItem.m in Sources */,
 				180E2CB11990BFF700DE2AFA /* EZShotTask.m in Sources */,
 				18E1AF7719A47AED002F8A37 /* RACollectionViewReorderableTripletLayout.m in Sources */,
 				18E3483D18433FC000C9D89D /* UIImage+ResizeMagick.m in Sources */,
@@ -2848,7 +2873,6 @@
 				1857B4D2196A973D00ED2632 /* EZToolStripe.m in Sources */,
 				18E746F818A4A26A0023967B /* UIProgressView+AFNetworking.m in Sources */,
 				184EB9CC19825D590024A495 /* EZScrollerView.m in Sources */,
-				180E78F91987C7A700D85AD3 /* EZPopupView.m in Sources */,
 				18DE991819404734008C1B3F /* JSQMessagesCollectionViewCellIncoming.m in Sources */,
 				1870AED0198283A5005A663A /* EZMenuItem.m in Sources */,
 				18E746EC18A4A26A0023967B /* AFHTTPSessionManager.m in Sources */,
@@ -2898,11 +2922,13 @@
 				18E34778183DFAA400C9D89D /* EZMotionUtility.m in Sources */,
 				18E34787183DFAA400C9D89D /* EZDataUtil.m in Sources */,
 				18E3477F183DFAA400C9D89D /* EZReachability.m in Sources */,
+				182167C619B07F20003410B9 /* EZInputItem.m in Sources */,
 				186EC0091937363E0011C145 /* EZPhotoChat.m in Sources */,
 				1857B4C71969291800ED2632 /* EZPathPainter.m in Sources */,
 				18E3474C183DFA7300C9D89D /* EZDisplayPhoto.m in Sources */,
 				1814A39A195A913900FA0D6A /* EZPinchController.m in Sources */,
 				18DE990B19404734008C1B3F /* JSQMessagesViewController.m in Sources */,
+				182167BB19B07030003410B9 /* EZPointEditor.m in Sources */,
 				181608CC18B4EA9F00DD5995 /* EZRotateAnimation.m in Sources */,
 				18C0E76E1861A0FF00D694CE /* EZSoundEffect.m in Sources */,
 				18E746F218A4A26A0023967B /* AFURLSessionManager.m in Sources */,
@@ -2921,12 +2947,15 @@
 				18E746F518A4A26A0023967B /* UIAlertView+AFNetworking.m in Sources */,
 				18DE990919404734008C1B3F /* UIView+JSQMessages.m in Sources */,
 				18E34690183DF54400C9D89D /* EZAppDelegate.mm in Sources */,
+				182167C719B07F20003410B9 /* EZTextField.m in Sources */,
+				182167C419B07F20003410B9 /* EZPopupView.m in Sources */,
 				180E2CD01990E16800DE2AFA /* DCTextView.m in Sources */,
 				18C8FA531974EFAA003D6A77 /* EZTouch.m in Sources */,
 				18E346DC183DF96D00C9D89D /* UIImage2OpenCV.mm in Sources */,
 				186EC12E193869FD0011C145 /* FaceppError.m in Sources */,
 				18DE990819404734008C1B3F /* UIImage+JSQMessages.m in Sources */,
 				180E7907198FB23A00D85AD3 /* EZRegisterCtrl.m in Sources */,
+				182167C519B07F20003410B9 /* EZPopupInput.m in Sources */,
 				180E2CB71990C61E00DE2AFA /* EZMainPhotoCell.m in Sources */,
 				18E3477C183DFAA400C9D89D /* EZFileUtil.m in Sources */,
 				184ADD7718C4C20F00367527 /* EZUIApplication.m in Sources */,
@@ -2935,7 +2964,6 @@
 				180E2CCF1990E16800DE2AFA /* DCStatusBarOverlay.m in Sources */,
 				186EC12F193869FD0011C145 /* FaceppResult.m in Sources */,
 				18E1AF7D19A47AFA002F8A37 /* RAViewController.m in Sources */,
-				180E78FE1987DA8000D85AD3 /* EZPopupInput.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3028,7 +3056,7 @@
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = YES;
-				PROVISIONING_PROFILE = "204de17b-9064-45c1-b947-8909fc924e97";
+				PROVISIONING_PROFILE = "ece71820-1585-43f4-ab9c-8a633588659b";
 				SDKROOT = iphoneos;
 				VALID_ARCHS = "armv7 armv7s";
 			};
@@ -3068,7 +3096,7 @@
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = YES;
-				PROVISIONING_PROFILE = "204de17b-9064-45c1-b947-8909fc924e97";
+				PROVISIONING_PROFILE = "ece71820-1585-43f4-ab9c-8a633588659b";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 				VALID_ARCHS = "armv7 armv7s";
@@ -3095,13 +3123,14 @@
 					/Users/apple/Documents/open_source/MNCalendarView/MNCalendarView,
 				);
 				INFOPLIST_FILE = "FeatherCV/3DCamera-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/FeatherCV",
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = 3DCamera;
-				PROVISIONING_PROFILE = "204de17b-9064-45c1-b947-8909fc924e97";
+				PROVISIONING_PROFILE = "ece71820-1585-43f4-ab9c-8a633588659b";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv7 armv7s arm64";
 				WRAPPER_EXTENSION = app;
@@ -3128,13 +3157,14 @@
 					/Users/apple/Documents/open_source/MNCalendarView/MNCalendarView,
 				);
 				INFOPLIST_FILE = "FeatherCV/3DCamera-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/FeatherCV",
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = 3DCamera;
-				PROVISIONING_PROFILE = "204de17b-9064-45c1-b947-8909fc924e97";
+				PROVISIONING_PROFILE = "ece71820-1585-43f4-ab9c-8a633588659b";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv7 armv7s arm64";
 				WRAPPER_EXTENSION = app;

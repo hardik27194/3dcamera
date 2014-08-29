@@ -14,7 +14,10 @@
 #import "EZMessageCenter.h"
 #import "EZCaptureCameraController.h"
 #import "RAViewController.h"
-
+#import "EZInfoDotView.h"
+#import "EZPhotoInfo.h"
+#import "EZPopupInput.h"
+#import "EZInputItem.h"
 @interface EZPhotoEditPage ()
 
 @end
@@ -223,10 +226,34 @@
 
 - (void) loadImage
 {
+    
+    __weak EZPhotoEditPage* weakSelf = self;
+    for (UIView* infoView in _dotViews) {
+        [infoView removeFromSuperview];
+    }
+    [_dotViews removeAllObjects];
     if(_photos.count > 0){
         EZStoredPhoto* sp = [_photos objectAtIndex:_currentPos];
         [_imageView setImageWithURL:str2url(sp.localFileURL?sp.localFileURL:sp.remoteURL)];
         _posText.text = [NSString stringWithFormat:@"第%i张", _currentPos + 1];
+        
+        NSArray* photoInfos = sp.infos;
+        for(EZPhotoInfo* info in photoInfos){
+            EZInfoDotView* dotView = [EZInfoDotView create:CGPointMake(info.x/100 * _imageView.width, info.y/100 * _imageView.height)];
+            dotView.clicked = ^(id obj){
+                [weakSelf raiseDailog:info];
+            };
+            dotView.moveCompleted = ^(EZInfoDotView* idotView){
+                EZDEBUG(@"moved to :%@", NSStringFromCGPoint(idotView.finalPosition));
+                info.x = idotView.finalPosition.x;
+                info.y = idotView.finalPosition.y;
+                [[EZDataUtil getInstance] updatePhotoInfo:info success:^(id obj){
+                    EZDEBUG(@"update success");
+                } failed:nil];
+            };
+            [self.imageView addSubview:dotView];
+            [_dotViews addObject:dotView];
+        }
     }else{
         _posText.text = @"";
         [_imageView setImage:nil];
@@ -287,13 +314,18 @@
     self.edgesForExtendedLayout = UIRectEdgeNone;
     self.extendedLayoutIncludesOpaqueBars = YES;
     self.view.backgroundColor = [UIColor whiteColor];
+    _dotViews = [[NSMutableArray alloc] init];
     _imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, MIN(CurrentScreenWidth, CurrentScreenHeight))];
     _imageView.contentMode = UIViewContentModeScaleAspectFill;
     _imageView.userInteractionEnabled = YES;
      //UIPanGestureRecognizer* panGesturer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panned:)];
     //[_imageView addGestureRecognizer:panGesturer];
     //panGesturer.delegate = self;
-    [self loadImage];
+   
+    
+    UIView* grayView = [[UIView alloc] initWithFrame:_imageView.frame];
+    grayView.backgroundColor = RGBACOLOR(0, 0, 0, 90);
+    grayView.userInteractionEnabled = false;
     
     _posText = [UILabel createLabel:CGRectMake(20, 0, CurrentScreenWidth - 2*20, 20) font:[UIFont boldSystemFontOfSize:18] color:[UIColor whiteColor]];
     _posText.textAlignment = NSTextAlignmentCenter;
@@ -333,14 +365,109 @@
         [_toolBar addSubview:_addButton];
     }
     [self.view addSubview:_imageView];
+    [self.view addSubview:grayView];
     [self.view addSubview:_posText];
     [self.view addSubview:_toolBar];
     
     [[EZMessageCenter getInstance] registerEvent:EZShotTaskChanged block:^(id obj){
         EZDEBUG(@"shot photo changed");
     }];
-    //self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addPhoto:)];
+    [self loadImage];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addInfoPoint:)];
     // Do any additional setup after loading the view.
+}
+
+- (void) addInfoPoint:(id)obj
+{
+    
+    CGRect imageRegion = self.imageView.frame;//[self.view convertRect:self.imageView.frame fromView:self.view];
+    UIView* topBar = [[UIView alloc] initWithFrame:CGRectMake(0, 20, CurrentScreenWidth, 44)];
+    topBar.backgroundColor = RGBCOLOR(200, 200, 200);
+    UIButton* cancelBtn = [UIButton createButton:CGRectMake(0, 0, 60, 44) font:[UIFont systemFontOfSize:17]  color:RGBCOLOR(255, 68, 69) align:NSTextAlignmentCenter];
+    topBar.tag = 2046;
+    topBar.alpha = 0.0;
+    [TopView addSubview:topBar];
+    [cancelBtn setTitle:@"取消" forState:UIControlStateNormal];
+    [cancelBtn addTarget:self action:@selector(cancelPoint:) forControlEvents:UIControlEventTouchUpInside];
+    [topBar addSubview:cancelBtn];
+    
+    UIButton* confirmBtn = [UIButton createButton:CGRectMake(CurrentScreenWidth - 60, 0, 60, 44) font:[UIFont systemFontOfSize:17] color:ClickedColor align:NSTextAlignmentCenter];
+    [confirmBtn addTarget:self action:@selector(confirmPoint:) forControlEvents:UIControlEventTouchUpInside];
+    [confirmBtn setTitle:@"确定" forState:UIControlStateNormal];
+    [topBar addSubview:confirmBtn];
+    
+    UIView* grayView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.width, self.view.height)];
+    grayView.backgroundColor = RGBACOLOR(0, 0, 0, 60);
+    grayView.alpha = 0.0;
+    UIView* moveView = [[UIView alloc] initWithFrame:imageRegion];
+    moveView.backgroundColor = [UIColor clearColor];
+    //[grayView addSubview:topBar];
+    [grayView addSubview:moveView];
+    [self.view addSubview:grayView];
+    _pointCover = grayView;
+    _photoInfo = [[EZPhotoInfo alloc] init];
+    EZInfoDotView* dotView = [[EZInfoDotView alloc] initWithFrame:CGRectMake(130, 200, 60, 60) dotDiameter:15 color:RGBCOLOR(64, 64, 255)];
+    _dotView = dotView;
+    [moveView addSubview:dotView];
+    _dotView.moveCompleted = ^(EZInfoDotView* dotView){
+        EZDEBUG(@"moved to :%@", NSStringFromCGPoint(dotView.finalPosition));
+        _photoInfo.x = dotView.finalPosition.x;
+        _photoInfo.y = dotView.finalPosition.y;
+    };
+    _dotView.clicked = ^(EZInfoDotView* dotView){
+        [self raiseDailog:_photoInfo];
+    };
+    //UIView* grayCover = [[UIView alloc] initWithFrame:];
+    [UIView animateWithDuration:0.3 animations:^(){
+        topBar.alpha = 1.0;
+        _pointCover.alpha = 1.0;
+    }];
+}
+
+- (void) raiseDailog:(EZPhotoInfo*)info
+{
+    EZDEBUG(@"click get called");
+    EZInputItem* item1 = [[EZInputItem alloc] initWithName:@"Title" type:kStringValue defaultValue:info.title?info.title:@""];
+    EZInputItem* item2 = [[EZInputItem alloc] initWithName:@"Comment" type:kStringValue defaultValue:info.comment?info.comment:@""];
+    EZPopupInput* input = [[EZPopupInput alloc] initWithTitle:@"图片信息点" inputItems:@[item1, item2] haveDelete:NO saveBlock:^(EZPopupInput* popInput){
+        info.title = item1.changedValue;
+        info.comment = item2.changedValue;
+        if([info.infoID isNotEmpty]){
+            [[EZDataUtil getInstance] updatePhotoInfo:info success:^(id obj){
+                EZDEBUG(@"update success");
+            } failed:nil];
+        }
+    } deleteBlock:nil];
+    
+    [input showInView:self.view animated:YES];
+}
+
+- (void) cancelPoint:(id)obj
+{
+    EZDEBUG(@"cancel get called");
+    [UIView animateWithDuration:0.3 animations:^(){
+        _pointCover.alpha = 0.0;
+        [TopView viewWithTag:2046].alpha = 0.0;
+    } completion:^(BOOL finished) {
+        [_pointCover removeFromSuperview];
+        [[TopView viewWithTag:2046] removeFromSuperview];
+        _pointCover = nil;
+        _photoInfo = nil;
+    }];
+}
+
+- (void) confirmPoint:(id)obj
+{
+    EZDEBUG(@"confirm get called");
+    EZStoredPhoto* sp = [_photos objectAtIndex:_currentPos];
+    _photoInfo.photoID = sp.photoID;
+    [[EZDataUtil getInstance] createPhotoInfo:_photoInfo success:^(EZPhotoInfo* info){
+        [sp.infos addObject:info];
+        [self loadImage];
+    } failed:^(id err){
+        EZDEBUG(@"failed to update the info:%@", err);
+    }];
+    [self cancelPoint:obj];
 }
 
 - (void)didReceiveMemoryWarning

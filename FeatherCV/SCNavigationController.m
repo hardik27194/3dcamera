@@ -7,7 +7,7 @@
 //
 
 #import "SCNavigationController.h"
-#import "SCCaptureCameraController.h"
+#import "EZCaptureCameraController.h"
 
 @interface SCNavigationController ()
 
@@ -72,7 +72,7 @@
 
 #pragma mark - action(s)
 - (void)showCameraWithParentController:(UIViewController*)parentController {
-    SCCaptureCameraController *con = [[SCCaptureCameraController alloc] init];
+    EZCaptureCameraController *con = [[EZCaptureCameraController alloc] init];
     [self setViewControllers:[NSArray arrayWithObjects:con, nil]];
     [parentController presentModalViewController:self animated:YES];
 }

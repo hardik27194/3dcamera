@@ -10,6 +10,8 @@
 
 @class EZShotTask;
 @class EZStoredPhoto;
+@class EZInfoDotView;
+@class EZPhotoInfo;
 @interface EZPhotoEditPage : UIViewController<UIAlertViewDelegate>
 
 @property (nonatomic, strong) UIImageView* imageView;
@@ -37,9 +39,17 @@
 
 @property (nonatomic, strong) EZShotTask* task;
 
+@property (nonatomic, strong) EZPhotoInfo* photoInfo;
+
 @property (nonatomic, assign) BOOL showShot;
 
 @property (nonatomic, strong) EZEventBlock deletedClicked;
+
+@property (nonatomic, weak) UIView* pointCover;
+
+@property (nonatomic, weak) EZInfoDotView* dotView;
+
+@property (nonatomic, strong) NSMutableArray* dotViews;
 
 - (id) initWithTask:(EZShotTask*)tasks pos:(NSInteger)pos;
 
