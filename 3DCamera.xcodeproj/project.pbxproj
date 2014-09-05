@@ -1595,6 +1595,8 @@
 		18D760D5198235EC00F9D63B /* controllers */ = {
 			isa = PBXGroup;
 			children = (
+				18826E5D19B1C97E00DFC5A9 /* EZDragPage.h */,
+				18826E5E19B1C97E00DFC5A9 /* EZDragPage.m */,
 				18826E7019B8284B00DFC5A9 /* EZBackgroundEraser.h */,
 				18826E7119B8284B00DFC5A9 /* EZBackgroundEraser.mm */,
 				18827F2F19B8783E00DFC5A9 /* EZBgEditPage.h */,
@@ -1846,8 +1848,6 @@
 		18E1AF7219A47AAF002F8A37 /* dragdrop */ = {
 			isa = PBXGroup;
 			children = (
-				18826E5D19B1C97E00DFC5A9 /* EZDragPage.h */,
-				18826E5E19B1C97E00DFC5A9 /* EZDragPage.m */,
 				18E1AF7919A47AFA002F8A37 /* RAViewController.h */,
 				18E1AF7A19A47AFA002F8A37 /* RAViewController.m */,
 				18E1AF7B19A47AFA002F8A37 /* RACollectionViewCell.h */,

@@ -230,6 +230,25 @@
     } failblk:failure];
 }
 
+//The code is more robust now.
+- (void) updateTask:(EZShotTask*)task success:(EZEventBlock)success failure:(EZEventBlock)failure
+{
+    if([task.taskID isNotEmpty]){
+        [EZNetworkUtility getJson:@"p3d/id/update" parameters:@{@"taskID":task.taskID, @"name":task.name?task.name:@""} complete:^(NSDictionary* dict){
+            if(success){
+                success(task);
+            }
+        } failblk:failure];
+    }else{
+        [EZNetworkUtility getJson:@"p3d/id/create" parameters:@{@"personID":currentLoginID, @"name":task.name?task.name:@""} complete:^(NSDictionary* dict){
+            task.taskID = [dict objectForKey:@"id"];
+            if(success){
+                success(task);
+            }
+        } failblk:failure];
+    }
+}
+
 - (void) uploadStoredPhoto:(EZStoredPhoto*)photo success:(EZEventBlock)success failure:(EZEventBlock)failure
 {
     NSDictionary* parameters =

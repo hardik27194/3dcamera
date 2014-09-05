@@ -383,9 +383,42 @@
         EZDEBUG(@"shot photo changed");
     }];
     [self loadImage];
+    
+    UIButton* btn = [UIButton createButton:CGRectMake(0, 0, 200, 44) font:[UIFont boldSystemFontOfSize:17] color:ClickedColor align:NSTextAlignmentCenter];
+    [btn setTitle:@"修改名称" forState:UIControlStateNormal];
+    [btn addTarget:self action:@selector(raiseTitleChange) forControlEvents:UIControlEventTouchUpInside];
+    self.navigationItem.titleView = btn;
+    _titleButton = btn;
+    if([_task.name isNotEmpty]){
+        [_titleButton setTitle:_task.name forState:UIControlStateNormal];
+    }
     //self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addInfoPoint:)];
     //self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"去背景" style:UIBarButtonItemStylePlain target:self action:@selector(eraseBg:)];
     // Do any additional setup after loading the view.
+}
+
+- (void) raiseTitleChange
+{
+    EZDEBUG(@"click get called");
+    EZInputItem* item1 = [[EZInputItem alloc] initWithName:@"名称" type:kStringValue defaultValue:_task.name?_task.name:@""];
+    
+    EZPopupInput* input = [[EZPopupInput alloc] initWithTitle:@"图片名称" inputItems:@[item1] haveDelete:NO saveBlock:^(EZPopupInput* popInput){
+        //info.title = item1.changedValue;
+        //info.comment = item2.changedValue;
+        _task.name = item1.changedValue;
+        [_titleButton setTitle:item1.changedValue forState:UIControlStateNormal];
+        [[EZDataUtil getInstance] updateTask:_task success:^(id obj){
+            EZDEBUG(@"update name success");
+            //[[EZMessageCenter getInstance] postEvent:EZPhotoUploadSuccess attached:]
+            [[EZMessageCenter getInstance] postEvent:EZShotTaskChanged attached:nil];
+        } failure:^(id err){
+            EZDEBUG(@"failed to update name %@", err);
+        }];
+    } deleteBlock:nil];
+    
+    [input showInView:self.view animated:YES];
+    
+    
 }
 
 - (void) eraseBg:(id)obj

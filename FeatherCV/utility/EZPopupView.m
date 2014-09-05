@@ -6,8 +6,10 @@
 //  Copyright (c) 2014年 tiange. All rights reserved.
 //
 
+#import <QuartzCore/QuartzCore.h>
 #import "EZPopupView.h"
 #import "EZCustomButton.h"
+
 
 #define GradientBeginColor RGBCOLOR(51, 181, 225)
 
@@ -16,6 +18,18 @@
 #define ShowPositionRatio 3.0
 
 @implementation EZPopupView
+
+- (UIImage *) imageFromColor:(UIColor *)color {
+    CGRect rect = CGRectMake(0, 0, 1, 1);
+    UIGraphicsBeginImageContext(rect.size);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextSetFillColorWithColor(context, [color CGColor]);
+    //  [[UIColor colorWithRed:222./255 green:227./255 blue: 229./255 alpha:1] CGColor]) ;
+    CGContextFillRect(context, rect);
+    UIImage *img = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return img;
+}
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -31,11 +45,28 @@
         [barView addSubview:_title];
         EZCustomButton* quitBtn = [EZCustomButton createButton:CGRectMake(0, 0, 40, 40) image:[UIImage imageNamed:@"header_btn_cancel"]];
         [quitBtn addTarget:self action:@selector(cancelClicked:) forControlEvents:UIControlEventTouchUpInside];
-        [barView addSubview:quitBtn];
+        //[barView addSubview:quitBtn];
         
         EZCustomButton* saveButton = [EZCustomButton createButton:CGRectMake(frame.size.width - 40, 0, 40, 40) image:[UIImage imageNamed:@"header_btn_save"]];
         [saveButton addTarget:self action:@selector(saveClicked:) forControlEvents:UIControlEventTouchUpInside];
-        [barView addSubview:saveButton];
+        //[barView addSubview:saveButton];
+        
+        _cancelButton = [UIButton createButton:CGRectMake(0, self.height - 44, self.width/2.0, 44) font:[UIFont boldSystemFontOfSize:16] color:[UIColor whiteColor] align:NSTextAlignmentCenter];
+        [_cancelButton setTitle:@"取消" forState:UIControlStateNormal];
+        [_cancelButton addTarget:self action:@selector(cancelClicked:) forControlEvents:UIControlEventTouchUpInside];
+        UIView* colorView = [[UIView alloc] initWithFrame:_cancelButton.frame];
+        colorView.backgroundColor = RGBCOLOR(204, 204, 204);
+        //[_confirmButton setBackgroundImage:[self imageFromColor:RGBCOLOR(204, 204, 204)] forState:UIControlStateNormal];
+        
+        _confirmButton = [UIButton createButton:CGRectMake(self.width/2.0, self.height - 44, self.width/2.0, 44) font:[UIFont boldSystemFontOfSize:16] color:[UIColor whiteColor] align:NSTextAlignmentCenter];
+        [_confirmButton setTitle:@"确定" forState:UIControlStateNormal];
+        [_confirmButton addTarget:self action:@selector(saveClicked:) forControlEvents:UIControlEventTouchUpInside];
+        UIView* confirmColor = [[UIView alloc] initWithFrame:_confirmButton.frame];
+        confirmColor.backgroundColor = RGBCOLOR(255, 105, 93);
+        [self addSubview:colorView];
+        [self addSubview:confirmColor];
+        [self addSubview:_cancelButton];
+        [self addSubview:_confirmButton];
         
         self.layer.cornerRadius = 5;
         self.clipsToBounds = true;

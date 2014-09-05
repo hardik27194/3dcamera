@@ -13,7 +13,8 @@
 #import "EZStoredPhoto.h"
 #import "EZMessageCenter.h"
 #import "EZPhotoEditPage.h"
-
+#import "EZPopupInput.h"
+#import "EZInputItem.h"
 
 
 @interface EZDragPage ()
@@ -39,6 +40,24 @@
     [self.navigationController setNavigationBarHidden:false animated:YES];
 }
 
+- (void) raiseTitleChange
+{
+    EZDEBUG(@"click get called");
+    EZInputItem* item1 = [[EZInputItem alloc] initWithName:@"名称" type:kStringValue defaultValue:_task.name?_task.name:@""];
+
+    EZPopupInput* input = [[EZPopupInput alloc] initWithTitle:@"图片名称" inputItems:@[item1] haveDelete:NO saveBlock:^(EZPopupInput* popInput){
+        //info.title = item1.changedValue;
+        //info.comment = item2.changedValue;
+        _task.name = item1.changedValue;
+        [_titleChangeBtn setTitle:item1.changedValue forState:UIControlStateNormal];
+        
+    } deleteBlock:nil];
+    
+    [input showInView:self.view animated:YES];
+
+    
+}
+
 - (void) confirmed:(id)obj
 {
     EZDEBUG(@"Drag confirmed");
@@ -62,6 +81,11 @@
     self.collectionView.frame = self.view.bounds;
 }
 
+- (void) viewDidAppear:(BOOL)animated{
+    [super viewDidAppear:animated];
+    [self raiseTitleChange];
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -77,6 +101,12 @@
     self.collectionView.dataSource = self;
     [self.view addSubview:collectionView];
     self.collectionView.backgroundColor = [UIColor whiteColor];
+    UIButton* btn = [UIButton createButton:CGRectMake(0, 0, 200, 44) font:[UIFont boldSystemFontOfSize:17] color:ClickedColor align:NSTextAlignmentCenter];
+    [btn setTitle:@"修改名称" forState:UIControlStateNormal];
+    [btn addTarget:self action:@selector(raiseTitleChange) forControlEvents:UIControlEventTouchUpInside];
+    self.navigationItem.titleView = btn;
+    _titleChangeBtn = btn;
+    
     //[self setupPhotosArray];
     
     [[EZMessageCenter getInstance] registerEvent:EZShotTaskChanged block:^(EZStoredPhoto* pt){

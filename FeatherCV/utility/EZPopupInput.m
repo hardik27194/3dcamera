@@ -119,7 +119,7 @@
         
         CGFloat limit = textField.right - inputName.right - 10;
         item.widthLimit = limit;
-        [textField fitContent:NO limit:limit];
+        [textField fitContent:NO limit:limit miniLimit:100];
        
         
     }else if(item.type == kDateValue){

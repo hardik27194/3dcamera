@@ -101,8 +101,9 @@
         [_uploadedPhotos insertObject:task atIndex:0];
         [_collectionView reloadData];
         __block int count = 0;
-        [[EZDataUtil getInstance] createTaskID:^(NSString* taskID){
-            task.taskID = taskID;
+        [[EZDataUtil getInstance] updateTask:task success:^(EZShotTask* tk){
+            //task.taskID = taskID;
+            NSString* taskID = task.taskID;
             for(EZStoredPhoto* sp in task.photos){
                 sp.taskID = taskID;
                 [[EZDataUtil getInstance] uploadStoredPhoto:sp success:^(EZStoredPhoto* uploaded){

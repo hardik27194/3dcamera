@@ -112,17 +112,19 @@ NSString* doubleString(NSString* str)
     self.spellCheckingType = UITextSpellCheckingTypeNo;
 }
 
-
-- (void) fitContent:(BOOL)left limit:(CGFloat)limit
+- (void) fitContent:(BOOL)left limit:(CGFloat)limit miniLimit:(CGFloat)miniLimit
 {
     CGFloat width = [self.text sizeWithAttributes:@{NSFontAttributeName:self.font}].width;
-    EZDEBUG(@"adjusted width:%f", width);
+    
     //[inputName setWidth:width];
     width = width + 40.0;
     
     if(limit > 0 && width > limit){
         width = limit;
+    }else if(limit < miniLimit){
+        width = miniLimit;
     }
+    EZDEBUG(@"adjusted width:%f, widthLimit:%f", width, miniLimit);
     if(left){
         [self setWidth:width];
     }else{
@@ -131,6 +133,12 @@ NSString* doubleString(NSString* str)
         [self setWidth:width];
         [self setX:adjustedX];
     }
+
+}
+
+- (void) fitContent:(BOOL)left limit:(CGFloat)limit
+{
+    [self fitContent:left limit:limit miniLimit:30];
 }
 
 /**

@@ -22,6 +22,8 @@
 
 @property (nonatomic, strong) UIButton* deleteBtn;
 
+@property (nonatomic, strong) UIButton* titleButton;
+
 @property (nonatomic, strong) UIButton* replaceBtn;
 
 @property (nonatomic, strong) UIButton* adjustSequence;

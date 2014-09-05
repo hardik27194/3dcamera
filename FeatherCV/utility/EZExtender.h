@@ -277,6 +277,8 @@ typedef void  (^ IterateOperation)(id obj);
 
 - (void) fitContent:(BOOL)left limit:(CGFloat)limit;
 
+- (void) fitContent:(BOOL)left limit:(CGFloat)limit miniLimit:(CGFloat)miniLimit;
+
 @end
 /**
 @interface UIButton(EZPrivate)
