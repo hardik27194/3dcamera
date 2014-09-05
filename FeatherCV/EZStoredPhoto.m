@@ -32,4 +32,19 @@
     }
 }
 
+- (NSDictionary*) toDict
+{
+    NSMutableDictionary* res = [[NSMutableDictionary alloc] init];
+    [res setObject:_remoteURL forKey:@"remoteURL"];
+    [res setObject:_taskID?_taskID:@"" forKey:@"taskID"];
+    [res setObject:_photoID?_photoID:@"" forKey:@"photoID"];
+    [res setObject:@(_sequence) forKey:@"sequence"];
+    NSMutableArray* infos = [[NSMutableArray alloc] init];
+    for(EZPhotoInfo* info in _infos){
+        [infos addObject:[info toDict]];
+    }
+    [res setObject:infos forKey:@"infos"];
+    return res;
+}
+
 @end

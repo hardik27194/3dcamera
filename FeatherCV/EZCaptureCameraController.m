@@ -16,6 +16,7 @@
 #import "SCNavigationController.h"
 #import "EZPhotoEditPage.h"
 #import "UIButton+AFNetworking.h"
+#import "EZDragPage.h"
 
 //static void * CapturingStillImageContext = &CapturingStillImageContext;
 //static void * RecordingContext = &RecordingContext;
@@ -249,12 +250,28 @@
         if(_shotType == kShotToReplace){
             //_confirmClicked(_photo);
             _confirmClicked(_shottedPhotoURL);
+            [self dismissBtnPressed:nil];
         }else{
-            _confirmClicked(_shotTask);
+            //_confirmClicked(_shotTask);
+            EZDEBUG(@"save clicked");
+            EZDragPage* dragPage = [[EZDragPage alloc] initWithTask:_shotTask];
+            dragPage.confirmClicked = ^(NSNumber* num){
+                if([num boolValue]){
+                    EZDEBUG(@"confirm clicked");
+                    if(_confirmClicked){
+                        _confirmClicked(_shotTask);
+                    }
+                }
+                int pos = self.navigationController.viewControllers.count - 3;
+                EZDEBUG(@"The view pos is:%i", pos);
+                [self.navigationController popToViewController:[self.navigationController.viewControllers objectAtIndex:pos] animated:YES];
+            };
+            [self.navigationController pushViewController:dragPage animated:YES];
         }
+    }else{
+         [self dismissBtnPressed:nil];
     }
-    [self dismissBtnPressed:nil];
-}
+   }
 
 - (void) deletePos:(NSInteger)pos
 {
@@ -703,7 +720,7 @@ void c_slideAlpha() {
     _shotStatus = kShotting;
     [_shotPrepareVoice play];
     [self showCountDown];
-    dispatch_later(3.0, ^(){
+    dispatch_later(4.5, ^(){
         [self realShot:sender];
     });
     

@@ -40,7 +40,8 @@
 #import "EZStoredPhoto.h"
 #import "EZShotTask.h"
 #import "EZPhotoInfo.h"
-
+#import "LocalTasks.h"
+#import "EZReachability.h"
 
 @implementation EZAlbumResult
 
@@ -77,7 +78,13 @@
     [EZNetworkUtility postJson:[NSString stringWithFormat:@"%@p3d/info/update", baseServiceURL]  parameters:params complete:success failblk:failed];
 }
 
-
+- (void) storeTask:(EZShotTask*)task
+{
+    LocalTasks* lt = [_taskIDToTask objectForKey:task.taskID];
+    task.localTask = lt;
+    [task store];
+}
+//check if already have or not
 
 - (void) queryTaskByPersonID:(NSString*)pid success:(EZEventBlock)success failed:(EZEventBlock)failure
 {
@@ -85,6 +92,11 @@
     if(pid){
         queryURL = [NSString stringWithFormat:@"p3d/account/query?personID=%@", pid];
     }
+    
+    NSArray* tasks = [self loadLocalTasks:pid];
+    
+    if(_networkAvailable){
+    
     [EZNetworkUtility postJson:queryURL parameters:nil complete:^(NSArray* arr){
         EZDEBUG(@"returned value:%@", arr);
         NSMutableArray* res = [[NSMutableArray alloc] init];
@@ -92,13 +104,20 @@
             EZShotTask* task = [[EZShotTask alloc] init];
             [task populateTask:dict];
             [res addObject:task];
+            [self storeTask:task];
         }
         if(success){
             success(res);
         }
         
     } failblk:failure];
-     
+    }else{
+        dispatch_main(^(){
+            if(success){
+                success(tasks);
+            }
+        });
+    }
 }
 
 - (void) createPersonID:(EZEventBlock)success failed:(EZEventBlock)failure
@@ -176,6 +195,30 @@
             });
         }
     }
+}
+
+- (NSArray*) loadLocalTasks:(NSString*)personID
+{
+    NSArray* tasks = [[EZCoreAccessor getClientAccessor] fetchAll:[LocalTasks class] sortField:@"createdTime" ascending:NO];
+    EZDEBUG(@"stored tasks:%i", tasks.count);
+    NSMutableArray* res = [[NSMutableArray alloc] init];
+    for(LocalTasks* lt in tasks){
+        [_taskIDToTask setObject:lt forKey:lt.taskID];
+        if(![personID isNotEmpty]){
+            EZShotTask* st = [[EZShotTask alloc] init];
+            [st populateTask:lt.payload];
+            st.localTask = lt;
+            [res addObject:st];
+        }
+        else if([lt.personID isEqualToString:personID]){
+            EZShotTask* st = [[EZShotTask alloc] init];
+            [st populateTask:lt.payload];
+            st.localTask = lt;
+            [res addObject:st];
+        }
+    }
+    EZDEBUG(@"local task size is:%i", res.count);
+    return res;
 }
 
 - (void) createTaskID:(EZEventBlock)success failure:(EZEventBlock)failure
@@ -601,6 +644,7 @@
     if (_assetLibaray == nil) {
         _assetLibaray = [[ALAssetsLibrary alloc] init];
     }
+    _taskIDToTask = [[NSMutableDictionary alloc] init];
     _recordTypeDetails = [[NSMutableDictionary alloc] init];
     _childRecordLists = [[NSMutableArray alloc] init];
     _motherRecordLists = [[NSMutableArray alloc] init];

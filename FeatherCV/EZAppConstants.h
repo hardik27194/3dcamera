@@ -60,6 +60,14 @@ typedef enum {
     kMotherWeight
 } EZTrackRecordType;
 
+//struct EZGrabCut;
+typedef enum {
+    kSelectRough,
+    kSelectPartialFront,
+    kSelectParticlBack,
+    kProcessing
+} EZSelectStatus;
+
 
 #define EZLoginSuccess @"EZLoginSuccess"
 

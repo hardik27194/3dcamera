@@ -48,6 +48,7 @@
 #import "CKViewController.h"
 #import "EZShotTask.h"
 #import "EZStoredPhoto.h"
+#import "EZCoreAccessor.h"
 
 @implementation EZAppDelegate
 
@@ -332,6 +333,7 @@
 }
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    //[EZCoreAccessor cleanClientDB];
     _cameraRaised = false;
     ///[EZDataUtil getInstance].currentPersonID = @"52f783d7e7b5b9dd9c28f1cc";
     [MobClick startWithAppkey:@"5350f11d56240bb1e901071a" reportPolicy:SENDWIFIONLY channelId:@"AppStore"];
@@ -348,6 +350,7 @@
     if(remoteNote){
         [self handleNotification:remoteNote isLive:NO];
     }
+    
     [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
     //[[EZDataUtil getInstance] setCurrentPersonID:nil];
     if(![[EZDataUtil getInstance] getCurrentPersonID]){

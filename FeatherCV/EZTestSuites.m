@@ -53,6 +53,11 @@
     //[self testFileNameChange];
     //[self testFullFetchBack];
     //[self testUploadTask];
+    //NSInteger val = 1;
+    //EZDEBUG(@"the hash is:%i, %i", @"xxoo1".hash, [NSString stringWithFormat:@"xxoo%i", val].hash);
+    //NSInteger hashed = [NSString stringWithFormat:@"xxoo%i", val].hash;
+    //EZDEBUG(@"final hashed:%i", hashed);
+    //assert( @"xxoo1".hash == hashed);
 }
 
 + (void) testUploadTask

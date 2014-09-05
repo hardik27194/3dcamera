@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
+@class EZEventEater;
 @interface EZMainPhotoCell : UICollectionViewCell
 
 @property (nonatomic, strong) UIImageView* photo;
@@ -20,10 +21,18 @@
 
 @property (nonatomic, strong) UILabel* photoCount;
 
+@property (nonatomic, strong) UILabel* clickInfo;
+
 //Based on the recent change, this really make sense to me.
 @property (nonatomic, strong) UILabel* updateDate;
 
 @property (nonatomic, strong) EZEventBlock editClicked;
 @property (nonatomic, strong) EZEventBlock shareClicked;
+
+@property (nonatomic, strong) UIActivityIndicatorView* activity;
+
+@property (nonatomic, strong) EZEventEater* eventEater;
+
+- (void) setUploading:(BOOL)uploading;
 
 @end

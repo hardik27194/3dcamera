@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
+@class LocalTasks;
 @interface EZShotTask : NSObject
 
 @property (nonatomic, strong) NSMutableArray* photos;
@@ -22,6 +23,18 @@
 
 @property (nonatomic, strong) NSString* taskID;
 
+@property (nonatomic, strong) NSString* personID;
+
+@property (nonatomic, strong) LocalTasks* localTask;
+
+@property (nonatomic, assign) BOOL uploading;
+
+@property (nonatomic, assign) BOOL newlyUpload;
+
 - (void) populateTask:(NSDictionary*) dict;
+
+- (NSDictionary*) toDict;
+
+- (void) store;
 
 @end

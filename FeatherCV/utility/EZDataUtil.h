@@ -49,6 +49,8 @@ typedef enum {
 - (void) queryTaskByPersonID:(NSString*)pid success:(EZEventBlock)success failed:(EZEventBlock)failure;
 
 
+- (NSArray*) loadLocalTasks:(NSString*)personID;
+
 - (void) createTaskID:(EZEventBlock)success failure:(EZEventBlock)failure;
 
 - (void) deleteLocalFile:(EZStoredPhoto*)photo;
@@ -104,6 +106,7 @@ typedef enum {
 - (NSArray*) getPreferredRecords:(EZProfile *)profile;
 
 
+@property (nonatomic, strong) NSMutableDictionary* taskIDToTask;
 
 @property (nonatomic, strong) NSDateFormatter* titleFormatter;
 

@@ -31,4 +31,6 @@
 
 - (void) populate:(NSDictionary*)dict;
 
+- (NSDictionary*) toDict;
+
 @end

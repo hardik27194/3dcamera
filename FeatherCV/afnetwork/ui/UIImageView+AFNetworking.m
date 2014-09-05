@@ -27,7 +27,7 @@
 #if defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
 
 #import "AFHTTPRequestOperation.h"
-
+#import "EZImageCache.h"
 @interface AFImageCache : NSCache <AFImageCache>
 @end
 
@@ -127,7 +127,7 @@ static char kAFResponseSerializerKey;
 {
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
     [request addValue:@"image/*" forHTTPHeaderField:@"Accept"];
-    UIImage *cachedImage = [[[self class] sharedImageCache] cachedImageForRequest:request];
+    UIImage *cachedImage = [[EZImageCache sharedEZImageCache] getImage:request.URL.absoluteString]; //[[[self class] sharedImageCache] cachedImageForRequest:request];
     if (cachedImage) {
         if (success) {
             success(cachedImage);
@@ -139,8 +139,8 @@ static char kAFResponseSerializerKey;
         AFHTTPRequestOperation* imageRequestOperation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
         imageRequestOperation.responseSerializer = [AFImageResponseSerializer serializer];
         [imageRequestOperation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
-            [[[self class] sharedImageCache] cacheImage:responseObject forRequest:request];
-            
+            //[[[self class] sharedImageCache] cacheImage:responseObject forRequest:request];
+            [[EZImageCache sharedEZImageCache] storeImage:responseObject key:[url absoluteString]];
             //UIImage *fetchBack = [[[self class] sharedImageCache] cachedImageForRequest:request];
             //EZDEBUG(@"Prefetch immediate fetch back:%@, %i, sharedCache:%i", url.absoluteString, (int)fetchBack, (int)[[self class] sharedImageCache]);
             if ([[request URL] isEqual:[operation.request URL]]) {
@@ -148,6 +148,7 @@ static char kAFResponseSerializerKey;
                     success(responseObject);
                 }
             }
+            
         } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
             if ([[request URL] isEqual:[operation.request URL]]) {
                 if (failed) {
@@ -166,7 +167,7 @@ static char kAFResponseSerializerKey;
 {
     [self cancelImageRequestOperation];
 
-    UIImage *cachedImage = [[[self class] sharedImageCache] cachedImageForRequest:urlRequest];
+    UIImage *cachedImage = [[EZImageCache sharedEZImageCache] getImage:[urlRequest.URL absoluteString]]; //[[[self class] sharedImageCache] cachedImageForRequest:urlRequest];
     //EZDEBUG(@"load image from url:%@, %i, cache pointer:%i",urlRequest.URL.absoluteString, (int)cachedImage, (int) [[self class] sharedImageCache]);
     if (cachedImage) {
         if (success) {
@@ -192,8 +193,8 @@ static char kAFResponseSerializerKey;
                     strongSelf.image = responseObject;
                 }
             }
-
-            [[[strongSelf class] sharedImageCache] cacheImage:responseObject forRequest:urlRequest];
+            [[EZImageCache sharedEZImageCache] storeImage:responseObject key:[urlRequest.URL absoluteString]];
+            //[[[strongSelf class] sharedImageCache] cacheImage:responseObject forRequest:urlRequest];
         } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
             if ([[urlRequest URL] isEqual:[operation.request URL]]) {
                 if (failure) {

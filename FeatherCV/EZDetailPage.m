@@ -45,6 +45,8 @@
     _webView.frame = self.view.bounds;
 }
 
+
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -54,7 +56,26 @@
     NSString* url = [NSString stringWithFormat:@"%@p3d/show3d?taskID=%@", baseServiceURL, _task.taskID];
     EZDEBUG(@"final url is:%@", url);
     [_webView loadRequest:[NSURLRequest requestWithURL:str2url(url)]];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"share"] style:UIBarButtonItemStylePlain target:self action:@selector(shareClicked:)];
     // Do any additional setup after loading the view.
+}
+
+- (void) shareClicked:(id)obj
+{
+    NSString* url = [NSString stringWithFormat:@"%@p3d/show3d?taskID=%@", baseServiceURL, _task.taskID];
+    NSArray *activityItems = @[@"P3D", str2url(url)];
+    UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:nil];
+    
+    [self presentViewController:activityVC animated:YES completion:nil];
+    
+    
+    [activityVC setCompletionHandler:^(NSString *activityType, BOOL completed)
+     {
+         NSLog(@"Activity = %@",activityType);
+         NSLog(@"Completed Status = %d",completed);
+         
+     }];
+
 }
 
 - (void)didReceiveMemoryWarning

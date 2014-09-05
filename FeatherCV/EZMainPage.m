@@ -30,6 +30,7 @@
 #import "EZDetailPage.h"
 #import "RAViewController.h"
 #import "EZPhotoEditPage.h"
+#import "EZMainLayout.h"
 
 #define CELL_ID @"CELL_ID"
 
@@ -63,11 +64,12 @@
 }
 - (EZMainPage*) initPage:(NSArray*)arr
 {
-    UICollectionViewFlowLayout* grid = [[UICollectionViewFlowLayout alloc] init];
+    EZMainLayout* grid = [[EZMainLayout alloc] init];
     grid.itemSize = CGSizeMake(CurrentScreenWidth/2.0 - 1, (CurrentScreenWidth * 2.0)/3.0 - 1);
     //grid.sectionInset = UIEdgeInsetsMake(1, 1, 0, 0);
     grid.minimumInteritemSpacing = 0;
     grid.minimumLineSpacing = 1;
+    //_layout = grid;
     _date = [NSDate date];
     _uploadedPhotos = [[NSMutableArray alloc] initWithArray:arr];
     return [self initWithCollectionViewLayout:grid];
@@ -76,8 +78,7 @@
 - (void) viewWillLayoutSubviews
 {
     [super viewWillLayoutSubviews];
-    self.collectionView.frame = CGRectMake(0, 44, self.view.bounds.size.width, self.view.bounds.size.height-88);
-    self.collectionView.backgroundColor = MainBackgroundColor;//[UIColor whiteColor];
+    self.collectionView.frame = CGRectMake(0, 44, self.view.bounds.size.width,_currentPos==0?(self.view.bounds.size.height-88):(self.view.bounds.size.height-44));
     _bottomBar.y = self.view.bounds.size.height - 44;
 }
 
@@ -94,17 +95,32 @@
     cam.proposedNumber = total;
     cam.shotType = kNormalShotTask;
     cam.confirmClicked = ^(EZShotTask* task){
-        [[EZMessageCenter getInstance] postEvent:EZShotPhotos attached:task];
+        EZDEBUG(@"Confirmed clicked, will add the progress screen later");
+        //[[EZMessageCenter getInstance] postEvent:EZShotPhotos attached:task];
+        task.uploading = true;
+        [_uploadedPhotos insertObject:task atIndex:0];
+        [_collectionView reloadData];
+        __block int count = 0;
         [[EZDataUtil getInstance] createTaskID:^(NSString* taskID){
             task.taskID = taskID;
             for(EZStoredPhoto* sp in task.photos){
                 sp.taskID = taskID;
                 [[EZDataUtil getInstance] uploadStoredPhoto:sp success:^(EZStoredPhoto* uploaded){
                     EZDEBUG(@"successfully updated:%@, remoteURL:%@", sp.photoID, sp.remoteURL);
+                    ++count;
+                    if(count == task.photos.count){
+                        task.uploading = false;
+                        task.newlyUpload = true;
+                        int pos = [_uploadedPhotos indexOfObject:task];
+                        [_collectionView reloadItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:pos inSection:0]]];
+                    }
                 } failure:nil];
             }
         } failure:^(id obj){
             EZDEBUG(@"failed to get taskID:%@", obj);
+            task.uploading = false;
+            int pos = [_uploadedPhotos indexOfObject:task];
+            [_collectionView reloadItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:pos inSection:0]]];
         }];
     };
     [self.navigationController pushViewController:cam animated:YES];
@@ -157,6 +173,26 @@
             _currentTopBtn = btn;
             
         }];
+        if(pos == 0){
+             _bottomBar.hidden = NO;
+             self.collectionView.frame = CGRectMake(0, 44, self.view.bounds.size.width, self.view.bounds.size.height-88);
+            [UIView animateWithDuration:0.3 animations:^(){
+                _bottomBar.alpha = 1.0;
+               
+            } completion:^(BOOL completed){
+                //[self.collectionView layoutSubviews];
+            }];
+        }else{
+            self.collectionView.frame = CGRectMake(0, 44, self.view.bounds.size.width, self.view.bounds.size.height-44);
+            [UIView animateWithDuration:0.3 animations:^(){
+                _bottomBar.alpha = 0.0;
+                
+                //[self.collectionView layoutSubviews];
+            } completion:^(BOOL completed){
+                _bottomBar.hidden = YES;
+                //[self.collectionView layoutSubviews];
+            }];
+        }
         [self btnClicked:pos];
     }
 }
@@ -294,6 +330,10 @@
     
     EZShotTask* task = [_uploadedPhotos objectAtIndex:indexPath.row];
     EZDetailPage* dp = [[EZDetailPage alloc] initWithTask:task];
+    if(task.newlyUpload){
+        task.newlyUpload = false;
+        [self.collectionView reloadItemsAtIndexPaths:@[indexPath]];
+    }
     [self.navigationController pushViewController:dp animated:YES];
 }
 
@@ -315,7 +355,7 @@
     EZShotTask* shotTask = [_uploadedPhotos objectAtIndex:indexPath.row];
     //EZTrackRecord* record = [_recorders objectAtIndex:indexPath.row];
     //[cell.name setTitle:desc.name forState:UIControlStateNormal];
-    cell.name.text = shotTask.name?shotTask.name:@"未命名";
+    cell.name.text = [shotTask.name isNotEmpty]?shotTask.name:@"未命名";
     cell.updateDate.text = [[EZDataUtil getInstance].titleFormatter stringFromDate:shotTask.shotDate];
     cell.photoCount.text = [NSString stringWithFormat:@"共%i张", shotTask.photos.count];
     EZStoredPhoto* storePhoto = nil;
@@ -324,6 +364,11 @@
         [cell.photo setImageWithURL:str2url(storePhoto.remoteURL)];
     }else{
         [cell.photo setImage:nil];
+    }
+    if(shotTask.newlyUpload){
+        cell.clickInfo.hidden = NO;
+    }else{
+        cell.clickInfo.hidden = YES;
     }
     __weak EZMainPage* weakSelf = self;
     
@@ -342,6 +387,7 @@
     cell.shareClicked = ^(id obj){
         [weakSelf shareClicked:shotTask];
     };
+    [cell setUploading:shotTask.uploading];
     //cell.editBtn
     return cell;
 }

@@ -335,7 +335,7 @@ alpha:(a)/255.0f]
 
 #define serviceURL @"http://api.liangne.com/v1"
 //#define serviceURL @"http://www.songeast.com.cn/statusnet/index.php/mobile"
-#define serverHost @"api.liangne.com"
+#define serverHost @"www.enjoyxue.com"
 
 //This is used to get the cookie out.
 #define serverHostURL @"http://api.liangne.com"

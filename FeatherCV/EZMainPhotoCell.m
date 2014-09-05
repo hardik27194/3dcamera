@@ -7,6 +7,7 @@
 //
 
 #import "EZMainPhotoCell.h"
+#import "EZEventEater.h"
 
 @implementation EZMainPhotoCell
 
@@ -33,6 +34,12 @@
         _photoCount = [UILabel createLabel:CGRectMake(5, 25, frame.size.width - 10, 14) font:[UIFont systemFontOfSize:12] color:RGBCOLOR(210, 210, 210)];
         _photoCount.textAlignment = NSTextAlignmentLeft;
         
+        
+        _clickInfo = [UILabel createLabel:CGRectMake(5, 60, frame.size.width - 10, 16) font:[UIFont systemFontOfSize:16] color:RGBCOLOR(210, 210, 210)];
+        _clickInfo.textAlignment = NSTextAlignmentCenter;
+        _clickInfo.text = @"Click to view";
+        _clickInfo.hidden = YES;
+        
         /**
         _updateDate = [UILabel createLabel:CGRectMake(20, _name.bottom + 8, frame.size.width - 2*20, 16) font:[UIFont systemFontOfSize:14] color:RGBCOLOR(200, 200, 200)];
         _updateDate.textAlignment = NSTextAlignmentCenter;
@@ -50,12 +57,36 @@
         [self.contentView addSubview:grayCover];
         [self.contentView addSubview:_name];
         [self.contentView addSubview:_photoCount];
+        [self.contentView addSubview:_clickInfo];
         //[self.contentView addSubview:_updateDate];
         [self.contentView addSubview:_editBtn];
         [self.contentView addSubview:_shareBtn];
         //self.contentView.backgroundColor = [UIColor whiteColor];
+        _activity = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+        _activity.center = CGPointMake(self.width/2, self.height/2);
+        [self.contentView addSubview:_activity];
+        _eventEater = [[EZEventEater alloc] initWithFrame:self.bounds];
+        _eventEater.backgroundColor = [UIColor clearColor];
+        [self.contentView addSubview:_eventEater];
+        _eventEater.userInteractionEnabled = NO;
+        _activity.hidden = YES;
     }
     return self;
+}
+
+- (void) setUploading:(BOOL)uploading
+{
+    if(uploading){
+        //self.contentView.userInteractionEnabled = false;
+        _activity.hidden = false;
+        _eventEater.userInteractionEnabled = YES;
+        [_activity startAnimating];
+    }else{
+        //self.contentView.userInteractionEnabled = true;
+        _eventEater.userInteractionEnabled = NO;
+        _activity.hidden = true;
+        [_activity stopAnimating];
+    }
 }
 
 - (void) shareClicked:(id)obj

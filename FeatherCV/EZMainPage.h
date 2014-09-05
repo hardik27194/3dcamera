@@ -40,6 +40,8 @@
 @property (nonatomic, strong) UIActivityIndicatorView* loadingActivity;
 
 @property (nonatomic, assign) NSInteger currentPos;
+
+@property (nonatomic, assign) CGFloat minusHeight;
 //@property (nonatomic, strong) NSMutableArray* uploadedPhotos;
 
 @end

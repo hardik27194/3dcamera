@@ -18,6 +18,8 @@
 #import "EZPhotoInfo.h"
 #import "EZPopupInput.h"
 #import "EZInputItem.h"
+#import "EZBackgroundEraser.h"
+
 @interface EZPhotoEditPage ()
 
 @end
@@ -180,6 +182,8 @@
         }
         [[EZDataUtil getInstance] deleteLocalFile:storedPhoto];
         storedPhoto.localFileURL = localURL;
+        
+        if([storedPhoto.photoID isNotEmpty]){
         [[EZDataUtil getInstance] uploadStoredPhoto:storedPhoto success:^(id obj){
             EZDEBUG(@"obj:%@", obj);
             [_imageView setImageWithURL:str2url(localURL)];
@@ -187,6 +191,9 @@
         } failure:^(id err){
             EZDEBUG(@"error:%@", err);
         }];
+        }else{
+            [_imageView setImageWithURL:str2url(localURL)];
+        }
         
     };
     
@@ -321,7 +328,7 @@
      //UIPanGestureRecognizer* panGesturer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panned:)];
     //[_imageView addGestureRecognizer:panGesturer];
     //panGesturer.delegate = self;
-   
+    
     
     UIView* grayView = [[UIView alloc] initWithFrame:_imageView.frame];
     grayView.backgroundColor = RGBACOLOR(0, 0, 0, 90);
@@ -336,31 +343,34 @@
     _toolBar.backgroundColor = [UIColor clearColor];
     
     
-    _replaceBtn = [UIButton createButton:CGRectMake(0, 0, CurrentScreenWidth/4.0, 44) font:[UIFont boldSystemFontOfSize:18] color:RGBCOLOR(70, 70, 70) align:NSTextAlignmentCenter];
+    _replaceBtn = [UIButton createButton:CGRectMake(0, 0, CurrentScreenWidth/3.0, 44) font:[UIFont boldSystemFontOfSize:18] color:RGBCOLOR(70, 70, 70) align:NSTextAlignmentCenter];
     [_replaceBtn setTitle:@"更换" forState:UIControlStateNormal];
     [_replaceBtn addTarget:self action:@selector(replace:) forControlEvents:UIControlEventTouchUpInside];
     
     
-    _deleteBtn = [UIButton createButton:CGRectMake(CurrentScreenWidth/4.0, 0, CurrentScreenWidth/4.0, 44) font:[UIFont boldSystemFontOfSize:18] color:RGBCOLOR(70, 70, 70) align:NSTextAlignmentCenter];
+    _deleteBtn = [UIButton createButton:CGRectMake(CurrentScreenWidth/4.0, 0, CurrentScreenWidth/3.0, 44) font:[UIFont boldSystemFontOfSize:18] color:RGBCOLOR(70, 70, 70) align:NSTextAlignmentCenter];
     [_deleteBtn setTitle:@"删除" forState:UIControlStateNormal];
     [_deleteBtn addTarget:self action:@selector(delete:) forControlEvents:UIControlEventTouchUpInside];
     
     
-    _adjustSequence = [UIButton createButton:CGRectMake(2 * CurrentScreenWidth/4.0, 0, CurrentScreenWidth/4.0, 44)  font:[UIFont boldSystemFontOfSize:18] color:RGBCOLOR(70, 70, 70) align:NSTextAlignmentCenter];
+    _adjustSequence = [UIButton createButton:CGRectMake( CurrentScreenWidth/3.0, 0, CurrentScreenWidth/3.0, 44)  font:[UIFont boldSystemFontOfSize:18] color:RGBCOLOR(70, 70, 70) align:NSTextAlignmentCenter];
     [_adjustSequence setTitle:@"调整顺序" forState:UIControlStateNormal];
     [_adjustSequence addTarget:self action:@selector(sequence:) forControlEvents:UIControlEventTouchUpInside];
     
-    _addButton = [UIButton createButton:CGRectMake(3 * CurrentScreenWidth/4.0, 0, CurrentScreenWidth/4.0, 44)  font:[UIFont boldSystemFontOfSize:18] color:RGBCOLOR(70, 70, 70) align:NSTextAlignmentCenter];
+    _addButton = [UIButton createButton:CGRectMake(2 * CurrentScreenWidth/3.0, 0, CurrentScreenWidth/3.0, 44)  font:[UIFont boldSystemFontOfSize:18] color:RGBCOLOR(70, 70, 70) align:NSTextAlignmentCenter];
     [_addButton setTitle:@"增加" forState:UIControlStateNormal];
     [_addButton addTarget:self action:@selector(addPhoto:) forControlEvents:UIControlEventTouchUpInside];
 
     
     if(_showShot){
-        _deleteBtn.frame = CGRectMake(0, 0, CurrentScreenWidth, 44);
+        _deleteBtn.frame = CGRectMake(0, 0, CurrentScreenWidth/2.0, 44);
         [_toolBar addSubview:_deleteBtn];
+        
+        _replaceBtn.frame = CGRectMake(CurrentScreenWidth/2.0, 0, CurrentScreenWidth/2.0, 44);
+        [_toolBar addSubview:_replaceBtn];
     }else{
         [_toolBar addSubview:_replaceBtn];
-        [_toolBar addSubview:_deleteBtn];
+        //[_toolBar addSubview:_deleteBtn];
         [_toolBar addSubview:_adjustSequence];
         [_toolBar addSubview:_addButton];
     }
@@ -373,8 +383,16 @@
         EZDEBUG(@"shot photo changed");
     }];
     [self loadImage];
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addInfoPoint:)];
+    //self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addInfoPoint:)];
+    //self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"去背景" style:UIBarButtonItemStylePlain target:self action:@selector(eraseBg:)];
     // Do any additional setup after loading the view.
+}
+
+- (void) eraseBg:(id)obj
+{
+    EZBackgroundEraser* backEraser = [[EZBackgroundEraser alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, CurrentScreenWidth) image:_imageView.image];
+    [self.view addSubview:backEraser];
+    EZDEBUG(@"Background eraser started");
 }
 
 - (void) addInfoPoint:(id)obj
