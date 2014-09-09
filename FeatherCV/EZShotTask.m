@@ -34,6 +34,14 @@
     }
 }
 
+//The file will get deleted in this method too
+- (void) deleteLocal
+{
+    if(_localTask){
+        [_localTask.managedObjectContext deleteObject:_localTask];
+    }
+}
+
 - (NSDictionary*) toDict
 {
     NSMutableDictionary* res = [[NSMutableDictionary alloc] init];

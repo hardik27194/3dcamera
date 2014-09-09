@@ -32,11 +32,11 @@ typedef enum {
 
 @class RBVolumeButtons;
 @class EZSoundEffect;
-@interface EZCaptureCameraController : UIViewController
+@interface EZCaptureCameraController : UIViewController<UIActionSheetDelegate>
 @property (nonatomic, assign) CGRect previewRect;
 @property (nonatomic, assign) BOOL isStatusBarHiddenBeforeShowCamera;
 @property (nonatomic, strong) UILabel* shotText;
-@property (nonatomic, strong) UILabel* statusText;
+//@property (nonatomic, strong) UILabel* statusText;
 @property (nonatomic, assign) NSInteger proposedNumber;
 @property (nonatomic, assign) NSInteger currentCount;
 @property (nonatomic, strong) UIButton* shotImages;
@@ -45,6 +45,7 @@ typedef enum {
 @property (nonatomic, strong) UIButton* shotBtn;
 @property (nonatomic, assign) BOOL areCapturing;
 @property (nonatomic, assign) BOOL isPaused;
+@property (nonatomic, assign) BOOL isManual;
 @property (nonatomic, assign) EZCameraShotStatus shotStatus;
 @property (nonatomic, assign) EZShotTaskType shotType;
 @property (nonatomic, strong) EZStoredPhoto* photo;
@@ -55,7 +56,17 @@ typedef enum {
 
 @property (nonatomic, strong) EZEventBlock confirmClicked;
 
+@property (nonatomic, assign) NSInteger totalCountDown;
+
+@property (nonatomic, assign) NSInteger currentCountDown;
+
+@property (nonatomic, strong) UILabel* countDownTitle;
+
 @property (nonatomic, strong) NSString* shottedPhotoURL;
+
+@property (nonatomic, strong) UIButton* toggleMode;
+
+@property (nonatomic, strong) UIButton* changeDelayBtn;
 //@property (nonatomic, strong) UIButton* confirmButton;
 
 

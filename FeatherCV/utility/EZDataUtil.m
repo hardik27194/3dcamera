@@ -197,6 +197,11 @@
     }
 }
 
+- (void) deletePhotoTask:(NSString*)taskID success:(EZEventBlock)success failed:(EZEventBlock)failed
+{
+    [EZNetworkUtility getJson:@"p3d/id/delete" parameters:@{@"taskID":taskID} complete:success failblk:failed];
+}
+
 - (NSArray*) loadLocalTasks:(NSString*)personID
 {
     NSArray* tasks = [[EZCoreAccessor getClientAccessor] fetchAll:[LocalTasks class] sortField:@"createdTime" ascending:NO];

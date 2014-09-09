@@ -7,12 +7,14 @@
 //
 
 #import "EZBackgroundEraser.h"
+#import <opencv2/highgui/ios.h>
 //#import "EZGrabCut.h"
 #import "EZGrabHandler.h"
 #import "EZExtender.h"
 #import "EZImageConverter.h"
 #import "EZDataUtil.h"
 #import "EZThreadUtility.h"
+
 
 #define FrontSelectColor RGBACOLOR(255,64 ,64,128)
 #define BackgroundSelectColor RGBACOLOR(64, 64, 255, 128)

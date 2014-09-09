@@ -257,6 +257,12 @@
     [_topBar addSubview:_bottomLine];
 
     [self.view addSubview:_topBar];
+    
+    [[EZMessageCenter getInstance] registerEvent:EZDeletePhotoTask block:^(EZShotTask* task){
+        int pos = [_uploadedPhotos indexOfObject:task];
+        [_uploadedPhotos removeObject:task];
+        [_collectionView deleteItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:pos inSection:0]]];
+    }];
     [[EZMessageCenter getInstance] registerEvent:EZShotPhotos block:^(EZShotTask* task){
         EZDEBUG(@"I receieved photo");
         if(!task){

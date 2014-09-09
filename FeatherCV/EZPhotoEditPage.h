@@ -43,6 +43,8 @@
 
 @property (nonatomic, strong) EZPhotoInfo* photoInfo;
 
+@property (nonatomic, strong) UIAlertView* deleteAlert;
+
 @property (nonatomic, assign) BOOL showShot;
 
 @property (nonatomic, strong) EZEventBlock deletedClicked;

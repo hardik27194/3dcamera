@@ -40,6 +40,8 @@ typedef enum {
 
 + (EZDataUtil*) getInstance;
 
+- (void) deletePhotoTask:(NSString*)taskID success:(EZEventBlock)success failed:(EZEventBlock)failed;
+
 - (void) createPhotoInfo:(EZPhotoInfo*)photoInfo success:(EZEventBlock)success failed:(EZEventBlock)failed;
 
 - (void) updatePhotoInfo:(EZPhotoInfo*)photoInfo success:(EZEventBlock)success failed:(EZEventBlock)failed;

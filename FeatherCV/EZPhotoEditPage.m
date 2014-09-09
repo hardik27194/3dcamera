@@ -19,6 +19,7 @@
 #import "EZPopupInput.h"
 #import "EZInputItem.h"
 #import "EZBackgroundEraser.h"
+#import "LocalTasks.h"
 
 @interface EZPhotoEditPage ()
 
@@ -90,11 +91,35 @@
     //[self reloadImage];
 }
 
+- (void) deleteConfirmed:(id)sender
+{
+    EZDEBUG(@"delete confirm get called:%@", _task.taskID);
+    if([_task.taskID isNotEmpty]){
+    [[EZDataUtil getInstance] deletePhotoTask:_task.taskID success:^(id obj){
+        [_task deleteLocal];
+        [[EZMessageCenter getInstance] postEvent:@"EZDeletePhotoTask" attached:_task];
+        [self.navigationController popViewControllerAnimated:YES];
+    } failed:^(id err){
+        EZDEBUG(@"failed to delete");
+    }];
+    }else{
+        [_task deleteLocal];
+        [[EZMessageCenter getInstance] postEvent:@"EZDeletePhotoTask" attached:_task];
+        [self.navigationController popViewControllerAnimated:YES];
+    }
+}
 
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     EZDEBUG(@"button index:%i", buttonIndex);
+    if(alertView == _deleteAlert){
+        if(buttonIndex == 1){
+            [self deleteConfirmed:nil];
+        }
+        return;
+    }
+    
     if(buttonIndex == 1){
         if(_photos.count>0){
             EZStoredPhoto* storedPhoto = [_photos objectAtIndex:_currentPos];
@@ -392,10 +417,19 @@
     if([_task.name isNotEmpty]){
         [_titleButton setTitle:_task.name forState:UIControlStateNormal];
     }
-    //self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addInfoPoint:)];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(deleteTask)];
     //self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"去背景" style:UIBarButtonItemStylePlain target:self action:@selector(eraseBg:)];
     // Do any additional setup after loading the view.
 }
+
+- (void) deleteTask
+{
+    UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"删除%@", ([_task.name isNotEmpty]?_task.name:@"未命名")] message:[NSString  stringWithFormat:@"共有%i张照片，确认删除吗？", _task.photos.count] delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确认", nil];
+    [alertView show];
+    _deleteAlert = alertView;
+}
+
+
 
 - (void) raiseTitleChange
 {

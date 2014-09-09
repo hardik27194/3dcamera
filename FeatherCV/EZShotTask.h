@@ -35,6 +35,8 @@
 
 - (NSDictionary*) toDict;
 
+- (void) deleteLocal;
+
 - (void) store;
 
 @end

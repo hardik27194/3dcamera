@@ -74,6 +74,8 @@
 
 @end
 
+#define EZCountDownSetting @"CountDownSetting"
+
 @implementation EZCaptureCameraController
 
 #pragma mark -------------life cycle---------------
@@ -97,6 +99,10 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
+    _totalCountDown = [[NSUserDefaults standardUserDefaults] integerForKey:EZCountDownSetting];
+    if(!_totalCountDown){
+        _totalCountDown = 3;
+    }
     __weak EZCaptureCameraController* weakSelf = self;
     //navigation bar
     if (self.navigationController && !self.navigationController.navigationBarHidden) {
@@ -148,6 +154,23 @@
         [self.view addSubview:imgView];
     }
 #endif
+    
+    
+}
+
+- (void) setDelayChangeButton:(NSInteger)countDown
+{
+    [_changeDelayBtn setTitle:[NSString stringWithFormat:@"延时:%i秒", _totalCountDown] forState:UIControlStateNormal];
+}
+
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    EZDEBUG(@"buttonIndex:%i", buttonIndex);
+    if(buttonIndex < 8){
+        _totalCountDown = 3 + buttonIndex;
+        [[NSUserDefaults standardUserDefaults] setInteger:_totalCountDown forKey:EZCountDownSetting];
+        [self setDelayChangeButton:_totalCountDown];
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -209,8 +232,13 @@
         _shotText.font = [UIFont systemFontOfSize:22.f];
         [_topContainerView addSubview:_shotText];
         
-        _statusText = [UILabel createLabel:CGRectMake(100, 0, 120, topFrame.size.height) font:[UIFont systemFontOfSize:22] color:[UIColor whiteColor]];
-        [_topContainerView addSubview:_statusText];
+        _toggleMode = [UIButton createButton:CGRectMake(100, 0, CurrentScreenWidth - 200, 44) font:[UIFont boldSystemFontOfSize:17] color:ClickedColor align:NSTextAlignmentCenter];
+        [_toggleMode addTarget:self action:@selector(toggleClicked) forControlEvents:UIControlEventTouchUpInside];
+        [_topContainerView addSubview:_toggleMode];
+        [self setManualMode:_isManual];
+        
+        //_statusText = [UILabel createLabel:CGRectMake(100, 0, 120, topFrame.size.height) font:[UIFont systemFontOfSize:22] color:[UIColor whiteColor]];
+        //[_topContainerView addSubview:_statusText];
         
         /**
          _confirmButton = [UIButton createButton:CGRectMake(CurrentScreenWidth - 70, 0, 60, 44) font:[UIFont systemFontOfSize:17] color:[UIColor whiteColor] align:NSTextAlignmentCenter];
@@ -229,6 +257,21 @@
         self.topLbl = _shotText;
     }
     _topLbl.text = text;
+}
+
+- (void) toggleClicked
+{
+    [self setManualMode:!_isManual];
+}
+
+- (void) setManualMode:(BOOL)isManual
+{
+    _isManual = isManual;
+    if(_isManual){
+        [_toggleMode setTitle:@"手动" forState:UIControlStateNormal];
+    }else{
+        [_toggleMode setTitle:@"自动" forState:UIControlStateNormal];
+    }
 }
 
 //bottomContainerView，总体
@@ -337,6 +380,11 @@
     [_bottomContainerView addSubview:_shotImages];
     [_shotImages addTarget:self action:@selector(showResult:) forControlEvents:UIControlEventTouchUpInside];
     
+    _changeDelayBtn = [UIButton createButton:CGRectMake(_bottomContainerView.width - 20 - 75, pos, 75, 44) font:[UIFont boldSystemFontOfSize:16] color:[UIColor whiteColor] align:NSTextAlignmentCenter];
+    [self setDelayChangeButton:_totalCountDown];
+    [_changeDelayBtn addTarget:self action:@selector(changeDelay) forControlEvents:UIControlEventTouchUpInside];
+    [_bottomContainerView addSubview:_changeDelayBtn];
+    
     //拍照的菜单栏view（屏幕高度大于480的，此view在上面，其他情况在下面）
     CGFloat menuViewY = (isHigherThaniPhone4_SC ? SC_DEVICE_SIZE.height - CAMERA_MENU_VIEW_HEIGH : 0);
     UIView *menuView = [[UIView alloc] initWithFrame:CGRectMake(0, menuViewY, self.view.frame.size.width, CAMERA_MENU_VIEW_HEIGH)];
@@ -344,6 +392,14 @@
     [self.view addSubview:menuView];
     self.cameraMenuView = menuView;
     [self addMenuViewButtons];
+}
+
+- (void) changeDelay
+{
+    UIActionSheet* ac = [[UIActionSheet alloc] initWithTitle:@"拍摄延时(秒)" delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:nil otherButtonTitles:@"3",@"4",@"5",@"6",@"7",@"8",@"9", nil];
+    
+    [ac showInView:self.view];
+    ac.delegate = self;
 }
 
 //拍照菜单栏上的按钮
@@ -431,6 +487,13 @@
     downView.backgroundColor = [UIColor blackColor];
     [self.view addSubview:downView];
     self.doneCameraDownView = downView;
+    
+    _countDownTitle = [UILabel createLabel:CGRectMake(0, 70, CurrentScreenWidth, 100) font:[UIFont fontWithName:@"HelveticaNeue-Light" size:100] color:[UIColor whiteColor]];
+    _countDownTitle.textAlignment = NSTextAlignmentCenter;
+    _countDownTitle.text = @"0";
+    _countDownTitle.alpha = 0.8;
+    _countDownTitle.hidden = YES;
+    [self.view addSubview:_countDownTitle];
 }
 
 - (void)showCameraCover:(BOOL)toShow {
@@ -599,7 +662,11 @@ void c_slideAlpha() {
 {
     
     
-    EZDEBUG(@"Capturing is:%i, isPaused:%i", _shotStatus, _isPaused);
+    EZDEBUG(@"Capturing is:%i, isPaused:%i, manual:%i", _shotStatus, _isPaused, _isManual);
+    if(_isManual){
+        [self innerShot:sender];
+        return;
+    }
     
     //Mean click for the first time
     if(_shotStatus == kShotInit){
@@ -659,21 +726,28 @@ void c_slideAlpha() {
         return;
     }
 #endif
-    [self updateShotStatusText];
     //sender.userInteractionEnabled = NO;
-    [self showCameraCover:YES];
+    //[self showCameraCover:YES];
     
     __block UIActivityIndicatorView *actiView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
     actiView.center = CGPointMake(self.view.center.x, self.view.center.y - CAMERA_TOPVIEW_HEIGHT);
     [actiView startAnimating];
     [self.view addSubview:actiView];
+    
     WEAKSELF_SC
     [_captureManager takePicture:^(UIImage *stillImage) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             //[SCCommon saveImageToPhotoAlbum:stillImage];//存至本机
             [self appendPhoto:file2url([EZFileUtil saveImageToDocument:stillImage])];
             //_currentCount ++;
-            //EZDEBUG(@"_currentCount: %i, proposedNumber:%i, _shotType:%i",_currentCount,_proposedNumber, _shotType);
+            EZDEBUG(@"_currentCount: %i, proposedNumber:%i, _shotType:%i",_currentCount,_proposedNumber, _shotType);
+            dispatch_main(^(){
+            if(_isManual){
+                //_currentCount++;
+                _shotStatus = kShotDone;
+                [_shotBtn setImage:[UIImage imageNamed:@"shot_s"] forState:UIControlStateNormal];
+                return;
+            }
             
             if(_shotType == kNormalShotTask && _currentCount < _proposedNumber){
                 [self innerShot:sender];
@@ -684,6 +758,7 @@ void c_slideAlpha() {
                 //EZDEBUG(@"complete shot");
                 _currentCount = 0;
             }
+            });
         });
         
         [actiView stopAnimating];
@@ -696,7 +771,7 @@ void c_slideAlpha() {
         dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
         dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
             sender.userInteractionEnabled = YES;
-            [weakSelf_SC showCameraCover:NO];
+            //[weakSelf_SC showCameraCover:NO];
         });
     }];
     
@@ -705,22 +780,48 @@ void c_slideAlpha() {
 //Show the count down message
 - (void) showCountDown
 {
-    
+    _currentCountDown = 0;
+    _countDownTitle.hidden = NO;
+    //_countDownTitle.text = int2str(_currentCount);
+    [self countDownInner];
+}
+
+- (void) countDownInner
+{
+   
+    EZDEBUG(@"show countDown:%i", _currentCountDown);
+    _countDownTitle.text = int2str(_totalCountDown - _currentCountDown);
+    if(_currentCountDown > _totalCountDown){
+        _countDownTitle.hidden = YES;
+    }else{
+        dispatch_later(1.0, ^(){
+            [self countDownInner];
+        });
+    }
+    ++_currentCountDown;
 }
 
 - (void) innerShot:(UIButton*)sender
 {
+    EZDEBUG(@"inner shot:%i, %i", _isManual, _isPaused);
+    if(_isManual){
+        [_shotBtn setImage:[UIImage imageNamed:@"shot_s"] forState:UIControlStateNormal];
+        [self realShot:sender];
+        return;
+    }
+    
     
     if(_isPaused){
         //_shotText.text = @"暂停";
         EZDEBUG(@"Quit for paused");
+        [_shotBtn setImage:[UIImage imageNamed:@"shot_s"] forState:UIControlStateNormal];
         _shotStatus = kShotPaused;
         return;
     }
     _shotStatus = kShotting;
     [_shotPrepareVoice play];
-    [self showCountDown];
-    dispatch_later(4.5, ^(){
+    //[self showCountDown];
+    dispatch_later(_totalCountDown, ^(){
         [self realShot:sender];
     });
     

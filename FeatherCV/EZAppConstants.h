@@ -68,6 +68,7 @@ typedef enum {
     kProcessing
 } EZSelectStatus;
 
+#define EZDeletePhotoTask @"EZDeletePhotoTask"
 
 #define EZLoginSuccess @"EZLoginSuccess"
 

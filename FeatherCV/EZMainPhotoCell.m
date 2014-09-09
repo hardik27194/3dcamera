@@ -37,7 +37,7 @@
         
         _clickInfo = [UILabel createLabel:CGRectMake(5, 60, frame.size.width - 10, 16) font:[UIFont systemFontOfSize:16] color:RGBCOLOR(210, 210, 210)];
         _clickInfo.textAlignment = NSTextAlignmentCenter;
-        _clickInfo.text = @"Click to view";
+        _clickInfo.text = @"点击查看";
         _clickInfo.hidden = YES;
         
         /**

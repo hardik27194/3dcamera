@@ -48,6 +48,7 @@
     EZPopupInput* input = [[EZPopupInput alloc] initWithTitle:@"图片名称" inputItems:@[item1] haveDelete:NO saveBlock:^(EZPopupInput* popInput){
         //info.title = item1.changedValue;
         //info.comment = item2.changedValue;
+        EZDEBUG(@"Changed value:%@", item1.changedValue);
         _task.name = item1.changedValue;
         [_titleChangeBtn setTitle:item1.changedValue forState:UIControlStateNormal];
         
