@@ -141,6 +141,8 @@ typedef enum {
 
 @property (nonatomic, assign) NSInteger currentProfilePos;
 
+@property (nonatomic, strong) UIImage* placeHolder;
+
 //Which will include both mother and the child list
 - (void) createAllRecordType;
 

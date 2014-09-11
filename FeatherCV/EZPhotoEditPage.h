@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
+
+#define FlexibleItemBar [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil]
 @class EZShotTask;
 @class EZStoredPhoto;
 @class EZInfoDotView;

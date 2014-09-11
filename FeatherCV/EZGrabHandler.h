@@ -15,6 +15,28 @@
 using namespace cv;
 using namespace std;
 
+
+typedef enum {
+    kCycleShape,
+    kRectShape
+} EZShapeType;
+
+
+
+struct EZEraseShape
+{
+public:
+    //cv::Point point;
+    cv::Rect frame;
+    EZShapeType shapeType;
+
+    cv::Size getRadius();
+    void setRadius(cv::Size radius);
+    
+};
+
+
+
 struct EZGrabHandler
 {
 public:
@@ -38,21 +60,24 @@ public:
     void reset();
     void setImage( const Mat& image);
     
+    void mergeMask(const Mat& extMask);
+    
     void setImageOnly(const Mat& image);
-    Mat showImage(int showSign) const;
+    void showImage(int showSign, Mat& res) const;
     void mouseClick( int event, int x, int y, int flags, void* param );
     int nextIter();
     int getIterCount() const { return iterCount; };
     
     void setMaskRect(cv::Rect rect);
+    
+    void setMaskCycle(cv::Point p,int front, int radius, bool isPr);
 
     void setLblsInMask(int isFront, cv::Point p, bool isPr );
     
     int renderByMask();
+    void copyMat(cv::Mat& dest, cv::Mat& mask, bool alpha) const;
 private:
     void setRectInMask();
-    
-    
     const string* winName;
     const Mat* image;
     Mat mask;

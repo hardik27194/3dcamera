@@ -80,6 +80,12 @@
 - (void)setImageWithURL:(NSURL *)url;
 
 
+- (void)setImageWithURL:(NSURL*)url loading:(BOOL)loading
+                       success:(EZEventBlock)success
+                failure:(EZEventBlock)failure;
+
+
+- (void) setImageWithURL:(NSURL *)url loading:(BOOL)loading;
 //Load image before user notice anything
 - (void) preloadImageURL:(NSURL *)url success:(EZEventBlock)success failed:(EZEventBlock)failed;
 

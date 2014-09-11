@@ -13,6 +13,7 @@
     
 }
 
++ (UIImage *)matToImageEx:(cv::Mat)image;
 + (UIImage *)matToImage:(cv::Mat)cvMat;
 + (UIImage *)matToImage2:(cv::Mat)cvMat withUIImage:(UIImage*)image;
 

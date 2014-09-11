@@ -1120,6 +1120,18 @@ NSString* doubleString(NSString* str)
     [self addTarget:bw action:@selector(invokeMethod:) forControlEvents:UIControlEventTouchUpInside];
 }
 
++ (UIButton*) createButton:(CGRect)frame image:(UIImage*)image imageInset:(UIEdgeInsets)inset title:(NSString*)title font:(UIFont*)font color:(UIColor*)color align:(NSTextAlignment)align textFrame:(CGRect)textFrame
+{
+    UIButton* res = [UIButton createButton:frame font:font color:color align:align];
+    res.imageEdgeInsets = inset;
+    [res setImage:image forState:UIControlStateNormal];
+    UILabel* titleLabel = [UILabel createLabel:textFrame font:font color:color];
+    titleLabel.textAlignment = align;
+    titleLabel.text = title;
+    [res addSubview:titleLabel];
+    return res;
+}
+
 + (UIButton*) createButton:(CGRect)frame font:(UIFont*)font color:(UIColor*)color align:(NSTextAlignment)align
 {
     UIButton* res = [[UIButton alloc] initWithFrame:frame];

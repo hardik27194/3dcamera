@@ -9,6 +9,8 @@
 #import <UIKit/UIKit.h>
 
 struct EZGrabHandler;
+
+@class DAScratchPadView;
 @interface EZBackgroundEraser : UIView{
     //EZGrabCut* gradCut;
     struct EZGrabHandler* grabHandler;
@@ -33,5 +35,9 @@ struct EZGrabHandler;
 @property (nonatomic, strong) UIView* horizonBar;
 
 @property (nonatomic, strong) UIView* verticalBar;
+
+@property (nonatomic, strong) DAScratchPadView* scratchView;
+
+@property (nonatomic, strong) UIButton* confirmSelect;
 
 @end

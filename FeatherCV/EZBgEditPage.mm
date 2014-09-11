@@ -152,7 +152,9 @@
          ^(){
              int itCount = grabHandler->nextIter();
              dispatch_main(^(){
-                 UIImage* converted = [EZImageConverter matToImage:grabHandler->showImage(NO)];
+                 Mat res;
+                 grabHandler->showImage(NO, res);
+                 UIImage* converted = [EZImageConverter matToImage:res];
                  _imageView.image = converted;
              });
          } isConcurrent:NO];

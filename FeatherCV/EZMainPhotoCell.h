@@ -33,6 +33,8 @@
 
 @property (nonatomic, strong) EZEventEater* eventEater;
 
+@property (nonatomic, strong) UIToolbar* toolBar;
+
 - (void) setUploading:(BOOL)uploading;
 
 @end

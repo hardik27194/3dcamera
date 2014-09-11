@@ -122,6 +122,45 @@ static char kAFResponseSerializerKey;
     [self setImageWithURLRequest:request placeholderImage:placeholderImage success:nil failure:nil];
 }
 
+
+- (void) setImageWithURL:(NSURL *)url loading:(BOOL)loading
+{
+    [self setImageWithURL:url loading:loading success:nil failure:nil];
+}
+
+- (void)setImageWithURL:(NSURL*)url loading:(BOOL)loading
+                success:(EZEventBlock)success
+                failure:(EZEventBlock)failure
+{
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
+    [request addValue:@"image/*" forHTTPHeaderField:@"Accept"];
+    UIActivityIndicatorView* ai = nil;
+    if(loading){
+        ai = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+        ai.center = CGPointMake(self.width/2.0, self.height/2.0);
+        [self addSubview:ai];
+        [ai startAnimating];
+    }
+    
+    [self setImageWithURLRequest:request placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+        if(loading){
+            [ai stopAnimating];
+            [ai removeFromSuperview];
+        }
+        if(success){
+            success(image);
+        }
+    } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
+        if(loading){
+            [ai stopAnimating];
+            [ai removeFromSuperview];
+        }
+        if(failure){
+            failure(error);
+        }
+    }];
+}
+
 //Load image before user notice anything
 - (void) preloadImageURL:(NSURL *)url success:(EZEventBlock)success failed:(EZEventBlock)failed
 {
@@ -172,10 +211,8 @@ static char kAFResponseSerializerKey;
     if (cachedImage) {
         if (success) {
             success(nil, nil, cachedImage);
-        } else {
-            self.image = cachedImage;
         }
-
+        self.image = cachedImage;
         self.af_imageRequestOperation = nil;
     } else {
         
@@ -187,10 +224,11 @@ static char kAFResponseSerializerKey;
         [self.af_imageRequestOperation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
             __strong __typeof(weakSelf)strongSelf = weakSelf;
             if ([[urlRequest URL] isEqual:[operation.request URL]]) {
+                if (responseObject) {
+                    strongSelf.image = responseObject;
+                }
                 if (success) {
                     success(urlRequest, operation.response, responseObject);
-                } else if (responseObject) {
-                    strongSelf.image = responseObject;
                 }
             }
             [[EZImageCache sharedEZImageCache] storeImage:responseObject key:[urlRequest.URL absoluteString]];

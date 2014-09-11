@@ -348,7 +348,7 @@
         EZStoredPhoto* sp = [[EZStoredPhoto alloc] init];
         sp.localFileURL = _shottedPhotoURL;
         sp.remoteURL = _shottedPhotoURL;
-        photos = @[photos];
+        photos = @[sp];
     }else{
         photos = _shotTask.photos;
     }

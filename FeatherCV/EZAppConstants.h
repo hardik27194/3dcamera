@@ -68,6 +68,8 @@ typedef enum {
     kProcessing
 } EZSelectStatus;
 
+#define ImagePlaceHolder [EZDataUtil getInstance].placeHolder
+
 #define EZDeletePhotoTask @"EZDeletePhotoTask"
 
 #define EZLoginSuccess @"EZLoginSuccess"

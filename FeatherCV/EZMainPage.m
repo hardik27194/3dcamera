@@ -368,7 +368,7 @@
     EZStoredPhoto* storePhoto = nil;
     if(shotTask.photos.count){
         EZStoredPhoto* storePhoto = [shotTask.photos objectAtIndex:0];
-        [cell.photo setImageWithURL:str2url(storePhoto.remoteURL)];
+        [cell.photo setImageWithURL:str2url(storePhoto.remoteURL) loading:YES];
     }else{
         [cell.photo setImage:nil];
     }

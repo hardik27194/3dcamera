@@ -30,17 +30,59 @@
 +(UIImage *)matToImage:(cv::Mat)cvMat
 {
     CGColorSpaceRef colorSpace;
-    cv::Mat fullMat;
-    cv::cvtColor(cvMat, fullMat, CV_BGR2BGRA);
-    NSData *data = [NSData dataWithBytes:fullMat.data length:fullMat.elemSize()*fullMat.total()];
+    //cv::Mat fullMat;
+    //cv::cvtColor(cvMat, fullMat, CV_BGR2BGRA);
+    NSData *data = [NSData dataWithBytes:cvMat.data length:cvMat.elemSize()*cvMat.total()];
     colorSpace = CGColorSpaceCreateDeviceRGB();
     
     CGDataProviderRef provider = CGDataProviderCreateWithCFData( (__bridge CFDataRef)data );
-    CGImageRef imageRef = CGImageCreate( fullMat.cols, fullMat.rows, 8, 8 * fullMat.elemSize(), fullMat.step[0], colorSpace, kCGImageAlphaNone|kCGBitmapByteOrderDefault, provider, NULL, false, kCGRenderingIntentDefault );
+    CGImageRef imageRef = CGImageCreate(cvMat.cols, cvMat.rows, 8, 8 * cvMat.elemSize(), cvMat.step[0], colorSpace, kCGImageAlphaLast|kCGBitmapByteOrderDefault, provider, NULL, false, kCGRenderingIntentDefault );
     UIImage *finalImage = [UIImage imageWithCGImage:imageRef];
     CGImageRelease( imageRef );
     CGDataProviderRelease( provider );
     CGColorSpaceRelease( colorSpace );
+    return finalImage;
+}
+
+
++(UIImage *)matToImageEx:(cv::Mat)image
+{
+    NSData *data = [NSData dataWithBytes:image.data
+                                  length:image.elemSize()*image.total()];
+    
+    CGColorSpaceRef colorSpace;
+    
+    if (image.elemSize() == 1) {
+        colorSpace = CGColorSpaceCreateDeviceGray();
+    } else {
+        colorSpace = CGColorSpaceCreateDeviceRGB();
+    }
+    
+    CGDataProviderRef provider =
+    CGDataProviderCreateWithCFData((__bridge CFDataRef)data);
+    
+    // Creating CGImage from cv::Mat
+    CGImageRef imageRef = CGImageCreate(image.cols,
+                                        image.rows,
+                                        8,
+                                        8 * image.elemSize(),
+                                        image.step.p[0],
+                                        colorSpace,
+                                        kCGImageAlphaLast|
+                                        kCGBitmapByteOrderDefault,
+                                        provider,
+                                        NULL,
+                                        false,
+                                        kCGRenderingIntentDefault
+                                        );
+    
+    
+    // Getting UIImage from CGImage
+    UIImage *finalImage = [UIImage imageWithCGImage:imageRef];
+    CGImageRelease(imageRef);
+    CGDataProviderRelease(provider);
+    CGColorSpaceRelease(colorSpace);
+    
     return finalImage;
 }
 

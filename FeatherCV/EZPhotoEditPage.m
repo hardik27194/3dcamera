@@ -195,6 +195,10 @@
 
 - (void) replace:(id)sender
 {
+    EZDEBUG(@"Replace photo:%i, total:%i", _photos.count, _currentPos);
+    if(_photos.count == 0){
+        return;
+    }
     EZStoredPhoto* storedPhoto = [_photos objectAtIndex:_currentPos];
     EZCaptureCameraController* sc = [[EZCaptureCameraController alloc] init];
     sc.shotType = kShotSingle;
@@ -233,10 +237,12 @@
     editorView.confirmClicked = ^(RAViewController* raView){
         EZDEBUG(@"editor confirm get called");
         _task.photos = raView.storedPhotos;
+        _photos = raView.storedPhotos;
         [[EZDataUtil getInstance] updateTaskSequence:_task success:^(id info){
             EZDEBUG(@"successfully change sequence");
             //[weakSelf.collectionView reloadItemsAtIndexPaths:@[indexPath]];
             [self loadImage];
+            [[EZMessageCenter getInstance] postEvent:EZShotTaskChanged attached:nil];
         } failure:^(id err){
             EZDEBUG(@"failed to update the sequence");
         }];
@@ -266,7 +272,7 @@
     [_dotViews removeAllObjects];
     if(_photos.count > 0){
         EZStoredPhoto* sp = [_photos objectAtIndex:_currentPos];
-        [_imageView setImageWithURL:str2url(sp.localFileURL?sp.localFileURL:sp.remoteURL)];
+        [_imageView setImageWithURL:str2url(sp.localFileURL?sp.localFileURL:sp.remoteURL) loading:YES];
         _posText.text = [NSString stringWithFormat:@"第%i张", _currentPos + 1];
         
         NSArray* photoInfos = sp.infos;
@@ -340,12 +346,14 @@
     EZDEBUG(@"touch ended");
 }
 
+
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     self.edgesForExtendedLayout = UIRectEdgeNone;
     self.extendedLayoutIncludesOpaqueBars = YES;
-    self.view.backgroundColor = [UIColor whiteColor];
+    self.view.backgroundColor = MainBackgroundColor;
     _dotViews = [[NSMutableArray alloc] init];
     _imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, MIN(CurrentScreenWidth, CurrentScreenHeight))];
     _imageView.contentMode = UIViewContentModeScaleAspectFill;
@@ -353,7 +361,6 @@
      //UIPanGestureRecognizer* panGesturer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panned:)];
     //[_imageView addGestureRecognizer:panGesturer];
     //panGesturer.delegate = self;
-    
     
     UIView* grayView = [[UIView alloc] initWithFrame:_imageView.frame];
     grayView.backgroundColor = RGBACOLOR(0, 0, 0, 90);
@@ -363,41 +370,82 @@
     _posText.textAlignment = NSTextAlignmentCenter;
     
     
-    _toolBar = [[UIView alloc] initWithFrame:CGRectZero];
+    _toolBar =  [[UIView alloc] initWithFrame:CGRectZero]; //[[UIToolbar alloc] initWithFrame:CGRectZero];
     _toolBar.userInteractionEnabled = true;
     _toolBar.backgroundColor = [UIColor clearColor];
+    //_toolBar.tintColor = ClickedColor;
+    //[_toolBar setBackgroundImage:[UIImage new]
+    //          forToolbarPosition:UIToolbarPositionAny
+    //                  barMetrics:UIBarMetricsDefault];
     
+    //[_toolBar setBackgroundColor:[UIColor clearColor]];
     
-    _replaceBtn = [UIButton createButton:CGRectMake(0, 0, CurrentScreenWidth/3.0, 44) font:[UIFont boldSystemFontOfSize:18] color:RGBCOLOR(70, 70, 70) align:NSTextAlignmentCenter];
-    [_replaceBtn setTitle:@"更换" forState:UIControlStateNormal];
+    _replaceBtn = [UIButton createButton:CGRectMake(0, 0, 30, 44) image:[UIImage imageNamed:@"replace"] imageInset:UIEdgeInsetsMake(0, 0, 14, 0) title:@"替换" font:[UIFont boldSystemFontOfSize:12] color:ClickedColor align:NSTextAlignmentCenter textFrame:CGRectMake(0, 30, 30, 14)];
+    /**
+    [UIButton createButton:CGRectMake(0, 0, 30, 44) font:[UIFont boldSystemFontOfSize:12] color:RGBCOLOR(70, 70, 70) align:NSTextAlignmentCenter];
+    [_replaceBtn setTitleEdgeInsets:UIEdgeInsetsMake(0.0, 0.0, -31.0,0.0)];
+    [_replaceBtn setImage:[UIImage imageNamed:@"replace"] forState:UIControlStateNormal];
+    _replaceBtn.imageEdgeInsets = UIEdgeInsetsMake(0, 0, 14, 0);
+    [_replaceBtn setTitle:@"替换" forState:UIControlStateNormal];
+    **/
+    
     [_replaceBtn addTarget:self action:@selector(replace:) forControlEvents:UIControlEventTouchUpInside];
     
+   
+    //UIBarButtonItem* replaceBtn = [[UIBarButtonItem alloc]initWithCustomView:_replaceBtn];//UIBarButtonSystemItemCamera target:self action:@selector(replace:)];
     
-    _deleteBtn = [UIButton createButton:CGRectMake(CurrentScreenWidth/4.0, 0, CurrentScreenWidth/3.0, 44) font:[UIFont boldSystemFontOfSize:18] color:RGBCOLOR(70, 70, 70) align:NSTextAlignmentCenter];
-    [_deleteBtn setTitle:@"删除" forState:UIControlStateNormal];
+    
+    _deleteBtn = [UIButton createButton:CGRectMake(0, 0, 30, 44) image:[UIImage imageNamed:@"trash"] imageInset:UIEdgeInsetsMake(0, 0, 14, 0) title:@"删除" font:[UIFont boldSystemFontOfSize:12] color:ClickedColor align:NSTextAlignmentCenter textFrame:CGRectMake(0, 30, 30, 14)];
     [_deleteBtn addTarget:self action:@selector(delete:) forControlEvents:UIControlEventTouchUpInside];
+    //UIBarButtonItem* deleteBtn = [[UIBarButtonItem alloc] initWithCustomView:_deleteBtn];
     
     
-    _adjustSequence = [UIButton createButton:CGRectMake( CurrentScreenWidth/3.0, 0, CurrentScreenWidth/3.0, 44)  font:[UIFont boldSystemFontOfSize:18] color:RGBCOLOR(70, 70, 70) align:NSTextAlignmentCenter];
-    [_adjustSequence setTitle:@"调整顺序" forState:UIControlStateNormal];
+    _adjustSequence = [UIButton createButton:CGRectMake(0, 0, 30, 44) image:[UIImage imageNamed:@"sort"] imageInset:UIEdgeInsetsMake(0, 0, 14, 0) title:@"排序" font:[UIFont boldSystemFontOfSize:12] color:ClickedColor align:NSTextAlignmentCenter textFrame:CGRectMake(0, 30, 30, 14)];
     [_adjustSequence addTarget:self action:@selector(sequence:) forControlEvents:UIControlEventTouchUpInside];
+    //UIBarButtonItem* orgnizerBtn = [[UIBarButtonItem alloc] initWithCustomView:_adjustSequence];
     
-    _addButton = [UIButton createButton:CGRectMake(2 * CurrentScreenWidth/3.0, 0, CurrentScreenWidth/3.0, 44)  font:[UIFont boldSystemFontOfSize:18] color:RGBCOLOR(70, 70, 70) align:NSTextAlignmentCenter];
-    [_addButton setTitle:@"增加" forState:UIControlStateNormal];
+    
+    
+    _addButton = [UIButton createButton:CGRectMake(0, 0, 30, 44) image:[UIImage imageNamed:@"add"] imageInset:UIEdgeInsetsMake(0, 0, 14, 0) title:@"增加" font:[UIFont boldSystemFontOfSize:12] color:ClickedColor align:NSTextAlignmentCenter textFrame:CGRectMake(0, 30, 30, 14)];
     [_addButton addTarget:self action:@selector(addPhoto:) forControlEvents:UIControlEventTouchUpInside];
+    //UIBarButtonItem* addBtn = [[UIBarButtonItem alloc] initWithCustomView:_addButton];
+    CGFloat gap = CurrentScreenWidth / 3.0;
 
-    
     if(_showShot){
+        gap = CurrentScreenWidth / 4.0;
+        /**
         _deleteBtn.frame = CGRectMake(0, 0, CurrentScreenWidth/2.0, 44);
         [_toolBar addSubview:_deleteBtn];
         
         _replaceBtn.frame = CGRectMake(CurrentScreenWidth/2.0, 0, CurrentScreenWidth/2.0, 44);
         [_toolBar addSubview:_replaceBtn];
+         **/
+       //_toolBar.items = @[FlexibleItemBar,deleteBtn,FlexibleItemBar,replaceBtn,FlexibleItemBar];
+               //[deleteBtn setX:0];
+        //_deleteBtn.centerX = gap/2.0;
+        _deleteBtn.centerX = gap;
+        _replaceBtn.centerX = gap * 3.0;
+        [_toolBar addSubview:_deleteBtn];
+        [_toolBar addSubview:_replaceBtn];
+        
     }else{
+        /**
         [_toolBar addSubview:_replaceBtn];
         //[_toolBar addSubview:_deleteBtn];
         [_toolBar addSubview:_adjustSequence];
         [_toolBar addSubview:_addButton];
+         **/
+        //_toolBar.items = @[FlexibleItemBar, replaceBtn, FlexibleItemBar, orgnizerBtn, FlexibleItemBar, addBtn, FlexibleItemBar];
+        _replaceBtn.centerX = gap/2.0;
+        
+        _adjustSequence.centerX = gap + gap/2.0;
+        
+        _addButton.centerX = 2 * gap + gap/2.0;
+        
+        [_toolBar addSubview:_replaceBtn];
+        [_toolBar addSubview:_adjustSequence];
+        [_toolBar addSubview:_addButton];
+        
     }
     [self.view addSubview:_imageView];
     [self.view addSubview:grayView];
@@ -410,15 +458,15 @@
     [self loadImage];
     
     UIButton* btn = [UIButton createButton:CGRectMake(0, 0, 200, 44) font:[UIFont boldSystemFontOfSize:17] color:ClickedColor align:NSTextAlignmentCenter];
-    [btn setTitle:@"修改名称" forState:UIControlStateNormal];
+    [btn setTitle:[_task.name isNotEmpty]?_task.name:@"未命名"  forState:UIControlStateNormal];
     [btn addTarget:self action:@selector(raiseTitleChange) forControlEvents:UIControlEventTouchUpInside];
     self.navigationItem.titleView = btn;
     _titleButton = btn;
     if([_task.name isNotEmpty]){
         [_titleButton setTitle:_task.name forState:UIControlStateNormal];
     }
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(deleteTask)];
-    //self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"去背景" style:UIBarButtonItemStylePlain target:self action:@selector(eraseBg:)];
+    //self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(deleteTask)];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"去背景" style:UIBarButtonItemStylePlain target:self action:@selector(eraseBg:)];
     // Do any additional setup after loading the view.
 }
 
@@ -475,7 +523,6 @@
     [cancelBtn setTitle:@"取消" forState:UIControlStateNormal];
     [cancelBtn addTarget:self action:@selector(cancelPoint:) forControlEvents:UIControlEventTouchUpInside];
     [topBar addSubview:cancelBtn];
-    
     UIButton* confirmBtn = [UIButton createButton:CGRectMake(CurrentScreenWidth - 60, 0, 60, 44) font:[UIFont systemFontOfSize:17] color:ClickedColor align:NSTextAlignmentCenter];
     [confirmBtn addTarget:self action:@selector(confirmPoint:) forControlEvents:UIControlEventTouchUpInside];
     [confirmBtn setTitle:@"确定" forState:UIControlStateNormal];

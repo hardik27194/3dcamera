@@ -46,6 +46,16 @@
         **/
         
         
+        _toolBar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, _photo.height, self.width,44)];
+        
+        [_toolBar setBackgroundImage:[UIImage new]
+                      forToolbarPosition:UIToolbarPositionAny
+                              barMetrics:UIBarMetricsDefault];
+        
+        [_toolBar setBackgroundColor:[UIColor clearColor]];
+        [self.contentView addSubview:_toolBar];
+        //_toolBar.backgroundColor = [UIColor clearColor];
+        
         _editBtn = [UIButton createButton:CGRectMake(5, self.bounds.size.height - 48, 60, 40) font:[UIFont boldSystemFontOfSize:16] color:EZBarButtonColor align:NSTextAlignmentLeft];
         [_editBtn addTarget:self action:@selector(editClicked:) forControlEvents:UIControlEventTouchUpInside];
         [_editBtn setTitle:@"编辑" forState:UIControlStateNormal];
@@ -53,14 +63,23 @@
         _shareBtn = [UIButton createButton:CGRectMake(self.bounds.size.width - 60 - 5, self.bounds.size.height - 48, 60, 40) font:[UIFont boldSystemFontOfSize:16] color:EZBarButtonColor align:NSTextAlignmentRight];
         [_shareBtn addTarget:self action:@selector(shareClicked:) forControlEvents:UIControlEventTouchUpInside];
         [_shareBtn setTitle:@"分享" forState:UIControlStateNormal];
+        
+        UIBarButtonItem* editBar = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCompose target:self action:@selector(editClicked:)];
+        
+        UIBarButtonItem* sepBar = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+        UIBarButtonItem* shareBar = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"share"] style:UIBarButtonItemStylePlain target:self action:@selector(shareClicked:)];
+        _toolBar.items = @[editBar,sepBar,shareBar];
+        
+        _toolBar.tintColor = ClickedColor;
         [self.contentView addSubview:_photo];
         [self.contentView addSubview:grayCover];
         [self.contentView addSubview:_name];
         [self.contentView addSubview:_photoCount];
         [self.contentView addSubview:_clickInfo];
         //[self.contentView addSubview:_updateDate];
-        [self.contentView addSubview:_editBtn];
-        [self.contentView addSubview:_shareBtn];
+        //[self.contentView addSubview:_editBtn];
+        //[self.contentView addSubview:_shareBtn];
+        [self.contentView addSubview:_toolBar];
         //self.contentView.backgroundColor = [UIColor whiteColor];
         _activity = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
         _activity.center = CGPointMake(self.width/2, self.height/2);

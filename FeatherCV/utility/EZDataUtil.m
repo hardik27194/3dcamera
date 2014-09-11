@@ -668,6 +668,8 @@
     if (_assetLibaray == nil) {
         _assetLibaray = [[ALAssetsLibrary alloc] init];
     }
+    
+    _placeHolder = [UIImage imageNamed:@"place-holder"];
     _taskIDToTask = [[NSMutableDictionary alloc] init];
     _recordTypeDetails = [[NSMutableDictionary alloc] init];
     _childRecordLists = [[NSMutableArray alloc] init];

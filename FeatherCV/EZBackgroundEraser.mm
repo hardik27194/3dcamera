@@ -14,6 +14,7 @@
 #import "EZImageConverter.h"
 #import "EZDataUtil.h"
 #import "EZThreadUtility.h"
+#import "DAScratchPadView.h"
 
 
 #define FrontSelectColor RGBACOLOR(255,64 ,64,128)
@@ -26,6 +27,7 @@
     self = [super initWithFrame:frame];
     
     if (self) {
+        self.backgroundColor = RGBCOLOR(64, 255, 32);//[UIColor whiteColor];
         _orgImage = image;
         // Initialization code
         //grabCut = new EZGrabCut;
@@ -39,18 +41,33 @@
         _selectRegion = [[UIView alloc] initWithFrame:CGRectZero];
         _selectRegion.backgroundColor = FrontSelectColor;//RGBACOLOR(255, 64, 64, 128);
         _selectRegion.hidden = YES;
-        
+        _scratchView = [[DAScratchPadView alloc] initWithFrame:_imageView.frame];
+        _scratchView.drawColor = BackgroundSelectColor;
+        _scratchView.drawWidth = 5;
         _horizonBar = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.width, 2)];
         _verticalBar = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 2, self.height)];
         _horizonBar.hidden = YES;
         _verticalBar.hidden = YES;
+        [_imageView addSubview:_scratchView];
         [_imageView addSubview:_horizonBar];
         [_imageView addSubview:_verticalBar];
         [_imageView addSubview:_selectRegion];
+       
+        
+        _confirmSelect = [UIButton createButton:CGRectMake(0, 64, 60, 44) font:[UIFont systemFontOfSize:14] color:[UIColor whiteColor] align:NSTextAlignmentCenter];
+        [_confirmSelect setTitle:@"Start" forState:UIControlStateNormal];
+        [self addSubview:_confirmSelect];
+        [_confirmSelect addTarget:self action:@selector(confirm) forControlEvents:UIControlEventTouchUpInside];
     }
     return self;
 }
 
+- (void) confirm
+{
+    EZDEBUG(@"confirmed clicked");
+    [self imageToMask];
+    
+}
 
 - (void) dealloc{
     if(grabHandler){
@@ -114,6 +131,8 @@
             _selectRegion.hidden = NO;
             _touchBegin = pt;
         }else if(_selectStatus == kSelectPartialFront || _selectStatus == kSelectParticlBack){
+            [_scratchView touchesBegan:touches withEvent:event];
+            /**
             _horizonBar.y = pt.y;
             _verticalBar.x = pt.x;
             _horizonBar.hidden = false;
@@ -121,6 +140,7 @@
             UIColor* color = _selectStatus == kSelectPartialFront?FrontSelectColor:BackgroundSelectColor;
             _horizonBar.backgroundColor = color;
             _verticalBar.backgroundColor = color;
+             **/
         }
         
     }else{
@@ -143,9 +163,12 @@
             CGSize delta = CGSizeMake(np.x - _touchBegin.x, np.y - _touchBegin.y);
             _selectRegion.frame = [self calcFrame:_touchBegin delta:delta];
         }else if(_selectStatus == kSelectPartialFront || _selectStatus == kSelectParticlBack){
+            /**
             CGPoint np = [self normalize:pt size:_imageView.bounds.size];
             _horizonBar.y = np.y;
             _verticalBar.x = np.x;
+             **/
+            [_scratchView touchesMoved:touches withEvent:event];
         }
     }else{
         EZDEBUG(@"do nothing");
@@ -167,8 +190,10 @@
      ^(){
          int itCount = grabHandler->nextIter();
          dispatch_main(^(){
-             Mat imageMat = grabHandler->showImage(NO);
-             UIImage* converted = [EZImageConverter matToImage:imageMat];
+             Mat imageMat;
+             grabHandler->showImage(NO, imageMat);
+             ///UIImage* converted = [EZImageConverter matToImage:imageMat];
+             UIImage* converted =[EZImageConverter matToImageEx:imageMat];
              _imageView.image = converted;
              _selectRegion.hidden = YES;
              _selectStatus = kSelectParticlBack;
@@ -189,6 +214,39 @@
     return CGPointMake(point.x/size.width * imageSize.width, point.y/size.height * imageSize.height);
 }
 
+- (void) imageToMask
+{
+    Mat imageMat;
+    UIImageToMat([_scratchView getSketch], imageMat);
+    Mat maskMat;
+    cvtColor(imageMat, maskMat, CV_BGR2GRAY);
+    EZDEBUG(@"mask row, col:%i, %i", maskMat.rows, maskMat.cols);
+    grabHandler->mergeMask(maskMat);
+    
+    _selectStatus = kProcessing;
+    [[EZThreadUtility getInstance] executeBlockInQueue:
+     ^(){
+         int itCount = grabHandler->renderByMask();
+         EZDEBUG("render point completed %i", itCount);
+         dispatch_main(^(){
+             Mat imageMat;
+             grabHandler->showImage(NO, imageMat);
+             UIImage* converted = [EZImageConverter matToImageEx:imageMat];
+             _imageView.image = converted;
+             //_selectRegion.hidden = YES;
+             _verticalBar.hidden = YES;
+             _horizonBar.hidden = YES;
+             _selectStatus = kSelectParticlBack;
+             [_scratchView clearToColor:[UIColor clearColor]];
+             //grabHandler->setImageOnly(imageMat);
+             //grabHandler->setImage(im)
+             //grabHandler->setImage(imageMat);
+         });
+     } isConcurrent:NO];
+
+    
+}
+
 - (void) selectPoint:(CGPoint)point
 {
     CGPoint np = [self normalize:point size:_imageView.bounds.size];
@@ -202,9 +260,9 @@
          int itCount = grabHandler->renderByMask();
          EZDEBUG("render point completed %i", itCount);
          dispatch_main(^(){
-             Mat imageMat = grabHandler->showImage(NO);
-             
-             UIImage* converted = [EZImageConverter matToImage:imageMat];
+             Mat imageMat;
+             grabHandler->showImage(NO, imageMat);
+             UIImage* converted = [EZImageConverter matToImageEx:imageMat];
              _imageView.image = converted;
              //_selectRegion.hidden = YES;
              _verticalBar.hidden = YES;
@@ -227,7 +285,7 @@
         if(_selectStatus == kSelectRough){
             [self selectRect:pt];
         }else if(_selectStatus == kSelectParticlBack || _selectStatus == kSelectPartialFront){
-            [self selectPoint:pt];
+            //[self selectPoint:pt];
         }
     }else{
         EZDEBUG(@"do nothing");

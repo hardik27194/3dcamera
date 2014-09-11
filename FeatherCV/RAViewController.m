@@ -13,6 +13,7 @@
 #import "EZStoredPhoto.h"
 #import "EZMessageCenter.h"
 #import "EZPhotoEditPage.h"
+#import "EZDataUtil.h"
 
 
 
@@ -54,12 +55,12 @@
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action:@selector(confirmed:)];
     UICollectionView* collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:[[RACollectionViewReorderableTripletLayout alloc] init]];
     [collectionView registerClass:[RACollectionViewCell class] forCellWithReuseIdentifier:@"cellID"];
-    self.view.backgroundColor = [UIColor whiteColor];
+    //self.view.backgroundColor = MainBackgroundColor;
     self.collectionView = collectionView;
     self.collectionView.delegate = self;
     self.collectionView.dataSource = self;
     [self.view addSubview:collectionView];
-    self.collectionView.backgroundColor = [UIColor whiteColor];
+    self.collectionView.backgroundColor = MainBackgroundColor;//[UIColor whiteColor];
     //[self setupPhotosArray];
     
     [[EZMessageCenter getInstance] registerEvent:EZShotTaskChanged block:^(EZStoredPhoto* pt){
@@ -184,9 +185,9 @@
         //[cell.contentView addSubview:cell.imageView];
     EZStoredPhoto* sp = [_storedPhotos objectAtIndex:indexPath.item];
     if(sp.localFileURL){
-        [cell.imageView setImageWithURL:str2url(sp.localFileURL)];
+        [cell.imageView setImageWithURL:str2url(sp.localFileURL) placeholderImage:ImagePlaceHolder];
     }else{
-        [cell.imageView setImageWithURL:str2url(sp.remoteURL)];
+        [cell.imageView setImageWithURL:str2url(sp.remoteURL) loading:YES];
 
     }
     EZDEBUG(@"item:%i cell bounds:%@, localURL:%@, remoteURL:%@",indexPath.item, NSStringFromCGRect(cell.frame), sp.localFileURL, sp.remoteURL);

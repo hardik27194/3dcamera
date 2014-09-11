@@ -29,6 +29,16 @@ const Scalar GREEN = Scalar(0,255,0);
 
 #define grabIterateCount 1
 
+cv::Size EZEraseShape::getRadius()
+{
+    return cv::Size(frame.width/2,frame.height/2);
+}
+void EZEraseShape::setRadius(cv::Size radius)
+{
+    cv::Point center =cv::Point(frame.x + frame.width/2, frame.y + frame.height/2);
+    frame = cv::Rect(center.x - radius.width, center.y - radius.height, 2 * radius.width, 2 * radius.height);
+}
+
 static void getBinMask( const Mat& comMask, Mat& binMask )
 {
     if( comMask.empty() || comMask.type()!=CV_8UC1 )
@@ -37,7 +47,6 @@ static void getBinMask( const Mat& comMask, Mat& binMask )
         binMask.create( comMask.size(), CV_8UC1 );
     binMask = comMask & 1;
 }
-
 
 
 void EZGrabHandler::reset()
@@ -59,6 +68,68 @@ void EZGrabHandler::setImageOnly(const Mat& _image)
     image = new Mat(_image);
 }
 
+void EZGrabHandler::copyMat(cv::Mat& dst, cv::Mat& mask, bool isAlpha) const
+{
+ 
+    int count = 0;
+    cout << "element Size:" << image->elemSize() << endl;
+    for (int i = 0; i < image->rows; i++)
+    {        for (int j = 0; j < image->cols; j++)
+            {
+                uchar alpha_value = mask.at<uchar>(i, j);
+                
+                if (alpha_value != 0)
+                {
+                    Vec3b src3b = image->at<Vec3b>(i, j);
+
+                    if(++count < 10){
+                        cout << (int)alpha_value << ",0:" << src3b[0] << endl;
+                    }
+                    //float weight = float(alpha_value) / 255.f;
+                    dst.at<Vec4b>(i, j) = Vec4b(src3b[0],src3b[1],src3b[2],255);
+                }
+                else
+                {
+                    dst.at<Vec4b>(i, j) = Vec4b(0, 0, 0, 0);
+                }
+            }
+    }
+}
+
+void EZGrabHandler::mergeMask(const Mat& extMask)
+{
+    int count = 0;
+    
+    for (int i = 0; i < extMask.rows; i++)
+    {
+        for (int j = 0; j < extMask.cols; j++)
+    {
+        uchar alpha_value = extMask.at<uchar>(i, j);
+        
+        if (alpha_value != 0)
+        {
+            /**
+            Vec3b src3b = image->at<Vec3b>(i, j);
+            
+            if(++count < 10){
+                cout << (int)alpha_value << ",0:" << src3b[0] << endl;
+            }
+            //float weight = float(alpha_value) / 255.f;
+            dst.at<Vec4b>(i, j) = Vec4b(src3b[0],src3b[1],src3b[2],255);
+             **/
+            mask.at<uchar>(i, j) = GC_PR_BGD;
+            count ++;
+        }
+        else
+        {
+            //dst.at<Vec4b>(i, j) = Vec4b(0, 0, 0, 0);
+        }
+    }
+    }
+    cout << "mask element Size:" << extMask.elemSize() << ",mask row/col:" << extMask.rows << "/" << extMask.cols << ", count:" << count << endl;
+
+}
+
 void EZGrabHandler::setImage( const Mat& _image)
 {
     cout << "before set image" << endl;
@@ -72,19 +143,22 @@ void EZGrabHandler::setImage( const Mat& _image)
 
 
 
-Mat EZGrabHandler::showImage(int showSign) const
+void EZGrabHandler::showImage(int showSign, Mat& res) const
 {
     //if( image->empty() || winName->empty() )
     //    return NULL;
-    cout << "show image called initialized:" << isInitialized << endl;
-    Mat res;
+    //cout << "show image called initialized:" << isInitialized << endl;
+    //Mat res;
+    res.create(image->size(), CV_8UC4);
+    cout << "show image called initialized:" << isInitialized << "res element:" << res.elemSize() << " size:" << res.rows << "," << res.cols << endl;
     Mat binMask;
     if( !isInitialized )
-        image->copyTo( res );
+        image->copyTo(res);
     else
     {
-        getBinMask( mask, binMask );
-        image->copyTo( res, binMask );
+        getBinMask(mask, binMask);
+        //image->copyTo(res, binMask );
+        copyMat(res, binMask, true);
     }
     
     cout << "copyTo is over" << endl;
@@ -104,7 +178,7 @@ Mat EZGrabHandler::showImage(int showSign) const
     }
     cout << "final res is done" << endl;
     //imshow( *winName, res );
-    return res;
+    //return res;
 }
 
 void EZGrabHandler::setMaskRect(cv::Rect rt)
@@ -125,6 +199,36 @@ void EZGrabHandler::setRectInMask()
     rect.width = min(rect.width, image->cols-rect.x);
     rect.height = min(rect.height, image->rows-rect.y);
     (mask(rect)).setTo( Scalar(GC_PR_FGD) );
+}
+
+void EZGrabHandler::setMaskCycle(cv::Point p,int front, int radius, bool isPr)
+{
+    vector<cv::Point> *bpxls, *fpxls;
+    uchar bvalue, fvalue;
+    if( !isPr )
+    {
+        bpxls = &bgdPxls;
+        fpxls = &fgdPxls;
+        bvalue = GC_BGD;
+        fvalue = GC_FGD;
+    }
+    else
+    {
+        bpxls = &prBgdPxls;
+        fpxls = &prFgdPxls;
+        bvalue = GC_PR_BGD;
+        fvalue = GC_PR_FGD;
+    }
+    if(!front)
+    {
+        bpxls->push_back(p);
+        circle( mask, p, radius, bvalue, thickness);
+    }
+    if(front)
+    {
+        fpxls->push_back(p);
+        circle( mask, p, radius, fvalue, thickness);
+    }
 }
 
 void EZGrabHandler::setLblsInMask(int isFront, cv::Point p, bool isPr )
@@ -154,77 +258,6 @@ void EZGrabHandler::setLblsInMask(int isFront, cv::Point p, bool isPr )
     {
         fpxls->push_back(p);
         circle( mask, p, radius, fvalue, thickness );
-    }
-}
-
-void EZGrabHandler::mouseClick( int event, int x, int y, int flags, void* )
-{
-    // TODO add bad args check
-    switch( event )
-    {
-        case EVENT_LBUTTONDOWN: // set rect or GC_BGD(GC_FGD) labels
-        {
-            bool isb = (flags & BGD_KEY) != 0,
-            isf = (flags & FGD_KEY) != 0;
-            if( rectState == NOT_SET && !isb && !isf )
-            {
-                rectState = IN_PROCESS;
-                rect = cv::Rect( x, y, 1, 1 );
-            }
-            if ( (isb || isf) && rectState == SET )
-                lblsState = IN_PROCESS;
-        }
-            break;
-        case EVENT_RBUTTONDOWN: // set GC_PR_BGD(GC_PR_FGD) labels
-        {
-            bool isb = (flags & BGD_KEY) != 0,
-            isf = (flags & FGD_KEY) != 0;
-            if ( (isb || isf) && rectState == SET )
-                prLblsState = IN_PROCESS;
-        }
-            break;
-        case EVENT_LBUTTONUP:
-            if( rectState == IN_PROCESS )
-            {
-                rect = cv::Rect( cv::Point(rect.x, rect.y), cv::Point(x,y) );
-                rectState = SET;
-                setRectInMask();
-                CV_Assert( bgdPxls.empty() && fgdPxls.empty() && prBgdPxls.empty() && prFgdPxls.empty() );
-                //showImage();
-            }
-            if( lblsState == IN_PROCESS )
-            {
-                setLblsInMask(flags, cv::Point(x,y), false);
-                lblsState = SET;
-                //showImage();
-            }
-            break;
-        case EVENT_RBUTTONUP:
-            if( prLblsState == IN_PROCESS )
-            {
-                setLblsInMask(flags, cv::Point(x,y), true);
-                prLblsState = SET;
-                //showImage();
-            }
-            break;
-        case EVENT_MOUSEMOVE:
-            if( rectState == IN_PROCESS )
-            {
-                rect = cv::Rect( cv::Point(rect.x, rect.y), cv::Point(x,y) );
-                CV_Assert( bgdPxls.empty() && fgdPxls.empty() && prBgdPxls.empty() && prFgdPxls.empty() );
-                //showImage();
-            }
-            else if( lblsState == IN_PROCESS )
-            {
-                setLblsInMask(flags, cv::Point(x,y), false);
-               // showImage();
-            }
-            else if( prLblsState == IN_PROCESS )
-            {
-                setLblsInMask(flags, cv::Point(x,y), true);
-                //showImage();
-            }
-            break;
     }
 }
 
