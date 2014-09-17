@@ -505,7 +505,7 @@
 
 - (void) eraseBg:(id)obj
 {
-    EZBackgroundEraser* backEraser = [[EZBackgroundEraser alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, CurrentScreenWidth) image:_imageView.image];
+    EZBackgroundEraser* backEraser = [[EZBackgroundEraser alloc] initWithFrame:self.view.bounds image:_imageView.image];
     [self.view addSubview:backEraser];
     EZDEBUG(@"Background eraser started");
 }

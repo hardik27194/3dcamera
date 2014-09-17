@@ -63,6 +63,7 @@ typedef enum {
 //struct EZGrabCut;
 typedef enum {
     kSelectRough,
+    kDragAndDrop,
     kSelectPartialFront,
     kSelectParticlBack,
     kProcessing

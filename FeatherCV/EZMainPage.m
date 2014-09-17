@@ -32,6 +32,13 @@
 #import "EZPhotoEditPage.h"
 #import "EZMainLayout.h"
 
+#import "EZCanvas.h"
+#import "EZRectObject.h"
+#import "EZRoundObject.h"
+#import "EZPathObject.h"
+#import "EZPoint.h"
+#import "EZImageObject.h"
+
 #define CELL_ID @"CELL_ID"
 
 @interface EZMainPage ()
@@ -321,6 +328,41 @@
     [[EZMessageCenter getInstance] registerEvent:EZShotTaskChanged block:^(EZShotTask* task){
         [_collectionView reloadData];
     }];
+    
+    
+    /**
+    EZCanvas* canvas = [[EZCanvas alloc] initWithFrame:CGRectMake(0, 100, 320, 320)];
+    EZRectObject* object = [EZRectObject createRect:CGRectMake(20, 20, 20, 20) isStroke:YES color:[UIColor greenColor] borderWidth:10];
+    
+    [canvas.shapes addObject:object];
+    
+    EZRectObject* fillRect = [EZRectObject createRect:CGRectMake(40, 40, 40, 40) isStroke:NO color:[UIColor redColor] borderWidth:0];
+    [canvas.shapes addObject:fillRect];
+    
+    EZRoundObject* fillRound = [EZRoundObject createRound:CGRectMake(80, 80, 80, 40) isStroke:NO color:[UIColor redColor] borderWidth:0];
+    [canvas.shapes addObject:fillRound];
+    
+    
+    EZPathObject* path = [EZPathObject createPath:[UIColor whiteColor] width:10 isFill:NO];
+    [path addPoints:@[pointValue(0, 0), pointValue(10, 10), pointValue(15, 10), pointValue(20, 30)]];
+    
+    [canvas addShapeObject:path];
+    
+    EZPathObject* path1 = [EZPathObject createPath:[UIColor greenColor] width:10 isFill:YES];
+    [path1 addPoints:@[pointValue(40, 40), pointValue(50, 50), pointValue(50, 100), pointValue(100, 50)]];
+    [canvas addShapeObject:path1];
+    
+    EZImageObject* imageobj = [EZImageObject createImage:[UIImage imageNamed:@"camera_btn"] frame:CGRectMake(0, 120, 0, 0)];
+    
+    EZImageObject* imageObj2 = [EZImageObject createImage:[UIImage imageNamed:@"camera_btn"] frame:CGRectMake(0, 60, 20, 20)];
+    [canvas addShapeObject:imageobj];
+    [canvas addShapeObject:imageObj2];
+    
+    [canvas setNeedsDisplay];
+    [self.view addSubview:canvas];
+     ***/
+    
+    
 }
 
 - (void) viewWillAppear:(BOOL)animated

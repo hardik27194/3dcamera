@@ -85,6 +85,12 @@
 		18290CBF19276C1A00676423 /* shot_new.caf in Resources */ = {isa = PBXBuildFile; fileRef = 18290CBE19276C1A00676423 /* shot_new.caf */; };
 		182AC31D194ECBB200055D19 /* EZPasswordFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 182AC31C194ECBB200055D19 /* EZPasswordFetcher.m */; };
 		182AC325194EDB0800055D19 /* NIDropDown.m in Sources */ = {isa = PBXBuildFile; fileRef = 182AC324194EDB0800055D19 /* NIDropDown.m */; };
+		183BA65C19C7C0340019173B /* EZCanvas.m in Sources */ = {isa = PBXBuildFile; fileRef = 183BA65B19C7C0340019173B /* EZCanvas.m */; };
+		183BA65F19C7C0670019173B /* EZRectObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 183BA65E19C7C0670019173B /* EZRectObject.m */; };
+		183BA66219C7C81F0019173B /* EZRoundObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 183BA66119C7C81F0019173B /* EZRoundObject.m */; };
+		183BA66519C7CAEA0019173B /* EZPathObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 183BA66419C7CAEA0019173B /* EZPathObject.m */; };
+		183BA66819C7CEEF0019173B /* EZPoint.m in Sources */ = {isa = PBXBuildFile; fileRef = 183BA66719C7CEEF0019173B /* EZPoint.m */; };
+		183BA66B19C7D8D20019173B /* EZImageObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 183BA66A19C7D8D20019173B /* EZImageObject.m */; };
 		1841DC121907782B00213EB6 /* feather_icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1841DC111907782B00213EB6 /* feather_icon@2x.png */; };
 		184ADD6F18C4B3DD00367527 /* EZAvatarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 184ADD6E18C4B3DD00367527 /* EZAvatarController.m */; };
 		184ADD7418C4B40D00367527 /* EZAvatarView.m in Sources */ = {isa = PBXBuildFile; fileRef = 184ADD7318C4B40D00367527 /* EZAvatarView.m */; };
@@ -655,6 +661,18 @@
 		182AC31C194ECBB200055D19 /* EZPasswordFetcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZPasswordFetcher.m; sourceTree = "<group>"; };
 		182AC323194EDB0800055D19 /* NIDropDown.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NIDropDown.h; sourceTree = "<group>"; };
 		182AC324194EDB0800055D19 /* NIDropDown.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NIDropDown.m; sourceTree = "<group>"; };
+		183BA65A19C7C0340019173B /* EZCanvas.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZCanvas.h; sourceTree = "<group>"; };
+		183BA65B19C7C0340019173B /* EZCanvas.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZCanvas.m; sourceTree = "<group>"; };
+		183BA65D19C7C0670019173B /* EZRectObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZRectObject.h; sourceTree = "<group>"; };
+		183BA65E19C7C0670019173B /* EZRectObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZRectObject.m; sourceTree = "<group>"; };
+		183BA66019C7C81F0019173B /* EZRoundObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZRoundObject.h; sourceTree = "<group>"; };
+		183BA66119C7C81F0019173B /* EZRoundObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZRoundObject.m; sourceTree = "<group>"; };
+		183BA66319C7CAEA0019173B /* EZPathObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZPathObject.h; sourceTree = "<group>"; };
+		183BA66419C7CAEA0019173B /* EZPathObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZPathObject.m; sourceTree = "<group>"; };
+		183BA66619C7CEEF0019173B /* EZPoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZPoint.h; sourceTree = "<group>"; };
+		183BA66719C7CEEF0019173B /* EZPoint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZPoint.m; sourceTree = "<group>"; };
+		183BA66919C7D8D20019173B /* EZImageObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZImageObject.h; sourceTree = "<group>"; };
+		183BA66A19C7D8D20019173B /* EZImageObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZImageObject.m; sourceTree = "<group>"; };
 		1841DC111907782B00213EB6 /* feather_icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "feather_icon@2x.png"; sourceTree = "<group>"; };
 		184ADD6D18C4B3DD00367527 /* EZAvatarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZAvatarController.h; sourceTree = "<group>"; };
 		184ADD6E18C4B3DD00367527 /* EZAvatarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZAvatarController.m; sourceTree = "<group>"; };
@@ -967,8 +985,8 @@
 		18826E7119B8284B00DFC5A9 /* EZBackgroundEraser.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = EZBackgroundEraser.mm; sourceTree = "<group>"; };
 		18826E7319B8340000DFC5A9 /* EZGrabHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EZGrabHandler.cpp; sourceTree = "<group>"; };
 		18826E7419B8340000DFC5A9 /* EZGrabHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZGrabHandler.h; sourceTree = "<group>"; };
-		18826E7619B8465000DFC5A9 /* EZImageConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZImageConverter.h; sourceTree = "<group>"; };
-		18826E7719B8465000DFC5A9 /* EZImageConverter.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = EZImageConverter.mm; sourceTree = "<group>"; };
+		18826E7619B8465000DFC5A9 /* EZImageConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EZImageConverter.h; path = utility/EZImageConverter.h; sourceTree = "<group>"; };
+		18826E7719B8465000DFC5A9 /* EZImageConverter.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = EZImageConverter.mm; path = utility/EZImageConverter.mm; sourceTree = "<group>"; };
 		18827F2F19B8783E00DFC5A9 /* EZBgEditPage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZBgEditPage.h; sourceTree = "<group>"; };
 		18827F3019B8783F00DFC5A9 /* EZBgEditPage.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = EZBgEditPage.mm; sourceTree = "<group>"; };
 		18827F3219B8B76500DFC5A9 /* EZMainLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZMainLayout.h; sourceTree = "<group>"; };
@@ -1602,6 +1620,18 @@
 			children = (
 				1896AF6819C196990065F7BD /* DAScratchPadView.h */,
 				1896AF6919C196990065F7BD /* DAScratchPadView.m */,
+				183BA65A19C7C0340019173B /* EZCanvas.h */,
+				183BA65B19C7C0340019173B /* EZCanvas.m */,
+				183BA65D19C7C0670019173B /* EZRectObject.h */,
+				183BA65E19C7C0670019173B /* EZRectObject.m */,
+				183BA66019C7C81F0019173B /* EZRoundObject.h */,
+				183BA66119C7C81F0019173B /* EZRoundObject.m */,
+				183BA66319C7CAEA0019173B /* EZPathObject.h */,
+				183BA66419C7CAEA0019173B /* EZPathObject.m */,
+				183BA66619C7CEEF0019173B /* EZPoint.h */,
+				183BA66719C7CEEF0019173B /* EZPoint.m */,
+				183BA66919C7D8D20019173B /* EZImageObject.h */,
+				183BA66A19C7D8D20019173B /* EZImageObject.m */,
 			);
 			name = "background util";
 			sourceTree = "<group>";
@@ -1619,12 +1649,16 @@
 		18D760D5198235EC00F9D63B /* controllers */ = {
 			isa = PBXGroup;
 			children = (
+				18D760D6198236A100F9D63B /* EZMainPage.h */,
+				18D760D7198236A100F9D63B /* EZMainPage.m */,
 				18826E5D19B1C97E00DFC5A9 /* EZDragPage.h */,
 				18826E5E19B1C97E00DFC5A9 /* EZDragPage.m */,
 				18826E7019B8284B00DFC5A9 /* EZBackgroundEraser.h */,
 				18826E7119B8284B00DFC5A9 /* EZBackgroundEraser.mm */,
 				18827F2F19B8783E00DFC5A9 /* EZBgEditPage.h */,
 				18827F3019B8783F00DFC5A9 /* EZBgEditPage.mm */,
+				18826E7619B8465000DFC5A9 /* EZImageConverter.h */,
+				18826E7719B8465000DFC5A9 /* EZImageConverter.mm */,
 				18826E7419B8340000DFC5A9 /* EZGrabHandler.h */,
 				18826E7319B8340000DFC5A9 /* EZGrabHandler.cpp */,
 				18826E6A19B6FC6900DFC5A9 /* LocalTasks.h */,
@@ -1643,8 +1677,6 @@
 				18E1AF6F19A381FC002F8A37 /* EZEditPage.m */,
 				18E1AF6819A37352002F8A37 /* EZDetailPage.h */,
 				18E1AF6919A37352002F8A37 /* EZDetailPage.m */,
-				18D760D6198236A100F9D63B /* EZMainPage.h */,
-				18D760D7198236A100F9D63B /* EZMainPage.m */,
 				1870B0271985313A005A663A /* EZRecorderCell.h */,
 				1870B0281985313A005A663A /* EZRecorderCell.m */,
 				1870B02419852E41005A663A /* EZRecordMain.h */,
@@ -2186,8 +2218,6 @@
 				18E34772183DFAA400C9D89D /* EZDataUtil.m */,
 				18826E6D19B74D8D00DFC5A9 /* EZImageCache.h */,
 				18826E6E19B74D8D00DFC5A9 /* EZImageCache.m */,
-				18826E7619B8465000DFC5A9 /* EZImageConverter.h */,
-				18826E7719B8465000DFC5A9 /* EZImageConverter.mm */,
 				182167BC19B07F20003410B9 /* EZPopupView.h */,
 				182167BD19B07F20003410B9 /* EZPopupView.m */,
 				182167BE19B07F20003410B9 /* EZPopupInput.h */,
@@ -2874,6 +2904,7 @@
 				18827F3419B8B76500DFC5A9 /* EZMainLayout.m in Sources */,
 				18E34781183DFAA400C9D89D /* EZMessageCenter.m in Sources */,
 				184ADD9818D045BD00367527 /* LocalPhotos.m in Sources */,
+				183BA65F19C7C0670019173B /* EZRectObject.m in Sources */,
 				180E2CCE1990E16800DE2AFA /* DCIntrospect.m in Sources */,
 				18DE992E19404A6F008C1B3F /* JSQDemoViewController.m in Sources */,
 				1823DA3318D5674F00E6E8B3 /* EZLoginController.m in Sources */,
@@ -2913,6 +2944,7 @@
 				1823DA3618D5A1E000E6E8B3 /* EZKeyboardController.m in Sources */,
 				18DE990A19404734008C1B3F /* JSQMessagesKeyboardController.m in Sources */,
 				18F58B7F187AF540006CB966 /* EZFaceUtilWrapper.mm in Sources */,
+				183BA66819C7CEEF0019173B /* EZPoint.m in Sources */,
 				180E2CB11990BFF700DE2AFA /* EZShotTask.m in Sources */,
 				18E1AF7719A47AED002F8A37 /* RACollectionViewReorderableTripletLayout.m in Sources */,
 				18E3483D18433FC000C9D89D /* UIImage+ResizeMagick.m in Sources */,
@@ -2933,6 +2965,7 @@
 				1866ADAC18966E7000DB46E2 /* SlideAnimation.m in Sources */,
 				1866ADC71898F0DB00DB46E2 /* LFGlassView.m in Sources */,
 				184ADD8D18CDA96200367527 /* EZDownloadHolder.m in Sources */,
+				183BA66519C7CAEA0019173B /* EZPathObject.m in Sources */,
 				1870B06E19866FB4005A663A /* CKViewController.m in Sources */,
 				1866ADAA18966E7000DB46E2 /* BaseAnimation.m in Sources */,
 				181608DA18B714B900DD5995 /* EZModalDissolveAnimation.m in Sources */,
@@ -2978,6 +3011,7 @@
 				180E2CCC1990E16800DE2AFA /* DCCrossHairView.m in Sources */,
 				1870B02C19860657005A663A /* EZCustomButton.m in Sources */,
 				185CE25F18FFAE760037947A /* EZPageControl.m in Sources */,
+				183BA66219C7C81F0019173B /* EZRoundObject.m in Sources */,
 				18E34785183DFAA400C9D89D /* EZKeyboadUtility.m in Sources */,
 				18DE991719404734008C1B3F /* JSQMessagesCollectionViewCell.m in Sources */,
 				18E34786183DFAA400C9D89D /* EZUIUtility.m in Sources */,
@@ -3052,7 +3086,9 @@
 				182167C519B07F20003410B9 /* EZPopupInput.m in Sources */,
 				180E2CB71990C61E00DE2AFA /* EZMainPhotoCell.m in Sources */,
 				18827F3119B8783F00DFC5A9 /* EZBgEditPage.mm in Sources */,
+				183BA66B19C7D8D20019173B /* EZImageObject.m in Sources */,
 				18E3477C183DFAA400C9D89D /* EZFileUtil.m in Sources */,
+				183BA65C19C7C0340019173B /* EZCanvas.m in Sources */,
 				184ADD7718C4C20F00367527 /* EZUIApplication.m in Sources */,
 				184EB9D11982603E0024A495 /* EZSeperator.m in Sources */,
 				184ADD9518D045BA00367527 /* LocalPersons.m in Sources */,

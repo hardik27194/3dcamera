@@ -267,6 +267,8 @@ typedef void  (^ IterateOperation)(id obj);
 
 + (UIButton*) createButton:(CGRect)frame font:(UIFont*)font color:(UIColor*)color align:(NSTextAlignment)align;
 
++ (UIButton*) createButton:(CGRect)frame title:(NSString*)title font:(UIFont*)font color:(UIColor*)color align:(NSTextAlignment)align;
+
 + (UIButton*) createButton:(CGRect)frame image:(UIImage*)image imageInset:(UIEdgeInsets)inset title:(NSString*)title font:(UIFont*)font color:(UIColor*)color align:(NSTextAlignment)align textFrame:(CGRect)textFrame;
 
 - (void) addBlockWrapper:(EZBlockWrapper*)bw;

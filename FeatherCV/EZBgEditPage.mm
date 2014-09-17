@@ -100,16 +100,16 @@
     return res;
 }
 
-- (CGRect) calcFrame:(CGPoint)begin delta:(CGSize)delta
+- (CGRect) calcFrame:(CGPoint)begin delta:(CGPoint)delta
 {
     CGPoint start = begin;
-    if(delta.width < 0){
-        start.x = delta.width + start.x;
+    if(delta.x < 0){
+        start.x = delta.x + start.x;
     }
-    if(delta.height < 0){
-        start.y = delta.height + start.y;
+    if(delta.y < 0){
+        start.y = delta.y + start.y;
     }
-    return CGRectMake(start.x, start.y, abs(delta.width), abs(delta.height));
+    return CGRectMake(start.x, start.y, abs(delta.x), abs(delta.y));
 }
 
 - (cv::Rect) toImageRect:(CGRect)rect size:(CGSize)size imageSize:(CGSize)imageSize
@@ -128,7 +128,7 @@
     CGPoint pt = [touch locationInView:_imageView];
     if(_effectiveTouch){
         CGPoint np = [self normalize:pt size:_imageView.bounds.size];
-        CGSize delta = CGSizeMake(np.x - _touchBegin.x, np.y - _touchBegin.y);
+        CGPoint delta = CGPointMake(np.x - _touchBegin.x, np.y - _touchBegin.y);
         _selectRegion.frame = [self calcFrame:_touchBegin delta:delta];
     }else{
         EZDEBUG(@"do nothing");
@@ -141,11 +141,10 @@
     CGPoint pt = [touch locationInView:_imageView];
     if(_effectiveTouch){
         CGPoint np = [self normalize:pt size:_imageView.bounds.size];
-        CGSize delta = CGSizeMake(np.x - _touchBegin.x, np.y - _touchBegin.y);
+        CGPoint delta = CGPointMake(np.x - _touchBegin.x, np.y - _touchBegin.y);
         _selectRegion.frame = [self calcFrame:_touchBegin delta:delta];
         cv::Rect maskRect = [self toImageRect:_selectRegion.frame size:_imageView.frame.size imageSize:_imageView.image.size];
         EZDEBUG(@"ratio Rect %i, %i, %i, %i", maskRect.x, maskRect.y, maskRect.width, maskRect.height);
-        
         grabHandler->setMaskRect(maskRect);
         EZDEBUG(@"before call next iteration");
         [[EZThreadUtility getInstance] executeBlockInQueue:

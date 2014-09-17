@@ -1132,17 +1132,25 @@ NSString* doubleString(NSString* str)
     return res;
 }
 
-+ (UIButton*) createButton:(CGRect)frame font:(UIFont*)font color:(UIColor*)color align:(NSTextAlignment)align
++ (UIButton*) createButton:(CGRect)frame title:(NSString*)title font:(UIFont*)font color:(UIColor*)color align:(NSTextAlignment)align
 {
     UIButton* res = [[UIButton alloc] initWithFrame:frame];
     [res setTitleColor:color forState:UIControlStateNormal];
     res.showsTouchWhenHighlighted = YES;
+    if(title){
+        [res setTitle:title forState:UIControlStateNormal];
+    }
     //res.font = font;
     //res.textColor = color;
     [res.titleLabel setFont:font];
     res.titleLabel.textAlignment = align;
     //res.backgroundColor = [UIColor clearColor];
     return  res;
+}
+
++ (UIButton*) createButton:(CGRect)frame font:(UIFont*)font color:(UIColor*)color align:(NSTextAlignment)align
+{
+    return [self createButton:frame title:nil font:font color:color align:align];
 }
 
 

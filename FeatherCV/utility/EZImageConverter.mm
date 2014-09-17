@@ -7,8 +7,86 @@
 //
 
 #import "EZImageConverter.h"
+#import <opencv2/imgproc/imgproc.hpp>
 
 @implementation EZImageConverter
+
+
+/**
+ enum
+ {
+ GC_BGD    = 0,  //!< background
+ GC_FGD    = 1,  //!< foreground
+ GC_PR_BGD = 2,  //!< most probably background
+ GC_PR_FGD = 3   //!< most probably foreground
+ };
+
+ **/
+
++ (UIImage*) matMaskToImage:(cv::Mat&)mat
+{
+    cv::Mat fullMat(mat.rows,mat.cols, CV_8UC4);
+    for(int i = 0; i < mat.rows; i ++){
+        for(int j = 0; j < mat.cols; j ++){
+            uchar maskType = mat.at<uchar>(i, j);
+            
+            if(maskType == cv::GC_BGD){
+                fullMat.at<cv::Vec4b>(i, j) = BackSureColorCV;
+            }else if(maskType == cv::GC_PR_BGD){
+                fullMat.at<cv::Vec4b>(i, j) = BackProbableColorCV;
+            }else if(maskType == cv::GC_FGD){
+                fullMat.at<cv::Vec4b>(i, j) = FrontSureColorCV;
+            }else if(maskType == cv::GC_PR_FGD){
+                fullMat.at<cv::Vec4b>(i, j) = FrontProbableColorCV;
+            }
+        }
+    }
+    CGColorSpaceRef colorSpace;
+    //cv::Mat fullMat;
+    //cv::cvtColor(cvMat, fullMat, CV_BGR2BGRA);
+    NSData *data = [NSData dataWithBytes:fullMat.data length:fullMat.elemSize()*fullMat.total()];
+    colorSpace = CGColorSpaceCreateDeviceRGB();
+    
+    CGDataProviderRef provider = CGDataProviderCreateWithCFData( (__bridge CFDataRef)data );
+    CGImageRef imageRef = CGImageCreate(fullMat.cols, fullMat.rows, 8, 8 * fullMat.elemSize(), fullMat.step[0], colorSpace, kCGImageAlphaNone|kCGBitmapByteOrderDefault, provider, NULL, false, kCGRenderingIntentDefault );
+    UIImage *finalImage = [UIImage imageWithCGImage:imageRef];
+    CGImageRelease( imageRef );
+    CGDataProviderRelease( provider );
+    CGColorSpaceRelease( colorSpace );
+    return finalImage;
+}
+
++ (void) imageMaskToMat:(cv::Mat&)outMat image:(UIImage*)image
+{
+    CGColorSpaceRef colorSpace = CGImageGetColorSpace( image.CGImage );
+    CGFloat cols = image.size.width;
+    CGFloat rows = image.size.height;
+    cv::Mat cvMat( rows, cols, CV_8UC4);
+    CGContextRef contextRef = CGBitmapContextCreate( cvMat.data, cols, rows, 8, cvMat.step[0], colorSpace, kCGImageAlphaLast | kCGBitmapByteOrderDefault );
+    CGContextDrawImage( contextRef, CGRectMake(0, 0, cols, rows), image.CGImage );
+    CGContextRelease( contextRef );
+    CGColorSpaceRelease( colorSpace );
+    
+    //cv::Mat outMat(rows, cols, CV_8UC1);
+    //cv::cvtColor(cvMat, outMat, CV_BGRA2BGR);
+    for(int i = 0; i < cvMat.rows; i ++){
+        for(int j = 0; j < cvMat.cols; j ++){
+            cv::Vec4b fullColor = cvMat.at<cv::Vec4b>(i, j);
+            if(EqualMatColor(fullColor, BackSureColorCV)){
+                //fullMat.at<cv::Vec3b>(i, j) = BackSureColorCV;
+                outMat.at<uchar>(i, j) = cv::GC_BGD;
+            }else if(EqualMatColor(fullColor, BackProbableColorCV)){
+                outMat.at<uchar>(i, j) = cv::GC_PR_BGD;
+            }else if(EqualMatColor(fullColor, FrontSureColorCV)){
+                outMat.at<uchar>(i, j) = cv::GC_FGD;
+            }else if(EqualMatColor(fullColor, FrontProbableColorCV)){
+                outMat.at<uchar>(i, j) = cv::GC_PR_FGD;
+            }
+        }
+    }
+}
+
+
 
 + (UIImage *)matToImage2:(cv::Mat)cvMat withUIImage:(UIImage*)image;
 {

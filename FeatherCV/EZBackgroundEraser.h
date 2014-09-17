@@ -10,7 +10,24 @@
 
 struct EZGrabHandler;
 
-@class DAScratchPadView;
+typedef enum {
+    kSquareShape,
+    kRoundShape,
+    kPolygon,
+    kStrokeShape
+} EZMaskShapeType;
+
+
+typedef enum{
+    kSmartBackground,
+    kManualBackground,
+    kSmartForeground,
+    kManualForeground
+} EZMaskMode;
+
+//@class DAScratchPadView;
+@class EZCanvas;
+@class EZDrawable;
 @interface EZBackgroundEraser : UIView{
     //EZGrabCut* gradCut;
     struct EZGrabHandler* grabHandler;
@@ -26,7 +43,7 @@ struct EZGrabHandler;
 
 @property (nonatomic, assign) EZSelectStatus selectStatus;
 
-@property (nonatomic, strong) UIView* selectRegion;
+//@property (nonatomic, strong) UIView* selectRegion;
 
 @property (nonatomic, assign) BOOL effectiveTouch;
 
@@ -36,8 +53,38 @@ struct EZGrabHandler;
 
 @property (nonatomic, strong) UIView* verticalBar;
 
-@property (nonatomic, strong) DAScratchPadView* scratchView;
+//@property (nonatomic, strong) DAScratchPadView* scratchView;
+
+@property (nonatomic, strong) EZCanvas* canvas;
+
+@property (nonatomic, strong) EZDrawable* drawable;
 
 @property (nonatomic, strong) UIButton* confirmSelect;
+
+@property (nonatomic, strong) UIToolbar* toolBar;
+
+@property (nonatomic, strong) NSArray* items;
+
+@property (nonatomic, assign) EZMaskMode currentMaskMode;
+
+@property (nonatomic, assign) EZMaskShapeType shapeType;
+
+@property (nonatomic, strong) UIView* strokeWidthDemo;
+
+@property (nonatomic, assign) CGPoint touchPoint;
+
+@property (nonatomic, assign) BOOL pressed;
+
+@property (nonatomic, assign) BOOL notMoved;
+
+@property (nonatomic, assign) CGPoint lastTouch;
+
+@property (nonatomic, strong) UISlider* slider;
+
+//@property (nonatomic, assign) EZMaskMode maskMode;
+@property (nonatomic, assign) CGFloat strokeSize;
+
+- (void) startProcessing:(EZEventBlock)success;
+
 
 @end
