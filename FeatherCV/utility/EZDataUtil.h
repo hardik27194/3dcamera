@@ -61,7 +61,7 @@ typedef enum {
 
 - (void) deleteStoredPhoto:(EZStoredPhoto*)photo success:(EZEventBlock)success failed:(EZEventBlock)failed;
 
-- (void) uploadStoredPhoto:(EZStoredPhoto*)photo success:(EZEventBlock)success failure:(EZEventBlock)failure;
+- (void) uploadStoredPhoto:(EZStoredPhoto*)photo isOriginal:(BOOL)isOriginal success:(EZEventBlock)success failure:(EZEventBlock)failure;
 
 //Normally just update the sequences
 - (void) updateTaskSequence:(EZShotTask*)task success:(EZEventBlock)success failure:(EZEventBlock)failure;

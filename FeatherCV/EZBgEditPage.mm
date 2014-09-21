@@ -35,7 +35,9 @@
     // Initialization code
     //grabCut = new EZGrabCut;
     grabHandler = new EZGrabHandler;
-    grabHandler->setImage([EZImageConverter cvMatFromUIImage:image]);
+    cv::Mat imageMat;
+    [EZImageConverter cvMatFromUIImage:image outMat:imageMat];
+    grabHandler->setImage(imageMat);
     CGFloat ratio = _orgImage.size.height/_orgImage.size.width;
     
     _imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, ratio * self.view.width)];

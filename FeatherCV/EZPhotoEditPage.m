@@ -18,7 +18,8 @@
 #import "EZPhotoInfo.h"
 #import "EZPopupInput.h"
 #import "EZInputItem.h"
-#import "EZBackgroundEraser.h"
+//#import "EZBackgroundEraser.h"
+#import "EZEraserPage.h"
 #import "LocalTasks.h"
 
 @interface EZPhotoEditPage ()
@@ -179,7 +180,7 @@
         addedPhoto.createdTime = [NSDate date];
         addedPhoto.sequence = _photos.count;
         
-        [[EZDataUtil getInstance] uploadStoredPhoto:storedPhoto success:^(id obj){
+        [[EZDataUtil getInstance] uploadStoredPhoto:storedPhoto isOriginal:YES success:^(id obj){
             EZDEBUG(@"obj:%@", obj);
             [_photos addObject:addedPhoto];
             [_imageView setImageWithURL:str2url(localURL)];
@@ -213,7 +214,7 @@
         storedPhoto.localFileURL = localURL;
         
         if([storedPhoto.photoID isNotEmpty]){
-        [[EZDataUtil getInstance] uploadStoredPhoto:storedPhoto success:^(id obj){
+        [[EZDataUtil getInstance] uploadStoredPhoto:storedPhoto isOriginal:YES success:^(id obj){
             EZDEBUG(@"obj:%@", obj);
             [_imageView setImageWithURL:str2url(localURL)];
             [[EZMessageCenter getInstance] postEvent:EZShotTaskChanged attached:storedPhoto];
@@ -505,8 +506,14 @@
 
 - (void) eraseBg:(id)obj
 {
-    EZBackgroundEraser* backEraser = [[EZBackgroundEraser alloc] initWithFrame:self.view.bounds image:_imageView.image];
-    [self.view addSubview:backEraser];
+    //EZBackgroundEraser* backEraser = [[EZBackgroundEraser alloc] initWithFrame:self.view.bounds image:_imageView.image];
+    //[self.view addSubview:backEraser];
+    EZEraserPage* ep = [[EZEraserPage alloc] initWithPhoto:[_photos objectAtIndex:_currentPos]  orgImage:nil];
+    [self.navigationController pushViewController:ep animated:YES];
+    ep.confirmed = ^(id obj){
+        [self loadImage];
+    };
+    
     EZDEBUG(@"Background eraser started");
 }
 

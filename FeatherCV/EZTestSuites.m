@@ -58,6 +58,18 @@
     //NSInteger hashed = [NSString stringWithFormat:@"xxoo%i", val].hash;
     //EZDEBUG(@"final hashed:%i", hashed);
     //assert( @"xxoo1".hash == hashed);
+    //[self testReplaceURLHost];
+}
+
++ (void) testReplaceURLHost
+{
+    //NSString* host = @"http://coolgguy/xxoo";
+    NSURL* url = [NSURL URLWithString:@"http://coolgguy/xxoo"];
+    NSString* host = [url host];
+    NSString* path = [url path];
+    NSString* baseURL = [url relativePath];
+    EZDEBUG(@"host:%@, path:%@, baseURL:%@", host, path, baseURL);
+    assert(false);
 }
 
 + (void) testUploadTask
@@ -71,13 +83,14 @@
         photo.taskID = taskID;
         photo.localFileURL = [EZFileUtil bundleToURL:@"tiange.jpg" retinaAware:NO];
         photo.sequence = 2;
+        /**
         [[EZDataUtil getInstance] uploadStoredPhoto:photo success:^(EZStoredPhoto* ph){
             EZDEBUG(@"The returned photoID:%@, remoteURL:%@", ph.photoID,ph.remoteURL);
             [task.photos addObject:ph];
         } failure:^(id err){
             EZDEBUG(@"error:%@", err);
         }];
-        
+        **/
         
         
         
@@ -86,13 +99,14 @@
         photo2.localFileURL = [EZFileUtil bundleToURL:@"wall.jpg" retinaAware:NO];
         photo2.sequence = 3;
         
+        /**
         [[EZDataUtil getInstance] uploadStoredPhoto:photo2 success:^(EZStoredPhoto* ph){
             EZDEBUG(@"The second returned photoID:%@, remoteURL:%@", ph.photoID,ph.remoteURL);
             [task.photos addObject:ph];
         } failure:^(id err){
             EZDEBUG(@"error:%@", err);
         }];
-        
+        **/
         dispatch_later(1.0, ^(){
             //EZShotTask* task =
             EZDEBUG(@"before sequence adjust:%@, count:%i", task.taskID, task.photos.count);

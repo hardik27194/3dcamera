@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "EZCanvas.h"
 
+
 @interface EZRectObject : EZDrawable
 
 @property (nonatomic, assign) CGRect frame;

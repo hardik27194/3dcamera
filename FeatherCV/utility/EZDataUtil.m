@@ -254,7 +254,7 @@
     }
 }
 
-- (void) uploadStoredPhoto:(EZStoredPhoto*)photo success:(EZEventBlock)success failure:(EZEventBlock)failure
+- (void) uploadStoredPhoto:(EZStoredPhoto*)photo isOriginal:(BOOL)isOriginal success:(EZEventBlock)success failure:(EZEventBlock)failure
 {
     NSDictionary* parameters =
                   [[NSMutableDictionary alloc] initWithDictionary:@{
@@ -264,6 +264,10 @@
     if(photo.photoID){
         [parameters setValue:photo.photoID forKey:@"photoID"];
     }
+    
+    if(isOriginal){
+        [parameters setValue:@(1) forKey:@"isOriginal"];
+    }
     photo.uploadStatus = kUploadStart;
     [EZNetworkUtility upload:relativeUploadURL parameters:parameters fileURL:photo.localFileURL complete:^(NSDictionary* dict){
         EZDEBUG(@"uploaded success result object:%@", dict);
@@ -271,6 +275,9 @@
         NSString* remoteURL = [dict objectForKey:@"remoteURL"];
         photo.photoID = photoID;
         photo.remoteURL = remoteURL;
+        if(isOriginal){
+            photo.originalURL = remoteURL;
+        }
         photo.uploadStatus = kUploadDone;
         if(success){
             success(photo);

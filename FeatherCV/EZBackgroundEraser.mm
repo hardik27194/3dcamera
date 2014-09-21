@@ -28,28 +28,42 @@
 @interface  EZBackgroundEraser(){
     UIButton* undoBtn;
     UIButton* redoBtn;
+    NSArray* imgViews;
+    UIButton* toggleHide;
 }
 @end
 
 @implementation EZBackgroundEraser
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if (object == self && [keyPath isEqualToString:@"bounds"]) {
+        EZDEBUG(@"Bound changed:%@", NSStringFromCGRect(self.bounds));
+    }
+}
+
 
 - (id)initWithFrame:(CGRect)frame image:(UIImage *)image
 {
     self = [super initWithFrame:frame];
     
     if (self) {
-        self.backgroundColor = RGBCOLOR(255, 255, 255);//RGBCOLOR(70, 70, 70);//[UIColor whiteColor];
+        [self addObserver:self forKeyPath:@"bounds" options:0 context:nil];
+        self.backgroundColor = [UIColor whiteColor];//RGBCOLOR(240, 240, 0);//RGBCOLOR(70, 70, 70);//[UIColor whiteColor];
         _strokeSize = 5;
         _orgImage = image;
         // Initialization code
         //grabCut = new EZGrabCut;
         grabHandler = new EZGrabHandler;
-        grabHandler->setImage([EZImageConverter cvMatFromUIImage:image]);
+        cv::Mat imageMat;
+        [EZImageConverter cvMatFromUIImage:image outMat:imageMat];
+        grabHandler->setImage(imageMat);
         CGFloat ratio = image.size.height/image.size.width;
         _imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, self.bounds.size.width, ratio * self.width)];
         [self addSubview:_imageView];
         _imageView.contentMode = UIViewContentModeScaleAspectFill;
         _imageView.image = image;
+        //_imageView.hidden = true;
         //_selectRegion = [[UIView alloc] initWithFrame:CGRectZero];
         //_selectRegion.backgroundColor = FrontSelectColor;//RGBACOLOR(255, 64, 64, 128);
         //_selectRegion.hidden = YES;
@@ -83,19 +97,51 @@
         [self addSubview:undoBtn];
         [undoBtn addTarget:self action:@selector(undo) forControlEvents:UIControlEventTouchUpInside];
         
+        toggleHide = [UIButton createButton:CGRectMake((self.width - 100)/2.0, self.height - 100, 100, 44) title:NSLocalizedString(@"隐藏擦板", @"") font:[UIFont boldSystemFontOfSize:17] color:ClickedColor align:NSTextAlignmentCenter];
+        [self addSubview:toggleHide];
+        [toggleHide addTarget:self action:@selector(toggleHideClicked:) forControlEvents:UIControlEventTouchUpInside];
+        
         redoBtn = [UIButton createButton:CGRectMake(self.width - 100, self.height - 100, 100, 44) title:NSLocalizedString(@"恢复", @"") font:[UIFont boldSystemFontOfSize:17] color:ClickedColor align:NSTextAlignmentLeft];
         [self addSubview:redoBtn];
         [redoBtn addTarget:self action:@selector(redo) forControlEvents:UIControlEventTouchUpInside];
         
         //_currentMaskMode = kManualForeground;
-        [self setCurrentMaskMode:kManualForeground];
+        [self setCurrentMaskMode:kSmartForeground];
         
         EZRectObject* background = [EZRectObject createRect:_imageView.bounds isStroke:NO color:[self maskModeToColor:kManualBackground] borderWidth:0];
         [_canvas insertShape:background pos:0];
         [_canvas setNeedsDisplay];
         
+        
+        UIImageView* img1 = [[UIImageView alloc] initWithFrame:CGRectMake(0, 320, 80, 80)];
+        img1.contentMode = UIViewContentModeScaleAspectFit;
+        
+        UIImageView* img2 = [[UIImageView alloc] initWithFrame:CGRectMake(80, 320, 80, 80)];
+        img2.contentMode = UIViewContentModeScaleAspectFit;
+        
+        UIImageView* img3 = [[UIImageView alloc] initWithFrame:CGRectMake(160, 320, 80, 80)];
+        img3.contentMode = UIViewContentModeScaleAspectFit;
+        
+        UIImageView* img4 = [[UIImageView alloc] initWithFrame:CGRectMake(240, 320, 80, 80)];
+        img4.contentMode = UIViewContentModeScaleAspectFit;
+        
+        [self addSubview:img1];
+        [self addSubview:img2];
+        [self addSubview:img3];
+        [self addSubview:img4];
+        imgViews = @[img1, img2, img3, img4];
+        _activity = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+        [self addSubview:_activity];
+        _activity.center = self.center;
+        _activity.hidden = true;
     }
     return self;
+}
+
+- (void) toggleHideClicked:(id)sender
+{
+    _canvas.hidden = !_canvas.hidden;
+    [toggleHide setTitle:(_canvas.hidden?@"显示擦板":@"隐藏擦板") forState:UIControlStateNormal];
 }
 
 - (void) undo
@@ -120,7 +166,7 @@
     }else if(_shapeType == kRoundShape){
         [item setTitle:@"圆形"];
     }else if(_shapeType == kPolygon){
-        [item setTitle:@"多变形"];
+        [item setTitle:@"多边形"];
     }
     else if(_shapeType == kStrokeShape){
         [item setTitle:@"画线"];
@@ -143,8 +189,8 @@
     //slider.height = _strokeSize;
     _strokeWidthDemo.height = _strokeSize;
     _strokeWidthDemo.center = CGPointMake(_strokeWidthDemo.superview.width/2.0, _strokeWidthDemo.superview.height/2.0);
-    UIColor* slideColor = [UIColor blackColor]; //[self maskModeToColor:_currentMaskMode];
-    _strokeWidthDemo.backgroundColor = slideColor;
+    //UIColor* slideColor = [UIColor blackColor]; //[self maskModeToColor:_currentMaskMode];
+    //_strokeWidthDemo.backgroundColor = slideColor;
 }
 
 
@@ -177,7 +223,7 @@
     //strokeWidthView.center = CGPointMake((self.width - strokeWidthView.width)/2.0, self.height - 118);
     strokeWidthView.tag = StrokeWidthTag;
     _strokeWidthDemo.center = CGPointMake(strokeWidthView.width/2.0, 44/2.0);
-    _strokeWidthDemo.backgroundColor = [self maskModeToColor:_currentMaskMode];
+    _strokeWidthDemo.backgroundColor = [UIColor blackColor];//[self maskModeToColor:_currentMaskMode];
     [strokeWidthView addSubview:_strokeWidthDemo];
     
     tapView.backgroundColor = [UIColor clearColor];
@@ -208,8 +254,15 @@
 
 - (void) toggleMask
 {
+    /**
     _currentMaskMode =(EZMaskMode)(1 +(int)_currentMaskMode);
     if(_currentMaskMode > kManualForeground){
+        _currentMaskMode = kSmartBackground;
+    }
+     **/
+    if(_currentMaskMode == kSmartBackground){
+        _currentMaskMode = kSmartForeground;
+    }else{
         _currentMaskMode = kSmartBackground;
     }
     [self setCurrentMaskMode:_currentMaskMode];
@@ -236,9 +289,25 @@
 
 }
 
+- (void) showActivity
+{
+    //UIView* cover = [[UIView alloc] initWithFrame:self.bounds];
+    //cover.backgroundColor =
+    _activity.hidden = false;
+    [_activity startAnimating];
+
+}
+
+- (void) hideActitiy
+{
+    _activity.hidden = true;
+    [_activity stopAnimating];
+}
+
 - (void) confirm
 {
     EZDEBUG(@"confirmed clicked");
+    [self showActivity];
     [self imageToMask];
     
 }
@@ -312,7 +381,7 @@
     UIColor* maskColor = [self maskModeToColor:_currentMaskMode];
     if(pt.x < _imageView.width && pt.y < _imageView.height){
         dispatch_later(0.5, ^(){
-            EZDEBUG(@"_pressed:%i, _notMoved:%i", _pressed, _notMoved);
+            EZDEBUG(@"_pressed:%i, _notMoved:%i, selectStatus:%i", _pressed, _notMoved, _selectStatus);
             if(_pressed && _notMoved){
                 EZDrawable* drawable = [_canvas getShapeAtPoint:_lastTouch];
                 if(drawable){
@@ -334,7 +403,8 @@
             }else if(_shapeType == kSquareShape){
                 //_selectRegion.layer.cornerRadius = 0;
                 _drawable = [EZRectObject createRect:CGRectMake(pt.x, pt.y, 2, 2) isStroke:NO color:maskColor borderWidth:2];
-            }else{
+            }
+            else{
                 
                 _drawable = [EZPathObject createPath:maskColor width:_strokeSize isFill:_shapeType == kPolygon];
                 //_scratchView.drawColor = maskColor;
@@ -431,42 +501,6 @@
     
 }
 
-
-- (void) selectRect:(CGPoint)pt
-{
-    CGPoint np = [self normalize:pt size:_imageView.bounds.size];
-    CGSize delta = CGSizeMake(np.x - _touchBegin.x, np.y - _touchBegin.y);
-    //_selectRegion.frame = [self calcFrame:_touchBegin delta:delta];
-    //cv::Rect maskRect = [self toImageRect:_selectRegion.frame size:_imageView.frame.size imageSize:_imageView.image.size];
-    //EZDEBUG(@"ratio Rect %i, %i, %i, %i", maskRect.x, maskRect.y, maskRect.width, maskRect.height);
-    
-    
-    //grabHandler->setMaskRect(maskRect);
-    EZDEBUG(@"before call next iteration");
-    _selectStatus = kProcessing;
-    [[EZThreadUtility getInstance] executeBlockInQueue:
-     ^(){
-         int itCount = grabHandler->nextIter();
-         dispatch_main(^(){
-             Mat imageMat;
-             grabHandler->showImage(NO, imageMat);
-             ///UIImage* converted = [EZImageConverter matToImage:imageMat];
-             UIImage* converted =[EZImageConverter matToImageEx:imageMat];
-             _imageView.image = converted;
-             //_selectRegion.hidden = YES;
-             _selectStatus = kSelectParticlBack;
-             //grabHandler->setImageOnly(imageMat);
-             
-         });
-     } isConcurrent:NO];
-    //EZDEBUG(@"before converted");
-    
-    //EZDEBUG(@"converted is done");
-    //EZDEBUG(@"itCount is:%i, converted size:%@", itCount, NSStringFromCGSize(converted.size));
-    
-    
-}
-
 - (CGPoint) toImagePoint:(CGPoint)point size:(CGSize)size imageSize:(CGSize)imageSize
 {
     return CGPointMake(point.x/size.width * imageSize.width, point.y/size.height * imageSize.height);
@@ -474,36 +508,57 @@
 
 - (void) imageToMask
 {
-    Mat imageMat;
-    //UIImageToMat([_scratchView getSketch], imageMat);
-    Mat maskMat;
 
+    Mat maskMat;
+    __block Mat imageMat;
     UIImage* canvasImage = [_canvas contentAsImage];
-    [EZImageConverter imageMaskToMat:maskMat image:canvasImage];
-    //grabHandler->
+    //CGFloat scale = [UIScreen mainScreen].scale;
+    //if(scale != 1){
+    canvasImage = [canvasImage resizedImageByWidth:_orgImage.size.width];
+    //}
+    [EZImageConverter cvMatFromUIImage:canvasImage outMat:maskMat];
+    //[EZImageConverter cvMatFromUIImage:_imageView.image outMat:imageMat];
+    UIImageToMat(_orgImage, imageMat);
+     EZDEBUG(@"returned image size:%i, %i, %@, _orgImage:%@, scale:%f", maskMat.rows, maskMat.cols, NSStringFromCGSize(canvasImage.size), NSStringFromCGSize(_orgImage.size), _orgImage.scale);
     
-    cvtColor(imageMat, maskMat, CV_BGR2GRAY);
-    EZDEBUG(@"mask row, col:%i, %i", maskMat.rows, maskMat.cols);
-    grabHandler->mergeMask(maskMat);
+    __block Mat flagMat;
+    [EZImageConverter maskToFlag:maskMat flag:flagMat];
+    Mat backMat;
+    [EZImageConverter flagToMask:flagMat mask:backMat];
+    //EZDEBUG(@"before back");
+    UIImage* backImage = [EZImageConverter matToImage:maskMat];
+    //EZDEBUG(@"before flag");
+    UIImage* flagImage = [EZImageConverter matToImage:backMat];
+    
+    //EZDEBUG(@"before original image");
+    UIImage* orgBackImage = [EZImageConverter matToImage:imageMat];
+   // EZDEBUG(@"convert back size:%@, transferBack:%@, image:%@, mat:%i", NSStringFromCGSize(orgMask.size), NSStringFromCGSize(transferBack.size), NSStringFromCGSize(_imageView.image.size), imageMat.cols);
+    EZDEBUG(@"imageMat:%i, flagMat size:%i, backMat:%i, backImage:%@, maskMat:%i", imageMat.rows, flagMat.rows, backMat.rows, NSStringFromCGSize(backImage.size), maskMat.cols);
+    //_imageView.image = flagImage;
+    //_canvas.hidden = true;
+    //cvtColor(imageMat, maskMat, CV_BGR2GRAY);
+    //EZDEBUG(@"mask row, col:%i, %i", maskMat.rows, maskMat.cols);
+    [[imgViews objectAtIndex:0] setImage:backImage];
+    [[imgViews objectAtIndex:1] setImage:flagImage];
+    [[imgViews objectAtIndex:2] setImage:orgBackImage];
+    //grabHandler->mergeMask(flagMat);
     
     _selectStatus = kProcessing;
     [[EZThreadUtility getInstance] executeBlockInQueue:
      ^(){
-         int itCount = grabHandler->renderByMask();
-         EZDEBUG("render point completed %i", itCount);
+         
+         EZDEBUG(@"Before render image:%i, type:%i, elemSize:%lu", imageMat.cols, imageMat.type(), imageMat.elemSize());
+         __block cv::Mat resMat;
+         grabHandler->renderImageByMask(imageMat, flagMat, resMat);
+         EZDEBUG(@"After rendering the image:%i, res:%i, elemSize:%lu", imageMat.cols, resMat.cols, resMat.elemSize());
          dispatch_main(^(){
-             Mat imageMat;
-             grabHandler->showImage(NO, imageMat);
-             UIImage* converted = [EZImageConverter matToImageEx:imageMat];
+             //Mat imageMat;
+             //grabHandler->showImage(NO, imageMat);
+             [self hideActitiy];
+             UIImage* converted = [EZImageConverter matToImageEx:resMat];
              _imageView.image = converted;
-             //_selectRegion.hidden = YES;
-             _verticalBar.hidden = YES;
-             _horizonBar.hidden = YES;
-             _selectStatus = kSelectParticlBack;
-             //[_scratchView clearToColor:[UIColor clearColor]];
-             //grabHandler->setImageOnly(imageMat);
-             //grabHandler->setImage(im)
-             //grabHandler->setImage(imageMat);
+             _curImage = converted;
+            _selectStatus = kSelectRough;
          });
      } isConcurrent:NO];
 
@@ -556,7 +611,6 @@
 {
     [self handleTouchEnd:touches];
 }
-
 /*
 // Only override drawRect: if you perform custom drawing.
 // An empty implementation adversely affects performance during animation.

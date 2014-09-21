@@ -47,7 +47,7 @@
     NSMutableDictionary* res = [[NSMutableDictionary alloc] init];
     [res setObject:_taskID forKey:@"taskID"];
     [res setObject:_name?_name:@"" forKey:@"name"];
-    [res setObject:_personID forKey:@"personID"];
+    [res setObject:_personID?_personID:@"" forKey:@"personID"];
     NSMutableArray* photoArr = [[NSMutableArray alloc] init];
     for(EZStoredPhoto* storePhoto in _photos){
         [photoArr addObject:[storePhoto toDict]];

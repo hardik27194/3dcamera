@@ -81,6 +81,9 @@ typedef enum{
 
 @property (nonatomic, strong) UISlider* slider;
 
+
+@property (nonatomic, strong) UIActivityIndicatorView* activity;
+
 //@property (nonatomic, assign) EZMaskMode maskMode;
 @property (nonatomic, assign) CGFloat strokeSize;
 

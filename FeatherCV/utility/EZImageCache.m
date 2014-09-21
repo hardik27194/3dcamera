@@ -9,6 +9,7 @@
 #import "EZImageCache.h"
 #import "EZFileUtil.h"
 #import "EZExtender.h"
+#import "UIImageView+AFNetworking.h"
 
 @interface EZCacheEntry2 : NSObject
 

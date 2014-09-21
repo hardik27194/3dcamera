@@ -9,7 +9,6 @@
 #include "EZGrabHandler.h"
 
 using namespace std;
-
 /**
 EZGrabHandler::EZGrabHandler(){
     cout << "create get called" << endl;
@@ -18,14 +17,14 @@ EZGrabHandler::~EZGrabHandler(){
     cout << "release object" << endl;
 };
 **/
-const int BGD_KEY = EVENT_FLAG_CTRLKEY;
-const int FGD_KEY = EVENT_FLAG_SHIFTKEY;
+const int BGD_KEY = cv::EVENT_FLAG_CTRLKEY;
+const int FGD_KEY = cv::EVENT_FLAG_SHIFTKEY;
 
-const Scalar RED = Scalar(0,0,255);
-const Scalar PINK = Scalar(230,130,255);
-const Scalar BLUE = Scalar(255,0,0);
-const Scalar LIGHTBLUE = Scalar(255,255,160);
-const Scalar GREEN = Scalar(0,255,0);
+const cv::Scalar RED = cv::Scalar(0,0,255);
+const cv::Scalar PINK = cv::Scalar(230,130,255);
+const cv::Scalar BLUE = cv::Scalar(255,0,0);
+const cv::Scalar LIGHTBLUE = cv::Scalar(255,255,160);
+const cv::Scalar GREEN = cv::Scalar(0,255,0);
 
 #define grabIterateCount 1
 
@@ -70,17 +69,46 @@ void EZGrabHandler::setImageOnly(const Mat& _image)
 
 void EZGrabHandler::copyMat(cv::Mat& dst, cv::Mat& mask, bool isAlpha) const
 {
- 
+    
     int count = 0;
     cout << "element Size:" << image->elemSize() << endl;
     for (int i = 0; i < image->rows; i++)
     {        for (int j = 0; j < image->cols; j++)
+    {
+        uchar alpha_value = mask.at<uchar>(i, j);
+        
+        if (alpha_value != 0)
+        {
+            Vec3b src3b = image->at<Vec3b>(i, j);
+            
+            if(++count < 10){
+                cout << (int)alpha_value << ",0:" << src3b[0] << endl;
+            }
+            //float weight = float(alpha_value) / 255.f;
+            dst.at<Vec4b>(i, j) = Vec4b(src3b[0],src3b[1],src3b[2],255);
+        }
+        else
+        {
+            dst.at<Vec4b>(i, j) = Vec4b(0, 0, 0, 0);
+        }
+    }
+    }
+}
+
+
+void EZGrabHandler::copyByBinMask(cv::Mat& src, cv::Mat& dst, cv::Mat& mask, bool isAlpha) const
+{
+ 
+    int count = 0;
+    cout << "element Size:" << src.elemSize() << endl;
+    for (int i = 0; i < src.rows; i++)
+    {        for (int j = 0; j < src.cols; j++)
             {
                 uchar alpha_value = mask.at<uchar>(i, j);
                 
                 if (alpha_value != 0)
                 {
-                    Vec3b src3b = image->at<Vec3b>(i, j);
+                    Vec3b src3b = src.at<Vec3b>(i, j);
 
                     if(++count < 10){
                         cout << (int)alpha_value << ",0:" << src3b[0] << endl;
@@ -133,6 +161,9 @@ void EZGrabHandler::mergeMask(const Mat& extMask)
 void EZGrabHandler::setImage( const Mat& _image)
 {
     cout << "before set image" << endl;
+    if(image){
+        delete image;
+    }
     image = new Mat(_image);
     //_image.copyTo(image);
     
@@ -261,12 +292,38 @@ void EZGrabHandler::setLblsInMask(int isFront, cv::Point p, bool isPr )
     }
 }
 
+void EZGrabHandler::renderImageByMask(cv::Mat& image, cv::Mat& maskExt, cv::Mat& res)
+{
+    cv::Mat* dest = &image;
+    bool deleteFlag = false;
+    if(image.elemSize() == 4){
+        dest = new cv::Mat();
+        dest->create(image.size(), CV_8UC3);
+        cvtColor(image, *dest, CV_BGRA2BGR);
+        deleteFlag = true;
+    }
+    grabCut(*dest, maskExt, rect, bgdModel, fgdModel, grabIterateCount, GC_INIT_WITH_MASK);
+    res.create(image.size(), CV_8UC4);
+    cout << "show image called initialized:" << isInitialized << "res element:" << res.elemSize() << " size:" << res.rows << "," << res.cols << endl;
+    Mat binMask;
+    getBinMask(maskExt, binMask);
+    //image->copyTo(res, binMask );
+    copyByBinMask(*dest, res, binMask, true);
+    if(deleteFlag){
+        delete dest;
+    }
+}
 
 int EZGrabHandler::renderByMask()
 {
     iterCount++;
     grabCut( *image, mask, rect, bgdModel, fgdModel, grabIterateCount, GC_INIT_WITH_MASK);
     return iterCount;
+}
+
+void EZGrabHandler::setExternalMask(cv::Mat& extMask)
+{
+    extMask.copyTo(mask);
 }
 
 int EZGrabHandler::nextIter()

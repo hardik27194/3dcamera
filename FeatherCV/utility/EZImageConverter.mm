@@ -25,22 +25,8 @@
 
 + (UIImage*) matMaskToImage:(cv::Mat&)mat
 {
-    cv::Mat fullMat(mat.rows,mat.cols, CV_8UC4);
-    for(int i = 0; i < mat.rows; i ++){
-        for(int j = 0; j < mat.cols; j ++){
-            uchar maskType = mat.at<uchar>(i, j);
-            
-            if(maskType == cv::GC_BGD){
-                fullMat.at<cv::Vec4b>(i, j) = BackSureColorCV;
-            }else if(maskType == cv::GC_PR_BGD){
-                fullMat.at<cv::Vec4b>(i, j) = BackProbableColorCV;
-            }else if(maskType == cv::GC_FGD){
-                fullMat.at<cv::Vec4b>(i, j) = FrontSureColorCV;
-            }else if(maskType == cv::GC_PR_FGD){
-                fullMat.at<cv::Vec4b>(i, j) = FrontProbableColorCV;
-            }
-        }
-    }
+    cv::Mat fullMat;
+    [self flagToMask:mat mask:fullMat];
     CGColorSpaceRef colorSpace;
     //cv::Mat fullMat;
     //cv::cvtColor(cvMat, fullMat, CV_BGR2BGRA);
@@ -48,22 +34,102 @@
     colorSpace = CGColorSpaceCreateDeviceRGB();
     
     CGDataProviderRef provider = CGDataProviderCreateWithCFData( (__bridge CFDataRef)data );
-    CGImageRef imageRef = CGImageCreate(fullMat.cols, fullMat.rows, 8, 8 * fullMat.elemSize(), fullMat.step[0], colorSpace, kCGImageAlphaNone|kCGBitmapByteOrderDefault, provider, NULL, false, kCGRenderingIntentDefault );
+    CGImageRef imageRef = CGImageCreate(fullMat.cols, fullMat.rows, 8, 8 * fullMat.elemSize(), fullMat.step[0], colorSpace, kCGImageAlphaPremultipliedLast|kCGBitmapByteOrderDefault, provider, NULL, false, kCGRenderingIntentDefault );
     UIImage *finalImage = [UIImage imageWithCGImage:imageRef];
-    CGImageRelease( imageRef );
-    CGDataProviderRelease( provider );
-    CGColorSpaceRelease( colorSpace );
+    CGImageRelease(imageRef);
+    CGDataProviderRelease(provider);
+    CGColorSpaceRelease(colorSpace);
     return finalImage;
+}
+
++ (void) flagToMask:(cv::Mat&)mat mask:(cv::Mat&)outMat
+{
+    outMat.create(mat.rows,mat.cols, CV_8UC4);
+    int backCount = 0;
+    int pbackCount = 0;
+    int frontCount = 0;
+    int pfrontCount = 0;
+    for(int i = 0; i < mat.rows; i ++){
+        for(int j = 0; j < mat.cols; j ++){
+           
+            uchar maskType = mat.at<uchar>(i, j);
+            if(i < 10 && j < 10){
+                EZDEBUG(@"flagToMask pos:%i,%i:%i,%i",i, j, maskType, cv::GC_PR_BGD);
+            }
+            if(maskType == cv::GC_BGD){
+                ++backCount;
+                outMat.at<cv::Vec4b>(i, j) = BackSureColorCV;
+            }else if(maskType == cv::GC_PR_BGD){
+                ++pbackCount;
+                outMat.at<cv::Vec4b>(i, j) = BackProbableColorCV;
+            }else if(maskType == cv::GC_FGD){
+                ++frontCount;
+                outMat.at<cv::Vec4b>(i, j) = FrontSureColorCV;
+            }else if(maskType == cv::GC_PR_FGD){
+                ++pfrontCount;
+                outMat.at<cv::Vec4b>(i, j) = FrontProbableColorCV;
+            }else{
+                ++pbackCount;
+                outMat.at<cv::Vec4b>(i, j) = BackProbableColorCV;
+            }
+        }
+    }
+    EZDEBUG(@"flagToMask count:%i, %i, %i, %i", backCount, pbackCount, frontCount, pfrontCount);
+
+
+}
+
++ (void) maskToFlag:(cv::Mat&)cvMat flag:(cv::Mat&)outMat
+{
+    outMat.create(cvMat.rows, cvMat.cols, CV_8UC1);
+    //int count = 0;
+    int backCount = 0;
+    int pbackCount = 0;
+    int frontCount = 0;
+    int pfrontCount = 0;
+    for(int i = 0; i < cvMat.rows; i ++){
+        for(int j = 0; j < cvMat.cols; j ++){
+            
+            cv::Vec4b fullColor = cvMat.at<cv::Vec4b>(i, j);
+            
+            if(i < 10 && j < 10){
+                //EZDEBUG(@"i:%i, j:%i, result:%i, %i, %i, %i",i, j, fullColor[0], fullColor[1], fullColor[2], fullColor[3]);
+            }
+
+            if(EqualMatColor(fullColor, BackSureColorCV)){
+                ++backCount;
+                //fullMat.at<cv::Vec3b>(i, j) = BackSureColorCV;
+                outMat.at<uchar>(i, j) = cv::GC_BGD;
+            }else if(EqualMatColor(fullColor, BackProbableColorCV)){
+                ++pbackCount;
+                outMat.at<uchar>(i, j) = cv::GC_PR_BGD;
+            }else if(EqualMatColor(fullColor, FrontSureColorCV)){
+                ++frontCount;
+                outMat.at<uchar>(i, j) = cv::GC_FGD;
+            }else if(EqualMatColor(fullColor, FrontProbableColorCV)){
+                ++pfrontCount;
+                outMat.at<uchar>(i, j) = cv::GC_PR_FGD;
+            }else{
+                ++pbackCount;
+                outMat.at<uchar>(i, j) = cv::GC_PR_BGD;
+            }
+        }
+    }
+    EZDEBUG(@"point count:%i, %i, %i, %i", backCount, pbackCount, frontCount, pfrontCount);
+
 }
 
 + (void) imageMaskToMat:(cv::Mat&)outMat image:(UIImage*)image
 {
-    CGColorSpaceRef colorSpace = CGImageGetColorSpace( image.CGImage );
+    CGColorSpaceRef colorSpace = CGImageGetColorSpace(image.CGImage);
     CGFloat cols = image.size.width;
     CGFloat rows = image.size.height;
     cv::Mat cvMat( rows, cols, CV_8UC4);
-    CGContextRef contextRef = CGBitmapContextCreate( cvMat.data, cols, rows, 8, cvMat.step[0], colorSpace, kCGImageAlphaLast | kCGBitmapByteOrderDefault );
+    EZDEBUG(@"Before create, color space:%i", (int)colorSpace);
+    CGContextRef contextRef = CGBitmapContextCreate( cvMat.data, cols, rows, 8, cvMat.step[0], colorSpace, kCGImageAlphaPremultipliedLast | kCGBitmapByteOrderDefault );
+    //EZDEBUG(@"before draw");
     CGContextDrawImage( contextRef, CGRectMake(0, 0, cols, rows), image.CGImage );
+    
     CGContextRelease( contextRef );
     CGColorSpaceRelease( colorSpace );
     
@@ -110,12 +176,19 @@
     CGColorSpaceRef colorSpace;
     //cv::Mat fullMat;
     //cv::cvtColor(cvMat, fullMat, CV_BGR2BGRA);
+    CGFloat scale = 1;//[UIScreen mainScreen].scale ;
     NSData *data = [NSData dataWithBytes:cvMat.data length:cvMat.elemSize()*cvMat.total()];
-    colorSpace = CGColorSpaceCreateDeviceRGB();
+    int colorFlag = kCGImageAlphaPremultipliedLast;
+    if(cvMat.elemSize() > 1){
+        colorSpace = CGColorSpaceCreateDeviceRGB();
+    }else{
+        colorSpace = CGColorSpaceCreateDeviceGray();
+        colorFlag = kCGImageAlphaNone;
+    }
     
     CGDataProviderRef provider = CGDataProviderCreateWithCFData( (__bridge CFDataRef)data );
-    CGImageRef imageRef = CGImageCreate(cvMat.cols, cvMat.rows, 8, 8 * cvMat.elemSize(), cvMat.step[0], colorSpace, kCGImageAlphaLast|kCGBitmapByteOrderDefault, provider, NULL, false, kCGRenderingIntentDefault );
-    UIImage *finalImage = [UIImage imageWithCGImage:imageRef];
+    CGImageRef imageRef = CGImageCreate(cvMat.cols, cvMat.rows, 8, 8 * cvMat.elemSize(), cvMat.step[0], colorSpace, colorFlag|kCGBitmapByteOrderDefault, provider, NULL, false, kCGRenderingIntentDefault );
+    UIImage *finalImage = [UIImage imageWithCGImage:imageRef scale:scale orientation:UIImageOrientationUp];
     CGImageRelease( imageRef );
     CGDataProviderRelease( provider );
     CGColorSpaceRelease( colorSpace );
@@ -164,39 +237,39 @@
     return finalImage;
 }
 
-+ (cv::Mat)cvMatFromUIImage:(UIImage *)image
++ (void)cvMatFromUIImage:(UIImage *)image outMat:(cv::Mat&)cvMat
 {
-    return [self cvMatFromUIImage:image type:CV_8UC4];
+    return [self cvMatFromUIImage:image outMat:cvMat type:CV_8UC4];
 }
 
-+ (cv::Mat)cvMatFromUIImage:(UIImage *)image type:(int)type
++ (void) cvMatFromUIImage:(UIImage *)image outMat:(cv::Mat&)cvMat type:(int)type
 {
     CGColorSpaceRef colorSpace = CGImageGetColorSpace( image.CGImage );
     CGFloat cols = image.size.width;
     CGFloat rows = image.size.height;
-    cv::Mat cvMat( rows, cols, type);
-    CGContextRef contextRef = CGBitmapContextCreate( cvMat.data, cols, rows, 8, cvMat.step[0], colorSpace, kCGImageAlphaNoneSkipLast | kCGBitmapByteOrderDefault );
+    //cv::Mat cvMat( rows, cols, type);
+    cvMat.create(rows, cols, type);
+    CGContextRef contextRef = CGBitmapContextCreate(cvMat.data, cols, rows, 8, cvMat.step[0], colorSpace, kCGImageAlphaPremultipliedLast | kCGBitmapByteOrderDefault );
     CGContextDrawImage( contextRef, CGRectMake(0, 0, cols, rows), image.CGImage );
     CGContextRelease( contextRef );
     CGColorSpaceRelease( colorSpace );
-    
-    cv::Mat outMat(rows, cols, CV_8UC3);
-    cv::cvtColor(cvMat, outMat, CV_BGRA2BGR);
-    return outMat;
+    //cv::Mat outMat(rows, cols, CV_8UC3);
+    //cv::cvtColor(cvMat, outMat, CV_BGRA2BGR);
+    //return outMat;
 }
 
-+ (cv::Mat)cvMatGrayFromUIImage:(UIImage *)image
++ (void)cvMatGrayFromUIImage:(UIImage *)image outMat:(cv::Mat &)grayMat
 {
-    cv::Mat cvMat = [EZImageConverter cvMatFromUIImage:image];
-    cv::Mat grayMat;
+    cv::Mat cvMat;
+    [self cvMatFromUIImage:image outMat:cvMat];
+    //cv::Mat grayMat;
     if ( cvMat.channels() == 1 ) {
         grayMat = cvMat;
+    } else {
+        grayMat.create(cvMat.rows, cvMat.cols, CV_8UC1);// = cv :: Mat( cvMat.rows,cvMat.cols, CV_8UC1 );
+        cv::cvtColor( cvMat, grayMat, CV_BGR2GRAY);
     }
-    else {
-        grayMat = cv :: Mat( cvMat.rows,cvMat.cols, CV_8UC1 );
-        cv::cvtColor( cvMat, grayMat, CV_BGR2GRAY );
-    }
-    return grayMat;
+    //return grayMat;
 }
 
 + (UIImage *)scaleAndRotateImageBackCamera:(UIImage *)image

@@ -7,6 +7,7 @@
 //
 
 #import "EZImageObject.h"
+#import "EZCanvas.h"
 
 @implementation EZImageObject
 
@@ -29,7 +30,7 @@
     if(!_image){
         return;
     }
-    EZDEBUG(@"Begin to draw image, %@, parent:%f, size:%@", NSStringFromCGSize(_image.size), self.parent.height, NSStringFromCGSize(_size));
+    //EZDEBUG(@"Begin to draw image, %@, parent:%f, size:%@", NSStringFromCGSize(_image.size), self.parent.height, NSStringFromCGSize(_size));
     //CGContextSaveGState(ctx);
 	CGContextScaleCTM(ctx, 1.0f, -1.0f);
 	CGContextTranslateCTM(ctx, 0.0f, -self.parent.height);

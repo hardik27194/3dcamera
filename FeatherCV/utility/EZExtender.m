@@ -744,10 +744,11 @@ NSString* doubleString(NSString* str)
 
 - (UIImage*) contentAsImage
 {
-    UIGraphicsBeginImageContext(self.frame.size);
-    //CGContextRef context = UIGraphicsGetCurrentContext();
-    //[self.layer renderInContext:context];
-    [self drawViewHierarchyInRect:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height) afterScreenUpdates:YES];
+    //CGFloat scale = [UIScreen mainScreen].scale;
+    UIGraphicsBeginImageContextWithOptions(CGSizeMake(self.width, self.height), false, 1.0);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    [self.layer renderInContext:context];
+    //[self drawViewHierarchyInRect:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height) afterScreenUpdates:YES];
     UIImage *res = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     return res;

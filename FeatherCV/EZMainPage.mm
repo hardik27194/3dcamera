@@ -113,7 +113,7 @@
             NSString* taskID = task.taskID;
             for(EZStoredPhoto* sp in task.photos){
                 sp.taskID = taskID;
-                [[EZDataUtil getInstance] uploadStoredPhoto:sp success:^(EZStoredPhoto* uploaded){
+                [[EZDataUtil getInstance] uploadStoredPhoto:sp isOriginal:YES success:^(EZStoredPhoto* uploaded){
                     EZDEBUG(@"successfully updated:%@, remoteURL:%@", sp.photoID, sp.remoteURL);
                     ++count;
                     if(count == task.photos.count){

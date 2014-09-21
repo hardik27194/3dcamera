@@ -17,6 +17,8 @@
 
 @property (nonatomic, assign) CGFloat lineWidth;
 
+@property (nonatomic, assign) CGRect frame;
+
 @property (nonatomic, assign) BOOL isFill;
 
 + (EZPathObject*) createPath:(UIColor*)color width:(CGFloat)lineWidth isFill:(BOOL)isFill;

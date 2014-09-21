@@ -1,67 +1,14 @@
 //
-//  EZCanvas.m
+//  EZCanvas2.m
 //  3DCamera
 //
-//  Created by xietian on 14-9-16.
+//  Created by xietian on 14-9-17.
 //  Copyright (c) 2014年 tiange. All rights reserved.
 //
 
-#import "EZCanvas.h"
+#import "EZCanvas2.h"
 
-@implementation EZDrawable
-
-- (id) init
-{
-    self = [super init];
-    _selectedColor = RGBCOLOR(254, 208, 73);
-    return self;
-}
-
-- (void) drawContext:(CGContextRef)context
-{
-    
-}
-
-- (void) mergeShift:(CGPoint)shift
-{
-    _boundingRect = [self shiftRect:_boundingRect shift:_shift];
-    _shift = CGPointZero;
-}
-
-- (void) mergeShift
-{
-    [self mergeShift:_shift];
-}
-
-- (CGRect) getBoundingRect
-{
-    return CGRectMake(_boundingRect.origin.x + _shift.x, _boundingRect.origin.y + _shift.y, _boundingRect.size.width, _boundingRect.size.height);
-}
-
-- (CGRect) shiftRect:(CGRect)rect shift:(CGPoint)shift
-{
-    return CGRectMake(rect.origin.x + shift.x, rect.origin.y + shift.y, rect.size.width, rect.size.height);
-}
-
-- (CGPoint) shiftPoint:(CGPoint)pt shift:(CGPoint)shift
-{
-    return CGPointMake(pt.x + shift.x, pt.y + shift.y);
-}
-
-- (BOOL) pointInSide:(CGPoint)pt
-{
-    return CGRectContainsPoint(_boundingRect, pt);
-}
-
-
-- (void) setParent:(EZCanvas*)canvas
-{
-    _parent = canvas;
-}
-
-@end
-
-@implementation EZCanvas
+@implementation EZCanvas1
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -77,7 +24,7 @@
 
 - (void) addShapeObject:(EZDrawable*)shape
 {
-    [shape setParent:self];
+    //[shape setParent:self];
     [_shapes addObject:shape];
 }
 
@@ -91,7 +38,7 @@
 
 - (void) insertShape:(EZDrawable*)shape pos:(NSInteger)pos
 {
-    [shape setParent:self];
+    //[shape setParent:self];
     [_shapes insertObject:shape atIndex:pos];
     
 }
@@ -143,13 +90,52 @@
 - (void)drawRect:(CGRect)rect
 {
     CGContextRef context = UIGraphicsGetCurrentContext();
+    [self renderTo:context];
+}
+
+- (void) renderTo:(CGContextRef)context
+{
     CGContextSetFillColorWithColor(context, [UIColor clearColor].CGColor);
-    CGContextFillRect(context, rect);
+    CGContextFillRect(context, CGRectMake(0, 0, self.width, self.height));
     for(EZDrawable* drawable in _shapes){
         [drawable drawContext:context];
     }
 }
 
+
+
+ - (void) renderToMat:(cv::Mat&)outMat
+ {
+ CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+ //CGFloat cols = image.size.width;
+ //CGFloat rows = image.size.height;
+ cv::Mat cvMat( self.height, self.width, CV_8UC4);
+ EZDEBUG(@"Before create, color space:%i", (int)colorSpace);
+ CGContextRef contextRef = CGBitmapContextCreate( cvMat.data, cvMat.cols, cvMat.rows, 8, cvMat.step[0], colorSpace, kCGImageAlphaLast | kCGBitmapByteOrderDefault );
+ //EZDEBUG(@"before draw");
+ //CGContextDrawImage( contextRef, CGRectMake(0, 0, cols, rows), image.CGImage );
+ [self renderTo:contextRef];
+ CGContextRelease( contextRef );
+ CGColorSpaceRelease( colorSpace );
+ //cv::Mat outMat(rows, cols, CV_8UC1);
+ //cv::cvtColor(cvMat, outMat, CV_BGRA2BGR);
+ for(int i = 0; i < cvMat.rows; i ++){
+ for(int j = 0; j < cvMat.cols; j ++){
+     cv::Vec4b fullColor = cvMat.at<cv::Vec4b>(i, j);
+     if(EqualMatColor(fullColor, BackSureColorCV)){
+         //fullMat.at<cv::Vec3b>(i, j) = BackSureColorCV;
+         outMat.at<uchar>(i, j) = cv::GC_BGD;
+     }else if(EqualMatColor(fullColor, BackProbableColorCV)){
+         outMat.at<uchar>(i, j) = cv::GC_PR_BGD;
+     }else if(EqualMatColor(fullColor, FrontSureColorCV)){
+         outMat.at<uchar>(i, j) = cv::GC_FGD;
+     }else if(EqualMatColor(fullColor, FrontProbableColorCV)){
+         outMat.at<uchar>(i, j) = cv::GC_PR_FGD;
+     }
+ }
+ }
+ 
+ }
 
 
 @end

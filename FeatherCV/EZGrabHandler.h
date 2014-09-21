@@ -40,7 +40,7 @@ public:
 struct EZGrabHandler
 {
 public:
-    EZGrabHandler(){
+    EZGrabHandler():image(0){
         std::cout << "GrabHandler init" << endl;
         //bgdModel = Mat(1, 65,CV_64F, cvScalar(0.));
         //fgdModel = Mat(1, 65,CV_64F, cvScalar(0.));
@@ -58,33 +58,35 @@ public:
     static const int thickness = 2;
     
     void reset();
-    void setImage( const Mat& image);
+    void setImage( const cv::Mat& image);
     
-    void mergeMask(const Mat& extMask);
+    void mergeMask(const cv::Mat& extMask);
     
-    void setImageOnly(const Mat& image);
-    void showImage(int showSign, Mat& res) const;
+    void setImageOnly(const cv::Mat& image);
+    void showImage(int showSign, cv::Mat& res) const;
     void mouseClick( int event, int x, int y, int flags, void* param );
     int nextIter();
     int getIterCount() const { return iterCount; };
-    
     void setMaskRect(cv::Rect rect);
     
+    void setExternalMask(cv::Mat& extMask);
+    
+    void renderImageByMask(cv::Mat& image, cv::Mat& maskExt, cv::Mat& res);
     void setMaskCycle(cv::Point p,int front, int radius, bool isPr);
 
     void setLblsInMask(int isFront, cv::Point p, bool isPr );
     
     int renderByMask();
     void copyMat(cv::Mat& dest, cv::Mat& mask, bool alpha) const;
+    
+    void copyByBinMask(cv::Mat& src, cv::Mat& dst, cv::Mat& mask, bool isAlpha) const;
 private:
     void setRectInMask();
     const string* winName;
-    const Mat* image;
-    Mat mask;
-    Mat bgdModel;//(1,1, CV_64F, Scalar(0.));
-    
-    Mat fgdModel;//(1,1, CV_64F, Scalar(0.));
-    
+    const cv::Mat* image;
+    cv::Mat mask;
+    cv::Mat bgdModel;//(1,1, CV_64F, Scalar(0.));
+    cv::Mat fgdModel;//(1,1, CV_64F, Scalar(0.));
     uchar rectState, lblsState, prLblsState;
     bool isInitialized;
     

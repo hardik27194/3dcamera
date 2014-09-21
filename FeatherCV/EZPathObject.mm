@@ -64,10 +64,13 @@
     }
 }
 
+
+
 - (void) mergeShift:(CGPoint)shift
 {
     NSMutableArray* dupPoints = [NSMutableArray arrayWithArray:_points];
     [_points removeAllObjects];
+    self.boundingRect = CGRectZero;
     for(EZPoint* val in dupPoints){
         //EZPoint* ep = [[EZPoint alloc] init];
         //ep.point = [val CGPointalue];
@@ -76,7 +79,8 @@
         [self addPoint:pt];
         
     }
-
+    [super mergeShift:shift];
+    //self.frame = [self shiftRect:self.frame shift:shift]
 }
 
 

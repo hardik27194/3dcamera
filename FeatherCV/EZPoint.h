@@ -7,9 +7,12 @@
 //
 
 #import <Foundation/Foundation.h>
+//#import <opencv2/opencv.hpp>
 
 @interface EZPoint : NSObject
 
 @property (nonatomic, assign) CGPoint point;
+
+//- (void) renderToMat:(cv::Mat&)outMat;
 
 @end

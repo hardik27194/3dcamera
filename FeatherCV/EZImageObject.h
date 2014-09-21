@@ -6,7 +6,7 @@
 //  Copyright (c) 2014年 tiange. All rights reserved.
 //
 
-#import "EZCanvas.h"
+#import "EZDrawable.h"
 
 @interface EZImageObject : EZDrawable
 

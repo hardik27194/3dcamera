@@ -16,6 +16,10 @@
 //You can put it into status
 @property (nonatomic, strong) NSString* remoteURL;
 
+
+//Mean the url which will store the original URL.
+@property (nonatomic, strong) NSString* originalURL;
+
 //Can be used to adjust the sequence of the photos
 @property (nonatomic, assign) NSInteger sequence;
 
@@ -28,6 +32,8 @@
 @property (nonatomic, assign) EZUploadStatus uploadStatus;
 
 @property (nonatomic, strong) NSMutableArray* infos;
+
+@property (nonatomic, assign) CGRect frontRegion;
 
 - (void) populate:(NSDictionary*)dict;
 
