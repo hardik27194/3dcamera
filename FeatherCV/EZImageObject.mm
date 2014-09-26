@@ -31,12 +31,12 @@
         return;
     }
     //EZDEBUG(@"Begin to draw image, %@, parent:%f, size:%@", NSStringFromCGSize(_image.size), self.parent.height, NSStringFromCGSize(_size));
-    //CGContextSaveGState(ctx);
+    CGContextSaveGState(ctx);
 	CGContextScaleCTM(ctx, 1.0f, -1.0f);
 	CGContextTranslateCTM(ctx, 0.0f, -self.parent.height);
     //CGRect rect = CGRectMake(0.0f, 0.0f, self.frame.size.width, self.frame.size.height);
     CGContextDrawImage(ctx, CGRectMake(_point.x, _point.y, _size.width, _size.height), _image.CGImage);
-    //CGContextRestoreGState(ctx);
+    CGContextRestoreGState(ctx);
 	//}
 }
 

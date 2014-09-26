@@ -87,6 +87,8 @@ typedef enum {
 
 #define ImagePlaceHolder [EZDataUtil getInstance].placeHolder
 
+#define EZPhotoUpdated @"EZPhotoUpdated"
+
 #define EZDeletePhotoTask @"EZDeletePhotoTask"
 
 #define EZLoginSuccess @"EZLoginSuccess"
@@ -315,13 +317,13 @@ typedef enum {
 //#define baseUploadURL @"http://192.168.1.101:8080/upload"
 //#define baseUploadURL @"http://192.168.1.101:8080/upload"
 
-#define baseServiceURL @"http://192.168.1.104:8080/"
+//#define baseServiceURL @"http://192.168.1.104:8080/"
 
 //#define baseServiceURL @"http://10.0.1.6:8080/"
 //every request need to have session with it.
 //#define baseServiceURL @"http://www.enjoyxue.com:8080/%@;jsessionid=%@?"
 //#define baseServiceURL @"http://192.168.1.105:8080/"
-//#define baseServiceURL @"http://www.enjoyxue.com:8080/"
+#define baseServiceURL @"http://www.enjoyxue.com:8080/"
 //#define baseServiceURL @"http://192.168.1.101:8080/"
 
 #define EZButtonGreen RGBCOLOR(56, 216, 116)

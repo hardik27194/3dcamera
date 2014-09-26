@@ -32,6 +32,7 @@ typedef enum {
 
 @class RBVolumeButtons;
 @class EZSoundEffect;
+@class EZFrontFrame;
 @interface EZCaptureCameraController : UIViewController<UIActionSheetDelegate>
 @property (nonatomic, assign) CGRect previewRect;
 @property (nonatomic, assign) BOOL isStatusBarHiddenBeforeShowCamera;
@@ -41,7 +42,7 @@ typedef enum {
 @property (nonatomic, assign) NSInteger currentCount;
 @property (nonatomic, strong) UIButton* shotImages;
 
-
+@property (nonatomic, strong) EZFrontFrame* frontFrame;
 @property (nonatomic, strong) UIButton* shotBtn;
 @property (nonatomic, assign) BOOL areCapturing;
 @property (nonatomic, assign) BOOL isPaused;

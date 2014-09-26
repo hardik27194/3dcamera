@@ -24,11 +24,15 @@
 
 - (EZDrawable*) getShapeAtPoint:(CGPoint)pt;
 
+- (void) drawImage:(UIImage*)image;
+
 - (void) removeShape:(EZDrawable*)drawable;
 
 - (void) insertShape:(EZDrawable*)shape pos:(NSInteger)pos;
 
 - (void) renderToMat:(cv::Mat&)outMat orgMat:(cv::Mat&)orgMat;
+
+- (void) undoAll;
 
 - (void) undo;
 

@@ -13,6 +13,7 @@
 #import "EZFileUtil.h"
 #import "UIImageView+AFNetworking.h"
 #import "EZImageUtil.h"
+#import "EZMessageCenter.h"
 
 @interface EZEraserPage ()
 
@@ -49,8 +50,13 @@
         }];
     }
     
+    
     _eraserView = [[EZBackgroundEraser alloc] initWithFrame:CGRectMake(0, 44, CurrentScreenWidth, CurrentScreenHeight - 44) image:_orgImage];
     [self.view addSubview:_eraserView];
+    //_photo.frontRegion = CGRectMake(20, 20, 100, 100);
+    if(_photo.frontRegion.size.width > 0){
+        [_eraserView addFrontFrame:_photo.frontRegion];
+    }
 
     EZDEBUG(@"Background eraser started");
     return self;
@@ -78,6 +84,7 @@
                 if(_confirmed){
                     _confirmed(_photo);
                 }
+                [[EZMessageCenter getInstance] postEvent:EZPhotoUpdated attached:_photo.taskID];
             } failure:^(id error){
                 EZDEBUG(@"Failed to upload");
             }];

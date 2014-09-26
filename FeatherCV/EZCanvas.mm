@@ -8,6 +8,7 @@
 
 #import "EZCanvas.h"
 #import "EZImageConverter.h"
+#import "EZImageObject.h"
 
 @implementation EZCanvas
 
@@ -47,6 +48,23 @@
 - (void) removeShape:(EZDrawable*)drawable
 {
     [_shapes removeObject:drawable];
+}
+
+- (void) drawImage:(UIImage*)image
+{
+    EZImageObject* im = [EZImageObject createImage:image frame:CGRectMake(0, 0, self.width, self.height)];
+    [self addShapeObject:im];
+    [self setNeedsDisplay];
+}
+
+- (void) undoAll
+{
+    for(int i = _shapes.count - 1; i >= 0; i --){
+        EZDrawable* drawAble = [_shapes objectAtIndex:i];
+        [_shapes removeObjectAtIndex:i];
+        [_redoList addObject:drawAble];
+    }
+    [self setNeedsDisplay];
 }
 
 - (void) undo
@@ -119,7 +137,7 @@
  scale = 2.0;
  cvMat.create( self.height*scale, self.width*scale, CV_8UC4);
  outMat.create(self.height*scale, self.width*scale, CV_8UC1);
- EZDEBUG(@"Update Before create, color space:%i", (int)colorSpace);
+ //EZDEBUG(@"Update Before create, color space:%i", (int)colorSpace);
  CGContextRef contextRef = CGBitmapContextCreate( NULL, self.width*scale, self.height*scale, 8, self.width * scale * 4, colorSpace, kCGImageAlphaNoneSkipLast | kCGBitmapByteOrderDefault );
  EZDEBUG(@"before draw");
  //CGContextDrawImage( contextRef, CGRectMake(0, 0, cols, rows), image.CGImage );

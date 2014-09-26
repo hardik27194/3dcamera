@@ -48,7 +48,7 @@
     self = [super initWithFrame:frame];
     
     if (self) {
-        [self addObserver:self forKeyPath:@"bounds" options:0 context:nil];
+        //[self addObserver:self forKeyPath:@"bounds" options:0 context:nil];
         self.backgroundColor = [UIColor whiteColor];//RGBCOLOR(240, 240, 0);//RGBCOLOR(70, 70, 70);//[UIColor whiteColor];
         _strokeSize = 5;
         _orgImage = image;
@@ -268,6 +268,12 @@
     [self setCurrentMaskMode:_currentMaskMode];
 }
 
+- (void) addFrontFrame:(CGRect)rect
+{
+    EZRectObject* rectObj = [EZRectObject createRect:rect isStroke:NO color:FrontProbableColor borderWidth:0.0];
+    [_canvas addShapeObject:rectObj];
+}
+
 - (void) setCurrentMaskMode:(EZMaskMode)currentMaskMode
 {
     _currentMaskMode = currentMaskMode;
@@ -293,6 +299,10 @@
 {
     //UIView* cover = [[UIView alloc] initWithFrame:self.bounds];
     //cover.backgroundColor =
+    UIView* cover = [[UIView alloc] initWithFrame:self.bounds];
+    cover.tag = 18;
+    cover.backgroundColor = RGBA(80, 80, 80, 128);
+    [self insertSubview:cover belowSubview:_activity];
     _activity.hidden = false;
     [_activity startAnimating];
 
@@ -300,6 +310,7 @@
 
 - (void) hideActitiy
 {
+    [[self viewWithTag:18] removeFromSuperview];
     _activity.hidden = true;
     [_activity stopAnimating];
 }
@@ -550,11 +561,19 @@
          EZDEBUG(@"Before render image:%i, type:%i, elemSize:%lu", imageMat.cols, imageMat.type(), imageMat.elemSize());
          __block cv::Mat resMat;
          grabHandler->renderImageByMask(imageMat, flagMat, resMat);
+         
+         cv::Mat finalMask;
+         [EZImageConverter binFlagToMask:flagMat mask:finalMask];
+         UIImage* finalMaskImage = [EZImageConverter matToImageEx:finalMask]; //MatToUIImage(finalMask);
+         
          EZDEBUG(@"After rendering the image:%i, res:%i, elemSize:%lu", imageMat.cols, resMat.cols, resMat.elemSize());
          dispatch_main(^(){
              //Mat imageMat;
              //grabHandler->showImage(NO, imageMat);
              [self hideActitiy];
+             [_canvas undoAll];
+             [_canvas drawImage:finalMaskImage];
+             [[imgViews objectAtIndex:3] setImage:finalMaskImage];
              UIImage* converted = [EZImageConverter matToImageEx:resMat];
              _imageView.image = converted;
              _curImage = converted;

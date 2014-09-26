@@ -38,6 +38,13 @@
 #import "EZPathObject.h"
 #import "EZPoint.h"
 #import "EZImageObject.h"
+#import "EZFrontFrame.h"
+#import "EZDrawAngle.h"
+#include "PatternDetector.hpp"
+#include "EZKeyPoint.h"
+#include <vector>
+#import "EZImageConverter.h"
+
 
 #define CELL_ID @"CELL_ID"
 
@@ -284,6 +291,11 @@
         
     }];
     
+    [[EZMessageCenter getInstance] registerEvent:EZPhotoUpdated block:^(NSString* taskID){
+        EZDEBUG(@"current taskID updated:%@", taskID);
+        [_collectionView reloadData];
+    }];
+    
 
     UIImage* iconImage = [UIImage imageNamed:@"camera_btn"];
     
@@ -329,40 +341,89 @@
         [_collectionView reloadData];
     }];
     
+    [self drawCanvas];
+}
+
+
+
+- (void) drawCanvas
+{
     
-    /**
-    EZCanvas* canvas = [[EZCanvas alloc] initWithFrame:CGRectMake(0, 100, 320, 320)];
-    EZRectObject* object = [EZRectObject createRect:CGRectMake(20, 20, 20, 20) isStroke:YES color:[UIColor greenColor] borderWidth:10];
-    
-    [canvas.shapes addObject:object];
-    
-    EZRectObject* fillRect = [EZRectObject createRect:CGRectMake(40, 40, 40, 40) isStroke:NO color:[UIColor redColor] borderWidth:0];
-    [canvas.shapes addObject:fillRect];
-    
-    EZRoundObject* fillRound = [EZRoundObject createRound:CGRectMake(80, 80, 80, 40) isStroke:NO color:[UIColor redColor] borderWidth:0];
-    [canvas.shapes addObject:fillRound];
-    
-    
-    EZPathObject* path = [EZPathObject createPath:[UIColor whiteColor] width:10 isFill:NO];
-    [path addPoints:@[pointValue(0, 0), pointValue(10, 10), pointValue(15, 10), pointValue(20, 30)]];
-    
-    [canvas addShapeObject:path];
-    
-    EZPathObject* path1 = [EZPathObject createPath:[UIColor greenColor] width:10 isFill:YES];
-    [path1 addPoints:@[pointValue(40, 40), pointValue(50, 50), pointValue(50, 100), pointValue(100, 50)]];
-    [canvas addShapeObject:path1];
-    
-    EZImageObject* imageobj = [EZImageObject createImage:[UIImage imageNamed:@"camera_btn"] frame:CGRectMake(0, 120, 0, 0)];
-    
-    EZImageObject* imageObj2 = [EZImageObject createImage:[UIImage imageNamed:@"camera_btn"] frame:CGRectMake(0, 60, 20, 20)];
-    [canvas addShapeObject:imageobj];
-    [canvas addShapeObject:imageObj2];
-    
-    [canvas setNeedsDisplay];
+     EZCanvas* canvas = [[EZCanvas alloc] initWithFrame:CGRectMake(0, 100, 320, 320)];
+     EZDrawAngle* angle = [EZDrawAngle create:CGRectMake(50, 50, 160, 160) total:12 occupiedColor:[UIColor whiteColor] emptyColor:[UIColor blackColor] background:RGBCOLOR(70, 80, 80)length:10];
+    angle.occupiedCount = 5;
+    [canvas addShapeObject:angle];
     [self.view addSubview:canvas];
+    [canvas setNeedsDisplay];
+    PatternDetector pt;
+    UIImage* orgImage =  [UIImage imageNamed:@"PyramidPattern.jpg"];
+    UIImage* patternImg = [UIImage imageNamed:@"PyramidPatternTest.bmp"];
+    
+    EZDEBUG(@"orgImage size:%@, patternImage:%@", NSStringFromCGSize(orgImage.size), NSStringFromCGSize(patternImg.size));
+    cv::Mat orgMat;
+    cv::Mat patternMat;
+    [EZImageConverter cvMatFromUIImage:orgImage outMat:orgMat];
+    [EZImageConverter cvMatFromUIImage:patternImg outMat:patternMat];
+    
+    std::vector<cv::KeyPoint> points;
+    std::vector<cv::KeyPoint> patternPoints;
+    cv::Mat descriptors;
+    pt.findKeyPoints(orgMat, points, descriptors);
+    
+    //std::vector<cv::Mat> descs;
+    //descs.push_back(descriptors);
+    //descs.push_back(descriptors);
+    pt.train(descriptors);
+    //pt.train(descs);
+    EZDEBUG(@"trained descs");
+    std::vector<cv::DMatch> matches;
+    pt.findMatches(patternMat,patternPoints, matches);
+    
+    EZDEBUG(@"Final match count:%lu", matches.size());
+    for(int i = 0; i < 10; i ++){
+        cv::Point2f pt = points[matches.at(i).trainIdx].pt;
+        cv::Point2f pt2 = patternPoints[matches.at(i).queryIdx].pt;
+        EZDEBUG(@"image index:%i, match trained:%i, dest:%i pt:%f, %f, query pt:%f, %f, patternPoints:%lu",matches.at(i).imgIdx, matches.at(i).trainIdx, matches.at(i).queryIdx, pt.x, pt.y, pt2.x, pt2.y, patternPoints.size());
+    }
+    /**
+     
+     EZFrontFrame* frontFrame = [[EZFrontFrame alloc] initWithFrame:CGRectMake(0, 44, CurrentScreenWidth, CurrentScreenWidth)];
+     [self.view addSubview:frontFrame];
+     frontFrame.backgroundColor = RGBCOLOR(80, 80, 80);
+     **/
+    /**
+     EZCanvas* canvas = [[EZCanvas alloc] initWithFrame:CGRectMake(0, 100, 320, 320)];
+     EZRectObject* object = [EZRectObject createRect:CGRectMake(20, 20, 20, 20) isStroke:YES color:[UIColor greenColor] borderWidth:10];
+     
+     [canvas.shapes addObject:object];
+     
+     EZRectObject* fillRect = [EZRectObject createRect:CGRectMake(40, 40, 40, 40) isStroke:NO color:[UIColor redColor] borderWidth:0];
+     [canvas.shapes addObject:fillRect];
+     
+     EZRoundObject* fillRound = [EZRoundObject createRound:CGRectMake(80, 80, 80, 40) isStroke:NO color:[UIColor redColor] borderWidth:0];
+     [canvas.shapes addObject:fillRound];
+     
+     
+     EZPathObject* path = [EZPathObject createPath:[UIColor whiteColor] width:10 isFill:NO];
+     [path addPoints:@[pointValue(0, 0), pointValue(10, 10), pointValue(15, 10), pointValue(20, 30)]];
+     
+     [canvas addShapeObject:path];
+     
+     EZPathObject* path1 = [EZPathObject createPath:[UIColor greenColor] width:10 isFill:YES];
+     [path1 addPoints:@[pointValue(40, 40), pointValue(50, 50), pointValue(50, 100), pointValue(100, 50)]];
+     [canvas addShapeObject:path1];
+     
+     EZImageObject* imageobj = [EZImageObject createImage:[UIImage imageNamed:@"camera_btn"] frame:CGRectMake(0, 120, 0, 0)];
+     
+     EZImageObject* imageObj2 = [EZImageObject createImage:[UIImage imageNamed:@"camera_btn"] frame:CGRectMake(0, 60, 20, 20)];
+     [canvas addShapeObject:imageobj];
+     [canvas addShapeObject:imageObj2];
+     
+     [canvas setNeedsDisplay];
+     [self.view addSubview:canvas];
      ***/
     
-    
+
 }
 
 - (void) viewWillAppear:(BOOL)animated

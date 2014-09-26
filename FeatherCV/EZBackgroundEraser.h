@@ -89,5 +89,7 @@ typedef enum{
 
 - (void) startProcessing:(EZEventBlock)success;
 
+- (void) addFrontFrame:(CGRect)rect;
+
 
 @end

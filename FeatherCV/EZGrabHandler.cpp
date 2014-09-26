@@ -47,6 +47,12 @@ static void getBinMask( const Mat& comMask, Mat& binMask )
     binMask = comMask & 1;
 }
 
+static void maskToCanvas(const Mat& mask, Mat&showMat)
+{
+    showMat.create(mask.size(), CV_8UC4);
+    //showMat = (mask & 1)? 1:0;
+}
+
 
 void EZGrabHandler::reset()
 {

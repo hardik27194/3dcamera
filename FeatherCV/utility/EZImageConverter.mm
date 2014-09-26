@@ -42,6 +42,34 @@
     return finalImage;
 }
 
++ (void) binFlagToMask:(cv::Mat&)mat mask:(cv::Mat&)outMat
+{
+    outMat.create(mat.rows,mat.cols, CV_8UC4);
+    int backCount = 0;
+    int pbackCount = 0;
+    int frontCount = 0;
+    int pfrontCount = 0;
+    for(int i = 0; i < mat.rows; i ++){
+        for(int j = 0; j < mat.cols; j ++){
+            
+            uchar maskType = mat.at<uchar>(i, j);
+            if(i < 10 && j < 10){
+                EZDEBUG(@"flagToMask pos:%i,%i:%i,%i",i, j, maskType, cv::GC_PR_BGD);
+            }
+            if(maskType & 1){
+                ++pfrontCount;
+                outMat.at<cv::Vec4b>(i, j) = FrontProbableColorCV;
+            }else {
+                ++pbackCount;
+                outMat.at<cv::Vec4b>(i, j) = BackSureColorCV;
+            }
+        }
+    }
+    EZDEBUG(@"flagToMask count:%i, %i, %i, %i", backCount, pbackCount, frontCount, pfrontCount);
+    
+}
+
+
 + (void) flagToMask:(cv::Mat&)mat mask:(cv::Mat&)outMat
 {
     outMat.create(mat.rows,mat.cols, CV_8UC4);

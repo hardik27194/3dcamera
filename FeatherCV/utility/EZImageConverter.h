@@ -26,6 +26,8 @@
 
 + (void) flagToMask:(cv::Mat&)mat mask:(cv::Mat&)outMat;
 + (void) maskToFlag:(cv::Mat&)cvMat flag:(cv::Mat&)outMat;
++ (void) binFlagToMask:(cv::Mat&)mat mask:(cv::Mat&)outMat;
+
 
 + (void) imageMaskToMat:(cv::Mat&)mat image:(UIImage*)image;
 

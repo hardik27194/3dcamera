@@ -17,6 +17,7 @@
 #import "EZPhotoEditPage.h"
 #import "UIButton+AFNetworking.h"
 #import "EZDragPage.h"
+#import "EZFrontFrame.h"
 
 //static void * CapturingStillImageContext = &CapturingStillImageContext;
 //static void * RecordingContext = &RecordingContext;
@@ -494,6 +495,12 @@
     _countDownTitle.alpha = 0.8;
     _countDownTitle.hidden = YES;
     [self.view addSubview:_countDownTitle];
+    
+    
+    _frontFrame = [[EZFrontFrame alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, CurrentScreenWidth)];
+    [self.view addSubview:_frontFrame];
+    _frontFrame.hidden = YES;
+    
 }
 
 - (void)showCameraCover:(BOOL)toShow {
@@ -648,6 +655,9 @@ void c_slideAlpha() {
         storedPhoto.localFileURL = photoFile;
         storedPhoto.remoteURL = photoFile;
         storedPhoto.sequence = _currentCount;
+        if(!_frontFrame.hidden){
+            storedPhoto.frontRegion = _frontFrame.getFinalFrame;
+        }
         [_shotTask.photos addObject:storedPhoto];
     }else if(_shotType == kShotToReplace){
         //_photo.localFileURL = photoFile;
@@ -856,12 +866,14 @@ void c_slideAlpha() {
 - (void)gridBtnPressed:(UIButton*)sender {
     sender.selected = !sender.selected;
     [_captureManager switchGrid:sender.selected];
+    
 }
 
 //拍照页面，切换前后摄像头按钮按钮
 - (void)switchCameraBtnPressed:(UIButton*)sender {
     sender.selected = !sender.selected;
-    [_captureManager switchCamera:sender.selected];
+    //[_captureManager switchCamera:sender.selected];
+    _frontFrame.hidden = !_frontFrame.hidden;
 }
 
 //拍照页面，闪光灯按钮

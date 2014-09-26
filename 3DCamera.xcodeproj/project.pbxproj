@@ -60,6 +60,8 @@
 		181608C718B4E38600DD5995 /* EZAnimationUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 181608C618B4E38600DD5995 /* EZAnimationUtil.m */; };
 		181608CC18B4EA9F00DD5995 /* EZRotateAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = 181608CB18B4EA9F00DD5995 /* EZRotateAnimation.m */; };
 		181608DA18B714B900DD5995 /* EZModalDissolveAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = 181608D918B714B900DD5995 /* EZModalDissolveAnimation.m */; };
+		181CAF6419D16C6400FD9FC0 /* EZDrawAngle.mm in Sources */ = {isa = PBXBuildFile; fileRef = 181CAF6319D16C6400FD9FC0 /* EZDrawAngle.mm */; };
+		181CAF6719D2D16500FD9FC0 /* EZPalate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 181CAF6619D2D16500FD9FC0 /* EZPalate.mm */; };
 		181FC35F1951DD6F00442AF3 /* UIView+Glow.m in Sources */ = {isa = PBXBuildFile; fileRef = 181FC35E1951DD6F00442AF3 /* UIView+Glow.m */; };
 		181FC36B19540F8B00442AF3 /* EZContactMainCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 181FC36A19540F8B00442AF3 /* EZContactMainCell.m */; };
 		181FC36E1954409700442AF3 /* TLSwipeForOptionsCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 181FC36D1954409700442AF3 /* TLSwipeForOptionsCell.m */; };
@@ -343,12 +345,20 @@
 		1890814319C97E460096997E /* EZCanvas2.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1890814219C97E460096997E /* EZCanvas2.mm */; };
 		1890814619CBC8DA0096997E /* EZEraserPage.m in Sources */ = {isa = PBXBuildFile; fileRef = 1890814519CBC8DA0096997E /* EZEraserPage.m */; };
 		1890814919CC06390096997E /* EZImageUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 1890814819CC06390096997E /* EZImageUtil.m */; };
+		1890814F19CE9DF50096997E /* EZFrontFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = 1890814E19CE9DF50096997E /* EZFrontFrame.m */; };
 		1896AF5E19BFD1C30065F7BD /* share@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1896AF5D19BFD1C30065F7BD /* share@2x.png */; };
 		1896AF6A19C196990065F7BD /* DAScratchPadView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1896AF6919C196990065F7BD /* DAScratchPadView.m */; };
 		18A37044185BF97E0022F0A8 /* EZPhotoRelation.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A37043185BF97E0022F0A8 /* EZPhotoRelation.m */; };
 		18B3651A1920916300092AB8 /* EZMotionRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 18B365191920916300092AB8 /* EZMotionRecorder.m */; };
 		18B3651D1920926900092AB8 /* EZMotionImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 18B3651C1920926900092AB8 /* EZMotionImage.m */; };
 		18B365201920938F00092AB8 /* EZMotionRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 18B3651F1920938F00092AB8 /* EZMotionRecord.m */; };
+		18BD955219D4051F001EB28C /* Pattern.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 18BD954C19D4051F001EB28C /* Pattern.cpp */; };
+		18BD955319D4051F001EB28C /* PatternDetector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 18BD954E19D4051F001EB28C /* PatternDetector.cpp */; };
+		18BD955419D4051F001EB28C /* PyramidPattern.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 18BD955019D4051F001EB28C /* PyramidPattern.jpg */; };
+		18BD955519D4051F001EB28C /* PyramidPatternTest.bmp in Resources */ = {isa = PBXBuildFile; fileRef = 18BD955119D4051F001EB28C /* PyramidPatternTest.bmp */; };
+		18BD955A19D40552001EB28C /* CameraCalibration.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 18BD955619D40552001EB28C /* CameraCalibration.cpp */; };
+		18BD955B19D40552001EB28C /* GeometryTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 18BD955819D40552001EB28C /* GeometryTypes.cpp */; };
+		18BD955F19D5207D001EB28C /* EZKeyPoint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 18BD955D19D5207D001EB28C /* EZKeyPoint.cpp */; };
 		18BF13D219A95CB400D0C56D /* EZCaptureCameraController.m in Sources */ = {isa = PBXBuildFile; fileRef = 18BF13D119A95CB400D0C56D /* EZCaptureCameraController.m */; };
 		18BF13D519A96AF800D0C56D /* shot_pause.png in Resources */ = {isa = PBXBuildFile; fileRef = 18BF13D319A96AF700D0C56D /* shot_pause.png */; };
 		18BF13D619A96AF800D0C56D /* shot_pause@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 18BF13D419A96AF800D0C56D /* shot_pause@2x.png */; };
@@ -622,6 +632,10 @@
 		181608CB18B4EA9F00DD5995 /* EZRotateAnimation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZRotateAnimation.m; sourceTree = "<group>"; };
 		181608D818B714B900DD5995 /* EZModalDissolveAnimation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZModalDissolveAnimation.h; sourceTree = "<group>"; };
 		181608D918B714B900DD5995 /* EZModalDissolveAnimation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZModalDissolveAnimation.m; sourceTree = "<group>"; };
+		181CAF6219D16C6400FD9FC0 /* EZDrawAngle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZDrawAngle.h; sourceTree = "<group>"; };
+		181CAF6319D16C6400FD9FC0 /* EZDrawAngle.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = EZDrawAngle.mm; sourceTree = "<group>"; };
+		181CAF6519D2D16500FD9FC0 /* EZPalate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZPalate.h; sourceTree = "<group>"; };
+		181CAF6619D2D16500FD9FC0 /* EZPalate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = EZPalate.mm; sourceTree = "<group>"; };
 		181FC35D1951DD6F00442AF3 /* UIView+Glow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+Glow.h"; sourceTree = "<group>"; };
 		181FC35E1951DD6F00442AF3 /* UIView+Glow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+Glow.m"; sourceTree = "<group>"; };
 		181FC36519540EE100442AF3 /* EZContactMain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EZContactMain.h; path = controllers/EZContactMain.h; sourceTree = "<group>"; };
@@ -1003,6 +1017,8 @@
 		1890814519CBC8DA0096997E /* EZEraserPage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZEraserPage.m; sourceTree = "<group>"; };
 		1890814719CC06390096997E /* EZImageUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZImageUtil.h; sourceTree = "<group>"; };
 		1890814819CC06390096997E /* EZImageUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZImageUtil.m; sourceTree = "<group>"; };
+		1890814D19CE9DF50096997E /* EZFrontFrame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZFrontFrame.h; sourceTree = "<group>"; };
+		1890814E19CE9DF50096997E /* EZFrontFrame.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZFrontFrame.m; sourceTree = "<group>"; };
 		1896AF5D19BFD1C30065F7BD /* share@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "share@2x.png"; sourceTree = "<group>"; };
 		1896AF6819C196990065F7BD /* DAScratchPadView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DAScratchPadView.h; sourceTree = "<group>"; };
 		1896AF6919C196990065F7BD /* DAScratchPadView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DAScratchPadView.m; sourceTree = "<group>"; };
@@ -1014,6 +1030,19 @@
 		18B3651C1920926900092AB8 /* EZMotionImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZMotionImage.m; sourceTree = "<group>"; };
 		18B3651E1920938F00092AB8 /* EZMotionRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZMotionRecord.h; sourceTree = "<group>"; };
 		18B3651F1920938F00092AB8 /* EZMotionRecord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZMotionRecord.m; sourceTree = "<group>"; };
+		18BD954C19D4051F001EB28C /* Pattern.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Pattern.cpp; sourceTree = "<group>"; };
+		18BD954D19D4051F001EB28C /* Pattern.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Pattern.hpp; sourceTree = "<group>"; };
+		18BD954E19D4051F001EB28C /* PatternDetector.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PatternDetector.cpp; sourceTree = "<group>"; };
+		18BD954F19D4051F001EB28C /* PatternDetector.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PatternDetector.hpp; sourceTree = "<group>"; };
+		18BD955019D4051F001EB28C /* PyramidPattern.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = PyramidPattern.jpg; sourceTree = "<group>"; };
+		18BD955119D4051F001EB28C /* PyramidPatternTest.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = PyramidPatternTest.bmp; sourceTree = "<group>"; };
+		18BD955619D40552001EB28C /* CameraCalibration.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CameraCalibration.cpp; sourceTree = "<group>"; };
+		18BD955719D40552001EB28C /* CameraCalibration.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CameraCalibration.hpp; sourceTree = "<group>"; };
+		18BD955819D40552001EB28C /* GeometryTypes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GeometryTypes.cpp; sourceTree = "<group>"; };
+		18BD955919D40552001EB28C /* GeometryTypes.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GeometryTypes.hpp; sourceTree = "<group>"; };
+		18BD955C19D4083C001EB28C /* DebugHelpers.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = DebugHelpers.hpp; sourceTree = "<group>"; };
+		18BD955D19D5207D001EB28C /* EZKeyPoint.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EZKeyPoint.cpp; sourceTree = "<group>"; };
+		18BD955E19D5207D001EB28C /* EZKeyPoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZKeyPoint.h; sourceTree = "<group>"; };
 		18BF13D019A95CB400D0C56D /* EZCaptureCameraController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZCaptureCameraController.h; sourceTree = "<group>"; };
 		18BF13D119A95CB400D0C56D /* EZCaptureCameraController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZCaptureCameraController.m; sourceTree = "<group>"; };
 		18BF13D319A96AF700D0C56D /* shot_pause.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = shot_pause.png; sourceTree = "<group>"; };
@@ -1354,7 +1383,8 @@
 		180E2CB81990E11C00DE2AFA /* sccamera */ = {
 			isa = PBXGroup;
 			children = (
-				180E2CE61990E40E00DE2AFA /* images */,
+				1890814D19CE9DF50096997E /* EZFrontFrame.h */,
+				1890814E19CE9DF50096997E /* EZFrontFrame.m */,
 				18BF13D019A95CB400D0C56D /* EZCaptureCameraController.h */,
 				18BF13D119A95CB400D0C56D /* EZCaptureCameraController.m */,
 				180302CF199848B000563D03 /* RBVolumeButtons.h */,
@@ -1367,6 +1397,7 @@
 				180E2CDE1990E1A200DE2AFA /* UIImage+Resize.m */,
 				180E2CDF1990E1A200DE2AFA /* SCSlider.h */,
 				180E2CE01990E1A200DE2AFA /* SCSlider.m */,
+				180E2CE61990E40E00DE2AFA /* images */,
 				180E2CD21990E17300DE2AFA /* commons */,
 				180E2CB91990E15000DE2AFA /* utility */,
 			);
@@ -1648,8 +1679,32 @@
 				183BA66719C7CEEF0019173B /* EZPoint.mm */,
 				1890814119C97E460096997E /* EZCanvas2.h */,
 				1890814219C97E460096997E /* EZCanvas2.mm */,
+				181CAF6219D16C6400FD9FC0 /* EZDrawAngle.h */,
+				181CAF6319D16C6400FD9FC0 /* EZDrawAngle.mm */,
+				181CAF6519D2D16500FD9FC0 /* EZPalate.h */,
+				181CAF6619D2D16500FD9FC0 /* EZPalate.mm */,
 			);
 			name = "background util";
+			sourceTree = "<group>";
+		};
+		18BD954B19D404F5001EB28C /* feature_detect */ = {
+			isa = PBXGroup;
+			children = (
+				18BD955C19D4083C001EB28C /* DebugHelpers.hpp */,
+				18BD955619D40552001EB28C /* CameraCalibration.cpp */,
+				18BD955719D40552001EB28C /* CameraCalibration.hpp */,
+				18BD955819D40552001EB28C /* GeometryTypes.cpp */,
+				18BD955919D40552001EB28C /* GeometryTypes.hpp */,
+				18BD954C19D4051F001EB28C /* Pattern.cpp */,
+				18BD954D19D4051F001EB28C /* Pattern.hpp */,
+				18BD954E19D4051F001EB28C /* PatternDetector.cpp */,
+				18BD954F19D4051F001EB28C /* PatternDetector.hpp */,
+				18BD955019D4051F001EB28C /* PyramidPattern.jpg */,
+				18BD955119D4051F001EB28C /* PyramidPatternTest.bmp */,
+				18BD955D19D5207D001EB28C /* EZKeyPoint.cpp */,
+				18BD955E19D5207D001EB28C /* EZKeyPoint.h */,
+			);
+			name = feature_detect;
 			sourceTree = "<group>";
 		};
 		18C0E7691861A07200D694CE /* sound_effects */ = {
@@ -1982,6 +2037,7 @@
 		18E34685183DF54400C9D89D /* 3DCamera */ = {
 			isa = PBXGroup;
 			children = (
+				18BD954B19D404F5001EB28C /* feature_detect */,
 				1896AF6419C18FFA0065F7BD /* background util */,
 				18E3468E183DF54400C9D89D /* EZAppDelegate.h */,
 				18E3468F183DF54400C9D89D /* EZAppDelegate.mm */,
@@ -2573,6 +2629,7 @@
 				18E1AF6519A351D0002F8A37 /* tiange.jpg in Resources */,
 				18DE992419404734008C1B3F /* JSQMessagesTypingIndicatorFooterView.xib in Resources */,
 				1870AF8319829485005A663A /* header_icon_jb_white@2x.png in Resources */,
+				18BD955519D4051F001EB28C /* PyramidPatternTest.bmp in Resources */,
 				1870AF9B19829485005A663A /* icon_tw_white.png in Resources */,
 				1870AF8C19829485005A663A /* header_icon_sj_white.png in Resources */,
 				1870AF8B19829485005A663A /* header_icon_sg_white@2x.png in Resources */,
@@ -2731,6 +2788,7 @@
 				1870AFC119829485005A663A /* header_btn_cancel@2x.png in Resources */,
 				1870AF8119829485005A663A /* header_icon_fw_white@2x.png in Resources */,
 				18E1AF6719A354EC002F8A37 /* wall.jpg in Resources */,
+				18BD955419D4051F001EB28C /* PyramidPattern.jpg in Resources */,
 				1870AFE519829485005A663A /* icon_pw@2x.png in Resources */,
 				1870B00619829485005A663A /* drawer_nav_diary@2x.png in Resources */,
 				1870AFB519829485005A663A /* icon_bb_white@2x.png in Resources */,
@@ -2907,6 +2965,7 @@
 				18E3474B183DFA7300C9D89D /* EZLikeSatus.m in Sources */,
 				1866ADC61898F0DB00DB46E2 /* LFDisplayBridge.m in Sources */,
 				18FE436E19824F1000E975BD /* EZDetailHeader.m in Sources */,
+				18BD955219D4051F001EB28C /* Pattern.cpp in Sources */,
 				1866ADAE18966E7000DB46E2 /* ScaleAnimation.m in Sources */,
 				1896AF6A19C196990065F7BD /* DAScratchPadView.m in Sources */,
 				1870B0231984B847005A663A /* EZRecordTypeDesc.m in Sources */,
@@ -3032,11 +3091,13 @@
 				1820C9CB195ACAE600387052 /* EZContactMain.m in Sources */,
 				1870B01D1984B0A6005A663A /* EZProfile.m in Sources */,
 				1814A39F195AA5FE00FA0D6A /* EZPhotoDetail.m in Sources */,
+				18BD955319D4051F001EB28C /* PatternDetector.cpp in Sources */,
 				180E2CE11990E1A200DE2AFA /* SCNavigationController.m in Sources */,
 				180E2CCC1990E16800DE2AFA /* DCCrossHairView.m in Sources */,
 				1870B02C19860657005A663A /* EZCustomButton.m in Sources */,
 				185CE25F18FFAE760037947A /* EZPageControl.m in Sources */,
 				183BA66219C7C81F0019173B /* EZRoundObject.mm in Sources */,
+				18BD955A19D40552001EB28C /* CameraCalibration.cpp in Sources */,
 				18E34785183DFAA400C9D89D /* EZKeyboadUtility.m in Sources */,
 				18DE991719404734008C1B3F /* JSQMessagesCollectionViewCell.m in Sources */,
 				18E34786183DFAA400C9D89D /* EZUIUtility.m in Sources */,
@@ -3047,18 +3108,21 @@
 				18E746FC18A4BBBC0023967B /* EZFeatherAPIClient.m in Sources */,
 				18826E7219B8284B00DFC5A9 /* EZBackgroundEraser.mm in Sources */,
 				18E34737183DFA5800C9D89D /* EZTransitionLayout.m in Sources */,
+				1890814F19CE9DF50096997E /* EZFrontFrame.m in Sources */,
 				1870B07A19877864005A663A /* EZGraphDetail.m in Sources */,
 				18E34788183DFAA400C9D89D /* EZImageFileCache.m in Sources */,
 				18E746EE18A4A26A0023967B /* AFSecurityPolicy.m in Sources */,
 				1870B0201984B340005A663A /* EZTrackRecord.m in Sources */,
 				18DE992119404734008C1B3F /* JSQMessagesToolbarContentView.m in Sources */,
 				1879BE28190BB8830084FB27 /* EZLimitTextField.m in Sources */,
+				181CAF6419D16C6400FD9FC0 /* EZDrawAngle.mm in Sources */,
 				18DE990E19404734008C1B3F /* JSQMessagesBubbleImageFactory.m in Sources */,
 				18E746EA18A4A26A0023967B /* AFHTTPRequestOperation.m in Sources */,
 				184DBE7718BB476F00239F0F /* EZSimpleClick.m in Sources */,
 				182AC31D194ECBB200055D19 /* EZPasswordFetcher.m in Sources */,
 				18E3470B183DFA1A00C9D89D /* EZTestSuites.m in Sources */,
 				18E1AF7819A47AED002F8A37 /* RACollectionViewTripletLayout.m in Sources */,
+				18BD955F19D5207D001EB28C /* EZKeyPoint.cpp in Sources */,
 				186EC126193869FD0011C145 /* FaceppDetection.m in Sources */,
 				186EC12C193869FD0011C145 /* FaceppRecognition.m in Sources */,
 				18DE991119404734008C1B3F /* JSQSystemSoundPlayer.m in Sources */,
@@ -3069,6 +3133,7 @@
 				18BF13D219A95CB400D0C56D /* EZCaptureCameraController.m in Sources */,
 				180E2CCD1990E16800DE2AFA /* DCFrameView.m in Sources */,
 				186EC124193869FD0011C145 /* FaceppAPI.m in Sources */,
+				18BD955B19D40552001EB28C /* GeometryTypes.cpp in Sources */,
 				18E34778183DFAA400C9D89D /* EZMotionUtility.m in Sources */,
 				18E34787183DFAA400C9D89D /* EZDataUtil.m in Sources */,
 				18E3477F183DFAA400C9D89D /* EZReachability.m in Sources */,
@@ -3080,6 +3145,7 @@
 				1814A39A195A913900FA0D6A /* EZPinchController.m in Sources */,
 				18DE990B19404734008C1B3F /* JSQMessagesViewController.m in Sources */,
 				182167BB19B07030003410B9 /* EZPointEditor.m in Sources */,
+				181CAF6719D2D16500FD9FC0 /* EZPalate.mm in Sources */,
 				181608CC18B4EA9F00DD5995 /* EZRotateAnimation.m in Sources */,
 				18C0E76E1861A0FF00D694CE /* EZSoundEffect.m in Sources */,
 				18E746F218A4A26A0023967B /* AFURLSessionManager.m in Sources */,

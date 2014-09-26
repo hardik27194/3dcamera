@@ -59,6 +59,16 @@
     //EZDEBUG(@"final hashed:%i", hashed);
     //assert( @"xxoo1".hash == hashed);
     //[self testReplaceURLHost];
+    
+    /**
+    int val1 = ~255;
+    int val2 = 2 & ~255;
+    int val3 = 3 & ~255;
+    int final = ~255 & ~255;
+    
+    EZDEBUG(@"val1:%i, val2:%i, val3:%i, final:%i", val1, val2, val3, final);
+    assert(false);
+     **/
 }
 
 + (void) testReplaceURLHost
