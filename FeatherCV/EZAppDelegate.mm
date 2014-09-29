@@ -249,12 +249,17 @@
 - (void) uploadPendingImages:(id)obj
 {
     
+    if(![EZDataUtil getInstance].canUpload){
+        EZDEBUG(@"quit for network not available");
+        return;
+    }
+    
+    [[EZDataUtil getInstance] uploadAllTasks];
+    [[EZDataUtil getInstance] uploadAllPhotos];
+    
     /**
     if(currentLoginID){
-        if(![EZDataUtil getInstance].networkAvailable){
-            EZDEBUG(@"quit for network not available");
-            return;
-        }
+     
         _queryCount ++;
         [[EZDataUtil getInstance] uploadPendingPhoto];
         [[EZDataUtil getInstance] queryPendingPerson];

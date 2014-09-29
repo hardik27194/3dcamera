@@ -17,7 +17,9 @@
 {
     self = [super initWithFrame:frame];
     EZDrawAngle* angle = [EZDrawAngle create:CGRectMake(0, 0, frame.size.width, frame.size.height) total:total occupiedColor:activeColor emptyColor:inactiveColor background:background length:10];
+    angle.shiftAngle = - M_PI_2;
     [self addShapeObject:angle];
+    
     _total = total;
     _occupied = 0;
     _drawAngle = angle;

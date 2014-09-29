@@ -51,15 +51,15 @@
         //shiftedPt = [self shiftPoint:pt1.point shift:self.shift];
         //CGPathAddLineToPoint(path, NULL, shiftedPt.x, shiftedPt.y)
         CGMutablePathRef path = CGPathCreateMutable();
-        CGFloat curAngle = i * 2 * halfAngle - deltaAngle;
+        CGFloat curAngle =_shiftAngle + i * 2 * halfAngle - deltaAngle;
         CGFloat btmY = _center.y - sinf(curAngle) * _radius;
         CGFloat btmX = _center.x - cosf(curAngle) * _radius;
         
-        CGFloat midAngle = i * 2 * halfAngle;
+        CGFloat midAngle = _shiftAngle + i * 2 * halfAngle;
         CGFloat midY = _center.y - sinf(midAngle) * (_radius - _length);
         CGFloat midX = _center.x - cosf(midAngle) * (_radius - _length);
         
-        CGFloat upperAngle = i * 2  * halfAngle + deltaAngle;
+        CGFloat upperAngle = _shiftAngle + i * 2  * halfAngle + deltaAngle;
         CGFloat upperY = _center.y - sinf(upperAngle) * _radius;
         CGFloat upperX = _center.x - cosf(upperAngle) * _radius;
         

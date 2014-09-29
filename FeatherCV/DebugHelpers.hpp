@@ -55,7 +55,7 @@ namespace cv
             cv::Scalar(0,200,0,255), 
             cv::Scalar::all(-1),
             std::vector<char>(), 
-            cv::DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS
+            cv::DrawMatchesFlags::DEFAULT
             );
 
         return outImg;

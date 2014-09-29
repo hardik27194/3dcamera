@@ -41,7 +41,12 @@
     [self.navigationController setNavigationBarHidden:false animated:YES];
 }
 
-- (void) raiseTitleChange
+- (void) raiseNormal
+{
+    [self raiseTitleChange:nil];
+}
+
+- (void) raiseTitleChange:(EZEventBlock)inputSuccess;
 {
     EZDEBUG(@"click get called");
     EZInputItem* item1 = [[EZInputItem alloc] initWithName:@"名称" type:kStringValue defaultValue:_task.name?_task.name:@""];
@@ -52,19 +57,29 @@
         EZDEBUG(@"Changed value:%@", item1.changedValue);
         _task.name = item1.changedValue;
         [_titleChangeBtn setTitle:item1.changedValue forState:UIControlStateNormal];
+        if([_task.name isNotEmpty] && inputSuccess){
+            inputSuccess(nil);
+        }
         
     } deleteBlock:nil];
     
     [input showInView:self.view animated:YES];
-
-    
+    [item1.textField becomeFirstResponder];
 }
 
 - (void) confirmed:(id)obj
 {
     EZDEBUG(@"Drag confirmed");
-    if(_confirmClicked){
-        _confirmClicked(@(YES));
+    if([_task.name isNotEmpty]){
+        if(_confirmClicked){
+            _confirmClicked(@(YES));
+        }
+    }else{
+        [self raiseTitleChange:^(id obj){
+            if(_confirmClicked){
+                _confirmClicked(@(YES));
+            }
+        }];
     }
     //[self.navigationController popViewControllerAnimated:YES];
 }
@@ -85,7 +100,7 @@
 
 - (void) viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
-    [self raiseTitleChange];
+    //[self raiseTitleChange];
 }
 
 - (void)viewDidLoad
@@ -105,7 +120,7 @@
     self.collectionView.backgroundColor = MainBackgroundColor;////[UIColor whiteColor];
     UIButton* btn = [UIButton createButton:CGRectMake(0, 0, 200, 44) font:[UIFont boldSystemFontOfSize:17] color:ClickedColor align:NSTextAlignmentCenter];
     [btn setTitle:@"修改名称" forState:UIControlStateNormal];
-    [btn addTarget:self action:@selector(raiseTitleChange) forControlEvents:UIControlEventTouchUpInside];
+    [btn addTarget:self action:@selector(raiseNormal) forControlEvents:UIControlEventTouchUpInside];
     self.navigationItem.titleView = btn;
     _titleChangeBtn = btn;
     

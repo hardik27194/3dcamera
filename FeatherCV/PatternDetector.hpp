@@ -45,6 +45,8 @@ public:
     void train(const Pattern& pattern);
 
     void train(const std::vector<cv::Mat>& descriptors);
+    
+    bool findNearestMatch(const cv::Point2f& pos, std::vector<cv::DMatch>& matches, std::vector<cv::KeyPoint>& pts1, std::vector<cv::KeyPoint>& pts2);
     /**
     * Initialize Pattern structure from the input image.
     * This function finds the feature points and extract descriptors for them.

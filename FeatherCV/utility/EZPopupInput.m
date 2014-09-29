@@ -116,7 +116,7 @@
        
         textField.returnKeyType = UIReturnKeyDone;
         textField.delegate = item;
-        
+        item.textField = textField;
         CGFloat limit = textField.right - inputName.right - 10;
         item.widthLimit = limit;
         [textField fitContent:NO limit:limit miniLimit:100];
@@ -143,6 +143,7 @@
         CGFloat limit = textField.right - inputName.right - 10;
         item.widthLimit = limit;
         [textField fitContent:NO limit:limit];
+        item.textField = textField;
 
     }
     return inputView;

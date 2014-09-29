@@ -466,8 +466,8 @@
     if([_task.name isNotEmpty]){
         [_titleButton setTitle:_task.name forState:UIControlStateNormal];
     }
-    //self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(deleteTask)];
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"去背景" style:UIBarButtonItemStylePlain target:self action:@selector(eraseBg:)];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(deleteTask)];
+    //self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"去背景" style:UIBarButtonItemStylePlain target:self action:@selector(eraseBg:)];
     // Do any additional setup after loading the view.
 }
 

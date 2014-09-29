@@ -87,6 +87,8 @@ typedef enum {
 
 #define ImagePlaceHolder [EZDataUtil getInstance].placeHolder
 
+#define EZWifiOnlyKey @"EZWifiOnlyKey"
+
 #define EZPhotoUpdated @"EZPhotoUpdated"
 
 #define EZDeletePhotoTask @"EZDeletePhotoTask"

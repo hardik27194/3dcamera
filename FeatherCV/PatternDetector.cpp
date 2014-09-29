@@ -64,6 +64,53 @@ bool PatternDetector::findMatches(const cv::Mat &image,std::vector<cv::KeyPoint>
     return true;
 }
 
+bool findNearestMatch(const cv::Point2f& pos, std::vector<cv::DMatch>& matches, std::vector<cv::KeyPoint>& pts1, std::vector<cv::KeyPoint>& pts2, cv::Point2f& posTarget)
+{
+    if(matches.empty() || matches.size() < 2){
+        return false;
+    }
+    
+    std::vector<EZKeyPoint> res;
+    for(int i = 0; i < matches.size(); ++i)
+    {
+        cv::DMatch mt = matches[i];
+        cv::KeyPoint sp = pts1[mt.trainIdx];
+        cv::KeyPoint dp = pts2[mt.queryIdx];
+        //float dis1 = sp.pt.dot(pos);
+        //EZKeyPoint kp;
+        if(res.size() == 0){
+            EZKeyPoint kp;
+            kp.srcPoint = sp;
+            kp.destPoint = dp;
+            kp.distance = sp.pt.dot(pos);
+            res.push_back(kp);
+        }else{
+            float dist = sp.pt.dot(pos);
+            bool inserted = false;
+            EZKeyPoint kp;
+            kp.srcPoint = sp;
+            kp.destPoint = dp;
+            kp.distance = dist;
+            for(std::vector<EZKeyPoint>::iterator ite = res.begin(); ite != res.end(); ++ite){
+                EZKeyPoint betterPoint = *ite;
+                if(dist < betterPoint.distance){
+                    res.insert(ite, kp);
+                    inserted = true;
+                    break;
+                }
+            }
+            
+            if(res.size() > 2){
+                res.pop_back();
+            }else if(!inserted && res.size() < 2){
+                res.push_back(kp);
+            }
+        }
+    }
+    
+    return true;
+}
+
 bool  PatternDetector::findKeyPoints(const cv::Mat& image, std::vector<cv::KeyPoint>& points, cv::Mat& descriptors)
 {
     

@@ -44,6 +44,9 @@
 #include "EZKeyPoint.h"
 #include <vector>
 #import "EZImageConverter.h"
+#import <opencv2/features2d/features2d.hpp>
+#import <opencv2/opencv.hpp>
+#import "EZPalate.h"
 
 
 #define CELL_ID @"CELL_ID"
@@ -100,10 +103,10 @@
 {
     EZDEBUG(@"button index:%i", buttonIndex);
     //NSInteger shotBase = 12;
-    if(buttonIndex == 4){
+    if(buttonIndex == 5){
         return;
     }
-    NSInteger total = 12 + buttonIndex * 6;
+    NSInteger total = 6 + buttonIndex * 6;
     
     EZCaptureCameraController *cam = [[EZCaptureCameraController alloc] init];
     cam.proposedNumber = total;
@@ -111,20 +114,22 @@
     cam.confirmClicked = ^(EZShotTask* task){
         EZDEBUG(@"Confirmed clicked, will add the progress screen later");
         //[[EZMessageCenter getInstance] postEvent:EZShotPhotos attached:task];
-        task.uploading = true;
+        //task.uploading = true;
         [_uploadedPhotos insertObject:task atIndex:0];
         [_collectionView reloadData];
         __block int count = 0;
-        [[EZDataUtil getInstance] updateTask:task success:^(EZShotTask* tk){
+        [[EZDataUtil getInstance] addUploadTask:task success:^(EZShotTask* tk){
             //task.taskID = taskID;
+            EZDEBUG(@"uploaded task:%@", tk.taskID);
             NSString* taskID = task.taskID;
             for(EZStoredPhoto* sp in task.photos){
                 sp.taskID = taskID;
-                [[EZDataUtil getInstance] uploadStoredPhoto:sp isOriginal:YES success:^(EZStoredPhoto* uploaded){
+                sp.isOriginal = true;
+                [[EZDataUtil getInstance] addUploadPhoto:sp success:^(EZStoredPhoto* uploaded){
                     EZDEBUG(@"successfully updated:%@, remoteURL:%@", sp.photoID, sp.remoteURL);
                     ++count;
                     if(count == task.photos.count){
-                        task.uploading = false;
+                        //task.uploading = false;
                         task.newlyUpload = true;
                         int pos = [_uploadedPhotos indexOfObject:task];
                         [_collectionView reloadItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:pos inSection:0]]];
@@ -133,9 +138,11 @@
             }
         } failure:^(id obj){
             EZDEBUG(@"failed to get taskID:%@", obj);
-            task.uploading = false;
+            //task.uploading = false;
             int pos = [_uploadedPhotos indexOfObject:task];
-            [_collectionView reloadItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:pos inSection:0]]];
+            if(pos >= 0){
+                [_collectionView reloadItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:pos inSection:0]]];
+            }
         }];
     };
     [self.navigationController pushViewController:cam animated:YES];
@@ -149,7 +156,7 @@
 - (void) addClicked:(id)obj
 {
     //[self raiseCamera:nil personID:nil];
-    UIActionSheet* actionSheet = [[UIActionSheet alloc] initWithTitle:@"选择拍摄数量" delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:nil otherButtonTitles:@"12",@"18",@"24",@"32", nil];
+    UIActionSheet* actionSheet = [[UIActionSheet alloc] initWithTitle:@"选择拍摄数量" delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:nil otherButtonTitles:@"6",@"12",@"18",@"24",@"32", nil];
     
     [actionSheet showInView:self.view];
 }
@@ -341,7 +348,7 @@
         [_collectionView reloadData];
     }];
     
-    [self drawCanvas];
+    //[self drawCanvas];
 }
 
 
@@ -349,10 +356,11 @@
 - (void) drawCanvas
 {
     
-     EZCanvas* canvas = [[EZCanvas alloc] initWithFrame:CGRectMake(0, 100, 320, 320)];
-     EZDrawAngle* angle = [EZDrawAngle create:CGRectMake(50, 50, 160, 160) total:12 occupiedColor:[UIColor whiteColor] emptyColor:[UIColor blackColor] background:RGBCOLOR(70, 80, 80)length:10];
-    angle.occupiedCount = 5;
-    [canvas addShapeObject:angle];
+    EZPalate* canvas = [[EZPalate alloc] initWithFrame:CGRectMake(50, 50, 160, 160) activeColor:[UIColor whiteColor] inactiveColor:[UIColor blackColor] background:RGBACOLOR(70, 70, 70, 128) total:12]; //[[EZPalate alloc] initWithFrame:CGRectMake(0, 100, 320, 320)];
+    //EZDrawAngle* angle = [EZDrawAngle create:CGRectMake(50, 50, 160, 160) total:12 occupiedColor:[UIColor whiteColor] emptyColor:[UIColor blackColor] background:RGBCOLOR(70, 80, 80)length:10];
+    canvas.occupied = 10;
+   // angle.occupiedCount = 5;
+    //[canvas addShapeObject:angle];
     [self.view addSubview:canvas];
     [canvas setNeedsDisplay];
     PatternDetector pt;
@@ -379,12 +387,15 @@
     std::vector<cv::DMatch> matches;
     pt.findMatches(patternMat,patternPoints, matches);
     
-    EZDEBUG(@"Final match count:%lu", matches.size());
+    
+    //EZDEBUG(@"Final match count:%lu, finalMat:%@, imageView:%@", matches.size(), NSStringFromCGSize(finalMat.size), NSStringFromCGRect(imageView.frame));
     for(int i = 0; i < 10; i ++){
         cv::Point2f pt = points[matches.at(i).trainIdx].pt;
         cv::Point2f pt2 = patternPoints[matches.at(i).queryIdx].pt;
         EZDEBUG(@"image index:%i, match trained:%i, dest:%i pt:%f, %f, query pt:%f, %f, patternPoints:%lu",matches.at(i).imgIdx, matches.at(i).trainIdx, matches.at(i).queryIdx, pt.x, pt.y, pt2.x, pt2.y, patternPoints.size());
     }
+    
+    
     /**
      
      EZFrontFrame* frontFrame = [[EZFrontFrame alloc] initWithFrame:CGRectMake(0, 44, CurrentScreenWidth, CurrentScreenWidth)];

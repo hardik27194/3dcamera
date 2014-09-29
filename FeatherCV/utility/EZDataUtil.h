@@ -63,6 +63,14 @@ typedef enum {
 
 - (void) uploadStoredPhoto:(EZStoredPhoto*)photo isOriginal:(BOOL)isOriginal success:(EZEventBlock)success failure:(EZEventBlock)failure;
 
+- (void) addUploadTask:(EZShotTask*)task success:(EZEventBlock)success failure:(EZEventBlock)failure;
+
+- (void) uploadAllTasks;
+
+- (void) addUploadPhoto:(EZStoredPhoto*)photo success:(EZEventBlock)success failure:(EZEventBlock)failure;
+
+- (void) uploadAllPhotos;
+
 //Normally just update the sequences
 - (void) updateTaskSequence:(EZShotTask*)task success:(EZEventBlock)success failure:(EZEventBlock)failure;
 
@@ -109,6 +117,9 @@ typedef enum {
 
 - (NSArray*) getPreferredRecords:(EZProfile *)profile;
 
+@property (nonatomic, strong) NSMutableArray* uploadingTasks;
+
+@property (nonatomic, strong) NSMutableArray* uploadingPhotos;
 
 @property (nonatomic, strong) NSMutableDictionary* taskIDToTask;
 
@@ -257,7 +268,7 @@ typedef enum {
 
 @property (nonatomic, strong) NSMutableDictionary* recievedNotify;
 
-@property (nonatomic, assign) int uploadingTasks;
+//@property (nonatomic, assign) int uploadingTasks;
 
 @property (nonatomic, strong) NSMutableDictionary* cachedPointer;
 

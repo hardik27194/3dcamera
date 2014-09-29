@@ -33,6 +33,8 @@
 
 @property (nonatomic, assign) CGFloat widthLimit;
 
+@property (nonatomic, weak) UITextField* textField;
+
 - (void) valueChanged:(id)obj;
 
 - (void) raiseDatePicker:(id)obj;

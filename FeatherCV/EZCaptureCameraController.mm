@@ -18,6 +18,8 @@
 #import "UIButton+AFNetworking.h"
 #import "EZDragPage.h"
 #import "EZFrontFrame.h"
+#import "EZPalate.h"
+#import "EZSignView.h"
 
 //static void * CapturingStillImageContext = &CapturingStillImageContext;
 //static void * RecordingContext = &RecordingContext;
@@ -113,7 +115,7 @@
     //notification
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kNotificationOrientationChange object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orientationDidChange:) name:kNotificationOrientationChange object:nil];
-    _shotPrepareVoice = [[EZSoundEffect alloc] initWithSoundNamed:@"shot_voice.aiff"];
+    _shotPrepareVoice = [[EZSoundEffect alloc] initWithSoundNamed:@"shot_voice2.aiff"];
     //session manager
     SCCaptureSessionManager *manager = [[SCCaptureSessionManager alloc] init];
     
@@ -137,11 +139,10 @@
     self.captureManager = manager;
     [self addTopViewWithText:@""];
     [self addbottomContainerView];
-    [self addCameraMenuView];
     [self addFocusView];
     [self addCameraCover];
     [self addPinchGesture];
-    
+    [self addCameraMenuView];
     [_captureManager.session startRunning];
     
 #if SWITCH_SHOW_DEFAULT_IMAGE_FOR_NONE_CAMERA
@@ -231,7 +232,12 @@
         _shotText.backgroundColor = [UIColor clearColor];
         _shotText.textColor = [UIColor whiteColor];
         _shotText.font = [UIFont systemFontOfSize:22.f];
-        [_topContainerView addSubview:_shotText];
+        //[_topContainerView addSubview:_shotText];
+        
+        
+        _shotStatusSign = [[EZSignView alloc] initWithFrame:CGRectMake(15, 15, topFrame.size.height - 30, topFrame.size.height - 30)];
+        _shotStatusSign.signType = kStopSign;
+        [_topContainerView addSubview:_shotStatusSign];
         
         _toggleMode = [UIButton createButton:CGRectMake(100, 0, CurrentScreenWidth - 200, 44) font:[UIFont boldSystemFontOfSize:17] color:ClickedColor align:NSTextAlignmentCenter];
         [_toggleMode addTarget:self action:@selector(toggleClicked) forControlEvents:UIControlEventTouchUpInside];
@@ -248,16 +254,42 @@
          [_topContainerView addSubview:_confirmButton];
          **/
         [self buildButton:CGRectMake(CurrentScreenWidth - 44, 0, 44, 44)
-             normalImgStr:@"flashing_off.png"
+             normalImgStr:@"share.png"
           highlightImgStr:@""
            selectedImgStr:@""
-                   action:@selector(flashBtnPressed:)
+                   action:@selector(shareClicked:)
                parentView:_topContainerView];
         
         
         self.topLbl = _shotText;
     }
     _topLbl.text = text;
+}
+
+- (void) coverClicked:(id)obj
+{
+    [UIView animateWithDuration:0.4 animations:^(){
+        //EZDEBUG(@"")
+        _dropDown.height = 0;
+        [self.view viewWithTag:1349].alpha = 0.0;
+    } completion:^(BOOL completed){
+        _dropDown.hidden = YES;
+        [[self.view viewWithTag:1349] removeFromSuperview];
+    }];
+
+}
+
+- (void) shareClicked:(id)obj
+{
+    if(_dropDown.hidden){
+        _dropDown.hidden = false;
+        UIView* cover = [self.view createCoverView:1349 color:RGBACOLOR(70, 70, 70, 128) below:_dropDown tappedTarget:self action:@selector(coverClicked:)];
+        [UIView animateWithDuration:0.4 animations:^(){
+            _dropDown.height = 44 * 4;
+        }];
+    }else{
+        [self coverClicked:nil];
+    }
 }
 
 - (void) toggleClicked
@@ -270,8 +302,10 @@
     _isManual = isManual;
     if(_isManual){
         [_toggleMode setTitle:@"手动" forState:UIControlStateNormal];
+        _shotStatusSign.hidden = YES;
     }else{
         [_toggleMode setTitle:@"自动" forState:UIControlStateNormal];
+        _shotStatusSign.hidden = NO;
     }
 }
 
@@ -317,6 +351,13 @@
     }
    }
 
+- (void) updateShotText
+{
+    _shotText.text = [NSString stringWithFormat:@"%i/%i", _currentCount, _proposedNumber];
+    //_shotLabel.text = int2str(_proposedNumber - _currentCount);
+    _shotPalate.occupied = _currentCount;
+}
+
 - (void) deletePos:(NSInteger)pos
 {
     if(_shotType == kShotToReplace){
@@ -325,7 +366,7 @@
         
     }else{
         --_currentCount;
-        _shotText.text = int2str(_currentCount);
+        [self updateShotText];
         [_shotTask.photos removeObjectAtIndex:pos];
         if(_shotTask.photos.count){
             EZStoredPhoto* photo = [_shotTask.photos objectAtIndex:_shotTask.photos.count - 1];
@@ -371,9 +412,17 @@
                   selectedImgStr:@""
                           action:@selector(takePictureBtnPressed:)
                       parentView:_bottomContainerView];
+    
+    _shotPalate = [[EZPalate alloc] initWithFrame:_shotBtn.bounds activeColor:[UIColor whiteColor] inactiveColor:[UIColor blackColor] background:[UIColor clearColor] total:_proposedNumber];
+    [_shotBtn addSubview:_shotPalate];
+    _shotPalate.userInteractionEnabled = false;
+    _shotLabel = [UILabel createLabel:_shotBtn.bounds font:[UIFont boldSystemFontOfSize:28] color:[UIColor whiteColor]];
+    _shotLabel.textAlignment = NSTextAlignmentCenter;
+    [_shotBtn addSubview:_shotLabel];
+    
     CGFloat pos = (_bottomContainerView.frame.size.height - 45)/2.0;
     pos = isLongScreenSize?pos:pos - 20;
-    _shotImages = [UIButton createButton:CGRectMake(20, pos, 45, 45) font:[UIFont systemFontOfSize:10] color:[UIColor whiteColor] align:NSTextAlignmentCenter];//[[UIImageView alloc] initWithFrame:CGRectMake(20, _bottomContainerView.frame.size.height - downH - cameraBtnLength, 45 , 45)];
+    _shotImages = [UIButton createButton:CGRectMake(20, pos, 60, 60) font:[UIFont systemFontOfSize:10] color:[UIColor whiteColor] align:NSTextAlignmentCenter];//[[UIImageView alloc] initWithFrame:CGRectMake(20, _bottomContainerView.frame.size.height - downH - cameraBtnLength, 45 , 45)];
     _shotImages.layer.cornerRadius = 5;
     _shotImages.clipsToBounds = TRUE;
     _shotImages.backgroundColor = [UIColor clearColor];
@@ -393,6 +442,41 @@
     [self.view addSubview:menuView];
     self.cameraMenuView = menuView;
     [self addMenuViewButtons];
+    
+    _dropDown = [[UIView alloc] initWithFrame:CGRectMake(CurrentScreenWidth - 44, 44, 44, 44*4)];
+    _dropDown.backgroundColor = [UIColor clearColor];//RGBCOLOR(100, 100, 100);
+    //_dro
+    _dropDown.hidden = YES;
+    _dropDown.clipsToBounds = true;
+    [self.view addSubview:_dropDown];
+    [self createDropDownButtons];
+}
+
+- (void) createDropDownButtons
+{
+    NSMutableArray *normalArr = [[NSMutableArray alloc] initWithObjects:@"flashing_off.png", @"camera_line.png", @"switch_camera.png", nil];
+    NSMutableArray *highlightArr = [[NSMutableArray alloc] initWithObjects:@"", @"", @"", nil];
+    NSMutableArray *selectedArr = [[NSMutableArray alloc] initWithObjects:@"", @"camera_line_h.png", @"switch_camera_h.png", @"", nil];
+    
+    //NSMutableArray *actionArr = [[NSMutableArray alloc] initWithObjects:@"dismissBtnPressed:", @"gridBtnPressed:", @"switchCameraBtnPressed:", @"savePressed:", nil];
+    
+    NSMutableArray *actionArr = [[NSMutableArray alloc] initWithObjects:@"flashBtnPressed:", @"gridBtnPressed:", @"switchCameraBtnPressed:", nil];
+
+    for (int i = 0; i < actionArr.count; i++) {
+
+        if([[actionArr objectAtIndex:i] isNotEmpty]){
+            UIButton * btn = [self buildButton:CGRectMake(0, 44 * i, 44, 44)
+                                  normalImgStr:[normalArr objectAtIndex:i]
+                               highlightImgStr:[highlightArr objectAtIndex:i]
+                                selectedImgStr:[selectedArr objectAtIndex:i]
+                                        action:NSSelectorFromString([actionArr objectAtIndex:i])
+                                    parentView:_dropDown];
+            
+            btn.showsTouchWhenHighlighted = YES;
+            //[_cameraBtnSet addObject:btn];
+        }
+    }
+
 }
 
 - (void) changeDelay
@@ -409,7 +493,9 @@
     NSMutableArray *highlightArr = [[NSMutableArray alloc] initWithObjects:@"", @"", @"", @"", nil];
     NSMutableArray *selectedArr = [[NSMutableArray alloc] initWithObjects:@"", @"camera_line_h.png", @"switch_camera_h.png", @"", nil];
     
-    NSMutableArray *actionArr = [[NSMutableArray alloc] initWithObjects:@"dismissBtnPressed:", @"gridBtnPressed:", @"switchCameraBtnPressed:", @"savePressed:", nil];
+    //NSMutableArray *actionArr = [[NSMutableArray alloc] initWithObjects:@"dismissBtnPressed:", @"gridBtnPressed:", @"switchCameraBtnPressed:", @"savePressed:", nil];
+    
+    NSMutableArray *actionArr = [[NSMutableArray alloc] initWithObjects:@"dismissBtnPressed:", @"", @"", @"savePressed:", nil];
     
     //@"flashBtnPressed:"
     CGFloat eachW = SC_APP_SIZE.width / actionArr.count;
@@ -424,7 +510,7 @@
         
         CGFloat theH = (!isHigherThaniPhone4_SC && i == 0 ? _bottomContainerView.frame.size.height : CAMERA_MENU_VIEW_HEIGH);
         UIView *parent = (!isHigherThaniPhone4_SC && i == 0 ? _bottomContainerView : _cameraMenuView);
-        
+        if([[actionArr objectAtIndex:i] isNotEmpty]){
         UIButton * btn = [self buildButton:CGRectMake(eachW * i, 0, eachW, theH)
                               normalImgStr:[normalArr objectAtIndex:i]
                            highlightImgStr:[highlightArr objectAtIndex:i]
@@ -435,6 +521,7 @@
         btn.showsTouchWhenHighlighted = YES;
         
         [_cameraBtnSet addObject:btn];
+        }
     }
 }
 
@@ -500,6 +587,12 @@
     _frontFrame = [[EZFrontFrame alloc] initWithFrame:CGRectMake(0, 0, CurrentScreenWidth, CurrentScreenWidth)];
     [self.view addSubview:_frontFrame];
     _frontFrame.hidden = YES;
+    
+}
+
+- (void) createShotStatusSign
+{
+    // [[EZCanvas alloc] initWithFrame:CGRectMake(10, 10, 30, 30)];
     
 }
 
@@ -689,6 +782,15 @@ void c_slideAlpha() {
     if(_shotStatus == kShotting){
         return;
     }
+    
+    EZDEBUG(@"proposed:%f, %i, status:%i", _proposedNumber, _currentCount, _shotStatus);
+    if(_proposedNumber == _currentCount && !_isManual && _shotType != kShotToReplace){
+        _shotStatus = kShotInit;
+        ++_proposedNumber;
+        [self setIsPaused:NO];
+        EZDEBUG(@"setPause to false:%i",_isPaused);
+    }
+    
     [self innerShot:sender];
     //_areCapturing = true;
     //[_shotPrepareVoice play];
@@ -703,10 +805,15 @@ void c_slideAlpha() {
     _isPaused = pause;
     //[_cameraBtnSet]
     //if(_shotStatus == kShotting){
+    _shotStatusSign.hidden = NO;
     if(_isPaused){
         [_shotBtn setImage:[UIImage  imageNamed:@"shot_s"] forState:UIControlStateNormal];
+        _shotLabel.hidden = YES;
+        _shotStatusSign.signType = kPauseSign;
     }else{
-        [_shotBtn setImage:[UIImage  imageNamed:@"shot_pause_s"] forState:UIControlStateNormal];
+        //[_shotBtn setImage:[UIImage  imageNamed:@"shot_pause_s"] forState:UIControlStateNormal];
+        _shotLabel.hidden = NO;
+        _shotStatusSign.signType = kPlaySign;
     }
     //}else{
     //    _isPaused = false;
@@ -756,6 +863,7 @@ void c_slideAlpha() {
                 //_currentCount++;
                 _shotStatus = kShotDone;
                 [_shotBtn setImage:[UIImage imageNamed:@"shot_s"] forState:UIControlStateNormal];
+                _shotLabel.hidden = YES;
                 return;
             }
             
@@ -765,8 +873,12 @@ void c_slideAlpha() {
                 _shotStatus = kShotDone;
                 //_areCapturing = false;
                 [_shotBtn setImage:[UIImage imageNamed:@"shot_s"] forState:UIControlStateNormal];
+                _shotLabel.hidden = YES;
+                _shotStatusSign.hidden = YES;
                 //EZDEBUG(@"complete shot");
-                _currentCount = 0;
+                if(!_isManual){
+                    //_currentCount = 0;
+                }
             }
             });
         });
@@ -776,7 +888,8 @@ void c_slideAlpha() {
         actiView = nil;
         [_shotImages setImage:[stillImage resizedImageByHeight:80] forState:UIControlStateNormal];
         ++_currentCount;
-        _shotText.text = int2str(_currentCount);
+        //_shotText.text = int2str(_currentCount);
+        [self updateShotText];
         double delayInSeconds = 2.f;
         dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
         dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
@@ -790,10 +903,12 @@ void c_slideAlpha() {
 //Show the count down message
 - (void) showCountDown
 {
-    _currentCountDown = 0;
-    _countDownTitle.hidden = NO;
+    //_currentCountDown = 0;
+    //_countDownTitle.hidden = NO;
     //_countDownTitle.text = int2str(_currentCount);
-    [self countDownInner];
+    //[self countDownInner];
+    _shotLabel.hidden = NO;
+    _shotLabel.text = int2str(_totalCountDown - _currentCountDown);
 }
 
 - (void) countDownInner
@@ -829,12 +944,19 @@ void c_slideAlpha() {
         return;
     }
     _shotStatus = kShotting;
-    [_shotPrepareVoice play];
+   
     //[self showCountDown];
-    dispatch_later(_totalCountDown, ^(){
+    [self showCountDown];
+    if(_currentCountDown>=_totalCountDown){
+        _currentCountDown = 0;
         [self realShot:sender];
-    });
-    
+    }else{
+        [_shotPrepareVoice play];
+        dispatch_later(1.0, ^(){
+            [self innerShot:nil];
+        });
+    }
+    ++_currentCountDown;
 }
 
 - (void)tmpBtnPressed:(id)sender {

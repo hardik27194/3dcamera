@@ -11,6 +11,15 @@
 
 @interface EZStoredPhoto : NSObject
 
+//This is upload status, used to indicate if this image is used to replace the original or not.
+@property (nonatomic, assign) BOOL isOriginal;
+
+@property (nonatomic, assign) EZUploadStatus uploadStatus;
+
+@property (nonatomic, strong) EZEventBlock successBlock;
+
+@property (nonatomic, strong) EZEventBlock failBlock;
+
 @property (nonatomic, strong) NSString* localFileURL;
 
 //You can put it into status
@@ -28,8 +37,6 @@
 @property (nonatomic, strong) NSString* photoID;
 
 @property (nonatomic, strong) NSDate* createdTime;
-
-@property (nonatomic, assign) EZUploadStatus uploadStatus;
 
 @property (nonatomic, strong) NSMutableArray* infos;
 

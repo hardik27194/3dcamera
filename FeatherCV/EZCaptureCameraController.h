@@ -10,7 +10,7 @@
 #import "SCCaptureSessionManager.h"
 #import "EZShotTask.h"
 #import "EZStoredPhoto.h"
-
+//#import "EZSignView.h"
 
 typedef enum {
     kShotMultiple,
@@ -33,6 +33,8 @@ typedef enum {
 @class RBVolumeButtons;
 @class EZSoundEffect;
 @class EZFrontFrame;
+@class EZPalate;
+@class EZSignView;
 @interface EZCaptureCameraController : UIViewController<UIActionSheetDelegate>
 @property (nonatomic, assign) CGRect previewRect;
 @property (nonatomic, assign) BOOL isStatusBarHiddenBeforeShowCamera;
@@ -41,9 +43,14 @@ typedef enum {
 @property (nonatomic, assign) NSInteger proposedNumber;
 @property (nonatomic, assign) NSInteger currentCount;
 @property (nonatomic, strong) UIButton* shotImages;
+@property (nonatomic, strong) EZSignView* shotStatusSign;
+
+@property (nonatomic, strong) UIView* dropDown;
 
 @property (nonatomic, strong) EZFrontFrame* frontFrame;
 @property (nonatomic, strong) UIButton* shotBtn;
+@property (nonatomic, strong) EZPalate* shotPalate;
+@property (nonatomic, strong) UILabel* shotLabel;
 @property (nonatomic, assign) BOOL areCapturing;
 @property (nonatomic, assign) BOOL isPaused;
 @property (nonatomic, assign) BOOL isManual;

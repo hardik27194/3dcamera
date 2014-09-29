@@ -10,6 +10,8 @@
 
 @interface EZDrawAngle : EZDrawable
 
+@property (nonatomic, assign) CGFloat shiftAngle;
+
 @property (nonatomic, assign) CGFloat totalAngle;
 
 @property (nonatomic, assign) CGPoint center;

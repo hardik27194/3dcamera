@@ -240,6 +240,8 @@ typedef void  (^ IterateOperation)(id obj);
 
 - (UIView*) createCoverView:(NSInteger)tag;
 
+- (UIView*) createCoverView:(NSInteger)tag color:(UIColor*)color below:(UIView*)view tappedTarget:(id)target action:(SEL)action;
+
 - (void) addGradient:(NSArray*)colors points:(NSArray*)points corner:(CGFloat)corner;
 
 - (void) addGradient:(NSArray*)colors points:(NSArray*)points;

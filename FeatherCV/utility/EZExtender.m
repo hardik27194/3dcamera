@@ -1100,13 +1100,25 @@ NSString* doubleString(NSString* str)
 
 - (UIView*) createCoverView:(NSInteger)tag
 {
-    UIView* coverView = [[UIView alloc] initWithFrame:self.frame];
+    UIView* coverView = [[UIView alloc] initWithFrame:self.bounds];
     coverView.userInteractionEnabled = false;
     coverView.tag = tag;
     [self addSubview:coverView];
     return coverView;
 }
 
+- (UIView*) createCoverView:(NSInteger)tag color:(UIColor*)color below:(UIView*)view tappedTarget:(id)target action:(SEL)action
+{
+    UIView* coverView = [[UIView alloc] initWithFrame:self.bounds];
+    coverView.tag = tag;
+    //coverView.userInteractionEnabled = false;
+    UITapGestureRecognizer* tap = [[UITapGestureRecognizer alloc] initWithTarget:target action:action];
+    [coverView addGestureRecognizer:tap];
+    coverView.tag = tag;
+    [self insertSubview:coverView belowSubview:view];
+    coverView.backgroundColor = color;
+    return coverView;
+}
 
 
 @end

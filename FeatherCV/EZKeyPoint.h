@@ -16,10 +16,13 @@
  */
 struct EZKeyPoint
 {
-    cv::Point2f              position;
-    cv::KeyPoint keyPoint;
-    cv::Mat                   descriptors;
-    
+    //cv::Point2f              position;
+    cv::KeyPoint srcPoint;
+    cv::KeyPoint destPoint;
+    //cv::Mat                   descriptors;
+    float distance;
+    //cv::Point2f adjustedOrg;
+    //cv::Point2f adjustedDest;
 };
 
 #endif /* defined(___DCamera__EZKeyPoint__) */

@@ -11,6 +11,12 @@
 @class LocalTasks;
 @interface EZShotTask : NSObject
 
+@property (nonatomic, assign) EZUploadStatus uploadStatus;
+
+@property (nonatomic, strong) EZEventBlock successBlock;
+
+@property (nonatomic, strong) EZEventBlock failBlock;
+
 @property (nonatomic, strong) NSMutableArray* photos;
 
 //When those photo get shot.
@@ -30,6 +36,10 @@
 @property (nonatomic, assign) BOOL uploading;
 
 @property (nonatomic, assign) BOOL newlyUpload;
+
+//If it is true mean I want to upload the task too.
+//Otherwise mean upload photo.
+@property (nonatomic, assign) BOOL uploadTask;
 
 - (void) populateTask:(NSDictionary*) dict;
 
