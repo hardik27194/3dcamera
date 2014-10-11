@@ -15,7 +15,7 @@
 #import "EZConversation.h"
 #import "LFGlassView.h"
 #import "EZTrackRecord.h"
-
+#import "UMSocial.h"
 
 typedef enum {
     kMotherStatus,
@@ -36,7 +36,7 @@ typedef enum {
 
 @end
 
-@interface EZDataUtil : NSObject
+@interface EZDataUtil : NSObject<UMSocialUIDelegate>
 
 + (EZDataUtil*) getInstance;
 
@@ -50,6 +50,9 @@ typedef enum {
 
 - (void) queryTaskByPersonID:(NSString*)pid success:(EZEventBlock)success failed:(EZEventBlock)failure;
 
+- (void) setSocialShareURL:(NSString*)url;
+
+- (void) shareContent:(NSString*)text image:(UIImage*)image url:(NSString*)url controller:(UIViewController*)controller;
 
 - (NSArray*) loadLocalTasks:(NSString*)personID;
 
@@ -212,6 +215,10 @@ typedef enum {
 @property (nonatomic, strong) NSString* currentPersonID;
 
 @property (nonatomic, strong) NSDateFormatter* inputDateFormatter;
+
+@property (nonatomic, strong) NSDateFormatter* generalDateTimeFormatter;
+
+@property (nonatomic, strong) NSDateFormatter* birthDateFormatter;
 
 @property (nonatomic, strong) NSDateFormatter* isoFormatter;
 

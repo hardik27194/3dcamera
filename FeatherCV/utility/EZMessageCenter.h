@@ -20,9 +20,14 @@
 
 + (EZMessageCenter*) getInstance;
 
+- (void) registerEvent:(NSString*)eventName block:(EZEventBlock)block isWeak:(BOOL)isWeak;
+
 - (void) registerEvent:(NSString*)eventName block:(EZEventBlock)block;
 
 - (void) registerEvent:(NSString*)eventName block:(EZEventBlock)block withKey:(NSString*)key;
+
+- (void) registerEvent:(NSString *)eventName block:(EZEventBlock)block once:(BOOL)once isWeak:(BOOL)isWeak;
+
 
 //If as pending event for me
 //Only for event that nobody recieved yets

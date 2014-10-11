@@ -21,7 +21,52 @@
 #import "EZStoredPhoto.h"
 
 
+@interface EZHolder : NSObject
+
+@property (nonatomic, strong) NSMapTable* mapTable;
+@property (nonatomic, strong) NSMapTable* mapTable2;
+@property (nonatomic, strong) NSMutableDictionary* mapTable3;
+
+SINGLETON_FOR_HEADER(EZHolder);
+
+@end
+
+@implementation EZHolder
+
+- (id) init
+{
+    self = [super init];
+    _mapTable = [NSMapTable strongToWeakObjectsMapTable];
+    _mapTable2 = [NSMapTable weakToStrongObjectsMapTable];
+    _mapTable3 = [[NSMutableDictionary alloc] init];
+    return self;
+}
+
+SINGLETON_FOR_CLASS(EZHolder);
+
+@end
+
+
+@interface WeakHolder : NSObject
+
+@property (nonatomic, weak) id obj;
+
+- (id) init:(id)obj;
+@end
+
+@implementation WeakHolder
+
+- (id) init:(id)obj
+{
+    self = [super init];
+    _obj = obj;
+    return self;
+}
+
+@end
+
 @interface ReleasedObj : NSObject
+
 
 @property (nonatomic, strong) NSString* name;
 
@@ -31,10 +76,15 @@
 
 - (void) dealloc
 {
-    EZDEBUG(@"Dealloced %@", _name);
+    EZDEBUG(@"Dealloced release:%@", _name);
+    if([@"re1" isEqualToString:_name]){
+        EZDEBUG(@"re1's map value is:%@",[EZHolder.sharedEZHolder.mapTable objectForKey:@"re1"]);
+    }
 }
 
 @end
+
+
 
 @implementation EZTestSuites
 
@@ -69,6 +119,37 @@
     EZDEBUG(@"val1:%i, val2:%i, val3:%i, final:%i", val1, val2, val3, final);
     assert(false);
      **/
+    [self testWeakMaps];
+    
+    EZDEBUG(@"re1:%@, re2:%@", [[EZHolder sharedEZHolder].mapTable objectForKey:@"re1"],[[EZHolder sharedEZHolder].mapTable objectForKey:@"re2"]);
+    //assert(false);
+}
+
+
++ (void) testWeakMaps
+{
+    EZHolder* holder = [EZHolder sharedEZHolder];
+    ReleasedObj* re1 = [[ReleasedObj alloc] init];
+    ReleasedObj* re2 = [[ReleasedObj alloc] init];
+    ReleasedObj* re3 = [[ReleasedObj alloc] init];
+    ReleasedObj* re4 = [[ReleasedObj alloc] init];
+    re1.name = @"re1";
+    re2.name = @"re2";
+    re3.name = @"re3";
+    re4.name = @"re4";
+    [holder.mapTable setObject:re1 forKey:@"re1"];
+    [holder.mapTable2 setObject:re2 forKey:@"re2"];
+    [holder.mapTable3 setObject:[[WeakHolder alloc] init:re4] forKey:@"re4"];
+    
+    EZDEBUG("value is:%@", [holder.mapTable objectForKey:@"re1"]);
+    EZDEBUG(@"value2 is:%@", [holder.mapTable2 objectForKey:@"re2"]);
+    re1=nil;
+    re2=nil;
+    re3=nil;
+    re4=nil;
+    EZDEBUG("value is:%@", [holder.mapTable objectForKey:@"re1"]);
+    EZDEBUG(@"value2 is:%@", [holder.mapTable objectForKey:@"re2"]);
+    //assert(false);
 }
 
 + (void) testReplaceURLHost

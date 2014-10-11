@@ -17,6 +17,9 @@
 
 @property (nonatomic, strong) EZShotTask* task;
 
+@property (nonatomic, strong) UILabel* switchTitle;
+
+@property (nonatomic, strong) UISwitch* switchBtn;
 
 - (id) initWithTask:(EZShotTask*)task;
 

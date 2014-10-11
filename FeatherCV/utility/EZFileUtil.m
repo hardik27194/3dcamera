@@ -286,6 +286,8 @@
 
 + (void) removeFile:(NSString*)file dirType:(NSSearchPathDirectory)type
 {
+    
+    EZDEBUG(@"deleteFile get called %@ :%@",file, [NSThread callStackSymbols]);
     NSFileManager* fileManager = [NSFileManager defaultManager];
     
     NSArray *paths = NSSearchPathForDirectoriesInDomains(type, NSUserDomainMask, YES);
@@ -308,6 +310,14 @@
     NSString* fileName = [EZFileUtil getTempFileName:int2str(count++) postFix:@"jpg"];
     return [self saveToDocument:image.toJpegData filename:fileName];
 }
+
++ (NSString*) saveFullImage:(UIImage*)image
+{
+    static int count = 0;
+    NSString* fileName = [NSString stringWithFormat:@"%@-%i.jpg", [[NSDate date] stringWithFormat:@"MMddHHmmss"], count++];
+    return [self saveToDocument:[image toJpegData:1.0] filename:fileName];
+}
+
 
 + (NSString*) saveToDocument:(NSData*)data filename:(NSString*)filename
 {
@@ -343,6 +353,7 @@
 
 + (void) deleteFile:(NSString*)fileName
 {
+    EZDEBUG(@"deleteFile get called:%@", [NSThread callStackSymbols]);
     NSError* err = nil;
     [[NSFileManager defaultManager] removeItemAtPath:fileName error:&err];
     if(err){
@@ -420,7 +431,7 @@
 
 + (NSString*) getTempFileName:(NSString*)padding  postFix:(NSString*)postFix
 {
-    return [NSString stringWithFormat:@"%@%@.%@",padding, [[NSDate date] stringWithFormat:@"yyyyMMddHHmmss"],postFix];
+    return [NSString stringWithFormat:@"%@%@.%@",padding, [[NSDate date] stringWithFormat:@"MMddHHmmss"],postFix];
 }
 
 //Turn bundle to abosolute URL

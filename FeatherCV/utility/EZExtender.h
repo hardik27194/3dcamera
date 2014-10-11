@@ -273,6 +273,9 @@ typedef void  (^ IterateOperation)(id obj);
 
 + (UIButton*) createButton:(CGRect)frame image:(UIImage*)image imageInset:(UIEdgeInsets)inset title:(NSString*)title font:(UIFont*)font color:(UIColor*)color align:(NSTextAlignment)align textFrame:(CGRect)textFrame;
 
+
++ (UIButton*) createButton:(CGRect)frame image:(UIImage*)image imageRect:(CGRect)rect title:(NSString*)title font:(UIFont*)font color:(UIColor*)color align:(NSTextAlignment)align textFrame:(CGRect)textFrame;
+
 - (void) addBlockWrapper:(EZBlockWrapper*)bw;
 
 @end
@@ -280,6 +283,8 @@ typedef void  (^ IterateOperation)(id obj);
 @interface UITextField(EZPrivate)
 
 - (void) enableTextWrap;
+
+- (void) fitContent:(BOOL)left;
 
 - (void) fitContent:(BOOL)left limit:(CGFloat)limit;
 

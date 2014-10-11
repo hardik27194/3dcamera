@@ -8,9 +8,10 @@
 
 #import <UIKit/UIKit.h>
 //#import "DLCImagePickerController.h"
+#import "UMSocialSnsService.h"
 
 @class EZScrollerView;
-@interface EZMainPage : UIViewController<UICollectionViewDataSource, UICollectionViewDelegate, UIActionSheetDelegate>//UICollectionViewController
+@interface EZMainPage : UIViewController<UICollectionViewDataSource, UICollectionViewDelegate, UIActionSheetDelegate, UMSocialUIDelegate>//UICollectionViewController
 
 - (EZMainPage*) initPage:(NSArray*)arr;
 

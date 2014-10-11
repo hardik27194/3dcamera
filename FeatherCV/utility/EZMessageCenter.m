@@ -13,6 +13,10 @@
 
 @property (nonatomic, strong) id block;
 
+@property (nonatomic, strong) id strongBlock;
+
+@property (nonatomic, weak) id weakBlock;
+
 @property (nonatomic, assign) BOOL isOnce;
 
 //Whether this block is a retry block.
@@ -20,7 +24,11 @@
 
 @property (nonatomic, strong) id retryBlock;
 
+@property (nonatomic, assign) BOOL isWeak;
+
 + (EZBlockHolder*) hold:(id)block once:(BOOL)once;
+
++ (EZBlockHolder*) hold:(id)block once:(BOOL)once isWeak:(BOOL)isWeak;
 
 @end
 
@@ -28,10 +36,34 @@
 
 + (EZBlockHolder*) hold:(id)block once:(BOOL)once
 {
+    return [self hold:block once:once isWeak:NO];
+}
+
++ (EZBlockHolder*) hold:(id)block once:(BOOL)once isWeak:(BOOL)isWeak
+{
     EZBlockHolder* res = [[EZBlockHolder alloc] init];
+    res.isWeak = isWeak;
     res.block = block;
     res.isOnce = once;
     return res;
+}
+
+- (void) setBlock:(id)block
+{
+    if(_isWeak){
+        _weakBlock = block;
+    }else{
+        _strongBlock = block;
+    }
+}
+
+- (id) getBlock
+{
+    EZDEBUG(@"get block called");
+    if(_isWeak){
+        return _weakBlock;
+    }
+    return _strongBlock;
 }
 
 @end
@@ -104,6 +136,12 @@ EZMessageCenter* instance = nil;
     }
 }
 
+- (void) registerEvent:(NSString*)eventName block:(EZEventBlock)block isWeak:(BOOL)isWeak
+{
+    [self registerEvent:eventName block:block once:false isWeak:isWeak];
+    //[_registeredEvent setValue:block forKey:eventName];
+}
+
 
 
 - (void) registerEvent:(NSString*)eventName block:(EZEventBlock)block
@@ -114,12 +152,17 @@ EZMessageCenter* instance = nil;
 
 - (void) registerEvent:(NSString *)eventName block:(EZEventBlock)block once:(BOOL)once
 {
+    [self registerEvent:eventName block:block once:once isWeak:false];
+}
+
+- (void) registerEvent:(NSString *)eventName block:(EZEventBlock)block once:(BOOL)once isWeak:(BOOL)isWeak;
+{
     NSMutableArray* listeners = [_registeredEvent objectForKey:eventName];
     if(listeners == nil){
         listeners = [[NSMutableArray alloc] init];
         [_registeredEvent setValue:listeners forKey:eventName];
     }
-    [listeners addObject:[EZBlockHolder hold:block once:once]];
+    [listeners addObject:[EZBlockHolder hold:block once:once isWeak:isWeak]];
 }
 
 
@@ -152,8 +195,8 @@ EZMessageCenter* instance = nil;
     //[blocks removeObject:object];
     for(int i = 0; i < blocks.count; i++){
         EZBlockHolder* bh = [blocks objectAtIndex:i];
-        EZDEBUG(@"block pointer:%i", (int)bh.block);
-        if((int)bh.block == (int)object){
+        EZDEBUG(@"block pointer:%i, isWeak:%i, %i", (int)bh.block, bh.isWeak, (int)bh.strongBlock);
+        if((int)bh.getBlock == (int)object){
             [blocks removeObjectAtIndex:i];
             break;
         }
@@ -192,21 +235,24 @@ EZMessageCenter* instance = nil;
         EZOperationBlock action = ^()
         {
             if(blockHolder.isRetry){
-                EZRetryBlock reBlock = (EZRetryBlock)blockHolder.block;
+                EZRetryBlock reBlock = (EZRetryBlock)blockHolder.getBlock;
                 reBlock(object, blockHolder.retryBlock);
             }else{
-                EZEventBlock eb = (EZEventBlock)blockHolder.block;
+                EZEventBlock eb = (EZEventBlock)blockHolder.getBlock;
                 eb(object);
             }
             
         };
         
-        if(blockHolder.block){
+        if(blockHolder.getBlock){
             if(!direct){
                 dispatch_async(dispatch_get_main_queue(),action);
             }else{
                 action();
             }
+        }else{
+            EZDEBUG(@"remove weak block");
+            [blocks removeObject:blockHolder];
         }
     }
 

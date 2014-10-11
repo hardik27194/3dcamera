@@ -15,23 +15,42 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
+        _container = [[UIView alloc] initWithFrame:CGRectMake(5, 5, frame.size.width - 10, frame.size.height - 10)];
         // Initialization code
         //_starButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 44, 44)];
         //_starButton.showsTouchWhenHighlighted = YES;
-        _photo = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.width)];
+        //_container.layer.cornerRadius = 8;
+        //_container.clipsToBounds = true;
+        _container.backgroundColor = [EZColorScheme sharedEZColorScheme].generalBackgroundColor;
+        //[_container enableShadow:RGBCOLOR(0, 0, 0)];
+        
+        
+        
+        [self.contentView addSubview:_container];
+        _photo = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, _container.width, _container.width)];
         _photo.contentMode = UIViewContentModeScaleAspectFit;
+        _clippingView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, _container.width, _container.width + 8)];
+        _clippingView.backgroundColor = [UIColor clearColor];
+        [_container addSubview:_photo];
+        _photo.layer.cornerRadius = 5;
+        _photo.clipsToBounds = true;
+        //[_container addSubview:_clippingView];
+        //[_clippingView addSubview:_photo];
+        //_clippingView.layer.cornerRadius = 8;
+        //_clippingView.clipsToBounds = true;
+        
         //[_starImg setPosition:CGPointMake(3, 4)];
         //[_starButton addSubview:starImg];
         //_starImg.tag = 1677;
         //[_starButton addTarget:self action:@selector(starClicked:) forControlEvents:UIControlEventTouchUpInside];
-        UIView* grayCover = [[UIView alloc] initWithFrame:_photo.frame];
-        grayCover.backgroundColor = RGBA(0, 0, 0, 90);
-        self.contentView.backgroundColor = CellBackgroundColor;
+        //UIView* grayCover = [[UIView alloc] initWithFrame:_photo.frame];
+        //grayCover.backgroundColor = RGBA(0, 0, 0, 90);
+        //self.contentView.backgroundColor = MainBackgroundColor;
         
-        _name = [UILabel createLabel:CGRectMake(5, 5, frame.size.width - 10, 16) font:[UIFont boldSystemFontOfSize:16] color:RGBCOLOR(230, 230, 230)];
+        _name = [UILabel createLabel:CGRectMake(5, _photo.height + 5, frame.size.width - 10, 16) font:[UIFont boldSystemFontOfSize:14] color:[EZColorScheme sharedEZColorScheme].mainCellNameColor];
         _name.textAlignment = NSTextAlignmentLeft;
         
-        _photoCount = [UILabel createLabel:CGRectMake(5, 25, frame.size.width - 10, 14) font:[UIFont systemFontOfSize:12] color:RGBCOLOR(210, 210, 210)];
+        _photoCount = [UILabel createLabel:CGRectMake(5, _name.bottom + 4, frame.size.width - 10, 14) font:[UIFont systemFontOfSize:12] color:[EZColorScheme sharedEZColorScheme].mainCellTimeColor];
         _photoCount.textAlignment = NSTextAlignmentLeft;
         
         
@@ -53,9 +72,10 @@
                               barMetrics:UIBarMetricsDefault];
         
         [_toolBar setBackgroundColor:[UIColor clearColor]];
-        [self.contentView addSubview:_toolBar];
+        //[self.contentView addSubview:_toolBar];
         //_toolBar.backgroundColor = [UIColor clearColor];
         
+        /**
         _editBtn = [UIButton createButton:CGRectMake(5, self.bounds.size.height - 48, 60, 40) font:[UIFont boldSystemFontOfSize:16] color:EZBarButtonColor align:NSTextAlignmentLeft];
         [_editBtn addTarget:self action:@selector(editClicked:) forControlEvents:UIControlEventTouchUpInside];
         [_editBtn setTitle:@"编辑" forState:UIControlStateNormal];
@@ -63,7 +83,7 @@
         _shareBtn = [UIButton createButton:CGRectMake(self.bounds.size.width - 60 - 5, self.bounds.size.height - 48, 60, 40) font:[UIFont boldSystemFontOfSize:16] color:EZBarButtonColor align:NSTextAlignmentRight];
         [_shareBtn addTarget:self action:@selector(shareClicked:) forControlEvents:UIControlEventTouchUpInside];
         [_shareBtn setTitle:@"分享" forState:UIControlStateNormal];
-        
+        **/
         UIBarButtonItem* editBar = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCompose target:self action:@selector(editClicked:)];
         
         UIBarButtonItem* sepBar = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
@@ -71,22 +91,24 @@
         _toolBar.items = @[editBar,sepBar,shareBar];
         
         _toolBar.tintColor = ClickedColor;
-        [self.contentView addSubview:_photo];
-        [self.contentView addSubview:grayCover];
-        [self.contentView addSubview:_name];
-        [self.contentView addSubview:_photoCount];
-        [self.contentView addSubview:_clickInfo];
+        //_photo.layer.cornerRadius = 5.0;
+        _photo.clipsToBounds = true;
+        //[_container addSubview:_photo];
+        //[self.contentView addSubview:grayCover];
+        [_container addSubview:_name];
+        //[_container addSubview:_photoCount];
+        [_container addSubview:_clickInfo];
         //[self.contentView addSubview:_updateDate];
         //[self.contentView addSubview:_editBtn];
         //[self.contentView addSubview:_shareBtn];
-        [self.contentView addSubview:_toolBar];
+        //[self.contentView addSubview:_toolBar];
         //self.contentView.backgroundColor = [UIColor whiteColor];
         _activity = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
         _activity.center = CGPointMake(self.width/2, self.height/2);
-        [self.contentView addSubview:_activity];
+        [_container addSubview:_activity];
         _eventEater = [[EZEventEater alloc] initWithFrame:self.bounds];
         _eventEater.backgroundColor = [UIColor clearColor];
-        [self.contentView addSubview:_eventEater];
+        [_container addSubview:_eventEater];
         _eventEater.userInteractionEnabled = NO;
         _activity.hidden = YES;
     }

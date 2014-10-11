@@ -11,6 +11,4 @@
 //The purpose is to monitoring the status bar
 @interface EZUIApplication : UIApplication
 
-
-
 @end

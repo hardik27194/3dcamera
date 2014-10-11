@@ -20,6 +20,8 @@
 #import "EZFrontFrame.h"
 #import "EZPalate.h"
 #import "EZSignView.h"
+#import "EZShotSetting.h"
+#import "EZConfigure.h"
 
 //static void * CapturingStillImageContext = &CapturingStillImageContext;
 //static void * RecordingContext = &RecordingContext;
@@ -98,14 +100,24 @@
     return YES;
 }
 
+- (void) showConfigure
+{
+    EZShotSetting* shotConfigre = [[EZShotSetting alloc] initWithFrame:CGRectMake(20, 100, CurrentScreenWidth - 40, 220)];
+    [shotConfigre showInView:self.view aniamted:NO confirmed:^(id obj){
+        EZConfigure* configure = [EZConfigure sharedEZConfigure];
+        EZDEBUG(@"delay:%f, count:%i, isMute:%i", configure.shotDelay, configure.shotCount, configure.isMute);
+        _proposedNumber = configure.shotCount;
+        _totalCountDown = configure.shotDelay;
+        _shotPalate.total = _proposedNumber;
+    }];
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
-    _totalCountDown = [[NSUserDefaults standardUserDefaults] integerForKey:EZCountDownSetting];
-    if(!_totalCountDown){
-        _totalCountDown = 3;
-    }
+    _totalCountDown =  [EZConfigure sharedEZConfigure].shotDelay; //[[NSUserDefaults standardUserDefaults] integerForKey:EZCountDownSetting];
+    _proposedNumber = [EZConfigure sharedEZConfigure].shotCount;
     __weak EZCaptureCameraController* weakSelf = self;
     //navigation bar
     if (self.navigationController && !self.navigationController.navigationBarHidden) {
@@ -143,6 +155,7 @@
     [self addCameraCover];
     [self addPinchGesture];
     [self addCameraMenuView];
+    [self showConfigure];
     [_captureManager.session startRunning];
     
 #if SWITCH_SHOW_DEFAULT_IMAGE_FOR_NONE_CAMERA
@@ -165,15 +178,6 @@
     [_changeDelayBtn setTitle:[NSString stringWithFormat:@"延时:%i秒", _totalCountDown] forState:UIControlStateNormal];
 }
 
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
-{
-    EZDEBUG(@"buttonIndex:%i", buttonIndex);
-    if(buttonIndex < 8){
-        _totalCountDown = 3 + buttonIndex;
-        [[NSUserDefaults standardUserDefaults] setInteger:_totalCountDown forKey:EZCountDownSetting];
-        [self setDelayChangeButton:_totalCountDown];
-    }
-}
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
@@ -237,7 +241,7 @@
         
         _shotStatusSign = [[EZSignView alloc] initWithFrame:CGRectMake(15, 15, topFrame.size.height - 30, topFrame.size.height - 30)];
         _shotStatusSign.signType = kStopSign;
-        [_topContainerView addSubview:_shotStatusSign];
+        //[_topContainerView addSubview:_shotStatusSign];
         
         _toggleMode = [UIButton createButton:CGRectMake(100, 0, CurrentScreenWidth - 200, 44) font:[UIFont boldSystemFontOfSize:17] color:ClickedColor align:NSTextAlignmentCenter];
         [_toggleMode addTarget:self action:@selector(toggleClicked) forControlEvents:UIControlEventTouchUpInside];
@@ -254,7 +258,7 @@
          [_topContainerView addSubview:_confirmButton];
          **/
         [self buildButton:CGRectMake(CurrentScreenWidth - 44, 0, 44, 44)
-             normalImgStr:@"share.png"
+             normalImgStr:@"share2"
           highlightImgStr:@""
            selectedImgStr:@""
                    action:@selector(shareClicked:)
@@ -324,6 +328,7 @@
 
 - (void) savePressed:(id)obj
 {
+    [self setIsPaused:true];
     if(_confirmClicked){
         if(_shotType == kShotToReplace){
             //_confirmClicked(_photo);
@@ -355,7 +360,9 @@
 {
     _shotText.text = [NSString stringWithFormat:@"%i/%i", _currentCount, _proposedNumber];
     //_shotLabel.text = int2str(_proposedNumber - _currentCount);
+    _shotPalate.total = _proposedNumber;
     _shotPalate.occupied = _currentCount;
+    
 }
 
 - (void) deletePos:(NSInteger)pos
@@ -404,7 +411,7 @@
 - (void)addCameraMenuView {
     
     //拍照按钮
-    CGFloat downH = (isHigherThaniPhone4_SC ? CAMERA_MENU_VIEW_HEIGH : 0);
+    CGFloat downH = (isLongScreenSize ? CAMERA_MENU_VIEW_HEIGH : 15);
     CGFloat cameraBtnLength = 90;
     _shotBtn = [self buildButton:CGRectMake((SC_APP_SIZE.width - cameraBtnLength) / 2, (_bottomContainerView.frame.size.height - downH - cameraBtnLength) / 2 , cameraBtnLength, cameraBtnLength)
                     normalImgStr:@"shot_s.png"
@@ -421,7 +428,7 @@
     [_shotBtn addSubview:_shotLabel];
     
     CGFloat pos = (_bottomContainerView.frame.size.height - 45)/2.0;
-    pos = isLongScreenSize?pos:pos - 20;
+    pos = isLongScreenSize?pos-20:pos - 30;
     _shotImages = [UIButton createButton:CGRectMake(20, pos, 60, 60) font:[UIFont systemFontOfSize:10] color:[UIColor whiteColor] align:NSTextAlignmentCenter];//[[UIImageView alloc] initWithFrame:CGRectMake(20, _bottomContainerView.frame.size.height - downH - cameraBtnLength, 45 , 45)];
     _shotImages.layer.cornerRadius = 5;
     _shotImages.clipsToBounds = TRUE;
@@ -430,15 +437,15 @@
     [_bottomContainerView addSubview:_shotImages];
     [_shotImages addTarget:self action:@selector(showResult:) forControlEvents:UIControlEventTouchUpInside];
     
-    _changeDelayBtn = [UIButton createButton:CGRectMake(_bottomContainerView.width - 20 - 75, pos, 75, 44) font:[UIFont boldSystemFontOfSize:16] color:[UIColor whiteColor] align:NSTextAlignmentCenter];
-    [self setDelayChangeButton:_totalCountDown];
-    [_changeDelayBtn addTarget:self action:@selector(changeDelay) forControlEvents:UIControlEventTouchUpInside];
-    [_bottomContainerView addSubview:_changeDelayBtn];
+    //_changeDelayBtn = [UIButton createButton:CGRectMake(_bottomContainerView.width - 20 - 75, pos, 75, 44) font:[UIFont boldSystemFontOfSize:16] color:[UIColor whiteColor] align:NSTextAlignmentCenter];
+    //[self setDelayChangeButton:_totalCountDown];
+    //[_changeDelayBtn addTarget:self action:@selector(changeDelay) forControlEvents:UIControlEventTouchUpInside];
+    //[_bottomContainerView addSubview:_changeDelayBtn];
     
     //拍照的菜单栏view（屏幕高度大于480的，此view在上面，其他情况在下面）
-    CGFloat menuViewY = (isHigherThaniPhone4_SC ? SC_DEVICE_SIZE.height - CAMERA_MENU_VIEW_HEIGH : 0);
+    CGFloat menuViewY = SC_DEVICE_SIZE.height - CAMERA_MENU_VIEW_HEIGH;
     UIView *menuView = [[UIView alloc] initWithFrame:CGRectMake(0, menuViewY, self.view.frame.size.width, CAMERA_MENU_VIEW_HEIGH)];
-    menuView.backgroundColor = (isHigherThaniPhone4_SC ? bottomContainerView_DOWN_COLOR : [UIColor clearColor]);
+    menuView.backgroundColor = [UIColor clearColor];//(isHigherThaniPhone4_SC ? bottomContainerView_DOWN_COLOR : [UIColor clearColor]);
     [self.view addSubview:menuView];
     self.cameraMenuView = menuView;
     [self addMenuViewButtons];
@@ -855,7 +862,7 @@ void c_slideAlpha() {
     [_captureManager takePicture:^(UIImage *stillImage) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             //[SCCommon saveImageToPhotoAlbum:stillImage];//存至本机
-            [self appendPhoto:file2url([EZFileUtil saveImageToDocument:stillImage])];
+            [self appendPhoto:file2url([EZFileUtil saveFullImage:stillImage])];
             //_currentCount ++;
             EZDEBUG(@"_currentCount: %i, proposedNumber:%i, _shotType:%i",_currentCount,_proposedNumber, _shotType);
             dispatch_main(^(){
@@ -875,6 +882,7 @@ void c_slideAlpha() {
                 [_shotBtn setImage:[UIImage imageNamed:@"shot_s"] forState:UIControlStateNormal];
                 _shotLabel.hidden = YES;
                 _shotStatusSign.hidden = YES;
+                [self setIsManual:true];
                 //EZDEBUG(@"complete shot");
                 if(!_isManual){
                     //_currentCount = 0;
@@ -951,7 +959,9 @@ void c_slideAlpha() {
         _currentCountDown = 0;
         [self realShot:sender];
     }else{
-        [_shotPrepareVoice play];
+        if(![EZConfigure sharedEZConfigure].isMute){
+            [_shotPrepareVoice play];
+        }
         dispatch_later(1.0, ^(){
             [self innerShot:nil];
         });
@@ -972,6 +982,7 @@ void c_slideAlpha() {
         [waiting show];
         return;
     }
+    [self setIsPaused:true];
     if (self.navigationController) {
         if (self.navigationController.viewControllers.count == 1) {
             [self.navigationController dismissViewControllerAnimated:YES completion:nil];

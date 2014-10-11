@@ -16,5 +16,6 @@
 @property (nonatomic, retain) NSDictionary* payload;
 @property (nonatomic, retain) NSString * taskID;
 @property (nonatomic, retain) NSString * personID;
+@property (nonatomic, retain) NSNumber* uploadStatus;
 
 @end

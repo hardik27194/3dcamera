@@ -26,6 +26,7 @@
     #import "EZUIUtility.h"
     #import "UIImage+ResizeMagick.h"
     #import "UIView+Shadow.h"
+#import "EZColorScheme.h"
 #import "UIImage+ImageEffects.h"
 #import "LiveFrost.h"
 #import "EZResult.h"

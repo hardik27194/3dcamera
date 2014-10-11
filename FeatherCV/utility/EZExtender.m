@@ -112,6 +112,27 @@ NSString* doubleString(NSString* str)
     self.spellCheckingType = UITextSpellCheckingTypeNo;
 }
 
+
+- (void) fitContent:(BOOL)left
+{
+    /**
+    CGFloat width = [self.text sizeWithAttributes:@{NSFontAttributeName:self.font}].width;
+    EZDEBUG(@"adjusted width:%f", width);
+    //[inputName setWidth:width];
+    width = width + 40.0;
+    
+    if(left){
+        [self setWidth:width];
+    }else{
+        CGFloat rightPos = self.frame.origin.x + self.width;
+        CGFloat adjustedX = rightPos - width;
+        [self setWidth:width];
+        [self setX:adjustedX];
+    }
+     **/
+    [self fitContent:left limit:180 miniLimit:60];
+}
+
 - (void) fitContent:(BOOL)left limit:(CGFloat)limit miniLimit:(CGFloat)miniLimit
 {
     CGFloat width = [self.text sizeWithAttributes:@{NSFontAttributeName:self.font}].width;
@@ -1110,12 +1131,17 @@ NSString* doubleString(NSString* str)
 - (UIView*) createCoverView:(NSInteger)tag color:(UIColor*)color below:(UIView*)view tappedTarget:(id)target action:(SEL)action
 {
     UIView* coverView = [[UIView alloc] initWithFrame:self.bounds];
+    coverView.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
     coverView.tag = tag;
     //coverView.userInteractionEnabled = false;
     UITapGestureRecognizer* tap = [[UITapGestureRecognizer alloc] initWithTarget:target action:action];
     [coverView addGestureRecognizer:tap];
     coverView.tag = tag;
-    [self insertSubview:coverView belowSubview:view];
+    if(view){
+        [self insertSubview:coverView belowSubview:view];
+    }else{
+        [self addSubview:coverView];
+    }
     coverView.backgroundColor = color;
     return coverView;
 }
@@ -1144,6 +1170,25 @@ NSString* doubleString(NSString* str)
     [res addSubview:titleLabel];
     return res;
 }
+
++ (UIButton*) createButton:(CGRect)frame image:(UIImage*)image imageRect:(CGRect)rect title:(NSString*)title font:(UIFont*)font color:(UIColor*)color align:(NSTextAlignment)align textFrame:(CGRect)textFrame
+{
+    UIButton* res = [UIButton createButton:frame font:font color:color align:align];
+    
+    UIImageView* imgView = [[UIImageView alloc] initWithFrame:rect];
+    imgView.contentMode = UIViewContentModeScaleAspectFill;
+    imgView.clipsToBounds = true;
+    //res.imageEdgeInsets = inset;
+    //[res setImage:image forState:UIControlStateNormal];
+    imgView.image = image;
+    [res addSubview:imgView];
+    UILabel* titleLabel = [UILabel createLabel:textFrame font:font color:color];
+    titleLabel.textAlignment = align;
+    titleLabel.text = title;
+    [res addSubview:titleLabel];
+    return res;
+}
+
 
 + (UIButton*) createButton:(CGRect)frame title:(NSString*)title font:(UIFont*)font color:(UIColor*)color align:(NSTextAlignment)align
 {

@@ -25,6 +25,7 @@
 //You can put it into status
 @property (nonatomic, strong) NSString* remoteURL;
 
+@property (nonatomic, assign) BOOL removed;
 
 //Mean the url which will store the original URL.
 @property (nonatomic, strong) NSString* originalURL;

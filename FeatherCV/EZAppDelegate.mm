@@ -49,6 +49,10 @@
 #import "EZShotTask.h"
 #import "EZStoredPhoto.h"
 #import "EZCoreAccessor.h"
+#import "WXApi.h"
+#import "UMSocialWechatHandler.h"
+#import "UMSocialQQHandler.h"
+#import "UMSocial.h"
 
 @implementation EZAppDelegate
 
@@ -341,8 +345,22 @@
     //[EZCoreAccessor cleanClientDB];
     _cameraRaised = false;
     ///[EZDataUtil getInstance].currentPersonID = @"52f783d7e7b5b9dd9c28f1cc";
-    [MobClick startWithAppkey:@"5350f11d56240bb1e901071a" reportPolicy:SENDWIFIONLY channelId:@"AppStore"];
+    [MobClick startWithAppkey:UMengAppKey reportPolicy:SENDWIFIONLY channelId:@"AppStore"];
+    [UMSocialData openLog:NO];
+    
+    //如果你要支持不同的屏幕方向，需要这样设置，否则在iPhone只支持一个竖屏方向
+    [UMSocialConfig setSupportedInterfaceOrientations:UIInterfaceOrientationMaskAll];
+    
+    //设置友盟社会化组件appkey
+    [UMSocialData setAppKey:UMengAppKey];
     [FaceppAPI initWithApiKey:@"80554f973e57498ae065ec46d16c6e6a" andApiSecret: @"7pwPTvUY2wSf0FqYI7WbZ783U3l0MPNJ" andRegion:APIServerRegionCN];
+    //[WXApi registerApp:@"Pin3D"];
+    
+    [UMSocialWechatHandler setWXAppId:WeChatAppId appSecret:WeChatAppSecret url:@"http://www.umeng.com/social"];
+    
+    [UMSocialQQHandler setQQWithAppId:QQAppId appKey:QQAppSecret url:@"http://www.umeng.com/social"];
+    //    //设置支持没有客户端情况下使用SSO授权
+    [UMSocialQQHandler setSupportWebView:YES];
     NSString *version = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
     EZDEBUG(@"Mobile version:%@", version);
     [MobClick setAppVersion:version];

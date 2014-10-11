@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="5064" systemVersion="13E28" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="6244" systemVersion="13F34" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="LocalPersons" representedClassName="LocalPersons" syncable="YES">
         <attribute name="lastActive" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="mobile" optional="YES" attributeType="String" syncable="YES"/>
@@ -21,6 +21,6 @@
     <elements>
         <element name="LocalPersons" positionX="0" positionY="0" width="128" height="120"/>
         <element name="LocalPhotos" positionX="0" positionY="0" width="128" height="90"/>
-        <element name="LocalTasks" positionX="0" positionY="36" width="128" height="103"/>
+        <element name="LocalTasks" positionX="0" positionY="36" width="128" height="105"/>
     </elements>
 </model>

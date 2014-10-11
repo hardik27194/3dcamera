@@ -22,7 +22,8 @@
 {
     _originalURL = [dict objectForKey:@"originalURL"];
     _remoteURL = [dict objectForKey:@"remoteURL"];
-    
+    _uploadStatus = [[dict objectForKey:@"uploadStatus"] intValue];
+    _localFileURL = [dict objectForKey:@"localFileURL"];
     if([_originalURL isNotEmpty]){
         NSURL* url = [NSURL URLWithString:_originalURL];
         //NSString* host = [url host];
@@ -30,7 +31,7 @@
         _originalURL =[NSString stringWithFormat:@"%@%@",baseServiceURL, [path isNotEmpty]?[path substringFromIndex:1]:path];
         
     }
-    if([_remoteURL isNotEmpty]){
+    if([_remoteURL isNotEmpty] && [_remoteURL hasPrefix:@"http:"]){
         NSURL* url = [NSURL URLWithString:_remoteURL];
         NSString* path = [url path];
         _remoteURL =[NSString stringWithFormat:@"%@%@",baseServiceURL, [path isNotEmpty]?[path substringFromIndex:1]:path];
@@ -63,6 +64,8 @@
     [res setObject:_photoID?_photoID:@"" forKey:@"photoID"];
     [res setObject:@(_sequence) forKey:@"sequence"];
     [res setObject:_originalURL?_originalURL:@"" forKey:@"originalURL"];
+    [res setObject:@(_uploadStatus) forKey:@"uploadStatus"];
+    [res setObject:_localFileURL?_localFileURL:@"" forKey:@"localFileURL"];
     NSMutableArray* infos = [[NSMutableArray alloc] init];
     for(EZPhotoInfo* info in _infos){
         [infos addObject:[info toDict]];

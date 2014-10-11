@@ -11,6 +11,10 @@
 @class EZEventEater;
 @interface EZMainPhotoCell : UICollectionViewCell
 
+@property (nonatomic, strong) UIView* container;
+
+@property (nonatomic, strong) UIView* clippingView;
+
 @property (nonatomic, strong) UIImageView* photo;
 
 @property (nonatomic, strong) UIButton* editBtn;

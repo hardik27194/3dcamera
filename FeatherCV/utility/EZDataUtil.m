@@ -43,6 +43,10 @@
 #import "LocalTasks.h"
 #import "EZReachability.h"
 #import "EZUploadWrapper.h"
+#import "EZImageCache.h"
+#import "UMSocialWechatHandler.h"
+#import "UMSocialQQHandler.h"
+#import "UMSocial.h"
 
 @implementation EZAlbumResult
 
@@ -81,8 +85,13 @@
 
 - (void) storeTask:(EZShotTask*)task
 {
-    LocalTasks* lt = [_taskIDToTask objectForKey:task.taskID];
-    task.localTask = lt;
+    //LocalTasks* lt = [_taskIDToTask objectForKey:task.taskID];
+    //task.localTask = lt;
+    if([task.taskID isNotEmpty]){
+        EZShotTask* tk = [_taskIDToTask objectForKey:task.taskID];
+        task.localTask = tk.localTask;
+        [_taskIDToTask setObject:task forKey:task.taskID];
+    }
     [task store];
 }
 //check if already have or not
@@ -104,6 +113,10 @@
         for(NSDictionary* dict in arr){
             EZShotTask* task = [[EZShotTask alloc] init];
             [task populateTask:dict];
+            task.uploadStatus = kUploadDone;
+            for(EZStoredPhoto* pt in task.photos){
+                pt.uploadStatus = kUploadDone;
+            }
             [res addObject:task];
             [self storeTask:task];
         }
@@ -203,24 +216,74 @@
     [EZNetworkUtility getJson:@"p3d/id/delete" parameters:@{@"taskID":taskID} complete:success failblk:failed];
 }
 
+-(void)didSelectSocialPlatform:(NSString *)platformName withSocialData:(UMSocialData *)socialData
+{
+    EZDEBUG(@"Did select platform:%@", platformName);
+}
+- (void) shareContent:(NSString*)text image:(UIImage*)image url:(NSString*)url controller:(UIViewController*)controller
+{
+    [[EZDataUtil getInstance] setSocialShareURL:url];
+    //NSArray *activityItems = @[@"P3D", str2url(url)];
+    
+    //NSString *shareText = @"来看看我分享了三维图片吧";// [NSString stringWithFormat:@"来看看我分享了三维图片吧, %@", url];
+    //UIImage *shareImage = [UIImage imageNamed:@"UMS_social_demo"];          //分享内嵌图片
+    
+    //如果得到分享完成回调，需要设置delegate为self
+    
+    //EZStoredPhoto* sp =
+    //UIImage* image = nil;
+    //if(shotTask.photos.count){
+    //    EZStoredPhoto* sp = [shotTask.photos objectAtIndex:0];
+    //    image = [[EZImageCache sharedEZImageCache] getImage:sp.remoteURL];
+    //}
+    [UMSocialSnsService presentSnsIconSheetView:controller appKey:UMengAppKey shareText:text shareImage:image shareToSnsNames:[NSArray arrayWithObjects:UMShareToWechatSession,UMShareToWechatTimeline,UMShareToWechatFavorite,UMShareToQQ, UMShareToSina,UMShareToTencent,UMShareToDouban, UMShareToRenren,UMShareToEmail, UMShareToSms,nil]/**@[@"qq",@"weixin",@"tencent",@"sina",@"renren",@"qzone",@"douban"]**/ delegate:self];
+}
+
+- (void) setSocialShareURL:(NSString *)url
+{
+    [UMSocialWechatHandler setWXAppId:WeChatAppId appSecret:WeChatAppSecret url:url];
+    
+    [UMSocialQQHandler setQQWithAppId:QQAppId appKey:QQAppSecret url:url];
+}
+
 - (NSArray*) loadLocalTasks:(NSString*)personID
 {
     NSArray* tasks = [[EZCoreAccessor getClientAccessor] fetchAll:[LocalTasks class] sortField:@"createdTime" ascending:NO];
     EZDEBUG(@"stored tasks:%i", tasks.count);
     NSMutableArray* res = [[NSMutableArray alloc] init];
     for(LocalTasks* lt in tasks){
-        [_taskIDToTask setObject:lt forKey:lt.taskID];
+        EZShotTask* st = [[EZShotTask alloc] init];
+        st.localTask = lt;
+        [st populateTask:lt.payload];
+        if([lt.taskID isNotEmpty]){
+            [_taskIDToTask setObject:st forKey:lt.taskID];
+        }
         if(![personID isNotEmpty]){
-            EZShotTask* st = [[EZShotTask alloc] init];
-            [st populateTask:lt.payload];
-            st.localTask = lt;
+            
+            //st.localTask = lt;
             [res addObject:st];
         }
         else if([lt.personID isEqualToString:personID]){
-            EZShotTask* st = [[EZShotTask alloc] init];
-            [st populateTask:lt.payload];
-            st.localTask = lt;
             [res addObject:st];
+            if(st.uploadStatus != kUploadDone){
+                if([lt.personID isEqualToString:currentLoginID]){
+                [self addUploadTask:st success:^(id obj){
+                    for(EZStoredPhoto* sp in st.photos){
+                        if(sp.uploadStatus != kUploadDone){
+                            [[EZDataUtil getInstance] addUploadPhoto:sp success:nil failure:nil];
+                        }
+                    }
+                } failure:nil];
+                }
+            }else{
+                if([lt.personID isEqualToString:currentLoginID]){
+                for(EZStoredPhoto* sp in st.photos){
+                    if(sp.uploadStatus != kUploadDone){
+                        [[EZDataUtil getInstance] addUploadPhoto:sp success:nil failure:nil];
+                    }
+                }
+                }
+            }
         }
     }
     EZDEBUG(@"local task size is:%i", res.count);
@@ -263,37 +326,52 @@
     [self uploadAllPhotos];
 }
 
+- (void) storePhoto:(EZStoredPhoto*)sp
+{
+    if([sp.taskID isNotEmpty]){
+        EZDEBUG(@"fetch taskID:%@", sp.taskID);
+        EZShotTask* task = [ _taskIDToTask objectForKey:sp.taskID];
+        [task store];
+    }
+}
+
 - (void) uploadAllPhotos
 {
-    EZStoredPhoto* task = nil;
+    EZStoredPhoto* photo = nil;
     for(int i = 0; i < _uploadingPhotos.count; i++){
-        task = [_uploadingPhotos objectAtIndex:i];
-        if((task.uploadStatus == kUploadInit || task.uploadStatus == kUploadFailure) && [task.taskID isNotEmpty]){
-            task.uploadStatus = kUpdateStart;
+        photo = [_uploadingPhotos objectAtIndex:i];
+        if((photo.uploadStatus == kUploadInit || photo.uploadStatus == kUploadFailure) && [photo.taskID isNotEmpty] && !photo.removed){
+            photo.uploadStatus = kUpdateStart;
             break;
-        }else{
-            task = nil;
+        }else if(photo.removed){
+            EZDEBUG(@"remove cancel photos");
+            [_uploadingPhotos removeObject:photo];
+            photo = nil;
+        }
+        else{
+            photo = nil;
         }
     }
     
-    if(!task){
+    if(!photo){
         EZDEBUG(@"No pending photo:%i", _uploadingPhotos.count);
         return;
     }
     EZDEBUG(@"start upload photos:%i", _uploadingPhotos.count);
     //[_uploadingTasks objectAtIndex:0];
-    [self uploadStoredPhoto:task isOriginal:task.isOriginal success:^(id obj){
+    [self uploadStoredPhoto:photo isOriginal:photo.isOriginal success:^(id obj){
         EZDEBUG(@"upload photo success");
-        task.uploadStatus = kUploadDone;
-        [_uploadingTasks removeObject:task];
-        if(task.successBlock){
-            task.successBlock(obj);
+        //photo.uploadStatus = kUploadDone;
+        [_uploadingPhotos removeObject:photo];
+        [self storePhoto:photo];
+        if(photo.successBlock){
+            photo.successBlock(obj);
         }
     }
     failure:^(id err){
-        task.uploadStatus = kUploadFailure;
-        if(task.failBlock){
-            task.failBlock(err);
+        //photo.uploadStatus = kUploadFailure;
+        if(photo.failBlock){
+            photo.failBlock(err);
         }
     }];
 }
@@ -303,8 +381,12 @@
     EZShotTask* task = nil;
     for(int i = 0; i < _uploadingTasks.count; i++){
         task = [_uploadingTasks objectAtIndex:i];
-        if(task.uploadStatus == kUploadInit || task.uploadStatus == kUploadFailure){
+        if((task.uploadStatus == kUploadInit || task.uploadStatus == kUploadFailure) && !task.removed){
             task.uploadStatus = kUpdateStart;
+            break;
+        }else if(task.removed){
+            [_uploadingTasks removeObject:task];
+            task = nil;
             break;
         }else{
             task = nil;
@@ -321,8 +403,12 @@
     EZDEBUG(@"Will upload task");
     [self updateTask:task success:^(id obj){
         EZDEBUG(@"upload success, %@", task.successBlock);
+        for(EZStoredPhoto* sp in task.photos){
+            sp.taskID = task.taskID;
+        }
         task.uploadStatus = kUploadDone;
         [_uploadingTasks removeObject:task];
+        [task store];
         if(task.successBlock){
             task.successBlock(obj);
         }
@@ -341,14 +427,15 @@
 {
     //task.uploadTask
     
+    EZDEBUG(@"Will start update the tasks:%@", task.taskID);
     if([task.taskID isNotEmpty]){
-        [EZNetworkUtility getJson:@"p3d/id/update" parameters:@{@"taskID":task.taskID, @"name":task.name?task.name:@""} complete:^(NSDictionary* dict){
+        [EZNetworkUtility getJson:@"p3d/id/update" parameters:@{@"taskID":task.taskID, @"name":task.name?task.name:@"", @"isPrivate":@(task.isPrivate)} complete:^(NSDictionary* dict){
             if(success){
                 success(task);
             }
         } failblk:failure];
     }else{
-        [EZNetworkUtility getJson:@"p3d/id/create" parameters:@{@"personID":currentLoginID, @"name":task.name?task.name:@""} complete:^(NSDictionary* dict){
+        [EZNetworkUtility getJson:@"p3d/id/create" parameters:@{@"personID":currentLoginID, @"name":task.name?task.name:@"", @"isPrivate":@(task.isPrivate)} complete:^(NSDictionary* dict){
             EZDEBUG(@"upload task success");
             task.taskID = [dict objectForKey:@"id"];
             //task.uploadTask = false;
@@ -374,7 +461,25 @@
         [parameters setValue:@(1) forKey:@"isOriginal"];
     }
     photo.uploadStatus = kUploadStart;
-    [EZNetworkUtility upload:relativeUploadURL parameters:parameters fileURL:photo.localFileURL complete:^(NSDictionary* dict){
+    EZDEBUG(@"start upload localFileURL:%@, remoteURL:%@", photo.localFileURL, photo.remoteURL);
+    
+    UIImage* img = [[EZImageCache sharedEZImageCache] getImage:photo.localFileURL];
+    if(!img){
+        EZDEBUG(@"not exist, get from localFileURL instead");
+        if([photo.localFileURL isNotEmpty]){
+            img = [UIImage imageWithContentsOfFile:url2fullpath(photo.localFileURL)];
+        }else{
+            //photo.uploadStatus = kUploadDone;
+            if(success){
+                dispatch_later(0.1,^(){
+                success(photo);
+                });
+            }
+            return;
+        }
+    }
+    NSData* data = [img toJpegData:0.7];
+    [EZNetworkUtility uploadData:relativeUploadURL parameters:parameters data:data complete:^(NSDictionary* dict){
         EZDEBUG(@"uploaded success result object:%@", dict);
         NSString* photoID = [dict objectForKey:@"photoID"];
         NSString* remoteURL = [dict objectForKey:@"remoteURL"];
@@ -817,6 +922,12 @@
     
     _isoFormatter2 = [[NSDateFormatter alloc] init];
     _isoFormatter2.dateFormat = @"yyyy-MM-dd' 'HH:mm:ss";
+    
+    _generalDateTimeFormatter = [[NSDateFormatter alloc] init];
+    [_generalDateTimeFormatter setDateFormat:@"yyyy'年'MM'月'dd'日'HH:mm:ss"];
+    
+    _birthDateFormatter = [[NSDateFormatter alloc] init];
+    [_birthDateFormatter setDateFormat:@"yyyy'年'MM'月'dd'日'"];
     
     _localPhotos = [[NSMutableArray alloc] init];
     _pendingPhotos = [[NSMutableArray alloc] init];
@@ -1843,7 +1954,6 @@
 {
     _manager = [AFNetworkReachabilityManager managerForDomain:reachableDomain];
     //[[AFNetworkActivityIndicatorManager sharedManager] setEnabled:YES];
-    
     [_manager setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
         //EZDEBUG(@"Reachability: %@", AFStringFromNetworkReachabilityStatus(status));
         EZDEBUG(@"network status:%i", status);

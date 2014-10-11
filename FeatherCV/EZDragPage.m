@@ -16,6 +16,8 @@
 #import "EZPopupInput.h"
 #import "EZInputItem.h"
 #import "EZDataUtil.h"
+#import "EZCompleteSetting.h"
+#import "EZConfigure.h"
 
 
 @interface EZDragPage ()
@@ -46,6 +48,21 @@
     [self raiseTitleChange:nil];
 }
 
+- (void) raiseCompleteView
+{
+    EZCompleteSetting* completeSetting = [[EZCompleteSetting alloc] initWithFrame:CGRectMake(15, 80, CurrentScreenWidth - 30, 220)];
+    __weak EZDragPage* weakSelf = self;
+    //completeSetting.confirmed =
+    [completeSetting showInView:self.view aniamted:YES confirmed:^(NSArray* values){
+        weakSelf.task.name = [values objectAtIndex:0];
+        weakSelf.task.isPrivate = [EZConfigure sharedEZConfigure].isPrivate;
+        if(weakSelf.confirmClicked){
+            weakSelf.confirmClicked(@(YES));
+        }
+    }];
+    
+}
+
 - (void) raiseTitleChange:(EZEventBlock)inputSuccess;
 {
     EZDEBUG(@"click get called");
@@ -70,6 +87,9 @@
 - (void) confirmed:(id)obj
 {
     EZDEBUG(@"Drag confirmed");
+    [self raiseCompleteView];
+    
+    /**
     if([_task.name isNotEmpty]){
         if(_confirmClicked){
             _confirmClicked(@(YES));
@@ -81,6 +101,7 @@
             }
         }];
     }
+     **/
     //[self.navigationController popViewControllerAnimated:YES];
 }
 
@@ -106,7 +127,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action:@selector(confirmed:)];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(confirmed:)];
     
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancel:)];
     
@@ -118,12 +139,15 @@
     self.collectionView.dataSource = self;
     [self.view addSubview:collectionView];
     self.collectionView.backgroundColor = MainBackgroundColor;////[UIColor whiteColor];
+    
+    /**
     UIButton* btn = [UIButton createButton:CGRectMake(0, 0, 200, 44) font:[UIFont boldSystemFontOfSize:17] color:ClickedColor align:NSTextAlignmentCenter];
     [btn setTitle:@"修改名称" forState:UIControlStateNormal];
     [btn addTarget:self action:@selector(raiseNormal) forControlEvents:UIControlEventTouchUpInside];
     self.navigationItem.titleView = btn;
     _titleChangeBtn = btn;
-    
+    **/
+    self.title = @"编辑照片";
     //[self setupPhotosArray];
     
     [[EZMessageCenter getInstance] registerEvent:EZShotTaskChanged block:^(EZStoredPhoto* pt){

@@ -37,6 +37,11 @@
 
 @property (nonatomic, assign) BOOL newlyUpload;
 
+@property (nonatomic, assign) BOOL removed;
+
+//If it is private, I will not show on the platform.
+@property (nonatomic, assign) BOOL isPrivate;
+
 //If it is true mean I want to upload the task too.
 //Otherwise mean upload photo.
 @property (nonatomic, assign) BOOL uploadTask;

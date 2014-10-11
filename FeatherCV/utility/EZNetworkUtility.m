@@ -167,7 +167,132 @@ static EZNetworkUtility* instance;
     **/
 }
 
++ (void) uploadRaw:(NSString *)uploadURL parameters:(NSDictionary *)parameters fileURL:(NSString *)fileURL complete:(EZEventBlock)completed error:(EZEventBlock)errorBlk progress:(EZProgressCheck)progress
+{
+    [EZNetworkUtility postJson:@"http://192.168.1.104:8080/p3d/upload" parameters:parameters complete:completed failblk:errorBlk];
+}
+
++ (void) uploadOld:(NSString *)uploadURL parameters:(NSDictionary *)parameters fileURL:(NSString *)fileURL complete:(EZEventBlock)completed error:(EZEventBlock)errorBlk progress:(EZProgressCheck)progress
+{
+    
+    NSString* completeURL = [NSString stringWithFormat:@"%@%@", baseServiceURL, uploadURL];
+    NSArray* fileNames = [fileURL componentsSeparatedByString:@"/"];
+    
+    EZDEBUG(@"The complete URL is:%@", completeURL);
+    NSString* fileName = fileNames.count > 0?[fileNames objectAtIndex:fileNames.count - 1]:fileURL;
+
+    NSMutableURLRequest *request = [[AFHTTPRequestSerializer serializer] multipartFormRequestWithMethod:@"POST" URLString:completeURL parameters:parameters constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
+        [formData appendPartWithFileURL:str2url(fileURL) name:@"myfile" fileName:fileName mimeType:@"image/jpeg" error:nil];
+    } error:nil];
+    
+    AFURLSessionManager *manager = [[AFURLSessionManager alloc] initWithSessionConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
+    NSProgress *progressBack = nil;
+    
+    NSURLSessionUploadTask *uploadTask = [manager uploadTaskWithStreamedRequest:request progress:&progressBack completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
+        if (error) {
+            EZDEBUG(@"Failure %@", error.description);
+            if(errorBlk){
+                errorBlk(error);
+            }
+        } else {
+            if(completed){
+                completed(responseObject);
+            }
+        }
+    }];
+    [uploadTask resume];
+}
+
 + (void) upload:(NSString *)uploadURL parameters:(NSDictionary *)parameters fileURL:(NSString *)fileURL complete:(EZEventBlock)completed error:(EZEventBlock)errorBlk progress:(EZProgressCheck)progress
+{
+    NSString* fullPath = url2fullpath(fileURL);
+    //BOOL fileExist = [[NSFileManager defaultManager] fileExistsAtPath:fullPath];
+    NSData *imageData = [NSData dataWithContentsOfFile:fullPath];//[NSData
+    
+    //UIImageJPEGRepresentation([UIImage imageWithContentsOfFile:url2fullpath(fileURL)], 1.0);
+    EZDEBUG(@"path:%@,image data length is:%i",fullPath, imageData.length);
+    [self uploadData:uploadURL parameters:parameters data:imageData complete:completed error:errorBlk progress:progress];
+}
+
++ (void) uploadData:(NSString *)uploadURL parameters:(NSDictionary *)parameters data:(NSData *)imageData complete:(EZEventBlock)completed error:(EZEventBlock)errorBlk progress:(EZProgressCheck)progress
+{
+    // create request
+    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
+    [request setCachePolicy:NSURLRequestReloadIgnoringLocalCacheData];
+    [request setHTTPShouldHandleCookies:YES];
+    [request setTimeoutInterval:30];
+    [request setHTTPMethod:@"POST"];
+    NSString* completeURL = [NSString stringWithFormat:@"%@%@", baseServiceURL, uploadURL];
+    //NSArray* fileNames = [fileURL componentsSeparatedByString:@"/"];
+    
+    //EZDEBUG(@"The complete URL is:%@", completeURL);
+    NSString* fileName = @"default.jpg";
+    // set Content-Type in HTTP header
+    NSString* boundary = [NSString stringWithFormat:@"boundary=pin3d-data%lu", random()];
+    NSString *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=%@", boundary];
+    [request setValue:contentType forHTTPHeaderField: @"Content-Type"];
+    
+    // post body
+    NSMutableData *body = [NSMutableData data];
+    
+    // add params (all params are strings)
+    for (NSString *param in parameters) {
+        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", param] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"%@\r\n", [parameters objectForKey:param]] dataUsingEncoding:NSUTF8StringEncoding]];
+    }
+    
+    // add image data
+
+    if (imageData) {
+        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"; filename=\"%@\"\r\n", @"myfile", fileName] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[@"Content-Type: image/jpeg\r\n\r\n"  dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:imageData];
+        [body appendData:[[NSString stringWithFormat:@"\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
+    }
+    
+    [body appendData:[[NSString stringWithFormat:@"--%@--\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+    
+    // setting the body of the post to the reqeust
+    [request setHTTPBody:body];
+    
+    // set the content-length
+    NSString *postLength = [NSString stringWithFormat:@"%d", [body length]];
+    [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
+    
+    // set URL
+    [request setURL:str2url(completeURL)];
+    
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    //manager.requestSerializer = [AFJSONRequestSerializer serializer];
+    
+    
+    //AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    AFHTTPRequestOperation *operation =
+    [manager HTTPRequestOperationWithRequest:request
+                                     success:^(AFHTTPRequestOperation *operation, id responseObject) {
+                                         //NSLog(@"Success %@", responseObject);
+                                         //EZDEBUG(@"post success");
+                                         if(completed){
+                                             completed(responseObject);
+                                         }
+                                     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+                                         //NSLog(@"Failure %@", error.description);
+                                         if(errorBlk){
+                                             errorBlk(error);
+                                         }
+                                     }];
+    
+    //if(background){
+    //    dispatch_queue_t backgroundQueue = dispatch_queue_create("com.name.bgqueue", NULL);
+        //AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
+    //    operation.completionQueue = backgroundQueue;
+    //}
+    [operation start];
+}
+
++ (void) uploadFirst:(NSString *)uploadURL parameters:(NSDictionary *)parameters fileURL:(NSString *)fileURL complete:(EZEventBlock)completed error:(EZEventBlock)errorBlk progress:(EZProgressCheck)progress
 {
     // 1. Create `AFHTTPRequestSerializer` which will create your request.
     AFHTTPRequestSerializer *serializer = [AFHTTPRequestSerializer serializer];

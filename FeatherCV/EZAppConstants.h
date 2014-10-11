@@ -13,10 +13,18 @@
 //Will hold the Application related constants.
 typedef enum {
     kDateValue,
+    kTimeValue,
     kFloatValue,
     kStringValue,
-    kImageValue
+    kImageValue,
+    kToggleValue,
+    kStringNoTitle,
+    kUploadValue,
+    kNumberPicker,
+    kBoolValue,
+    kSingleButton
 } EZInputValueType;
+
 
 typedef enum {
     kUploadInit,
@@ -69,6 +77,18 @@ typedef enum {
     kProcessing
 } EZSelectStatus;
 
+#define WeChatAppId @"wxd930ea5d5a258f4f" 
+#define WeChatAppSecret @"db426a9829e4b49a0dcac7b4162da6b6"
+//@"100424468" appKey:@"c7394704798a158208a74ab60104f0ba"
+#define QQAppId @"100424468"
+#define QQAppSecret @"c7394704798a158208a74ab60104f0ba"
+#define UMengAppKey @"542d42a0fd98c5484f053599"
+
+#define EZUpdatePhotoTask @"EZUpdatePhotoTask"
+
+
+
+
 #define FrontProbableColor RGBACOLOR(255, 128, 128, 128)
 
 #define FrontProbableColorCV cv::Vec4b(255, 128, 128, 128)
@@ -101,13 +121,13 @@ typedef enum {
 
 #define EZPasswordInputHeight 45.0
 
-#define MainBackgroundColor RGBCOLOR(44, 44, 45)
+#define MainBackgroundColor [EZColorScheme sharedEZColorScheme].generalBackgroundColor//RGBCOLOR(44, 44, 45)
 
 #define CellBackgroundColor RGBCOLOR(60, 60, 60)
 
 #define BottomBarBackgroundColor RGBCOLOR(24, 24, 27)
 
-#define WhiteTitleColor RGBCOLOR(220, 220, 220)
+#define WhiteTitleColor [EZColorScheme sharedEZColorScheme].mainNavNormalColor
 
 #define EZLoginInputTextColor RGBCOLOR(107, 107, 107)
 
@@ -325,14 +345,14 @@ typedef enum {
 //every request need to have session with it.
 //#define baseServiceURL @"http://www.enjoyxue.com:8080/%@;jsessionid=%@?"
 //#define baseServiceURL @"http://192.168.1.105:8080/"
+//#define baseServiceURL @"http://192.168.1.104:8080/"
 #define baseServiceURL @"http://www.enjoyxue.com:8080/"
-//#define baseServiceURL @"http://192.168.1.101:8080/"
 
 #define EZButtonGreen RGBCOLOR(56, 216, 116)
 
 #define EZButtonRed RGBCOLOR(216, 116, 56)
 
-#define ClickedColor RGBCOLOR(62, 192, 216)
+#define ClickedColor [EZColorScheme sharedEZColorScheme].navBtnTextColor   //RGBCOLOR(62, 192, 216)
 
 #define EZBarButtonColor RGBCOLOR(62, 192, 216)
 
@@ -475,6 +495,7 @@ typedef enum {
     kPhotoOwnLike
 }EZFilterType;
 
+#define BIINFO(text) NSLocalizedStringFromTable(text,@"UIControlInfo",nil)
 
 
 #define AllResizeMask UIViewAutoresizingFlexibleBottomMargin|UIViewAutoresizingFlexibleTopMargin|UIViewAutoresizingFlexibleLeftMargin|UIViewAutoresizingFlexibleRightMargin|UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight

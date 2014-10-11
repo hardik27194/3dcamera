@@ -106,6 +106,8 @@ static EZLRUMap* imageCaches;
 
 + (NSString*) saveImageToDocument:(UIImage*)image;
 
++ (NSString*) saveFullImage:(UIImage*)image;
+
 + (void) deleteFile:(NSString*)filename;
 
 @end

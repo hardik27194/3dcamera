@@ -108,6 +108,7 @@
         [[EZMessageCenter getInstance] postEvent:@"EZDeletePhotoTask" attached:_task];
         [self.navigationController popViewControllerAnimated:YES];
     }
+    
 }
 
 
@@ -179,8 +180,8 @@
         addedPhoto.localFileURL = localURL;
         addedPhoto.createdTime = [NSDate date];
         addedPhoto.sequence = _photos.count;
-        
-        [[EZDataUtil getInstance] uploadStoredPhoto:storedPhoto isOriginal:YES success:^(id obj){
+        addedPhoto.isOriginal = true;
+        [[EZDataUtil getInstance] addUploadPhoto:addedPhoto success:^(id obj){
             EZDEBUG(@"obj:%@", obj);
             [_photos addObject:addedPhoto];
             [_imageView setImageWithURL:str2url(localURL)];
@@ -228,6 +229,26 @@
     };
     
     [self.navigationController pushViewController:sc animated:YES];
+}
+
+- (void) reverseSequence:(id)obj
+{
+    NSMutableArray* reversed = [[NSMutableArray alloc] initWithCapacity:_task.photos.count];
+    for(int i = _task.photos.count - 1; i >= 0; i --){
+        [reversed addObject:[_task.photos objectAtIndex:i]];
+    }
+    _task.photos  = reversed;
+    _photos = reversed;
+    if([_task.taskID isNotEmpty]){
+        [[EZDataUtil getInstance] updateTaskSequence:_task success:^(id info){
+            EZDEBUG(@"successfully change sequence");
+            //[weakSelf.collectionView reloadItemsAtIndexPaths:@[indexPath]];
+            [self loadImage];
+            [[EZMessageCenter getInstance] postEvent:EZShotTaskChanged attached:nil];
+        } failure:^(id err){
+            EZDEBUG(@"failed to update the sequence");
+        }];
+    }
 }
 
 - (void) sequence:(id)obj
@@ -401,8 +422,8 @@
     //UIBarButtonItem* deleteBtn = [[UIBarButtonItem alloc] initWithCustomView:_deleteBtn];
     
     
-    _adjustSequence = [UIButton createButton:CGRectMake(0, 0, 30, 44) image:[UIImage imageNamed:@"sort"] imageInset:UIEdgeInsetsMake(0, 0, 14, 0) title:@"排序" font:[UIFont boldSystemFontOfSize:12] color:ClickedColor align:NSTextAlignmentCenter textFrame:CGRectMake(0, 30, 30, 14)];
-    [_adjustSequence addTarget:self action:@selector(sequence:) forControlEvents:UIControlEventTouchUpInside];
+    _adjustSequence = [UIButton createButton:CGRectMake(0, 0, 30, 44) image:[UIImage imageNamed:@"sort"] imageInset:UIEdgeInsetsMake(0, 0, 14, 0) title:@"逆序" font:[UIFont boldSystemFontOfSize:12] color:ClickedColor align:NSTextAlignmentCenter textFrame:CGRectMake(0, 30, 30, 14)];
+    [_adjustSequence addTarget:self action:@selector(reverseSequence:) forControlEvents:UIControlEventTouchUpInside];
     //UIBarButtonItem* orgnizerBtn = [[UIBarButtonItem alloc] initWithCustomView:_adjustSequence];
     
     
@@ -410,10 +431,10 @@
     _addButton = [UIButton createButton:CGRectMake(0, 0, 30, 44) image:[UIImage imageNamed:@"add"] imageInset:UIEdgeInsetsMake(0, 0, 14, 0) title:@"增加" font:[UIFont boldSystemFontOfSize:12] color:ClickedColor align:NSTextAlignmentCenter textFrame:CGRectMake(0, 30, 30, 14)];
     [_addButton addTarget:self action:@selector(addPhoto:) forControlEvents:UIControlEventTouchUpInside];
     //UIBarButtonItem* addBtn = [[UIBarButtonItem alloc] initWithCustomView:_addButton];
-    CGFloat gap = CurrentScreenWidth / 3.0;
+    CGFloat gap = CurrentScreenWidth / 4.0;
 
     if(_showShot){
-        gap = CurrentScreenWidth / 4.0;
+        //gap = CurrentScreenWidth / 4.0;
         /**
         _deleteBtn.frame = CGRectMake(0, 0, CurrentScreenWidth/2.0, 44);
         [_toolBar addSubview:_deleteBtn];
@@ -424,10 +445,10 @@
        //_toolBar.items = @[FlexibleItemBar,deleteBtn,FlexibleItemBar,replaceBtn,FlexibleItemBar];
                //[deleteBtn setX:0];
         //_deleteBtn.centerX = gap/2.0;
-        _deleteBtn.centerX = gap;
-        _replaceBtn.centerX = gap * 3.0;
+        _deleteBtn.centerX = CurrentScreenWidth/2.0;
+        //_replaceBtn.centerX = gap * 3.0;
         [_toolBar addSubview:_deleteBtn];
-        [_toolBar addSubview:_replaceBtn];
+        //[_toolBar addSubview:_replaceBtn];
         
     }else{
         /**
@@ -443,9 +464,12 @@
         
         _addButton.centerX = 2 * gap + gap/2.0;
         
+        _deleteBtn.centerX = 3 * gap + gap/2.0;
+        
         [_toolBar addSubview:_replaceBtn];
         [_toolBar addSubview:_adjustSequence];
         [_toolBar addSubview:_addButton];
+        [_toolBar addSubview:_deleteBtn];
         
     }
     [self.view addSubview:_imageView];
@@ -466,7 +490,9 @@
     if([_task.name isNotEmpty]){
         [_titleButton setTitle:_task.name forState:UIControlStateNormal];
     }
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(deleteTask)];
+    if(!_showShot){
+        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(deleteTask)];
+    }
     //self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"去背景" style:UIBarButtonItemStylePlain target:self action:@selector(eraseBg:)];
     // Do any additional setup after loading the view.
 }
