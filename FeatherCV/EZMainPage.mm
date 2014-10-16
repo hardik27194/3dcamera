@@ -28,7 +28,7 @@
 #import "EZMessageCenter.h"
 #import "EZPreviewView.h"
 #import "EZDetailPage.h"
-#import "RAViewController.h"
+#import "EZEditDrag.h"
 #import "EZPhotoEditPage.h"
 #import "EZMainLayout.h"
 
@@ -54,6 +54,8 @@
 #import "EZShotButton.h"
 #import "EZShotSetting.h"
 #import "EZInputItem.h"
+#import "STHorizontalPicker.h"
+#import "HorizontalPickerView.h"
 
 #define CELL_ID @"CELL_ID"
 
@@ -101,7 +103,6 @@
 - (void) viewWillLayoutSubviews
 {
     [super viewWillLayoutSubviews];
-    self.collectionView.frame = CGRectMake(0, 44, self.view.bounds.size.width,self.view.bounds.size.height-44);
     //_bottomBar.y = self.view.bounds.size.height - 44;
 }
 
@@ -126,7 +127,9 @@
         //[[EZMessageCenter getInstance] postEvent:EZShotPhotos attached:task];
         //task.uploading = true;
         [_uploadedPhotos insertObject:task atIndex:0];
-        [_collectionView reloadData];
+        //[_collectionView reloadData];
+        //[_collectionView ]
+        [_collectionView insertItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:0 inSection:0]]];
         task.personID = currentLoginID;
         [task store];
         __block int count = 0;
@@ -223,7 +226,7 @@
         }];
         if(pos == 0){
              _bottomBar.hidden = NO;
-             self.collectionView.frame = CGRectMake(0, 44, self.view.bounds.size.width, self.view.bounds.size.height-88);
+             self.collectionView.frame = CGRectMake(0, 44, self.view.bounds.size.width, self.view.bounds.size.height-44);
             [UIView animateWithDuration:0.3 animations:^(){
                 _bottomBar.alpha = 1.0;
                
@@ -268,9 +271,14 @@
         NSString* pid = pos?nil:currentLoginID;
         _loadingActivity.hidden = NO;
         [_loadingActivity startAnimating];
+        
+        
         [[EZDataUtil getInstance] queryTaskByPersonID:pid success:^(NSArray* tasks){
-            _uploadedPhotos = [self filterTask:tasks];///[[NSMutableArray alloc] initWithArray:tasks];
-            [_collectionView reloadData];
+            if(_currentPos != pos){
+                return;
+            }
+            _uploadedPhotos = [self filterTask:tasks];///[[NSMutableArray alloc initWithArray:tasks];
+            [self refresh];
             [_loadingActivity stopAnimating];
             _loadingActivity.hidden = YES;
         } failed:^(id err){
@@ -279,6 +287,13 @@
         }];
     }else{
     }
+}
+
+- (void) refresh
+{
+    [_collectionView.collectionViewLayout invalidateLayout];
+    [_collectionView reloadData];
+
 }
 
 - (void) viewDidLoad
@@ -323,8 +338,10 @@
     
     [[EZMessageCenter getInstance] registerEvent:EZDeletePhotoTask block:^(EZShotTask* task){
         int pos = [_uploadedPhotos indexOfObject:task];
-        [_uploadedPhotos removeObject:task];
-        [_collectionView deleteItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:pos inSection:0]]];
+        if(pos != NSNotFound){
+            [_uploadedPhotos removeObject:task];
+            [_collectionView deleteItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:pos inSection:0]]];
+        }
     }];
     [[EZMessageCenter getInstance] registerEvent:EZShotPhotos block:^(EZShotTask* task){
         EZDEBUG(@"I receieved photo");
@@ -335,14 +352,16 @@
         //if(_uploadedPhotos.count){
         //    [self.collectionView insertItemsAtIndexPaths:@[[[NSIndexPath alloc] initWithIndex:_uploadedPhotos.count-1]]];
         //}else{
-        [_collectionView reloadData];
+        //[_collectionView reloadData];
         //}
+        [self refresh];
         
     }];
     
     [[EZMessageCenter getInstance] registerEvent:EZPhotoUpdated block:^(NSString* taskID){
         EZDEBUG(@"current taskID updated:%@", taskID);
-        [_collectionView reloadData];
+        //[_collectionView reloadData];
+        [self refresh];
     }];
     
     [[EZMessageCenter getInstance] registerEvent:EZUpdatePhotoTask block:^(EZShotTask* task) {
@@ -402,10 +421,11 @@
     
     
     [[EZMessageCenter getInstance] registerEvent:EZShotTaskChanged block:^(EZShotTask* task){
-        [_collectionView reloadData];
+        //[_collectionView reloadData];
+        [self refresh];
     }];
     
-    
+    self.collectionView.frame = CGRectMake(0, 44, self.view.bounds.size.width,CurrentScreenHeight-20);
     //EZShotSetting* shit = [[EZShotSetting alloc] initWithFrame:CGRectMake(0, 100, 250, 300)];
     //shit.backgroundColor = [UIColor grayColor];
     //[self.view addSubview:shit];
@@ -426,89 +446,32 @@
 
 
 
-- (void) drawCanvas
-{
-    
-    EZPalate* canvas = [[EZPalate alloc] initWithFrame:CGRectMake(50, 50, 160, 160) activeColor:[UIColor whiteColor] inactiveColor:[UIColor blackColor] background:RGBACOLOR(70, 70, 70, 128) total:12]; //[[EZPalate alloc] initWithFrame:CGRectMake(0, 100, 320, 320)];
-    //EZDrawAngle* angle = [EZDrawAngle create:CGRectMake(50, 50, 160, 160) total:12 occupiedColor:[UIColor whiteColor] emptyColor:[UIColor blackColor] background:RGBCOLOR(70, 80, 80)length:10];
-    canvas.occupied = 10;
-   // angle.occupiedCount = 5;
-    //[canvas addShapeObject:angle];
-    [self.view addSubview:canvas];
-    [canvas setNeedsDisplay];
-    PatternDetector pt;
-    UIImage* orgImage =  [UIImage imageNamed:@"PyramidPattern.jpg"];
-    UIImage* patternImg = [UIImage imageNamed:@"PyramidPatternTest.bmp"];
-    
-    EZDEBUG(@"orgImage size:%@, patternImage:%@", NSStringFromCGSize(orgImage.size), NSStringFromCGSize(patternImg.size));
-    cv::Mat orgMat;
-    cv::Mat patternMat;
-    [EZImageConverter cvMatFromUIImage:orgImage outMat:orgMat];
-    [EZImageConverter cvMatFromUIImage:patternImg outMat:patternMat];
-    
-    std::vector<cv::KeyPoint> points;
-    std::vector<cv::KeyPoint> patternPoints;
-    cv::Mat descriptors;
-    pt.findKeyPoints(orgMat, points, descriptors);
-    
-    //std::vector<cv::Mat> descs;
-    //descs.push_back(descriptors);
-    //descs.push_back(descriptors);
-    pt.train(descriptors);
-    //pt.train(descs);
-    EZDEBUG(@"trained descs");
-    std::vector<cv::DMatch> matches;
-    pt.findMatches(patternMat,patternPoints, matches);
-    
-    
-    //EZDEBUG(@"Final match count:%lu, finalMat:%@, imageView:%@", matches.size(), NSStringFromCGSize(finalMat.size), NSStringFromCGRect(imageView.frame));
-    for(int i = 0; i < 10; i ++){
-        cv::Point2f pt = points[matches.at(i).trainIdx].pt;
-        cv::Point2f pt2 = patternPoints[matches.at(i).queryIdx].pt;
-        EZDEBUG(@"image index:%i, match trained:%i, dest:%i pt:%f, %f, query pt:%f, %f, patternPoints:%lu",matches.at(i).imgIdx, matches.at(i).trainIdx, matches.at(i).queryIdx, pt.x, pt.y, pt2.x, pt2.y, patternPoints.size());
-    }
-    
-    
-    /**
-     
-     EZFrontFrame* frontFrame = [[EZFrontFrame alloc] initWithFrame:CGRectMake(0, 44, CurrentScreenWidth, CurrentScreenWidth)];
-     [self.view addSubview:frontFrame];
-     frontFrame.backgroundColor = RGBCOLOR(80, 80, 80);
-     **/
-    /**
-     EZCanvas* canvas = [[EZCanvas alloc] initWithFrame:CGRectMake(0, 100, 320, 320)];
-     EZRectObject* object = [EZRectObject createRect:CGRectMake(20, 20, 20, 20) isStroke:YES color:[UIColor greenColor] borderWidth:10];
-     
-     [canvas.shapes addObject:object];
-     
-     EZRectObject* fillRect = [EZRectObject createRect:CGRectMake(40, 40, 40, 40) isStroke:NO color:[UIColor redColor] borderWidth:0];
-     [canvas.shapes addObject:fillRect];
-     
-     EZRoundObject* fillRound = [EZRoundObject createRound:CGRectMake(80, 80, 80, 40) isStroke:NO color:[UIColor redColor] borderWidth:0];
-     [canvas.shapes addObject:fillRound];
-     
-     
-     EZPathObject* path = [EZPathObject createPath:[UIColor whiteColor] width:10 isFill:NO];
-     [path addPoints:@[pointValue(0, 0), pointValue(10, 10), pointValue(15, 10), pointValue(20, 30)]];
-     
-     [canvas addShapeObject:path];
-     
-     EZPathObject* path1 = [EZPathObject createPath:[UIColor greenColor] width:10 isFill:YES];
-     [path1 addPoints:@[pointValue(40, 40), pointValue(50, 50), pointValue(50, 100), pointValue(100, 50)]];
-     [canvas addShapeObject:path1];
-     
-     EZImageObject* imageobj = [EZImageObject createImage:[UIImage imageNamed:@"camera_btn"] frame:CGRectMake(0, 120, 0, 0)];
-     
-     EZImageObject* imageObj2 = [EZImageObject createImage:[UIImage imageNamed:@"camera_btn"] frame:CGRectMake(0, 60, 20, 20)];
-     [canvas addShapeObject:imageobj];
-     [canvas addShapeObject:imageObj2];
-     
-     [canvas setNeedsDisplay];
-     [self.view addSubview:canvas];
-     ***/
-    
+#pragma mark -  HPickerViewDataSource
 
+- (NSInteger)numberOfRowsInPickerView:(HorizontalPickerView *)pickerView
+{
+    return @[@"1",@"2",@"3",@"4", @"5", @"6", @"7", @"8", @"9",@"10"].count;
 }
+
+#pragma mark -  HPickerViewDelegate
+
+- (NSString *)pickerView:(HorizontalPickerView *)pickerView titleForRow:(NSInteger)row
+{
+    //return [NSNumberFormatter localizedStringFromNumber:self.source[row] numberStyle:NSNumberFormatterDecimalStyle];
+    return [@[@"1",@"2",@"3",@"4", @"5", @"6", @"7", @"8", @"9",@"10"] objectAtIndex:row];
+}
+
+- (void)pickerView:(HorizontalPickerView *)pickerView didSelectRow:(NSInteger)row
+{
+    //self.selectedRowLabel.text = [NSString stringWithFormat:@"%@", @(row)];
+   // @[@"1",@"2",@"3",@"4", @"5", @"6", @"7", @"8", @"9",@"10"].count;
+    EZDEBUG(@"Selected %i", row);
+    //
+    
+}
+
+
+
 
 - (void) viewWillAppear:(BOOL)animated
 {

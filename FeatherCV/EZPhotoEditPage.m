@@ -13,7 +13,7 @@
 #import "EZStoredPhoto.h"
 #import "EZMessageCenter.h"
 #import "EZCaptureCameraController.h"
-#import "RAViewController.h"
+#import "EZEditDrag.h"
 #import "EZInfoDotView.h"
 #import "EZPhotoInfo.h"
 #import "EZPopupInput.h"
@@ -21,6 +21,7 @@
 //#import "EZBackgroundEraser.h"
 #import "EZEraserPage.h"
 #import "LocalTasks.h"
+#import "EZDragPage.h"
 
 @interface EZPhotoEditPage ()
 
@@ -39,12 +40,18 @@
 
 - (id) initWithTask:(EZShotTask*)task pos:(NSInteger)pos
 {
+    return [self initWithTask:task pos:pos isMultiMode:NO];
+}
+
+- (id) initWithTask:(EZShotTask*)tasks pos:(NSInteger)pos isMultiMode:(BOOL)isMultiMode
+{
     self = [super initWithNibName:nil bundle:nil];
     //_task = task;
     self.title = @"编辑";
-    _task = task;
-    _photos = task.photos;
+    _task = tasks;
+    _photos = tasks.photos;
     _currentPos = pos;
+    _isMultiMode = isMultiMode;
     return self;
 }
 
@@ -178,12 +185,14 @@
         //[[EZDataUtil getInstance] deleteLocalFile:storedPhoto];
         //storedPhoto.localFileURL = localURL;
         addedPhoto.localFileURL = localURL;
+        addedPhoto.remoteURL = localURL;
         addedPhoto.createdTime = [NSDate date];
         addedPhoto.sequence = _photos.count;
         addedPhoto.isOriginal = true;
+        [_photos addObject:addedPhoto];
+        [[EZMessageCenter getInstance] postEvent:EZShotPhotoAdded attached:addedPhoto];
         [[EZDataUtil getInstance] addUploadPhoto:addedPhoto success:^(id obj){
             EZDEBUG(@"obj:%@", obj);
-            [_photos addObject:addedPhoto];
             [_imageView setImageWithURL:str2url(localURL)];
             [[EZMessageCenter getInstance] postEvent:EZShotTaskChanged attached:addedPhoto];
         } failure:^(id err){
@@ -211,7 +220,7 @@
         if(!localURL){
             return;
         }
-        [[EZDataUtil getInstance] deleteLocalFile:storedPhoto];
+        //[[EZDataUtil getInstance] deleteLocalFile:storedPhoto];
         storedPhoto.localFileURL = localURL;
         
         if([storedPhoto.photoID isNotEmpty]){
@@ -251,12 +260,47 @@
     }
 }
 
+
+- (void) switchMode:(BOOL)isMultiMode
+{
+    if(!isMultiMode){
+        _toolBar.hidden = false;
+        _toolBar.alpha = 0;
+        [UIView animateWithDuration:0.3 animations:^(){
+            _dragPage.view.alpha = 0;
+            _toolBar.alpha = 1;
+        } completion:^(BOOL finished) {
+            [_dragPage.view removeFromSuperview];
+        }];
+    }else{
+        _dragPage.view.frame = CGRectMake(0, 0, self.view.width, self.view.height - _toolBar.height);
+        //[_dragPage viewWillLayoutSubviews];
+        _dragPage.view.alpha = 0;
+        [self.view addSubview:_dragPage.view];
+        EZDEBUG(@"Drag page view %@, %@", NSStringFromCGRect(_dragPage.view.frame), NSStringFromCGRect(_dragPage.collectionView.frame));
+        [UIView animateWithDuration:0.3 animations:^(){
+            _dragPage.view.alpha = 1;
+            _toolBar.alpha = 0;
+        } completion:^(BOOL finished) {
+            self.navigationItem.rightBarButtonItem.style = UIBarButtonSystemItemCompose;
+            _toolBar.hidden = true;
+        }];
+    }
+}
+
+- (void) modeSwitched:(id)obj
+{
+    _isMultiMode = !_isMultiMode;
+    EZDEBUG(@"Switched mode is:%i", _isMultiMode);
+    [self switchMode:_isMultiMode];
+}
+
 - (void) sequence:(id)obj
 {
     
-    RAViewController* editorView = [[RAViewController alloc] initWithTask:_task];
+    EZEditDrag* editorView = [[EZEditDrag alloc] initWithTask:_task];
     [self.navigationController pushViewController:editorView animated:YES];
-    editorView.confirmClicked = ^(RAViewController* raView){
+    editorView.confirmClicked = ^(EZEditDrag* raView){
         EZDEBUG(@"editor confirm get called");
         _task.photos = raView.storedPhotos;
         _photos = raView.storedPhotos;
@@ -294,7 +338,7 @@
     [_dotViews removeAllObjects];
     if(_photos.count > 0){
         EZStoredPhoto* sp = [_photos objectAtIndex:_currentPos];
-        [_imageView setImageWithURL:str2url(sp.localFileURL?sp.localFileURL:sp.remoteURL) loading:YES];
+        [_imageView setImageWithURL:str2url(sp.remoteURL) loading:YES];
         _posText.text = [NSString stringWithFormat:@"第%i张", _currentPos + 1];
         
         NSArray* photoInfos = sp.infos;
@@ -388,7 +432,7 @@
     grayView.backgroundColor = RGBACOLOR(0, 0, 0, 90);
     grayView.userInteractionEnabled = false;
     
-    _posText = [UILabel createLabel:CGRectMake(20, 0, CurrentScreenWidth - 2*20, 20) font:[UIFont boldSystemFontOfSize:18] color:[UIColor whiteColor]];
+    _posText = [UILabel createLabel:CGRectMake(20, 0, CurrentScreenWidth - 2*20, 20) font:[UIFont boldSystemFontOfSize:14] color:[UIColor whiteColor]];
     _posText.textAlignment = NSTextAlignmentCenter;
     
     
@@ -402,7 +446,9 @@
     
     //[_toolBar setBackgroundColor:[UIColor clearColor]];
     
-    _replaceBtn = [UIButton createButton:CGRectMake(0, 0, 30, 44) image:[UIImage imageNamed:@"replace"] imageInset:UIEdgeInsetsMake(0, 0, 14, 0) title:@"替换" font:[UIFont boldSystemFontOfSize:12] color:ClickedColor align:NSTextAlignmentCenter textFrame:CGRectMake(0, 30, 30, 14)];
+    //_replaceBtn = [UIButton createButton:CGRectMake(0, 0, 30, 44) image:[UIImage imageNamed:@"replace"] imageInset:UIEdgeInsetsMake(0, 0, 14, 0) title:@"替换" font:[UIFont boldSystemFontOfSize:12] color:ClickedColor align:NSTextAlignmentCenter textFrame:CGRectMake(0, 30, 30, 14)];
+    
+    _replaceBtn = [UIButton createButton:CGRectMake(0, 0, 44, 44) image:[UIImage imageNamed:@"replace"] imageRect:CGRectMake(9, 4, 25, 25) title:@"替换" font:[UIFont boldSystemFontOfSize:10] color:[EZColorScheme sharedEZColorScheme].toolBarTintColor align:NSTextAlignmentCenter textFrame:CGRectMake(0, 31, 44, 11)];
     /**
     [UIButton createButton:CGRectMake(0, 0, 30, 44) font:[UIFont boldSystemFontOfSize:12] color:RGBCOLOR(70, 70, 70) align:NSTextAlignmentCenter];
     [_replaceBtn setTitleEdgeInsets:UIEdgeInsetsMake(0.0, 0.0, -31.0,0.0)];
@@ -417,18 +463,27 @@
     //UIBarButtonItem* replaceBtn = [[UIBarButtonItem alloc]initWithCustomView:_replaceBtn];//UIBarButtonSystemItemCamera target:self action:@selector(replace:)];
     
     
-    _deleteBtn = [UIButton createButton:CGRectMake(0, 0, 30, 44) image:[UIImage imageNamed:@"trash"] imageInset:UIEdgeInsetsMake(0, 0, 14, 0) title:@"删除" font:[UIFont boldSystemFontOfSize:12] color:ClickedColor align:NSTextAlignmentCenter textFrame:CGRectMake(0, 30, 30, 14)];
+    //_deleteBtn = [UIButton createButton:CGRectMake(0, 0, 30, 44) image:[UIImage imageNamed:@"trash"] imageInset:UIEdgeInsetsMake(0, 0, 14, 0) title:@"删除" font:[UIFont boldSystemFontOfSize:12] color:ClickedColor align:NSTextAlignmentCenter textFrame:CGRectMake(0, 30, 30, 14)];
+    
+    _deleteBtn = [UIButton createButton:CGRectMake(0, 0, 44, 44) image:[UIImage imageNamed:@"trash"] imageRect:CGRectMake(9, 4, 25, 25) title:@"删除" font:[UIFont boldSystemFontOfSize:10] color:[EZColorScheme sharedEZColorScheme].toolBarTintColor align:NSTextAlignmentCenter textFrame:CGRectMake(0, 31, 44, 11)];
+
     [_deleteBtn addTarget:self action:@selector(delete:) forControlEvents:UIControlEventTouchUpInside];
     //UIBarButtonItem* deleteBtn = [[UIBarButtonItem alloc] initWithCustomView:_deleteBtn];
     
     
-    _adjustSequence = [UIButton createButton:CGRectMake(0, 0, 30, 44) image:[UIImage imageNamed:@"sort"] imageInset:UIEdgeInsetsMake(0, 0, 14, 0) title:@"逆序" font:[UIFont boldSystemFontOfSize:12] color:ClickedColor align:NSTextAlignmentCenter textFrame:CGRectMake(0, 30, 30, 14)];
+    //_adjustSequence = [UIButton createButton:CGRectMake(0, 0, 30, 44) image:[UIImage imageNamed:@"sort"] imageInset:UIEdgeInsetsMake(0, 0, 14, 0) title:@"逆序" font:[UIFont boldSystemFontOfSize:12] color:ClickedColor align:NSTextAlignmentCenter textFrame:CGRectMake(0, 30, 30, 14)];
+    
+    _adjustSequence = [UIButton createButton:CGRectMake(0, 0, 44, 44) image:[UIImage imageNamed:@"sort"] imageRect:CGRectMake(9, 4, 25, 25) title:@"逆序" font:[UIFont boldSystemFontOfSize:10] color:[EZColorScheme sharedEZColorScheme].toolBarTintColor align:NSTextAlignmentCenter textFrame:CGRectMake(0, 31, 44, 11)];
+
     [_adjustSequence addTarget:self action:@selector(reverseSequence:) forControlEvents:UIControlEventTouchUpInside];
     //UIBarButtonItem* orgnizerBtn = [[UIBarButtonItem alloc] initWithCustomView:_adjustSequence];
     
     
     
-    _addButton = [UIButton createButton:CGRectMake(0, 0, 30, 44) image:[UIImage imageNamed:@"add"] imageInset:UIEdgeInsetsMake(0, 0, 14, 0) title:@"增加" font:[UIFont boldSystemFontOfSize:12] color:ClickedColor align:NSTextAlignmentCenter textFrame:CGRectMake(0, 30, 30, 14)];
+    //_addButton = [UIButton createButton:CGRectMake(0, 0, 30, 44) image:[UIImage imageNamed:@"add"] imageInset:UIEdgeInsetsMake(0, 0, 14, 0) title:@"增加" font:[UIFont boldSystemFontOfSize:12] color:ClickedColor align:NSTextAlignmentCenter textFrame:CGRectMake(0, 30, 30, 14)];
+    
+    _addButton = [UIButton createButton:CGRectMake(0, 0, 44, 44) image:[UIImage imageNamed:@"add"] imageRect:CGRectMake(9, 4, 25, 25) title:@"增加" font:[UIFont boldSystemFontOfSize:10] color:[EZColorScheme sharedEZColorScheme].toolBarTintColor align:NSTextAlignmentCenter textFrame:CGRectMake(0, 31, 44, 11)];
+
     [_addButton addTarget:self action:@selector(addPhoto:) forControlEvents:UIControlEventTouchUpInside];
     //UIBarButtonItem* addBtn = [[UIBarButtonItem alloc] initWithCustomView:_addButton];
     CGFloat gap = CurrentScreenWidth / 4.0;
@@ -475,6 +530,8 @@
     [self.view addSubview:_imageView];
     [self.view addSubview:grayView];
     [self.view addSubview:_posText];
+    
+    
     [self.view addSubview:_toolBar];
     
     [[EZMessageCenter getInstance] registerEvent:EZShotTaskChanged block:^(id obj){
@@ -490,13 +547,36 @@
     if([_task.name isNotEmpty]){
         [_titleButton setTitle:_task.name forState:UIControlStateNormal];
     }
+    
+    /**
+    [[EZDataUtil getInstance] loadAllTaskPhotos:_task isThumbnail:NO success:^(id obj){
+        EZDEBUG(@"loaded all task images, make the scroll smooths");
+    } failure:^(id err){} progress:^(NSNumber* percent){
+        EZDEBUG(@"loaded %f percent", percent.floatValue);
+    }];
+     **/
+    _dragPage = [[EZDragPage alloc] initWithTask:_task mode:YES];
+    //_dragPage.view.frame = CGRectMake(0, 64, CurrentScreenWidth, CurrentScreenHeight - 108);
+    //EZDEBUG(@"before refer to view");
+    _dragPage.view.backgroundColor = [UIColor yellowColor];
+    //EZDEBUG(@"after refer to view");
+    __weak EZPhotoEditPage* weakSelf = self;
+    _dragPage.addClicked = ^(id obj){
+        [weakSelf addPhoto:nil];
+    };
+    //_dragPage.confirmClicked = ^(id obj){
+    //
+    //};
+    
     if(!_showShot){
-        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(deleteTask)];
+        //self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(deleteTask)];
+        
+        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemOrganize target:self action:@selector(modeSwitched:)];
     }
+    [self switchMode:_isMultiMode];
     //self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"去背景" style:UIBarButtonItemStylePlain target:self action:@selector(eraseBg:)];
     // Do any additional setup after loading the view.
 }
-
 - (void) deleteTask
 {
     UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"删除%@", ([_task.name isNotEmpty]?_task.name:@"未命名")] message:[NSString  stringWithFormat:@"共有%i张照片，确认删除吗？", _task.photos.count] delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确认", nil];

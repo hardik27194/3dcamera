@@ -43,6 +43,10 @@
 @property (nonatomic, assign) id<RACollectionViewReorderableTripletLayoutDataSource> datasource;
 @property (nonatomic, strong, readonly) UILongPressGestureRecognizer *longPressGesture;
 @property (nonatomic, strong, readonly) UIPanGestureRecognizer *panGesture;
+//@property (nonatomic, strong) UITapGestureRecognizer* tapGesture;
+@property (nonatomic, assign) BOOL needsUpdateLayout;
+
+@property (nonatomic, assign) BOOL dragStatus;
 //@property (nonatomic, assign) CGSize smallCellSize;
 
 @end

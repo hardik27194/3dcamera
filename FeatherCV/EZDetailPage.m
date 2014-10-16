@@ -49,7 +49,18 @@
     _webView.frame = self.view.bounds;
 }
 
-
+- (void) createSwitchButton
+{
+    _switchTitle = [UILabel createLabel:CGRectMake(10, CurrentScreenHeight - 100, 100, 44) font:[UIFont boldSystemFontOfSize:14] color:[EZColorScheme sharedEZColorScheme].toolBarTintColor];
+    _switchTitle.text = @"是否广场可见:";
+    
+    _switchBtn = [[UISwitch alloc] initWithFrame:CGRectMake(120, CurrentScreenHeight - 100, 60, 44)];
+    [_switchBtn addTarget:self action:@selector(switched:) forControlEvents:UIControlEventValueChanged];
+    
+    [self.view addSubview:_switchTitle];
+    [self.view addSubview:_switchBtn];
+    _switchBtn.on = !_task.isPrivate;
+}
 
 - (void)viewDidLoad
 {
@@ -89,16 +100,7 @@
     [deleteButton addTarget:self action:@selector(delete:) forControlEvents:UIControlEventTouchUpInside];
     
     
-    _switchTitle = [UILabel createLabel:CGRectMake(10, CurrentScreenHeight - 100, 100, 44) font:[UIFont boldSystemFontOfSize:14] color:[EZColorScheme sharedEZColorScheme].toolBarTintColor];
-    _switchTitle.text = @"是否广场可见:";
-    
-    _switchBtn = [[UISwitch alloc] initWithFrame:CGRectMake(120, CurrentScreenHeight - 100, 60, 44)];
-    [_switchBtn addTarget:self action:@selector(switched:) forControlEvents:UIControlEventValueChanged];
-    
-    [self.view addSubview:_switchTitle];
-    [self.view addSubview:_switchBtn];
-    
-    _switchBtn.on = !_task.isPrivate;
+ 
     ///UIButton* showPublic = [UIButton createButton:CGRectMake(0, 0, 44, 44) image:[UIImage imageNamed:@"trash"] imageInset:UIEdgeInsetsMake(3, 4, 3, 4) title:@"广场可见" font:[UIFont boldSystemFontOfSize:10] color:[EZColorScheme sharedEZColorScheme].toolBarTintColor align:NSTextAlignmentCenter textFrame:CGRectMake(0, 31, 44, 11)];
     
     //[deleteButton addTarget:self action:@selector(delete:) forControlEvents:UIControlEventTouchUpInside];
@@ -106,10 +108,17 @@
      
     UIBarButtonItem* sepBar = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
      
-    UIBarButtonItem* sepBar2 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+    //UIBarButtonItem* sepBar2 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     toolBar.items  = @[sepBar,editBtn, sepBar, shareBtn, sepBar];
     
     [self.view addSubview:toolBar];
+    
+    __weak EZDetailPage* weakSelf = self;
+    _taskChanged = ^(id obj){
+        EZDEBUG(@"Task Changed");
+        [weakSelf.webView reload];
+    };
+    [[EZMessageCenter getInstance] registerEvent:EZShotTaskChanged block:_taskChanged isWeak:YES];
     // Do any additional setup after loading the view.
 }
 
@@ -167,7 +176,7 @@
 - (void) edit
 {
     EZDEBUG(@"Edit get clicked");
-    EZPhotoEditPage* editPage = [[EZPhotoEditPage alloc] initWithTask:_task pos:0];
+    EZPhotoEditPage* editPage = [[EZPhotoEditPage alloc] initWithTask:_task pos:0 isMultiMode:YES];
     [self.navigationController pushViewController:editPage animated:YES];
     
 }

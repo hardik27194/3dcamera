@@ -102,6 +102,13 @@
 
 - (void) showConfigure
 {
+    if(_shotType == kShotToReplace){
+        _proposedNumber = 1;
+        _shotPalate.total = 1;
+        [self setManualMode:TRUE];
+        return;
+    }
+    
     EZShotSetting* shotConfigre = [[EZShotSetting alloc] initWithFrame:CGRectMake(20, 100, CurrentScreenWidth - 40, 220)];
     [shotConfigre showInView:self.view aniamted:NO confirmed:^(id obj){
         EZConfigure* configure = [EZConfigure sharedEZConfigure];
@@ -118,6 +125,7 @@
 	// Do any additional setup after loading the view.
     _totalCountDown =  [EZConfigure sharedEZConfigure].shotDelay; //[[NSUserDefaults standardUserDefaults] integerForKey:EZCountDownSetting];
     _proposedNumber = [EZConfigure sharedEZConfigure].shotCount;
+    
     __weak EZCaptureCameraController* weakSelf = self;
     //navigation bar
     if (self.navigationController && !self.navigationController.navigationBarHidden) {
@@ -337,7 +345,7 @@
         }else{
             //_confirmClicked(_shotTask);
             EZDEBUG(@"save clicked");
-            EZDragPage* dragPage = [[EZDragPage alloc] initWithTask:_shotTask];
+            EZDragPage* dragPage = [[EZDragPage alloc] initWithTask:_shotTask mode:NO];
             dragPage.confirmClicked = ^(NSNumber* num){
                 if([num boolValue]){
                     EZDEBUG(@"confirm clicked");
@@ -772,8 +780,13 @@ void c_slideAlpha() {
 {
     
     
-    EZDEBUG(@"Capturing is:%i, isPaused:%i, manual:%i", _shotStatus, _isPaused, _isManual);
+    EZDEBUG(@"Capturing is:%i, isPaused:%i, manual:%i, shotType:%i", _shotStatus, _isPaused, _isManual, _shotType);
     if(_isManual){
+        ++_proposedNumber;
+        if(_shotType == kShotToReplace){
+            _proposedNumber = 1;
+        }
+        //++_currentCount;
         [self innerShot:sender];
         return;
     }
@@ -882,11 +895,10 @@ void c_slideAlpha() {
                 [_shotBtn setImage:[UIImage imageNamed:@"shot_s"] forState:UIControlStateNormal];
                 _shotLabel.hidden = YES;
                 _shotStatusSign.hidden = YES;
-                [self setIsManual:true];
+                //[self setIsManual:true];
+                [self setManualMode:TRUE];
                 //EZDEBUG(@"complete shot");
-                if(!_isManual){
-                    //_currentCount = 0;
-                }
+                
             }
             });
         });
@@ -978,9 +990,9 @@ void c_slideAlpha() {
 //拍照页面，"X"按钮
 - (void)dismissBtnPressed:(id)sender {
     if(_shotStatus == kShotting){
-        UIAlertView* waiting = [[UIAlertView alloc] initWithTitle:@"等待拍摄结束"  message:@"拍摄结束后退出" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil];
-        [waiting show];
-        return;
+        //UIAlertView* waiting = [[UIAlertView alloc] initWithTitle:@"等待拍摄结束"  message:@"拍摄结束后退出" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil];
+        //[waiting show];
+        //return;
     }
     [self setIsPaused:true];
     if (self.navigationController) {

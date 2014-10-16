@@ -354,6 +354,11 @@
 		1890814F19CE9DF50096997E /* EZFrontFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = 1890814E19CE9DF50096997E /* EZFrontFrame.m */; };
 		1896AF5E19BFD1C30065F7BD /* share2@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1896AF5D19BFD1C30065F7BD /* share2@2x.png */; };
 		1896AF6A19C196990065F7BD /* DAScratchPadView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1896AF6919C196990065F7BD /* DAScratchPadView.m */; };
+		189FD63C19ED0370005B083F /* STHorizontalPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 189FD63B19ED0370005B083F /* STHorizontalPicker.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		189FD65719ED0FA6005B083F /* HorizontalPickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 189FD65019ED0FA6005B083F /* HorizontalPickerView.m */; };
+		189FD65819ED0FA6005B083F /* HPCollectionVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 189FD65219ED0FA6005B083F /* HPCollectionVC.m */; };
+		189FD65919ED0FA6005B083F /* HPCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 189FD65419ED0FA6005B083F /* HPCollectionViewCell.m */; };
+		189FD65A19ED0FA6005B083F /* HPCollectionViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 189FD65619ED0FA6005B083F /* HPCollectionViewFlowLayout.m */; };
 		18A37044185BF97E0022F0A8 /* EZPhotoRelation.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A37043185BF97E0022F0A8 /* EZPhotoRelation.m */; };
 		18B3651A1920916300092AB8 /* EZMotionRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 18B365191920916300092AB8 /* EZMotionRecorder.m */; };
 		18B3651D1920926900092AB8 /* EZMotionImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 18B3651C1920926900092AB8 /* EZMotionImage.m */; };
@@ -478,7 +483,7 @@
 		18E1AF7019A381FC002F8A37 /* EZEditPage.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E1AF6F19A381FC002F8A37 /* EZEditPage.m */; };
 		18E1AF7719A47AED002F8A37 /* RACollectionViewReorderableTripletLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E1AF7419A47AED002F8A37 /* RACollectionViewReorderableTripletLayout.m */; };
 		18E1AF7819A47AED002F8A37 /* RACollectionViewTripletLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E1AF7619A47AED002F8A37 /* RACollectionViewTripletLayout.m */; };
-		18E1AF7D19A47AFA002F8A37 /* RAViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E1AF7A19A47AFA002F8A37 /* RAViewController.m */; };
+		18E1AF7D19A47AFA002F8A37 /* EZEditDrag.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E1AF7A19A47AFA002F8A37 /* EZEditDrag.m */; };
 		18E1AF7E19A47AFA002F8A37 /* RACollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E1AF7C19A47AFA002F8A37 /* RACollectionViewCell.m */; };
 		18E1AF8119A4AC1D002F8A37 /* EZPhotoEditPage.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E1AF8019A4AC1D002F8A37 /* EZPhotoEditPage.m */; };
 		18E3467E183DF54400C9D89D /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18E3467D183DF54400C9D89D /* Foundation.framework */; };
@@ -549,7 +554,6 @@
 		18E34785183DFAA400C9D89D /* EZKeyboadUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E3476E183DFAA400C9D89D /* EZKeyboadUtility.m */; };
 		18E34786183DFAA400C9D89D /* EZUIUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E34770183DFAA400C9D89D /* EZUIUtility.m */; };
 		18E34787183DFAA400C9D89D /* EZDataUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E34772183DFAA400C9D89D /* EZDataUtil.m */; };
-		18E34788183DFAA400C9D89D /* EZImageFileCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E34774183DFAA400C9D89D /* EZImageFileCache.m */; };
 		18E3482C183F03A600C9D89D /* EZFaceTestPage.mm in Sources */ = {isa = PBXBuildFile; fileRef = 18E3482B183F03A600C9D89D /* EZFaceTestPage.mm */; };
 		18E34837183F064200C9D89D /* EZFaceUtil.mm in Sources */ = {isa = PBXBuildFile; fileRef = 18E34835183F064200C9D89D /* EZFaceUtil.mm */; };
 		18E3483A1843086200C9D89D /* EZFaceResult.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 18E348381843086100C9D89D /* EZFaceResult.cpp */; };
@@ -1080,6 +1084,17 @@
 		1896AF5D19BFD1C30065F7BD /* share2@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "share2@2x.png"; sourceTree = "<group>"; };
 		1896AF6819C196990065F7BD /* DAScratchPadView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DAScratchPadView.h; sourceTree = "<group>"; };
 		1896AF6919C196990065F7BD /* DAScratchPadView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DAScratchPadView.m; sourceTree = "<group>"; };
+		189FD63A19ED0370005B083F /* STHorizontalPicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STHorizontalPicker.h; sourceTree = "<group>"; };
+		189FD63B19ED0370005B083F /* STHorizontalPicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STHorizontalPicker.m; sourceTree = "<group>"; };
+		189FD64E19ED0FA6005B083F /* HPickerDefinitions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HPickerDefinitions.h; sourceTree = "<group>"; };
+		189FD64F19ED0FA6005B083F /* HorizontalPickerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HorizontalPickerView.h; sourceTree = "<group>"; };
+		189FD65019ED0FA6005B083F /* HorizontalPickerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HorizontalPickerView.m; sourceTree = "<group>"; };
+		189FD65119ED0FA6005B083F /* HPCollectionVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HPCollectionVC.h; sourceTree = "<group>"; };
+		189FD65219ED0FA6005B083F /* HPCollectionVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HPCollectionVC.m; sourceTree = "<group>"; };
+		189FD65319ED0FA6005B083F /* HPCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HPCollectionViewCell.h; sourceTree = "<group>"; };
+		189FD65419ED0FA6005B083F /* HPCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HPCollectionViewCell.m; sourceTree = "<group>"; };
+		189FD65519ED0FA6005B083F /* HPCollectionViewFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HPCollectionViewFlowLayout.h; sourceTree = "<group>"; };
+		189FD65619ED0FA6005B083F /* HPCollectionViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HPCollectionViewFlowLayout.m; sourceTree = "<group>"; };
 		18A37042185BF97E0022F0A8 /* EZPhotoRelation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZPhotoRelation.h; sourceTree = "<group>"; };
 		18A37043185BF97E0022F0A8 /* EZPhotoRelation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZPhotoRelation.m; sourceTree = "<group>"; };
 		18B365181920916300092AB8 /* EZMotionRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZMotionRecorder.h; sourceTree = "<group>"; };
@@ -1280,8 +1295,8 @@
 		18E1AF7419A47AED002F8A37 /* RACollectionViewReorderableTripletLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RACollectionViewReorderableTripletLayout.m; sourceTree = "<group>"; };
 		18E1AF7519A47AED002F8A37 /* RACollectionViewTripletLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RACollectionViewTripletLayout.h; sourceTree = "<group>"; };
 		18E1AF7619A47AED002F8A37 /* RACollectionViewTripletLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RACollectionViewTripletLayout.m; sourceTree = "<group>"; };
-		18E1AF7919A47AFA002F8A37 /* RAViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RAViewController.h; sourceTree = "<group>"; };
-		18E1AF7A19A47AFA002F8A37 /* RAViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RAViewController.m; sourceTree = "<group>"; };
+		18E1AF7919A47AFA002F8A37 /* EZEditDrag.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZEditDrag.h; sourceTree = "<group>"; };
+		18E1AF7A19A47AFA002F8A37 /* EZEditDrag.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZEditDrag.m; sourceTree = "<group>"; };
 		18E1AF7B19A47AFA002F8A37 /* RACollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RACollectionViewCell.h; sourceTree = "<group>"; };
 		18E1AF7C19A47AFA002F8A37 /* RACollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RACollectionViewCell.m; sourceTree = "<group>"; };
 		18E1AF7F19A4AC1D002F8A37 /* EZPhotoEditPage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZPhotoEditPage.h; sourceTree = "<group>"; };
@@ -1387,8 +1402,6 @@
 		18E34770183DFAA400C9D89D /* EZUIUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZUIUtility.m; sourceTree = "<group>"; };
 		18E34771183DFAA400C9D89D /* EZDataUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZDataUtil.h; sourceTree = "<group>"; };
 		18E34772183DFAA400C9D89D /* EZDataUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZDataUtil.m; sourceTree = "<group>"; };
-		18E34773183DFAA400C9D89D /* EZImageFileCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZImageFileCache.h; sourceTree = "<group>"; };
-		18E34774183DFAA400C9D89D /* EZImageFileCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZImageFileCache.m; sourceTree = "<group>"; };
 		18E3482A183F03A600C9D89D /* EZFaceTestPage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZFaceTestPage.h; sourceTree = "<group>"; };
 		18E3482B183F03A600C9D89D /* EZFaceTestPage.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = EZFaceTestPage.mm; sourceTree = "<group>"; };
 		18E34835183F064200C9D89D /* EZFaceUtil.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = EZFaceUtil.mm; sourceTree = "<group>"; };
@@ -1639,6 +1652,15 @@
 		1815256F19E4C8DF0005F5FC /* UICustomization */ = {
 			isa = PBXGroup;
 			children = (
+				189FD64E19ED0FA6005B083F /* HPickerDefinitions.h */,
+				189FD64F19ED0FA6005B083F /* HorizontalPickerView.h */,
+				189FD65019ED0FA6005B083F /* HorizontalPickerView.m */,
+				189FD65119ED0FA6005B083F /* HPCollectionVC.h */,
+				189FD65219ED0FA6005B083F /* HPCollectionVC.m */,
+				189FD65319ED0FA6005B083F /* HPCollectionViewCell.h */,
+				189FD65419ED0FA6005B083F /* HPCollectionViewCell.m */,
+				189FD65519ED0FA6005B083F /* HPCollectionViewFlowLayout.h */,
+				189FD65619ED0FA6005B083F /* HPCollectionViewFlowLayout.m */,
 				1815257019E4C9280005F5FC /* EZColorScheme.h */,
 				1815257119E4C9280005F5FC /* EZColorScheme.m */,
 				1815257319E53C8C0005F5FC /* EZShotButton.h */,
@@ -1892,6 +1914,10 @@
 		18D760D5198235EC00F9D63B /* controllers */ = {
 			isa = PBXGroup;
 			children = (
+				18E1AF7919A47AFA002F8A37 /* EZEditDrag.h */,
+				18E1AF7A19A47AFA002F8A37 /* EZEditDrag.m */,
+				18E1AF7F19A4AC1D002F8A37 /* EZPhotoEditPage.h */,
+				18E1AF8019A4AC1D002F8A37 /* EZPhotoEditPage.m */,
 				18D760D6198236A100F9D63B /* EZMainPage.h */,
 				18D760D7198236A100F9D63B /* EZMainPage.mm */,
 				180E2CB51990C61E00DE2AFA /* EZMainPhotoCell.h */,
@@ -1902,8 +1928,6 @@
 				18826E7119B8284B00DFC5A9 /* EZBackgroundEraser.mm */,
 				1890814419CBC8DA0096997E /* EZEraserPage.h */,
 				1890814519CBC8DA0096997E /* EZEraserPage.m */,
-				18E1AF7F19A4AC1D002F8A37 /* EZPhotoEditPage.h */,
-				18E1AF8019A4AC1D002F8A37 /* EZPhotoEditPage.m */,
 				18827F2F19B8783E00DFC5A9 /* EZBgEditPage.h */,
 				18827F3019B8783F00DFC5A9 /* EZBgEditPage.mm */,
 				18826E7619B8465000DFC5A9 /* EZImageConverter.h */,
@@ -2289,8 +2313,6 @@
 		18E1AF7219A47AAF002F8A37 /* dragdrop */ = {
 			isa = PBXGroup;
 			children = (
-				18E1AF7919A47AFA002F8A37 /* RAViewController.h */,
-				18E1AF7A19A47AFA002F8A37 /* RAViewController.m */,
 				18E1AF7B19A47AFA002F8A37 /* RACollectionViewCell.h */,
 				18E1AF7C19A47AFA002F8A37 /* RACollectionViewCell.m */,
 				18E1AF7319A47AED002F8A37 /* RACollectionViewReorderableTripletLayout.h */,
@@ -2614,6 +2636,8 @@
 		18E346D5183DF91500C9D89D /* utility */ = {
 			isa = PBXGroup;
 			children = (
+				189FD63A19ED0370005B083F /* STHorizontalPicker.h */,
+				189FD63B19ED0370005B083F /* STHorizontalPicker.m */,
 				1815258C19E7E5200005F5FC /* EZImageAdder.h */,
 				1815258D19E7E5200005F5FC /* EZImageAdder.m */,
 				1815258919E7E4FB0005F5FC /* EZInputItem.h */,
@@ -2680,8 +2704,6 @@
 				18E3476E183DFAA400C9D89D /* EZKeyboadUtility.m */,
 				18E3476F183DFAA400C9D89D /* EZUIUtility.h */,
 				18E34770183DFAA400C9D89D /* EZUIUtility.m */,
-				18E34773183DFAA400C9D89D /* EZImageFileCache.h */,
-				18E34774183DFAA400C9D89D /* EZImageFileCache.m */,
 				18E346DA183DF96D00C9D89D /* UIImage2OpenCV.h */,
 				18E346DB183DF96D00C9D89D /* UIImage2OpenCV.mm */,
 				18C0E76C1861A0FF00D694CE /* EZSoundEffect.h */,
@@ -3322,6 +3344,7 @@
 				186EC12A193869FD0011C145 /* FaceppInfo.m in Sources */,
 				1866ADAB18966E7000DB46E2 /* ModalAnimation.m in Sources */,
 				18E34780183DFAA400C9D89D /* EZUploadHandler.m in Sources */,
+				189FD65A19ED0FA6005B083F /* HPCollectionViewFlowLayout.m in Sources */,
 				1866ADB11897698900DB46E2 /* EZRaiseAnimation.m in Sources */,
 				18E34782183DFAA400C9D89D /* EZWeiboUtil.m in Sources */,
 				18E34837183F064200C9D89D /* EZFaceUtil.mm in Sources */,
@@ -3348,6 +3371,7 @@
 				1866ADB418979C7400DB46E2 /* EZModalRaiseAnimation.m in Sources */,
 				18E34693183DF54400C9D89D /* FeatherCV.xcdatamodeld in Sources */,
 				184ADD9218CF045A00367527 /* EZCameraNaviAnimation.m in Sources */,
+				189FD65819ED0FA6005B083F /* HPCollectionVC.m in Sources */,
 				181FC36B19540F8B00442AF3 /* EZContactMainCell.m in Sources */,
 				18E746F718A4A26A0023967B /* UIImageView+AFNetworking.m in Sources */,
 				181608C718B4E38600DD5995 /* EZAnimationUtil.m in Sources */,
@@ -3418,6 +3442,7 @@
 				1815257219E4C9280005F5FC /* EZColorScheme.m in Sources */,
 				181FC35F1951DD6F00442AF3 /* UIView+Glow.m in Sources */,
 				184ADD8318C8ACA300367527 /* EZShapeButton.m in Sources */,
+				189FD63C19ED0370005B083F /* STHorizontalPicker.m in Sources */,
 				181FC36E1954409700442AF3 /* TLSwipeForOptionsCell.m in Sources */,
 				18826E6C19B6FC6900DFC5A9 /* LocalTasks.m in Sources */,
 				18E3477E183DFAA400C9D89D /* EZThreadUtility.m in Sources */,
@@ -3464,7 +3489,7 @@
 				18E34737183DFA5800C9D89D /* EZTransitionLayout.m in Sources */,
 				1890814F19CE9DF50096997E /* EZFrontFrame.m in Sources */,
 				1870B07A19877864005A663A /* EZGraphDetail.m in Sources */,
-				18E34788183DFAA400C9D89D /* EZImageFileCache.m in Sources */,
+				189FD65919ED0FA6005B083F /* HPCollectionViewCell.m in Sources */,
 				18E746EE18A4A26A0023967B /* AFSecurityPolicy.m in Sources */,
 				1870B0201984B340005A663A /* EZTrackRecord.m in Sources */,
 				18DE992119404734008C1B3F /* JSQMessagesToolbarContentView.m in Sources */,
@@ -3539,8 +3564,9 @@
 				18826E7819B8465000DFC5A9 /* EZImageConverter.mm in Sources */,
 				180E2CCF1990E16800DE2AFA /* DCStatusBarOverlay.m in Sources */,
 				186EC12F193869FD0011C145 /* FaceppResult.m in Sources */,
-				18E1AF7D19A47AFA002F8A37 /* RAViewController.m in Sources */,
+				18E1AF7D19A47AFA002F8A37 /* EZEditDrag.m in Sources */,
 				18BD956A19D947FA001EB28C /* EZUploadWrapper.m in Sources */,
+				189FD65719ED0FA6005B083F /* HorizontalPickerView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3642,7 +3668,7 @@
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = YES;
-				PROVISIONING_PROFILE = "198b6270-44a3-4f89-be04-791b6b0614d5";
+				PROVISIONING_PROFILE = "71a27b10-aa5d-41d8-85d4-068a00e08f89";
 				SDKROOT = iphoneos;
 				VALID_ARCHS = "armv7 armv7s";
 			};
@@ -3682,7 +3708,7 @@
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = YES;
-				PROVISIONING_PROFILE = "198b6270-44a3-4f89-be04-791b6b0614d5";
+				PROVISIONING_PROFILE = "71a27b10-aa5d-41d8-85d4-068a00e08f89";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 				VALID_ARCHS = "armv7 armv7s";
@@ -3726,7 +3752,7 @@
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = 3DCamera;
-				PROVISIONING_PROFILE = "198b6270-44a3-4f89-be04-791b6b0614d5";
+				PROVISIONING_PROFILE = "71a27b10-aa5d-41d8-85d4-068a00e08f89";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv7 armv7s arm64";
 				WRAPPER_EXTENSION = app;
@@ -3770,7 +3796,7 @@
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = 3DCamera;
-				PROVISIONING_PROFILE = "198b6270-44a3-4f89-be04-791b6b0614d5";
+				PROVISIONING_PROFILE = "71a27b10-aa5d-41d8-85d4-068a00e08f89";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv7 armv7s arm64";
 				WRAPPER_EXTENSION = app;

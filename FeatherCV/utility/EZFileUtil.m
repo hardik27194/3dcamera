@@ -353,7 +353,7 @@
 
 + (void) deleteFile:(NSString*)fileName
 {
-    EZDEBUG(@"deleteFile get called:%@", [NSThread callStackSymbols]);
+    //EZDEBUG(@"deleteFile get called:%@", [NSThread callStackSymbols]);
     NSError* err = nil;
     [[NSFileManager defaultManager] removeItemAtPath:fileName error:&err];
     if(err){
@@ -544,6 +544,9 @@
 }
 + (NSString*) fileURLToFullPath:(NSString*)url
 {
+    if(![url hasPrefix:@"file"]){
+        return nil;
+    }
     return [url substringFromIndex:7];
 }
 
@@ -574,11 +577,11 @@
     NSString *documentsPath = [paths objectAtIndex:0]; //Get the docs directory
     NSString *fullPath = [documentsPath stringByAppendingPathComponent:fileName];
     if([[NSFileManager defaultManager] fileExistsAtPath:fullPath]){
-        if([self isValidImage:fullPath]){
-            return [@"file://" stringByAppendingString:fullPath];
-        }else{
-            EZDEBUG(@"Found broken file:%@", fileName);
-        }
+        //if([self isValidImage:fullPath]){
+        return [@"file://" stringByAppendingString:fullPath];
+        //}else{
+        //    EZDEBUG(@"Found broken file:%@", fileName);
+        //}
     }
     return nil;
 }

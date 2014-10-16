@@ -36,7 +36,7 @@
         defaultPos = 0;
     }
     
-    EZInputItem* shotCount = [[EZInputItem alloc] initWithName:BIINFO(@"拍摄张数") type:kNumberPicker values:availableCounts defaultPos:defaultPos];
+    EZInputItem* shotCount = [[EZInputItem alloc] initWithName:BIINFO(@"拍摄张数") type:kHorizonNumberPicker values:availableCounts defaultPos:defaultPos];
     
     
     
@@ -46,7 +46,7 @@
     if(defaultPos == NSNotFound){
         defaultPos = 2;
     }
-    EZInputItem* shotDelay = [[EZInputItem alloc] initWithName:BIINFO(@"拍摄延时（秒）") type:kNumberPicker values:availableDelays defaultPos:defaultPos];
+    EZInputItem* shotDelay = [[EZInputItem alloc] initWithName:BIINFO(@"拍摄延时（秒）") type:kHorizonNumberPicker values:availableDelays defaultPos:defaultPos];
     
     BOOL isMute = [EZConfigure sharedEZConfigure].isMute;
     

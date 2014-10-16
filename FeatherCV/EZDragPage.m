@@ -18,20 +18,22 @@
 #import "EZDataUtil.h"
 #import "EZCompleteSetting.h"
 #import "EZConfigure.h"
+#import "EZCaptureCameraController.h"
 
 
 @interface EZDragPage ()
 
-@property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
+//@property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
 //@property (nonatomic, strong) NSMutableArray *photosArray;
 
 @end
 
 @implementation EZDragPage
 
-- (id) initWithTask:(EZShotTask*)task
+- (id) initWithTask:(EZShotTask*)task mode:(BOOL)isEditMode;
 {
     self = [super init];
+    _isEditMode = isEditMode;
     _task = task;
     _storedPhotos = _task.photos;//[[NSMutableArray alloc] initWithArray:_task.photos];
     return self;
@@ -84,6 +86,46 @@
     [item1.textField becomeFirstResponder];
 }
 
+- (void) addPhoto:(id)sender
+{
+    //EZStoredPhoto* storedPhoto = [_photos objectAtIndex:_currentPos];
+    EZCaptureCameraController* sc = [[EZCaptureCameraController alloc] init];
+    sc.shotType = kShotSingle;
+    //sc.photo = storedPhoto;
+    
+    sc.confirmClicked = ^(NSString* localURL){
+        EZDEBUG(@"replace confirmed:%@", localURL);
+        if(!localURL){
+            return;
+        }
+        EZStoredPhoto* addedPhoto = [[EZStoredPhoto alloc] init];
+        //addedPhoto.taskID = storedPhoto.taskID;
+        
+        //[[EZDataUtil getInstance] deleteLocalFile:storedPhoto];
+        //storedPhoto.localFileURL = localURL;
+        addedPhoto.localFileURL = localURL;
+        addedPhoto.remoteURL = localURL;
+        addedPhoto.createdTime = [NSDate date];
+        addedPhoto.sequence = _storedPhotos.count;
+        addedPhoto.isOriginal = true;
+        [_storedPhotos addObject:addedPhoto];
+        [[EZMessageCenter getInstance] postEvent:EZShotPhotoAdded attached:addedPhoto];
+        /**
+        [[EZDataUtil getInstance] addUploadPhoto:addedPhoto success:^(id obj){
+            EZDEBUG(@"obj:%@", obj);
+            //[_imageView setImageWithURL:str2url(localURL)];
+            [[EZMessageCenter getInstance] postEvent:EZShotTaskChanged attached:addedPhoto];
+        } failure:^(id err){
+            EZDEBUG(@"error:%@", err);
+        }];
+        **/
+    };
+    
+    [self.navigationController pushViewController:sc animated:YES];
+}
+
+
+
 - (void) confirmed:(id)obj
 {
     EZDEBUG(@"Drag confirmed");
@@ -127,11 +169,14 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    EZDEBUG(@"EZDragPage view did load:%i", _task.photos.count);
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(confirmed:)];
     
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancel:)];
     
-    UICollectionView* collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:[[RACollectionViewReorderableTripletLayout alloc] init]];
+    _cellLayout = [[RACollectionViewReorderableTripletLayout alloc] init];
+    UICollectionView* collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:_cellLayout];
+    
     [collectionView registerClass:[RACollectionViewCell class] forCellWithReuseIdentifier:@"cellID"];
     //self.view.backgroundColor = MainBackgroundColor;
     self.collectionView = collectionView;
@@ -149,11 +194,17 @@
     **/
     self.title = @"编辑照片";
     //[self setupPhotosArray];
-    
+    __weak EZDragPage* dragPage = self;
+    [[EZMessageCenter getInstance] registerEvent:EZShotPhotoAdded block:^(id obj){
+        dragPage.cellLayout.needsUpdateLayout = YES;
+        [dragPage.collectionView insertItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:dragPage.storedPhotos.count - 1 inSection:0]]];
+    }];
+    /**
     [[EZMessageCenter getInstance] registerEvent:EZShotTaskChanged block:^(EZStoredPhoto* pt){
         //[_collectionView reloadData];
-        [self refresh:nil];
+        [dragPage refresh:nil];
     }];
+     **/
 }
 
 
@@ -170,7 +221,7 @@
     //    return 1;
     //}
     EZDEBUG(@"storedPhotos count:%i",_storedPhotos.count);
-    return _storedPhotos.count;
+    return _storedPhotos.count + 1;
 }
 
 - (CGFloat)sectionSpacingForCollectionView:(UICollectionView *)collectionView
@@ -226,21 +277,34 @@
 {
     EZDEBUG(@"end dragging get called:%i, row:%i", indexPath.item, indexPath.row);
     //RACollectionViewCell* cell = [collectionView cellForItemAtIndexPath:indexPath];
-    
-    [self.collectionView reloadData];
+    //[self.collectionView reloadData];
 }
 
 - (void)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout willBeginDraggingItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    
+    _isDragMode = true;
+    NSArray* visibleCell = [collectionView visibleCells];
+    for(RACollectionViewCell* cell in visibleCell){
+        [cell showDelete:YES];
+    }
 }
 
 - (void)collectionView:(UICollectionView *)collectionView itemAtIndexPath:(NSIndexPath *)fromIndexPath didMoveToIndexPath:(NSIndexPath *)toIndexPath
 {
-    EZStoredPhoto* fromSp = [_storedPhotos objectAtIndex:fromIndexPath.item];
-    //EZStoredPhoto* toSp = [_storedPhotos objectAtIndex:toIndexPath.item];
-    [_storedPhotos removeObjectAtIndex:fromIndexPath.item];
-    [_storedPhotos insertObject:fromSp atIndex:toIndexPath.item];
+    if(fromIndexPath.item < _storedPhotos.count && toIndexPath.item < _storedPhotos.count){
+        EZStoredPhoto* fromSp = [_storedPhotos objectAtIndex:fromIndexPath.item];
+        //EZStoredPhoto* toSp = [_storedPhotos objectAtIndex:toIndexPath.item];
+        [_storedPhotos removeObjectAtIndex:fromIndexPath.item];
+        [_storedPhotos insertObject:fromSp atIndex:toIndexPath.item];
+        if([_task.taskID isNotEmpty]){
+            [[EZDataUtil getInstance] updateTaskSequence:_task success:^(id obj){
+                EZDEBUG(@"update sequence success");
+                [[EZMessageCenter getInstance] postEvent:EZShotTaskChanged attached:nil];
+            } failure:^(id err){
+                EZDEBUG(@"error:%@", err);
+            }];
+        }
+    }
     
 }
 
@@ -249,7 +313,10 @@
     //if (toIndexPath.section == 0) {
     //    return NO;
     //}
-    return YES;
+    if(toIndexPath.item < _storedPhotos.count){
+        return YES;
+    }
+    return NO;
 }
 
 - (BOOL)collectionView:(UICollectionView *)collectionView canMoveItemAtIndexPath:(NSIndexPath *)indexPath
@@ -257,60 +324,100 @@
     // if (indexPath.section == 0) {
     //     return NO;
     // }
-    return YES;
+    if(indexPath.item < _task.photos.count){
+        return YES;
+    }
+    return NO;
+}
+
+/**
+ *
+ **/
+- (void) deletePhoto:(EZStoredPhoto*)sp indexPath:(NSIndexPath*)outPath
+{
+    NSInteger realPos = [_storedPhotos indexOfObject:sp];
+    NSIndexPath* indexPath = [NSIndexPath indexPathForItem:realPos inSection:0];
+    
+    if(indexPath.item >= _storedPhotos.count){
+        EZDEBUG(@"quit for non-exist photo:%i, %i", indexPath.item, _storedPhotos.count);
+        return;
+    }
+    [_storedPhotos removeObject:sp];
+    EZDEBUG(@"Before delete item");
+    _cellLayout.needsUpdateLayout = YES;
+    [_collectionView deleteItemsAtIndexPaths:@[indexPath]];
+    //[_collectionView reloadData];
+    EZDEBUG(@"After delete item");
+    [[EZMessageCenter getInstance] postEvent:EZShotTaskChanged attached:nil];
+    if([sp.photoID isNotEmpty]){
+        [[EZDataUtil getInstance] deleteStoredPhoto:sp success:^(id obj){
+            EZDEBUG(@"delete photo successfully");
+        } failed:^(id err){
+            EZDEBUG(@"delete error detail:%@", err);
+        }];
+    }else{
+        sp.removed = true;
+        //[_storedPhotos removeObject:sp];
+        //[_collectionView deleteItemsAtIndexPaths:@[indexPath]];
+    }
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     
     static NSString *cellID = @"cellID";
+    //EZDEBUG(@"current index:%i", indexPath.item);
+    __weak EZDragPage* weakSelf = self;
     RACollectionViewCell *cell = [self.collectionView dequeueReusableCellWithReuseIdentifier:cellID forIndexPath:indexPath];
     //[cell.imageView removeFromSuperview];
     //cell.imageView.frame = cell.bounds;
     //cell.imageView.image = _photosArray[indexPath.item];
     //cell.imageView.frame = cell.bounds;
     //[cell.contentView addSubview:cell.imageView];
-    EZStoredPhoto* sp = [_storedPhotos objectAtIndex:indexPath.item];
-    if(sp.localFileURL){
-        [cell.imageView setImageWithURL:str2url(sp.localFileURL)];
+    [cell showImage:_isDragMode];
+    if(indexPath.item < _storedPhotos.count){
+        EZStoredPhoto* sp = [_storedPhotos objectAtIndex:indexPath.item];
+    //if(sp.localFileURL){
+    //    [cell.imageView setImageWithURL:str2url(sp.localFileURL)];
+    //}else{
+        [cell.imageView setImageWithURL:str2url(sp.remoteURL) loading:NO];
+    //}
+        //EZDEBUG(@"item:%i cell bounds:%@, localURL:%@, remoteURL:%@",indexPath.item, NSStringFromCGRect(cell.frame), sp.localFileURL, sp.remoteURL);
+        cell.deleteClicked = ^(id obj){
+            [weakSelf deletePhoto:sp indexPath:indexPath];
+        };
     }else{
-        [cell.imageView setImageWithURL:str2url(sp.remoteURL) loading:YES];
-        
+        [cell showAdd];
+        if(_isEditMode){
+            cell.addClicked = _addClicked;
+        }else{
+            cell.addClicked = ^(id obj){
+                [weakSelf addPhoto:nil];
+            };
+        }
+        //EZDEBUG(@"Will show add button");
     }
-    EZDEBUG(@"item:%i cell bounds:%@, localURL:%@, remoteURL:%@",indexPath.item, NSStringFromCGRect(cell.frame), sp.localFileURL, sp.remoteURL);
     return cell;
     
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    
-    //if (_storedPhotos.count == 1) {
-    //    return;
-    //}
-    /**
-     [self.collectionView performBatchUpdates:^{
-     //[_photosArray removeObjectAtIndex:indexPath.item];
-     [self.collectionView deleteItemsAtIndexPaths:@[indexPath]];
-     } completion:^(BOOL finished) {
-     [self.collectionView reloadData];
-     }];
-     **/
-    //UICollectionViewCell* cell = [self.collectionView cellForItemAtIndexPath:indexPath];
-    //EZDEBUG(@"Did select indexPath:%i, frame:%@", indexPath.item, NSStringFromCGRect(cell.frame));
-    //EZStoredPhoto* stored
-    EZPhotoEditPage* ep = [[EZPhotoEditPage alloc] initWithShot:_storedPhotos pos:indexPath.item deletedBlock:^(NSNumber* pos){
-        EZDEBUG(@"deleted get called:%i", pos.intValue);
-        //int pos = [_storedPhotos indexOfObject:storedPht];
-        [_storedPhotos removeObjectAtIndex:pos.intValue];
-        //[self refresh:nil];
-        [self.collectionView deleteItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:pos.intValue inSection:0]]];
-        
-    }]; //[[EZPhotoEditPage alloc] initWithPhotos:_storedPhotos pos:indexPath.item];
-    
-    [self.navigationController pushViewController:ep animated:YES];
+    EZDEBUG(@"did select at path:%i", indexPath.item);
+    if(_isDragMode){
+        _isDragMode = false;
+        //[self setDragMode:_isDragMode];
+        _cellLayout.dragStatus = false;
+        [self.collectionView reloadData];
+    }
 }
 
+/**
+- (void) setDragMode:(BOOL)dragMode
+{
+    
+}
+**/
 - (IBAction)refresh:(UIBarButtonItem *)sender
 {
     //[self setupPhotosArray];

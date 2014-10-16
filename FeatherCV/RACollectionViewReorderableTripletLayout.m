@@ -46,7 +46,7 @@ typedef NS_ENUM(NSInteger, RAScrollDirction) {
 @property (nonatomic, assign) UIEdgeInsets scrollTrigerEdgeInsets;
 @property (nonatomic, assign) UIEdgeInsets scrollTrigePadding;
 @property (nonatomic, assign) BOOL setUped;
-@property (nonatomic, assign) BOOL needsUpdateLayout;
+
 
 @end
 
@@ -84,6 +84,12 @@ typedef NS_ENUM(NSInteger, RAScrollDirction) {
 - (UICollectionViewLayoutAttributes *)layoutAttributesForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     UICollectionViewLayoutAttributes *attribute = [super layoutAttributesForItemAtIndexPath:indexPath];
+    
+    NSInteger dataCount = [self.datasource collectionView:self.collectionView numberOfItemsInSection:indexPath.section];
+    EZDEBUG(@"attributes for indexPath:%i, exist:%i", indexPath.item, dataCount);
+    if(indexPath.item > dataCount){
+        return nil;
+    }
     if (attribute.representedElementCategory == UICollectionElementCategoryCell) {
         if ([attribute.indexPath isEqual:_reorderingCellIndexPath]) {
             CGFloat alpha = 0;
@@ -103,6 +109,7 @@ typedef NS_ENUM(NSInteger, RAScrollDirction) {
 
 - (BOOL)shouldUpdateAttributesArray
 {
+    EZDEBUG(@"Need to update AttributesArray:%i", _needsUpdateLayout);
     if (_needsUpdateLayout) {
         _needsUpdateLayout = NO;
         return YES;
@@ -118,16 +125,27 @@ typedef NS_ENUM(NSInteger, RAScrollDirction) {
 {
     if (!_setUped) {
         _longPressGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPressGesture:)];
+        EZDEBUG(@"default value:%f", _longPressGesture.minimumPressDuration);
         _panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGesture:)];
         _longPressGesture.delegate = self;
         _panGesture.delegate = self;
+        
+        //_tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
+        //_tapGesture.delegate = self;
         for (UIGestureRecognizer *gestureRecognizer in self.collectionView.gestureRecognizers) {
             if ([gestureRecognizer isKindOfClass:[UILongPressGestureRecognizer class]]) {
                 [gestureRecognizer requireGestureRecognizerToFail:_longPressGesture]; }}
         [self.collectionView addGestureRecognizer:_longPressGesture];
         [self.collectionView addGestureRecognizer:_panGesture];
+        //[self.collectionView addGestureRecognizer:_tapGesture];
         _setUped = YES;
     }
+}
+
+- (void) handleTap:(UITapGestureRecognizer*)tapGesturer
+{
+    
+    
 }
 
 - (void)setUpDisplayLink
@@ -195,6 +213,97 @@ typedef NS_ENUM(NSInteger, RAScrollDirction) {
     [self moveItemIfNeeded];
 }
 
+- (void) createFakeView:(NSIndexPath*)indexPath
+{
+    if ([self.datasource respondsToSelector:@selector(collectionView:canMoveItemAtIndexPath:)]) {
+        if (![self.datasource collectionView:self.collectionView canMoveItemAtIndexPath:indexPath]) {
+            return;
+        }
+    }
+    //will begin dragging
+    if ([self.delegate respondsToSelector:@selector(collectionView:layout:willBeginDraggingItemAtIndexPath:)]) {
+        [self.delegate collectionView:self.collectionView layout:self willBeginDraggingItemAtIndexPath:indexPath];
+    }
+    _dragStatus = true;
+    _needsUpdateLayout = YES;
+    //indexPath
+    _reorderingCellIndexPath = indexPath;
+    //scrolls top off
+    self.collectionView.scrollsToTop = NO;
+    //cell fake view
+    UICollectionViewCell *cell = [self.collectionView cellForItemAtIndexPath:indexPath];
+    _cellFakeView = [[UIView alloc] initWithFrame:cell.frame];
+    _cellFakeView.layer.shadowColor = [UIColor blackColor].CGColor;
+    _cellFakeView.layer.shadowOffset = CGSizeMake(0, 0);
+    _cellFakeView.layer.shadowOpacity = .5f;
+    _cellFakeView.layer.shadowRadius = 3.f;
+    UIImageView *cellFakeImageView = [[UIImageView alloc] initWithFrame:cell.bounds];
+    UIImageView *highlightedImageView = [[UIImageView alloc] initWithFrame:cell.bounds];
+    cellFakeImageView.contentMode = UIViewContentModeScaleAspectFill;
+    highlightedImageView.contentMode = UIViewContentModeScaleAspectFill;
+    cellFakeImageView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+    highlightedImageView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+    cell.highlighted = YES;
+    [highlightedImageView setCellCopiedImage:cell];
+    cell.highlighted = NO;
+    [cellFakeImageView setCellCopiedImage:cell];
+    [self.collectionView addSubview:_cellFakeView];
+    [_cellFakeView addSubview:cellFakeImageView];
+    [_cellFakeView addSubview:highlightedImageView];
+    //set center
+    _reorderingCellCenter = cell.center;
+    _cellFakeViewCenter = _cellFakeView.center;
+    [self invalidateLayout];
+    //animation
+    CGRect fakeViewRect = CGRectMake(cell.center.x - (self.smallCellSize.width / 2.f), cell.center.y - (self.smallCellSize.height / 2.f), self.smallCellSize.width, self.smallCellSize.height);
+    [UIView animateWithDuration:.3f delay:0 options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseInOut animations:^{
+        _cellFakeView.center = cell.center;
+        _cellFakeView.frame = fakeViewRect;
+        _cellFakeView.transform = CGAffineTransformMakeScale(1.1f, 1.1f);
+        highlightedImageView.alpha = 0;
+    } completion:^(BOOL finished) {
+        [highlightedImageView removeFromSuperview];
+    }];
+    //did begin dragging
+    if ([self.delegate respondsToSelector:@selector(collectionView:layout:didBeginDraggingItemAtIndexPath:)]) {
+        [self.delegate collectionView:self.collectionView layout:self didBeginDraggingItemAtIndexPath:indexPath];
+    }
+
+}
+
+- (void) cancelFakeView:(NSIndexPath*)currentCellIndexPath
+{
+    //will end dragging
+    if ([self.delegate respondsToSelector:@selector(collectionView:layout:willEndDraggingItemAtIndexPath:)]) {
+        [self.delegate collectionView:self.collectionView layout:self willEndDraggingItemAtIndexPath:currentCellIndexPath];
+    }
+    _needsUpdateLayout = YES;
+    //scrolls top on
+    self.collectionView.scrollsToTop = YES;
+    //disable auto scroll
+    [self invalidateDisplayLink];
+    //remove fake view
+    UICollectionViewLayoutAttributes *attributes = [self layoutAttributesForItemAtIndexPath:currentCellIndexPath];
+    [UIView animateWithDuration:.3f delay:0 options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseInOut animations:^{
+        _cellFakeView.transform = CGAffineTransformIdentity;
+        _cellFakeView.frame = attributes.frame;
+    } completion:^(BOOL finished) {
+        [_cellFakeView removeFromSuperview];
+        _cellFakeView = nil;
+        _reorderingCellIndexPath = nil;
+        _reorderingCellCenter = CGPointZero;
+        _cellFakeViewCenter = CGPointZero;
+        [self invalidateLayout];
+        if (finished) {
+            //did end dragging
+            if ([self.delegate respondsToSelector:@selector(collectionView:layout:didEndDraggingItemAtIndexPath:)]) {
+                [self.delegate collectionView:self.collectionView layout:self didEndDraggingItemAtIndexPath:currentCellIndexPath];
+            }
+        }
+    }];
+
+}
+
 - (void)handleLongPressGesture:(UILongPressGestureRecognizer *)longPress
 {
     NSLog(@"long press state:%i", longPress.state);
@@ -202,92 +311,18 @@ typedef NS_ENUM(NSInteger, RAScrollDirction) {
         case UIGestureRecognizerStateBegan: {
             //indexPath
             NSIndexPath *indexPath = [self.collectionView indexPathForItemAtPoint:[longPress locationInView:self.collectionView]];
+            [self createFakeView:indexPath];
+            if(!_dragStatus){
+                _dragStatus = true;
+                longPress.minimumPressDuration = 0.1;
+            }
             //can move
-            if ([self.datasource respondsToSelector:@selector(collectionView:canMoveItemAtIndexPath:)]) {
-                if (![self.datasource collectionView:self.collectionView canMoveItemAtIndexPath:indexPath]) {
-                    return;
-                }
-            }
-            //will begin dragging
-            if ([self.delegate respondsToSelector:@selector(collectionView:layout:willBeginDraggingItemAtIndexPath:)]) {
-                [self.delegate collectionView:self.collectionView layout:self willBeginDraggingItemAtIndexPath:indexPath];
-            }
-            _needsUpdateLayout = YES;
-            //indexPath
-            _reorderingCellIndexPath = indexPath;
-            //scrolls top off
-            self.collectionView.scrollsToTop = NO;
-            //cell fake view
-            UICollectionViewCell *cell = [self.collectionView cellForItemAtIndexPath:indexPath];
-            _cellFakeView = [[UIView alloc] initWithFrame:cell.frame];
-            _cellFakeView.layer.shadowColor = [UIColor blackColor].CGColor;
-            _cellFakeView.layer.shadowOffset = CGSizeMake(0, 0);
-            _cellFakeView.layer.shadowOpacity = .5f;
-            _cellFakeView.layer.shadowRadius = 3.f;
-            UIImageView *cellFakeImageView = [[UIImageView alloc] initWithFrame:cell.bounds];
-            UIImageView *highlightedImageView = [[UIImageView alloc] initWithFrame:cell.bounds];
-            cellFakeImageView.contentMode = UIViewContentModeScaleAspectFill;
-            highlightedImageView.contentMode = UIViewContentModeScaleAspectFill;
-            cellFakeImageView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-            highlightedImageView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-            cell.highlighted = YES;
-            [highlightedImageView setCellCopiedImage:cell];
-            cell.highlighted = NO;
-            [cellFakeImageView setCellCopiedImage:cell];
-            [self.collectionView addSubview:_cellFakeView];
-            [_cellFakeView addSubview:cellFakeImageView];
-            [_cellFakeView addSubview:highlightedImageView];
-            //set center
-            _reorderingCellCenter = cell.center;
-            _cellFakeViewCenter = _cellFakeView.center;
-            [self invalidateLayout];
-            //animation
-            CGRect fakeViewRect = CGRectMake(cell.center.x - (self.smallCellSize.width / 2.f), cell.center.y - (self.smallCellSize.height / 2.f), self.smallCellSize.width, self.smallCellSize.height);
-            [UIView animateWithDuration:.3f delay:0 options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseInOut animations:^{
-                _cellFakeView.center = cell.center;
-                _cellFakeView.frame = fakeViewRect;
-                _cellFakeView.transform = CGAffineTransformMakeScale(1.1f, 1.1f);
-                highlightedImageView.alpha = 0;
-            } completion:^(BOOL finished) {
-                [highlightedImageView removeFromSuperview];
-            }];
-            //did begin dragging
-            if ([self.delegate respondsToSelector:@selector(collectionView:layout:didBeginDraggingItemAtIndexPath:)]) {
-                [self.delegate collectionView:self.collectionView layout:self didBeginDraggingItemAtIndexPath:indexPath];
-            }
             break;
         }
         case UIGestureRecognizerStateEnded:
         case UIGestureRecognizerStateCancelled: {
             NSIndexPath *currentCellIndexPath = _reorderingCellIndexPath;
-            //will end dragging
-            if ([self.delegate respondsToSelector:@selector(collectionView:layout:willEndDraggingItemAtIndexPath:)]) {
-                [self.delegate collectionView:self.collectionView layout:self willEndDraggingItemAtIndexPath:currentCellIndexPath];
-            }
-            _needsUpdateLayout = YES;
-            //scrolls top on
-            self.collectionView.scrollsToTop = YES;
-            //disable auto scroll
-            [self invalidateDisplayLink];
-            //remove fake view
-            UICollectionViewLayoutAttributes *attributes = [self layoutAttributesForItemAtIndexPath:currentCellIndexPath];
-            [UIView animateWithDuration:.3f delay:0 options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseInOut animations:^{
-                _cellFakeView.transform = CGAffineTransformIdentity;
-                _cellFakeView.frame = attributes.frame;
-            } completion:^(BOOL finished) {
-                [_cellFakeView removeFromSuperview];
-                _cellFakeView = nil;
-                _reorderingCellIndexPath = nil;
-                _reorderingCellCenter = CGPointZero;
-                _cellFakeViewCenter = CGPointZero;
-                [self invalidateLayout];
-                if (finished) {
-                    //did end dragging
-                    if ([self.delegate respondsToSelector:@selector(collectionView:layout:didEndDraggingItemAtIndexPath:)]) {
-                        [self.delegate collectionView:self.collectionView layout:self didEndDraggingItemAtIndexPath:currentCellIndexPath];
-                    }
-                }
-            }];
+            [self cancelFakeView:currentCellIndexPath];
             break;
         }
         default:
@@ -295,11 +330,29 @@ typedef NS_ENUM(NSInteger, RAScrollDirction) {
     }
 }
 
+- (void) setDragStatus:(BOOL)dragStatus
+{
+    EZDEBUG(@"Set Drag status:%i", dragStatus);
+    _dragStatus = dragStatus;
+    if(!_dragStatus){
+        _longPressGesture.minimumPressDuration = 0.5;
+    }
+}
+
 - (void)handlePanGesture:(UIPanGestureRecognizer *)pan
 {
     NSLog(@"pan state:%i", pan.state);
     switch (pan.state) {
+        case UIGestureRecognizerStateBegan: {
+            
+            EZDEBUG(@"Pan started");
+            if(_dragStatus && !_cellFakeView){
+                NSIndexPath* indexPath = [self.collectionView indexPathForItemAtPoint:[pan locationInView:self.collectionView]];
+                [self createFakeView:indexPath];
+            }
+        }
         case UIGestureRecognizerStateChanged: {
+            EZDEBUG(@"Pan changed");
             //translation
             _panTranslation = [pan translationInView:self.collectionView];
             _cellFakeView.center = CGPointMake(_cellFakeViewCenter.x + _panTranslation.x, _cellFakeViewCenter.y + _panTranslation.y);
@@ -324,7 +377,9 @@ typedef NS_ENUM(NSInteger, RAScrollDirction) {
         }
         case UIGestureRecognizerStateCancelled:
         case UIGestureRecognizerStateEnded:
+            [self cancelFakeView:_reorderingCellIndexPath];
             [self invalidateDisplayLink];
+            
             break;
             
         default:
@@ -370,6 +425,9 @@ typedef NS_ENUM(NSInteger, RAScrollDirction) {
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
 {
     if ([_panGesture isEqual:gestureRecognizer]) {
+        if(_dragStatus){
+            return YES;
+        }else
         if (_longPressGesture.state == 0 || _longPressGesture.state == 5) {
             return NO;
         }

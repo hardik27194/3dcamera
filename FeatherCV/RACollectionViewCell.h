@@ -14,7 +14,16 @@
 
 @property (nonatomic, strong) UIButton* delBtn;
 
+@property (nonatomic, strong) UIButton* addBtn;
+
 @property (nonatomic, strong) EZEventBlock deleteClicked;
 
+@property (nonatomic, strong) EZEventBlock addClicked;
+
+- (void) showAdd;
+
+- (void) showDelete:(BOOL)animated;
+
+- (void) showImage:(BOOL)isDragMode;
 
 @end

@@ -21,6 +21,7 @@ typedef enum {
     kStringNoTitle,
     kUploadValue,
     kNumberPicker,
+    kHorizonNumberPicker,
     kBoolValue,
     kSingleButton
 } EZInputValueType;
@@ -116,6 +117,8 @@ typedef enum {
 #define EZLoginSuccess @"EZLoginSuccess"
 
 #define EZShotPhotos @"EZShottedPhotos"
+
+#define EZShotPhotoAdded @"EZShotPhotoAdded"
 
 #define EZShotTaskChanged @"EZShotTaskChanged"
 

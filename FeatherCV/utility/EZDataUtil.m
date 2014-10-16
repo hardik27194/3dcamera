@@ -12,7 +12,7 @@
 #import "EZFileUtil.h"
 #import "EZDisplayPhoto.h"
 #import "EZGeoUtility.h"
-#import "EZImageFileCache.h"
+//#import "EZImageFileCache.h"
 #import "EZDisplayPhoto.h"
 #import "EZExtender.h"
 #import "EZMessageCenter.h"
@@ -47,6 +47,7 @@
 #import "UMSocialWechatHandler.h"
 #import "UMSocialQQHandler.h"
 #import "UMSocial.h"
+#import "EZImageUtil.h"
 
 @implementation EZAlbumResult
 
@@ -104,11 +105,13 @@
     }
     
     NSArray* tasks = [self loadLocalTasks:pid];
-    
+    if(tasks.count){
+        success(tasks);
+    }
     if(_networkAvailable){
     
     [EZNetworkUtility postJson:queryURL parameters:nil complete:^(NSArray* arr){
-        EZDEBUG(@"returned value:%@", arr);
+        //EZDEBUG(@"returned value:%@", arr);
         NSMutableArray* res = [[NSMutableArray alloc] init];
         for(NSDictionary* dict in arr){
             EZShotTask* task = [[EZShotTask alloc] init];
@@ -299,6 +302,51 @@
     } failblk:failure];
 }
 
+
+//What's the purpose of this task?
+//Loading all images, so that we could use it later.
+- (void) loadAllTaskPhotos:(EZShotTask*)task isThumbnail:(BOOL)thumbnail success:(EZEventBlock)success failure:(EZEventBlock)failure progress:(EZEventBlock)progress
+{
+    __block int totalCount = task.photos.count;
+    
+    __block BOOL failureCalled = false;
+    
+    if(totalCount <= 0){
+        if(success){
+            success(task);
+        }
+        return;
+    }
+    
+    for(EZStoredPhoto* sp in task.photos){
+        [[EZImageUtil sharedEZImageUtil] preloadImageURL:str2url(sp.remoteURL) success:^(id obj){
+            EZDEBUG(@"preload file:%i", totalCount);
+            if(!failureCalled){
+                totalCount --;
+                if(totalCount == 0 && success){
+                    success(nil);
+                }else if(totalCount > 0){
+                    if(progress){
+                        progress(@(totalCount/(CGFloat)task.photos.count));
+                    }
+                }
+            }
+        } failed:^(id err){
+            EZDEBUG(@"failed to reload image:%@ at seq:%i, :%@",task.name, sp.sequence, err);
+            
+            if(!failureCalled){
+                failureCalled = true;
+                if(failure){
+                    failure(err);
+                }
+            }
+        }];
+        
+        
+    }
+    
+    
+}
 
 
 
@@ -2669,54 +2717,6 @@
 //Should we generate it dynamically.
 //Maybe we should.
 //Photo here are serve as value object, carry value back and forth.
-
-- (void) fetchImageFromAssetURL:(NSString*)url  success:(EZEventBlock)success failure:(EZEventBlock)failure
-{
-    __block NSString* fileURL = [[EZImageFileCache getInstance] getImage:url];
-    if(fileURL){
-        success(fileURL);
-        return;
-    }
-    ALAssetsLibraryAssetForURLResultBlock resultblock = ^(ALAsset *myasset)
-    {
-        EZDEBUG(@"get image");
-        ALAssetRepresentation *rep = [myasset defaultRepresentation];
-        CGImageRef iref = [rep fullResolutionImage];
-        if (iref) {
-            EZDEBUG(@"Really get it");
-            UIImage* largeimage = [UIImage imageWithCGImage:iref];
-            //[largeimage retain];
-            fileURL = [[EZImageFileCache getInstance] storeImage:largeimage key:url];
-            dispatch_async(dispatch_get_main_queue(), ^(){
-                success(fileURL);
-            });
-            
-        }else{
-            EZDEBUG(@"Don't get it, what's wrong");
-        }
-    };
-    
-    ALAssetsLibraryAccessFailureBlock failureblock  = ^(NSError *myerror)
-    {
-        NSLog(@"booya, cant get image - %@",[myerror localizedDescription]);
-        if(failure){
-            dispatch_async(dispatch_get_main_queue(), ^(){
-                failure(myerror);
-            });
-        }
-    };
-
-    NSURL *asseturl = [NSURL URLWithString:url];
-    if(_assetLibaray){
-        _assetLibaray = [[ALAssetsLibrary alloc] init];
-    }
-    EZDEBUG(@"try to get image from:%@", url);
-    dispatch_async(_asyncQueue, ^(){
-        [_assetLibaray assetForURL:asseturl
-                       resultBlock:resultblock
-                      failureBlock:failureblock];
-    });
-}
 
 
 - (void) saveImage:(UIImage*)shotImage success:(EZEventBlock)success failure:(EZEventBlock)failure

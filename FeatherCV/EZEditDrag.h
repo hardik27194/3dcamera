@@ -10,7 +10,7 @@
 #import "RACollectionViewReorderableTripletLayout.h"
 
 @class EZShotTask;
-@interface RAViewController : UIViewController <RACollectionViewDelegateReorderableTripletLayout, RACollectionViewReorderableTripletLayoutDataSource>
+@interface EZEditDrag: UIViewController <RACollectionViewDelegateReorderableTripletLayout, RACollectionViewReorderableTripletLayoutDataSource>
 
 //@property (nonatomic, strong) RACollectionViewReorderableTripletLayout* layout;
 

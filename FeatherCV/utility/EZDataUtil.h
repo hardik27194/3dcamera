@@ -68,6 +68,8 @@ typedef enum {
 
 - (void) addUploadTask:(EZShotTask*)task success:(EZEventBlock)success failure:(EZEventBlock)failure;
 
+- (void) loadAllTaskPhotos:(EZShotTask*)task isThumbnail:(BOOL)thumbnail success:(EZEventBlock)success failure:(EZEventBlock)failure progress:(EZEventBlock)progress;
+
 - (void) uploadAllTasks;
 
 - (void) addUploadPhoto:(EZStoredPhoto*)photo success:(EZEventBlock)success failure:(EZEventBlock)failure;

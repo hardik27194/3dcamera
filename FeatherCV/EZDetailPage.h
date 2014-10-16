@@ -21,6 +21,8 @@
 
 @property (nonatomic, strong) UISwitch* switchBtn;
 
+@property (nonatomic, strong) EZEventBlock taskChanged;
+
 - (id) initWithTask:(EZShotTask*)task;
 
 @end

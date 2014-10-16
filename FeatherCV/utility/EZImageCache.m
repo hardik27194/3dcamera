@@ -38,6 +38,11 @@
     _image = nil;
 }
 
+- (void) dealloc
+{
+    EZDEBUG(@"removed cache");
+}
+
 @end
 
 
@@ -58,7 +63,7 @@
 
 - (id) init
 {
-    return [self initWithLimit:100];
+    return [self initWithLimit:40];
 }
 
 /**
@@ -85,7 +90,7 @@
         ++ce.hitCount;
         //return [self getImage:key];
     }else{
-        NSString* urlString  = [NSString stringWithFormat:@"file://%@", [EZFileUtil saveToDocument:[img toJpegData:1.0] filename:fileName]];
+        NSString* urlString  = [NSString stringWithFormat:@"file://%@", [EZFileUtil saveToDocument:[img toJpegData:.7] filename:fileName]];
         ce = [[EZCacheEntry2 alloc] init];
         ce.attachment = urlString;
         ce.key = key;
@@ -109,7 +114,7 @@
         [_cache removeObjectForKey:ce.key];
         EZDEBUG(@"removed cache is:%@, hitCount:%i,_cache size:%i, queue size:%i", ce.key, ce.hitCount, _cache.count, _hitQueue.count);
         //storedName = ce.cacheFileName;
-        [ce recyle];
+        //[ce recyle];
         
     }
 
@@ -135,6 +140,9 @@
             ce.hitCount ++;
             [_hitQueue removeObject:ce];
             [_hitQueue insertObject:ce atIndex:0];
+            //if(!ce.image){
+            //    ce.image = [UIImage imageWithContentsOfFile:ce.cacheFileName];
+            //}
             //return [UIImage imageWithContentsOfFile:ce.cacheFileName];
             return ce.image;
             //return ce.attachment;
@@ -155,6 +163,7 @@
                 ce.image = [UIImage imageWithContentsOfFile:ce.cacheFileName];
                 [self checkLimit];
                 return ce.image;
+                
             }
         }
         return nil;

@@ -32,7 +32,7 @@
 //Some smell are going ahead.
 - (id) getChangedValue
 {
-    if(_type == kNumberPicker){
+    if(_type == kNumberPicker || _type == kHorizonNumberPicker){
         return @([[_pickerValues objectAtIndex:[_changedValue integerValue]] integerValue]);
     }
     return _changedValue;
@@ -113,7 +113,7 @@
     _type = type;
     _defaultValue = @(pos);
     _changedValue = @(pos);
-    if(_type == kNumberPicker){
+    if(_type == kNumberPicker || _type == kHorizonNumberPicker){
         _pickerValues = toggles;
     }else{
         _togglePos = pos;
@@ -304,6 +304,27 @@
     }
 }
 
+- (NSInteger)numberOfRowsInPickerView:(HorizontalPickerView *)pickerView
+{
+    return _pickerValues.count;
+}
+
+#pragma mark -  HPickerViewDelegate
+
+- (NSString *)pickerView:(HorizontalPickerView *)pickerView titleForRow:(NSInteger)row
+{
+    return [_pickerValues objectAtIndex:row];
+}
+
+- (void)pickerView:(HorizontalPickerView *)pickerView didSelectRow:(NSInteger)row
+{
+    EZDEBUG(@"picker selected value:%@", [_pickerValues objectAtIndex:row]);
+    if(_valueChanged){
+        _valueChanged(@(row));
+    }
+}
+
+
 - (void) clicked:(id)obj
 {
     if(_btnClicked){
@@ -392,6 +413,20 @@
             EZDEBUG(@"value change get called");
             weakItem.changedValue = @(sw.on);
         };
+    }else if(item.type == kHorizonNumberPicker){
+        HorizontalPickerView* picker = [[HorizontalPickerView alloc] initWithFrame:CGRectMake(frame.size.width - 160, (frame.size.height - 40)/2.0 , 150, 40) style:HPStyle_iOS7];
+        picker.delegate = self;
+        picker.dataSource = self;
+        [picker selectRow:[_defaultValue integerValue] animated:NO];
+        __weak EZInputItem* weakItem = item;
+        item.valueChanged = ^(NSNumber* pickedPos){
+            EZDEBUG(@"Horizon sPicked pos:%i", pickedPos.integerValue);
+            //if(weakItem.type == )
+            weakItem.changedValue = pickedPos;
+            //textField.text = [weakItem.pickerValues objectAtIndex:pickedPos.integerValue];
+        };
+        _pickerView = picker;
+        [inputView addSubview:picker];
     }else if(item.type == kNumberPicker){
         UITextField* textField = [EZTextField creatTextField:CGRectMake(frame.size.width - 110, (frame.size.height - 30)/2.0, 100, 30) textColor:inputColor font:inputFont alignment:NSTextAlignmentRight borderColor:borderColor?borderColor:[UIColor clearColor] padding:CGSizeMake(10, 0)];
         
@@ -493,6 +528,7 @@
 {
     [_textField resignFirstResponder];
 }
+
 
 - (void) toggleClicked:(UIButton*)clicked
 {

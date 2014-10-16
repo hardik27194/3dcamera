@@ -102,7 +102,7 @@
 {
     //Can eveluate the java script code, so that I could have no trouble to implement this.
     NSString *returnvalue =  [_webView stringByEvaluatingJavaScriptFromString:@"getText()"];
-    EZDEBUG(@"returned value from Js is:%@", returnvalue);
+    //EZDEBUG(@"returned value from Js is:%@", returnvalue);
     //self.valueFromBrowser.text = [NSString stringWithFormat:@"From browser : %@", returnvalue ];
 }
 

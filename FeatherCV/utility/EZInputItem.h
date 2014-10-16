@@ -7,9 +7,10 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "HorizontalPickerView.h"
 
 @class EZImageAdder;
-@interface EZInputItem : NSObject<UITextFieldDelegate, UIPickerViewDataSource, UIPickerViewDelegate>
+@interface EZInputItem : NSObject<UITextFieldDelegate, UIPickerViewDataSource, UIPickerViewDelegate, HPickerViewDelegate, HPickerViewDataSource>
 
 - (id) initWithName:(NSString*)inputName type:(EZInputValueType)type values:(NSArray*)toggles defaultPos:(NSInteger)pos;
 
@@ -46,6 +47,8 @@
 @property (nonatomic, strong) NSString* parameterName;
 
 @property (nonatomic, weak) UITextField* textField;
+
+@property (nonatomic, weak) HorizontalPickerView* pickerView;
 
 @property (nonatomic, assign) CGRect oldFrame;
 

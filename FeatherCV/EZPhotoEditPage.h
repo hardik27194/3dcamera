@@ -14,6 +14,7 @@
 @class EZStoredPhoto;
 @class EZInfoDotView;
 @class EZPhotoInfo;
+@class EZDragPage;
 @interface EZPhotoEditPage : UIViewController<UIAlertViewDelegate>
 
 @property (nonatomic, strong) UIImageView* imageView;
@@ -57,7 +58,14 @@
 
 @property (nonatomic, strong) NSMutableArray* dotViews;
 
+@property (nonatomic, strong) EZDragPage* dragPage;
+
+@property (nonatomic, assign) BOOL isMultiMode;
+
+
 - (id) initWithTask:(EZShotTask*)tasks pos:(NSInteger)pos;
+
+- (id) initWithTask:(EZShotTask*)tasks pos:(NSInteger)pos isMultiMode:(BOOL)isMultiMode;
 
 - (id) initWithShot:(NSArray*)photos pos:(NSInteger)pos deletedBlock:(EZEventBlock)deletedBlock;
 

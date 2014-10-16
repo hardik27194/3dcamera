@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Ryo Aoyama. All rights reserved.
 //
 
-#import "RAViewController.h"
+#import "EZEditDrag.h"
 #import "RACollectionViewCell.h"
 #import "UIImageView+AFNetworking.h"
 #import "EZShotTask.h"
@@ -17,14 +17,14 @@
 
 
 
-@interface RAViewController ()
+@interface EZEditDrag ()
 
 @property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
 //@property (nonatomic, strong) NSMutableArray *photosArray;
 
 @end
 
-@implementation RAViewController
+@implementation EZEditDrag
 
 
 - (id) initWithTask:(EZShotTask*)task
@@ -184,12 +184,12 @@
     //cell.imageView.frame = cell.bounds;
         //[cell.contentView addSubview:cell.imageView];
     EZStoredPhoto* sp = [_storedPhotos objectAtIndex:indexPath.item];
-    if(sp.localFileURL){
-        [cell.imageView setImageWithURL:str2url(sp.localFileURL) placeholderImage:ImagePlaceHolder];
-    }else{
-        [cell.imageView setImageWithURL:str2url(sp.remoteURL) loading:YES];
+    //if(sp.localFileURL){
+    //    [cell.imageView setImageWithURL:str2url(sp.localFileURL) placeholderImage:ImagePlaceHolder];
+    //}else{
+    [cell.imageView setImageWithURL:str2url(sp.remoteURL) loading:YES];
 
-    }
+    //}
     EZDEBUG(@"item:%i cell bounds:%@, localURL:%@, remoteURL:%@",indexPath.item, NSStringFromCGRect(cell.frame), sp.localFileURL, sp.remoteURL);
     return cell;
     

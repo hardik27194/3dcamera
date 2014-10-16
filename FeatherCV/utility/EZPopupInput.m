@@ -46,7 +46,7 @@
 {
     CGFloat beginYPos = EZPopHeaderHeight;
     for(EZInputItem* item in _inputItems){
-        UIView* inputView = [self renderToView:item];
+        UIView* inputView =  [item renderToView:CGRectMake(0, 0, self.width, EZInputItemHeight) titleFont:[UIFont boldSystemFontOfSize:14] titleColor:[EZColorScheme sharedEZColorScheme].systemTextColor inputFont:[UIFont boldSystemFontOfSize:15] inputColor:[UIColor blackColor]];  //[self renderToView:item];
         [inputView setY:beginYPos];
         beginYPos += EZInputItemHeight;
         [self addSubview:inputView];

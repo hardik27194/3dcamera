@@ -22,17 +22,19 @@
 
 - (void) preloadImageURL:(NSURL *)url success:(EZEventBlock)success failed:(EZEventBlock)failed
 {
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
-    [request addValue:@"image/*" forHTTPHeaderField:@"Accept"];
-    UIImage *cachedImage = [[EZImageCache sharedEZImageCache] getImage:request.URL.absoluteString]; //[[[self class] sharedImageCache] cachedImageForRequest:request];
+    UIImage *cachedImage = [[EZImageCache sharedEZImageCache] getImage:url.absoluteString]; //[[[self class] sharedImageCache] cachedImageForRequest:request];
     if (cachedImage) {
+        EZDEBUG(@"read from cache");
         if (success) {
             success(cachedImage);
         }
         //self.af_imageRequestOperation = nil;
     } else {
+        EZDEBUG(@"Send to server");
         //self.image = placeholderImage;
         //__weak __typeof(self)weakSelf = self;
+        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
+        [request addValue:@"image/*" forHTTPHeaderField:@"Accept"];
         AFHTTPRequestOperation* imageRequestOperation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
         imageRequestOperation.responseSerializer = [AFImageResponseSerializer serializer];
         [imageRequestOperation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {

@@ -8,7 +8,6 @@
 
 #import "EZTestSuites.h"
 #import "EZGeoUtility.h"
-#import "EZImageFileCache.h"
 #import "EZDataUtil.h"
 #import "EZExtender.h"
 #import "EZSoundEffect.h"
@@ -19,6 +18,7 @@
 //#import <GPUImageFilter.h>
 #import "EZShotTask.h"
 #import "EZStoredPhoto.h"
+#import "EZImageCache.h"
 
 
 @interface EZHolder : NSObject
@@ -119,12 +119,35 @@ SINGLETON_FOR_CLASS(EZHolder);
     EZDEBUG(@"val1:%i, val2:%i, val3:%i, final:%i", val1, val2, val3, final);
     assert(false);
      **/
-    [self testWeakMaps];
+    //[self testWeakMaps];
     
-    EZDEBUG(@"re1:%@, re2:%@", [[EZHolder sharedEZHolder].mapTable objectForKey:@"re1"],[[EZHolder sharedEZHolder].mapTable objectForKey:@"re2"]);
+    //EZDEBUG(@"re1:%@, re2:%@", [[EZHolder sharedEZHolder].mapTable objectForKey:@"re1"],[[EZHolder sharedEZHolder].mapTable objectForKey:@"re2"]);
     //assert(false);
+    //[self testImageCache];
 }
 
+
++ (void) testImageCache
+{
+    EZShotTask* st = [[EZShotTask alloc] init];
+    EZStoredPhoto* sp1 = [[EZStoredPhoto alloc] init];
+    sp1.remoteURL = @"http://192.168.1.104:8080/static/543be2b3e7b5b978f5053652/782b5575eac699993e5fabef5a78ea5b.jpg";
+    
+    EZStoredPhoto* sp2 = [[EZStoredPhoto alloc] init];
+    sp2.remoteURL = @"http://192.168.1.104:8080/static/543be2b3e7b5b978f5053652/f7788314af6c869d2b0b30c697685286.jpg";
+    [st.photos addObjectsFromArray:@[sp1, sp2]];
+    [[EZDataUtil getInstance] loadAllTaskPhotos:st isThumbnail:NO success:^(id obj){
+        EZDEBUG(@"load all image success");
+        UIImage* img = [[EZImageCache sharedEZImageCache] getImage:sp1.remoteURL];
+        EZDEBUG(@"load image from cache:%@", NSStringFromCGSize(img.size));
+        UIImage* img2 = [[EZImageCache sharedEZImageCache] getImage:sp2.remoteURL];
+        EZDEBUG(@"loaded image from cache:%@", NSStringFromCGSize(img2.size));
+    } failure:^(id obj){
+        EZDEBUG(@"failed to load all images:%@", obj);
+    } progress:^(NSNumber* stage){
+        EZDEBUG(@"current stage:%f", stage.floatValue);
+    }];
+}
 
 + (void) testWeakMaps
 {
@@ -407,18 +430,6 @@ SINGLETON_FOR_CLASS(EZHolder);
         
     } once:YES];
 
-}
-
-+ (void) testImageCache
-{
-    UIImage* img = [UIImage imageNamed:@"img01.jpg"];
-    NSString* imgURL = [[EZImageFileCache getInstance] storeImage:img key:@"file1"];
-    EZDEBUG(@"imgURL firstTime:%@", imgURL);
-    NSString* fetchBack = [[EZImageFileCache getInstance] getImage:@"file1"];
-    EZDEBUG(@"imgURL fetchBack:%@", fetchBack);
-    
-    fetchBack = [[EZImageFileCache getInstance] getImage:@"file1"];
-    EZDEBUG(@"imgURL fetchBack again:%@", fetchBack);
 }
 
 
