@@ -377,7 +377,7 @@ typedef enum {
 - (void) uploadContacts:(NSArray*)contacts success:(EZEventBlock)succss failure:(EZEventBlock)failure;
 
 //Internal invokation only.
-- (void) queryPersonIDs:(NSArray*)personIDs success:(EZEventBlock)success failure:(EZEventBlock)failure;
+- (void) queryPersonIDs:(NSArray*)personID success:(EZEventBlock)success failure:(EZEventBlock)failure;
 //Get the person object
 //- (EZPerson*) getPerson:(int)personID;
 //Check cache first, if not then will query the person

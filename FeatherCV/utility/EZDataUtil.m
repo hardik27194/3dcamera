@@ -483,6 +483,7 @@
             }
         } failblk:failure];
     }else{
+        EZDEBUG(@"personID:%@, name:%@", currentLoginID, task.name);
         [EZNetworkUtility getJson:@"p3d/id/create" parameters:@{@"personID":currentLoginID, @"name":task.name?task.name:@"", @"isPrivate":@(task.isPrivate)} complete:^(NSDictionary* dict){
             EZDEBUG(@"upload task success");
             task.taskID = [dict objectForKey:@"id"];
@@ -1236,7 +1237,7 @@
     EZDEBUG(@"current login languge:%@", currentLocalLang);
     [md setValue:currentLocalLang forKey:@"lang"];
     [md setValue:_version?_version:@"" forKey:@"version"];
-    [EZNetworkUtility postJson:@"register" parameters:md complete:^(NSDictionary* dict){
+    [EZNetworkUtility postJson:@"p3d/register" parameters:md complete:^(NSDictionary* dict){
         EZPerson* person = [self addPersonToStore:dict isQuerying:NO];
         self.currentPersonID  = person.personID;
         self.currentLoginPerson = person;
@@ -1263,21 +1264,24 @@
 
 - (void) queryPersonIDs:(NSArray*)personIDs success:(EZEventBlock)success failure:(EZEventBlock)failure
 {
-    [EZNetworkUtility postParameterAsJson:@"person/info"
-                               parameters:@{@"cmd":@"personID",
-                                        @"personIDs":personIDs
+    
+    EZDEBUG(@"current userID:%@", _currentPersonID);
+    [EZNetworkUtility postJson:@"p3d/person/personID"
+                               parameters:@{
+                                        @"personIDs":personIDs,
+                                        @"personID":_currentPersonID
                                 }
-    complete:^(NSArray* persons){
-        EZDEBUG(@"Photo size:%i",persons.count);
-        NSMutableArray* res = [[NSMutableArray alloc] initWithCapacity:persons.count];
-        for(NSDictionary* dict in persons){
-            //EZPerson* person = [[EZPerson alloc] init];
-            //[person fromJson:dict];
-            [res addObject:dict];
-            //[_currentQueryUsers setObject:person forKey:person.personID];
-        }
+    complete:^(NSDictionary* dicts){
+        //EZDEBUG(@"Photo size:%i",persons.count);
+        // NSMutableArray* res = [[NSMutableArray alloc] initWithCapacity:dicts.count];
+        //for(NSDictionary* dict in dicts){
+        //    EZPerson* person = [[EZPerson alloc] init];
+        //    [person fromJson:dict];
+        //    [res addObject:person];
+         //   [_currentQueryUsers setObject:person forKey:person.personID];
+        //}
         if(success){
-            success(res);
+            success(dicts);
         }
         } failblk:failure];
 
@@ -1946,6 +1950,7 @@
         [[EZMessageCenter getInstance] registerEvent:EZUserAuthenticated block:^(EZPerson* ps){
             EZDEBUG(@"dismiss login person:%@, avatar:%@", ps.name, ps.avatar);
             //[login dismissViewControllerAnimated:NO completion:nil];
+            [presenter dismissViewControllerAnimated:YES completion:nil];
             if(success){
                 success(ps);
             }
@@ -1959,6 +1964,7 @@
         [[EZMessageCenter getInstance] registerEvent:EZUserAuthenticated block:^(EZPerson* ps){
             EZDEBUG(@"dismiss login person:%@, avatar:%@", ps.name, ps.avatar);
             //[registerCtl dismissViewControllerAnimated:NO completion:nil];
+             [presenter dismissViewControllerAnimated:YES completion:nil];
             if(success){
                 success(ps);
             }
@@ -1973,7 +1979,7 @@
     EZDEBUG(@"current login languge:%@", currentLocalLang);
     [md setValue:currentLocalLang forKey:@"lang"];
     [md setValue:_version?_version:@"" forKey:@"version"];
-    [EZNetworkUtility postJson:@"login" parameters:md complete:^(NSDictionary* dict){
+    [EZNetworkUtility postJson:@"p3d/person/login" parameters:md complete:^(NSDictionary* dict){
         EZPerson* person = [self addPersonToStore:dict isQuerying:NO];//[[EZPerson alloc] init];
         //[person fromJson:dict];
         self.currentPersonID = person.personID;
@@ -2022,15 +2028,15 @@
     if(!_currentPersonID){
         _currentPersonID = [[NSUserDefaults standardUserDefaults] objectForKey:@"CurrentSessionID"];
     }
-    /**
+    
     if(_currentPersonID && !_currentLoginPerson){
         [self getPersonByID:_currentPersonID success:^(EZPerson* ps){
             //EZDEBUG(@"loaded person count:%i", ps.count);
-            //EZDEBUG(@"Current person name:%@", ps.name);
+            EZDEBUG(@"Current person name:%@", ps.name);
             _currentLoginPerson = ps;
         }];
     }
-     **/
+    
     //EZDEBUG(@"Current PersonID:%@, person name:%@", _currentPersonID, _currentLoginPerson.name);
     return _currentPersonID;
 }
@@ -2738,10 +2744,9 @@
 - (void) requestSmsCode:(NSString*)number success:(EZEventBlock)success failure:(EZEventBlock)failure
 {
     NSDictionary* payload = @{
-                              @"mobile":number,
-                              @"cmd":@"passcode"
+                              @"mobile":number
                               };
-    [EZNetworkUtility postJson:@"person/info" parameters:payload complete:^(id obj){
+    [EZNetworkUtility postJson:@"p3d/person/passcode" parameters:payload complete:^(id obj){
         EZDEBUG(@"update preson:%@", obj);
         if(success){
             success(obj);
@@ -3021,9 +3026,9 @@
     //NSMutableDictionary* dict = [[NSMutableDictionary alloc] init];
     NSDictionary* payload = @{
                               @"persons":dict,
-                              @"cmd":@"update"
+                              @"personID":_currentPersonID
                               };
-    [EZNetworkUtility postJson:@"person/info" parameters:payload complete:^(id obj){
+    [EZNetworkUtility postJson:@"p3d/person/update" parameters:payload complete:^(id obj){
         EZDEBUG(@"update preson:%@", obj);
         if(success){
             success(obj);

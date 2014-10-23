@@ -40,6 +40,8 @@
 
 @property (nonatomic, strong) EZEventBlock keyboardHide;
 
+@property (nonatomic, strong) EZEventBlock focusedBlock;
+
 @property (nonatomic, strong) NSArray* toggleValue;
 
 @property (nonatomic, strong) NSString* unitName;

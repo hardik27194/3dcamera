@@ -6,6 +6,8 @@
 //  Copyright (c) 2014年 tiange. All rights reserved.
 //
 
+#import <JavaScriptCore/JavaScript.h>
+#import <JavaScriptCore/JSContext.h>
 #import "EZDetailPage.h"
 #import "EZShotTask.h"
 #import "EZStoredPhoto.h"
@@ -13,6 +15,8 @@
 #import "EZDataUtil.h"
 #import "EZMessageCenter.h"
 #import "EZPhotoEditPage.h"
+#import "EZNetworkUtility.h"
+
 
 @interface EZDetailPage ()
 
@@ -46,7 +50,7 @@
 {
     [super viewWillLayoutSubviews];
     EZDEBUG(@"will layoutSubviews, parent bound:%@", NSStringFromCGRect(self.view.bounds));
-    _webView.frame = self.view.bounds;
+    _webView.frame = (CGRect){(CGPoint){0, 0}, self.view.width, self.view.height - _toolBar.height};
 }
 
 - (void) createSwitchButton
@@ -68,13 +72,15 @@
     _webView = [[UIWebView alloc] initWithFrame:CGRectZero];
     [self.view addSubview:_webView];
     _webView.delegate = self;
-    NSString* url = [NSString stringWithFormat:@"%@p3d/show3d?taskID=%@", baseServiceURL, _task.taskID];
+    NSString* url = [NSString stringWithFormat:@"%@p3d/show3d", baseServiceURL];
     EZDEBUG(@"final url is:%@", url);
-    [_webView loadRequest:[NSURLRequest requestWithURL:str2url(url)]];
+    [_webView loadRequest:[NSURLRequest requestWithURL:str2url(url) cachePolicy:NSURLRequestUseProtocolCachePolicy
+        timeoutInterval:20.0]];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(delete:)]; //[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"share"] style:UIBarButtonItemStylePlain target:self action:@selector(shareClicked:)];
     
     UIToolbar* toolBar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, CurrentScreenHeight - 44, CurrentScreenWidth, 44)];
     
+    _toolBar = toolBar;
     toolBar.tintColor = [EZColorScheme sharedEZColorScheme].toolBarTintColor;
     
     UIImage* editImg = [UIImage imageNamed:@"edit2"];
@@ -100,7 +106,12 @@
     [deleteButton addTarget:self action:@selector(delete:) forControlEvents:UIControlEventTouchUpInside];
     
     
- 
+    UIButton* publicBtn = [UIButton createButton:CGRectMake(0, 0, 44, 44) image:[UIImage imageNamed:_task.isPrivate?@"lock":@"unlock"] imageInset:UIEdgeInsetsMake(0, 4, 10, 4) title:@"广场状态" font:[UIFont boldSystemFontOfSize:10] color:[EZColorScheme sharedEZColorScheme].toolBarTintColor align:NSTextAlignmentCenter textFrame:CGRectMake(0, 31, 44, 11)];
+    
+    [publicBtn addTarget:self action:@selector(squareVisible:) forControlEvents:UIControlEventTouchUpInside];
+    UIBarButtonItem* btnPublic = [[UIBarButtonItem alloc] initWithCustomView:publicBtn];
+    
+    _publicBtn = publicBtn;
     ///UIButton* showPublic = [UIButton createButton:CGRectMake(0, 0, 44, 44) image:[UIImage imageNamed:@"trash"] imageInset:UIEdgeInsetsMake(3, 4, 3, 4) title:@"广场可见" font:[UIFont boldSystemFontOfSize:10] color:[EZColorScheme sharedEZColorScheme].toolBarTintColor align:NSTextAlignmentCenter textFrame:CGRectMake(0, 31, 44, 11)];
     
     //[deleteButton addTarget:self action:@selector(delete:) forControlEvents:UIControlEventTouchUpInside];
@@ -109,17 +120,38 @@
     UIBarButtonItem* sepBar = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
      
     //UIBarButtonItem* sepBar2 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-    toolBar.items  = @[sepBar,editBtn, sepBar, shareBtn, sepBar];
+    toolBar.items  = @[sepBar,editBtn, sepBar, shareBtn, sepBar, btnPublic, sepBar];
     
     [self.view addSubview:toolBar];
     
     __weak EZDetailPage* weakSelf = self;
     _taskChanged = ^(id obj){
-        EZDEBUG(@"Task Changed");
+        //EZDEBUG(@"Task Changed");
         [weakSelf.webView reload];
     };
     [[EZMessageCenter getInstance] registerEvent:EZShotTaskChanged block:_taskChanged isWeak:YES];
     // Do any additional setup after loading the view.
+}
+
+- (NSString*) photo2Json:(NSArray*)photos taskID:(NSString*)taskID
+{
+    NSMutableArray* imgURLs = [[NSMutableArray alloc] init];
+    for(EZStoredPhoto* photo in photos){
+        NSString* modifiedURL = [photo.remoteURL stringByReplacingOccurrencesOfString:@"file://" withString:@"http://file//"];
+        //EZDEBUG(@"Replaced url is:%@", modifiedURL);
+        [imgURLs addObject:modifiedURL];
+    }
+    
+    NSString* json = [EZNetworkUtility json2str:@{@"imagelist":imgURLs, @"zoomlist":imgURLs, @"taskID":taskID?taskID:@""}];
+    
+    //NSString* json = [EZNetworkUtility json2str:finalMat];
+    //EZDEBUG(@"JSON string:%@", json);
+    json = [json stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
+    //EZDEBUG(@"Replace json:%@", json);
+    NSString* jsonStr = [NSString stringWithFormat:@"changeImages(\"%@\");", json];
+    
+    //EZDEBUG(@"load get called");
+    return jsonStr;
 }
 
 - (void) switched:(UISwitch*)sw
@@ -133,6 +165,24 @@
         EZDEBUG(@"Update task failed:%@",err);
     }];
     
+}
+
+- (void) squareVisible:(id)obj
+{
+    //EZDEBUG(@"switch is:%i", sw.on);
+    _task.isPrivate = !_task.isPrivate;
+    //if(_task.isPrivate){
+        
+    //}
+    
+    [_publicBtn setImage:_task.isPrivate?[UIImage imageNamed:@"lock"]:[UIImage imageNamed:@"unlock"] forState:UIControlStateNormal];
+    [[EZDataUtil getInstance] updateTask:_task success:^(id obj){
+        EZDEBUG(@"update Task private success:%@", obj);
+        [_task store];
+        [[EZMessageCenter getInstance] postEvent:EZUpdatePhotoTask attached:_task];
+    } failure:^(id err){
+        EZDEBUG(@"Update task failed:%@",err);
+    }];
 }
 
 
@@ -176,6 +226,8 @@
 - (void) edit
 {
     EZDEBUG(@"Edit get clicked");
+    //NSString* result = [_webView stringByEvaluatingJavaScriptFromString:@"loadURL(\"load me\");"];
+    
     EZPhotoEditPage* editPage = [[EZPhotoEditPage alloc] initWithTask:_task pos:0 isMultiMode:YES];
     [self.navigationController pushViewController:editPage animated:YES];
     
@@ -186,7 +238,7 @@
 
     //NSArray *activityItems = @[@"P3D", str2url(url)];
     NSString* url = [NSString stringWithFormat:@"%@p3d/show3d?taskID=%@", baseServiceURL, _task.taskID];
-    NSString *shareText = @"来看看我分享的三维图片吧";// [NSString stringWithFormat:@"来看看我分享了三维    UIImage* image = nil;
+    NSString *shareText = [NSString stringWithFormat:@"我用Pin3D拍的，可以转的\"%@\"",[_task.name isNotEmpty]?_task.name:@"未命名"];// [NSString stringWithFormat:@"来看看我分享了三维    UIImage* image = nil;
     UIImage* image = nil;
     if(_task.photos.count){
         EZStoredPhoto* sp = [_task.photos objectAtIndex:0];
@@ -213,6 +265,25 @@
 - (void)webViewDidFinishLoad:(UIWebView *)webView
 {
     EZDEBUG(@"finish loading");
+    NSString* photoJson = [self photo2Json:_task.photos taskID:_task.taskID];
+    [_webView stringByEvaluatingJavaScriptFromString:photoJson];
+
+}
+
+
+- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
+{
+ 
+    EZDEBUG(@"The navigationType:%i, url:%@", navigationType, request.URL.absoluteString);
+    //request.cachePolicy = NSURLRequestUseProtocolCachePolicy;
+    //timeoutInterval:20.0
+    
+    return true;
+}
+
+- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error
+{
+    
 }
 
 

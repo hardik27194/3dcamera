@@ -153,7 +153,7 @@
     CGFloat cols = image.size.width;
     CGFloat rows = image.size.height;
     cv::Mat cvMat( rows, cols, CV_8UC4);
-    EZDEBUG(@"Before create, color space:%i", (int)colorSpace);
+    // EZDEBUG(@"Before create, color space:%i", (int)colorSpace);
     CGContextRef contextRef = CGBitmapContextCreate( cvMat.data, cols, rows, 8, cvMat.step[0], colorSpace, kCGImageAlphaPremultipliedLast | kCGBitmapByteOrderDefault );
     //EZDEBUG(@"before draw");
     CGContextDrawImage( contextRef, CGRectMake(0, 0, cols, rows), image.CGImage );

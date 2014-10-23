@@ -12,5 +12,6 @@
 
 + (EZShotButton*) createButton:(CGRect)rect;
 
++ (EZShotButton*) createCellShot:(CGRect)rect;
 
 @end

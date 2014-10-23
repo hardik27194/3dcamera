@@ -16,6 +16,7 @@ typedef enum {
     kTimeValue,
     kFloatValue,
     kStringValue,
+    kStringButton,
     kImageValue,
     kToggleValue,
     kStringNoTitle,
@@ -115,6 +116,8 @@ typedef enum {
 #define EZDeletePhotoTask @"EZDeletePhotoTask"
 
 #define EZLoginSuccess @"EZLoginSuccess"
+
+#define EZLoginUpdated @"EZLoginUpdated"
 
 #define EZShotPhotos @"EZShottedPhotos"
 
@@ -279,8 +282,6 @@ typedef enum {
 #define pointValue(x,y) [NSValue valueWithCGPoint:CGPointMake(x, y)]
 
 #define currentLocalLang [[NSLocale preferredLanguages] objectAtIndex:0]
-
-#define currentPerson [[EZDataUtil getInstance] getCurrentPerson] 
 
 #define randBack(color)  [[EZUIUtility sharedEZUIUtility] getBackgroundColor:color]
 

@@ -130,6 +130,8 @@ typedef void  (^ IterateOperation)(id obj);
 
 - (NSString*) getIntegerStr;
 
+- (BOOL) containString:(NSString*)str;
+
 - (BOOL) isEmpty;
 
 - (BOOL) isNotEmpty;

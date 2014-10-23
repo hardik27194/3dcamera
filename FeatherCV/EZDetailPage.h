@@ -23,6 +23,10 @@
 
 @property (nonatomic, strong) EZEventBlock taskChanged;
 
+@property (nonatomic, weak) UIToolbar* toolBar;
+
+@property (nonatomic, weak) UIButton* publicBtn;
+
 - (id) initWithTask:(EZShotTask*)task;
 
 @end

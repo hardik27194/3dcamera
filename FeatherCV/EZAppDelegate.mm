@@ -53,6 +53,7 @@
 #import "UMSocialWechatHandler.h"
 #import "UMSocialQQHandler.h"
 #import "UMSocial.h"
+#import "RNCachingURLProtocol.h"
 
 @implementation EZAppDelegate
 
@@ -185,9 +186,10 @@
 
 - (void) setupNetwork
 {
-    NSURLCache *URLCache = [[NSURLCache alloc] initWithMemoryCapacity:4 * 1024 * 1024 diskCapacity:100 * 1024 * 1024 diskPath:nil];
-    [NSURLCache setSharedURLCache:URLCache];
+    //NSURLCache *URLCache = [[NSURLCache alloc] initWithMemoryCapacity:4 * 1024 * 1024 diskCapacity:100 * 1024 * 1024 diskPath:nil];
+    //[NSURLCache setSharedURLCache:URLCache];
     
+    [NSURLProtocol registerClass:[RNCachingURLProtocol class]];
    
     [[AFNetworkActivityIndicatorManager sharedManager] setEnabled:YES];
     

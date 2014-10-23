@@ -23,7 +23,44 @@
     self.layer.cornerRadius = 5;
     _configureItems = [self createItems];
     [self renderItems:_configureItems];
+    
+    UIButton* cancelBtn = [UIButton createButton:CGRectMake(5, frame.size.height - 49, frame.size.width/2.0 - 10, 44) font:[UIFont boldSystemFontOfSize:14] color:[UIColor whiteColor] align:NSTextAlignmentCenter];
+    [cancelBtn setTitle:@"取消" forState:UIControlStateNormal];
+    cancelBtn.layer.cornerRadius = 5;
+    cancelBtn.backgroundColor = [EZColorScheme sharedEZColorScheme].cancelBtnColor;
+    [cancelBtn addTarget:self action:@selector(cancel:) forControlEvents:UIControlEventTouchUpInside];
+    
+    
+    UIButton* confirmBtn = [UIButton createButton:CGRectMake(frame.size.width/2.0 + 5, frame.size.height - 49, frame.size.width/2.0 - 10, 44) font:[UIFont boldSystemFontOfSize:14] color:[UIColor whiteColor] align:NSTextAlignmentCenter];
+    [confirmBtn setTitle:@"完成" forState:UIControlStateNormal];
+    confirmBtn.layer.cornerRadius = 5;
+    confirmBtn.backgroundColor = [EZColorScheme sharedEZColorScheme].confirmBtnColor;
+    [confirmBtn addTarget:self action:@selector(confirm:) forControlEvents:UIControlEventTouchUpInside];
+    [self addSubview:confirmBtn];
+    [self addSubview:cancelBtn];
+    
+    _confirmBtn = confirmBtn;
+    _cancelBtn = cancelBtn;
+    
     return self;
+}
+
+- (void) confirm:(id)obj
+{
+    
+    _btnClicked(obj);
+    //if(_confirmed){
+        //_confirmed(obj);
+        
+    //}
+}
+
+- (void) cancel:(id)obj
+{
+    [self dismiss:YES];
+    if(_cancelled){
+        _cancelled(nil);
+    }
 }
 
 - (NSArray*) createItems
@@ -53,11 +90,11 @@
     EZInputItem* isMuteSound = [[EZInputItem alloc] initWithName:BIINFO(@"拍摄延时提示音") type:kBoolValue defaultValue:@(!isMute)];
     
     
-    EZInputItem* confirmBtn = [[EZInputItem alloc] initWithName:BIINFO(@"开始拍摄") type:kSingleButton defaultValue:nil];
+    EZInputItem* confirmBtn = [[EZInputItem alloc] initWithName:BIINFO(@"设置完成") type:kSingleButton defaultValue:nil];
     confirmBtn.btnTextColor = [UIColor whiteColor];
     confirmBtn.btnBackground = [EZColorScheme sharedEZColorScheme].confirmBtnColor;
     
-    confirmBtn.btnClicked = ^(id obj){
+    _btnClicked = ^(id obj){
         EZConfigure* configure = [EZConfigure sharedEZConfigure];
         configure.isMute = ![isMuteSound.changedValue boolValue];
         configure.shotDelay = [[shotDelay getChangedValue] integerValue];
@@ -72,21 +109,26 @@
         }
         
     };
-    return @[shotCount, shotDelay, isMuteSound, confirmBtn];
+    //_confirmed = confirmBtn.btnClicked;
+    //confirmBtn
+    return @[shotCount, shotDelay, isMuteSound];
 }
 
 - (void) coverTapped:(UIView*)tapped
 {
-    [self dismiss:YES];
+    if(_touchDismiss){
+        [self dismiss:YES];
+    }
 }
 
-- (void) showInView:(UIView*)view aniamted:(BOOL)aniamted confirmed:(EZEventBlock)block
+- (void) showInView:(UIView*)view aniamted:(BOOL)aniamted confirmed:(EZEventBlock)block isTouchDimiss:(BOOL)touchDismiss
 {
     self.alpha = 0.0;
     self.transform = CGAffineTransformMakeScale(0, 0);
     _coverView = [view createCoverView:2015 color:RGBACOLOR(0, 0, 0, 80) below:nil tappedTarget:self action:@selector(coverTapped:)];
     _coverView.alpha = 0.0;
     _confirmed = block;
+    _touchDismiss = touchDismiss;
     [view addSubview:self];
     [UIView animateWithDuration:0.5 animations:^(){
         _coverView.alpha = 1.0;

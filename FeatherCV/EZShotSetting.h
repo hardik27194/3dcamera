@@ -20,13 +20,25 @@
 
 @property (nonatomic, strong) EZEventBlock confirmed;
 
+@property (nonatomic, strong) EZEventBlock cancelled;
+
+@property (nonatomic, strong) EZEventBlock btnClicked;
+
+@property (nonatomic, assign) BOOL touchDismiss;
+
+@property (nonatomic, assign) BOOL isDoubleButton;
+
+@property (nonatomic, strong) UIButton* confirmBtn;
+
+@property (nonatomic, strong) UIButton* cancelBtn;
+
 //- (id) initWithFrame:(CGRect)frame items:(EZInputItem*)item;
 //@property (nonatomic, strong) EZIN* shotBtn;
 
 //@property (nonatomic, strong) UILabel* musicMute;
 - (NSArray*) createItems;
 
-- (void) showInView:(UIView*)view aniamted:(BOOL)aniamted confirmed:(EZEventBlock)block;
+- (void) showInView:(UIView*)view aniamted:(BOOL)aniamted confirmed:(EZEventBlock)block isTouchDimiss:(BOOL)touchDismiss;
 
 - (void) dismiss:(BOOL)aniamted;
 

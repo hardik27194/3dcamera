@@ -38,4 +38,25 @@
     return button;
 }
 
+
++ (EZShotButton*) createCellShot:(CGRect)rect
+{
+    EZShotButton* button = [[EZShotButton alloc] initWithFrame:rect];
+    button.showsTouchWhenHighlighted = YES;
+    //button.backgroundColor = RGBACOLOR(255, 119, 86, 180);
+    button.backgroundColor = [UIColor clearColor];
+    
+    UIView* vertical = [[UIView alloc] initWithFrame:CGRectMake(0, 0, button.width * 0.6, 2)];
+    vertical.backgroundColor = [UIColor grayColor];
+    
+    UIView* horizon = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 2, button.height * 0.6)];
+    horizon.backgroundColor = [UIColor grayColor];
+    vertical.center = CGPointMake(button.width/2.0, button.height/2.0);
+    horizon.center = CGPointMake(button.width/2.0, button.height/2.0);
+    
+    [button addSubview:horizon];
+    [button addSubview:vertical];
+    return button;
+}
+
 @end

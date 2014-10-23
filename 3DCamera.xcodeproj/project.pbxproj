@@ -54,7 +54,6 @@
 		180E2D1A1990E42600DE2AFA /* switch_camera@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 180E2CFF1990E42600DE2AFA /* switch_camera@2x.png */; };
 		180E2D1B1990E42600DE2AFA /* switch_camera_h.png in Resources */ = {isa = PBXBuildFile; fileRef = 180E2D001990E42600DE2AFA /* switch_camera_h.png */; };
 		180E2D1C1990E42600DE2AFA /* switch_camera_h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 180E2D011990E42600DE2AFA /* switch_camera_h@2x.png */; };
-		180E7907198FB23A00D85AD3 /* EZRegisterCtrl.m in Sources */ = {isa = PBXBuildFile; fileRef = 180E7906198FB23900D85AD3 /* EZRegisterCtrl.m */; };
 		1814A39A195A913900FA0D6A /* EZPinchController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1814A399195A913900FA0D6A /* EZPinchController.m */; };
 		1814A39F195AA5FE00FA0D6A /* EZPhotoDetail.m in Sources */ = {isa = PBXBuildFile; fileRef = 1814A39E195AA5FE00FA0D6A /* EZPhotoDetail.m */; };
 		1815257219E4C9280005F5FC /* EZColorScheme.m in Sources */ = {isa = PBXBuildFile; fileRef = 1815257119E4C9280005F5FC /* EZColorScheme.m */; };
@@ -85,22 +84,14 @@
 		182268FC19BF2F9B00CD131E /* replace@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 182268F819BF2F9B00CD131E /* replace@2x.png */; };
 		182268FD19BF2F9B00CD131E /* trash@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 182268F919BF2F9B00CD131E /* trash@2x.png */; };
 		182268FE19BF2F9B00CD131E /* add@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 182268FA19BF2F9B00CD131E /* add@2x.png */; };
-		1823DA3318D5674F00E6E8B3 /* EZLoginController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1823DA3218D5674F00E6E8B3 /* EZLoginController.m */; };
-		1823DA3618D5A1E000E6E8B3 /* EZKeyboardController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1823DA3518D5A1E000E6E8B3 /* EZKeyboardController.m */; };
-		1823DA3918D5B2AF00E6E8B3 /* EZRegisterCtrlOld.m in Sources */ = {isa = PBXBuildFile; fileRef = 1823DA3818D5B2AF00E6E8B3 /* EZRegisterCtrlOld.m */; };
 		1823DA4018DA9ABA00E6E8B3 /* EZNote.m in Sources */ = {isa = PBXBuildFile; fileRef = 1823DA3F18DA9AB900E6E8B3 /* EZNote.m */; };
-		1823DA4318E3CCFE00E6E8B3 /* EZPerosnDetail.m in Sources */ = {isa = PBXBuildFile; fileRef = 1823DA4218E3CCFE00E6E8B3 /* EZPerosnDetail.m */; };
 		18290CBF19276C1A00676423 /* shot_new.caf in Resources */ = {isa = PBXBuildFile; fileRef = 18290CBE19276C1A00676423 /* shot_new.caf */; };
-		182AC31D194ECBB200055D19 /* EZPasswordFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 182AC31C194ECBB200055D19 /* EZPasswordFetcher.m */; };
-		182AC325194EDB0800055D19 /* NIDropDown.m in Sources */ = {isa = PBXBuildFile; fileRef = 182AC324194EDB0800055D19 /* NIDropDown.m */; };
 		183BA65F19C7C0670019173B /* EZRectObject.mm in Sources */ = {isa = PBXBuildFile; fileRef = 183BA65E19C7C0670019173B /* EZRectObject.mm */; };
 		183BA66219C7C81F0019173B /* EZRoundObject.mm in Sources */ = {isa = PBXBuildFile; fileRef = 183BA66119C7C81F0019173B /* EZRoundObject.mm */; };
 		183BA66519C7CAEA0019173B /* EZPathObject.mm in Sources */ = {isa = PBXBuildFile; fileRef = 183BA66419C7CAEA0019173B /* EZPathObject.mm */; };
 		183BA66819C7CEEF0019173B /* EZPoint.mm in Sources */ = {isa = PBXBuildFile; fileRef = 183BA66719C7CEEF0019173B /* EZPoint.mm */; };
 		183BA66B19C7D8D20019173B /* EZImageObject.mm in Sources */ = {isa = PBXBuildFile; fileRef = 183BA66A19C7D8D20019173B /* EZImageObject.mm */; };
 		1841DC121907782B00213EB6 /* feather_icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1841DC111907782B00213EB6 /* feather_icon@2x.png */; };
-		184ADD6F18C4B3DD00367527 /* EZAvatarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 184ADD6E18C4B3DD00367527 /* EZAvatarController.m */; };
-		184ADD7418C4B40D00367527 /* EZAvatarView.m in Sources */ = {isa = PBXBuildFile; fileRef = 184ADD7318C4B40D00367527 /* EZAvatarView.m */; };
 		184ADD7718C4C20F00367527 /* EZUIApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = 184ADD7618C4C20F00367527 /* EZUIApplication.m */; };
 		184ADD8318C8ACA300367527 /* EZShapeButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 184ADD8218C8ACA200367527 /* EZShapeButton.m */; };
 		184ADD8618CB490E00367527 /* EZBlurAnimator.m in Sources */ = {isa = PBXBuildFile; fileRef = 184ADD8518CB490E00367527 /* EZBlurAnimator.m */; };
@@ -346,6 +337,17 @@
 		18826E7819B8465000DFC5A9 /* EZImageConverter.mm in Sources */ = {isa = PBXBuildFile; fileRef = 18826E7719B8465000DFC5A9 /* EZImageConverter.mm */; };
 		18827F3119B8783F00DFC5A9 /* EZBgEditPage.mm in Sources */ = {isa = PBXBuildFile; fileRef = 18827F3019B8783F00DFC5A9 /* EZBgEditPage.mm */; };
 		18827F3419B8B76500DFC5A9 /* EZMainLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 18827F3319B8B76500DFC5A9 /* EZMainLayout.m */; };
+		188D8F7E19F4BF8B004901A0 /* EZShotCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 188D8F7D19F4BF8B004901A0 /* EZShotCell.m */; };
+		188D8F8019F50C48004901A0 /* unlock@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 188D8F7F19F50C48004901A0 /* unlock@2x.png */; };
+		188D8F8219F50CB8004901A0 /* lock@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 188D8F8119F50CB8004901A0 /* lock@2x.png */; };
+		188D8F9319F8A46A004901A0 /* EZAvatarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 188D8F8819F8A46A004901A0 /* EZAvatarController.m */; };
+		188D8F9419F8A46A004901A0 /* EZAvatarView.m in Sources */ = {isa = PBXBuildFile; fileRef = 188D8F8A19F8A46A004901A0 /* EZAvatarView.m */; };
+		188D8F9519F8A46A004901A0 /* EZLoginController.m in Sources */ = {isa = PBXBuildFile; fileRef = 188D8F8C19F8A46A004901A0 /* EZLoginController.m */; };
+		188D8F9619F8A46A004901A0 /* EZKeyboardController.m in Sources */ = {isa = PBXBuildFile; fileRef = 188D8F8E19F8A46A004901A0 /* EZKeyboardController.m */; };
+		188D8F9719F8A46A004901A0 /* EZPasswordFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 188D8F9019F8A46A004901A0 /* EZPasswordFetcher.m */; };
+		188D8F9819F8A46A004901A0 /* EZRegisterCtrl.m in Sources */ = {isa = PBXBuildFile; fileRef = 188D8F9219F8A46A004901A0 /* EZRegisterCtrl.m */; };
+		188D8F9B19F8BA70004901A0 /* EZSlidingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 188D8F9A19F8BA70004901A0 /* EZSlidingView.m */; };
+		188D8F9E19F8C765004901A0 /* EZPersonDetail.m in Sources */ = {isa = PBXBuildFile; fileRef = 188D8F9D19F8C765004901A0 /* EZPersonDetail.m */; };
 		1890813A19C977E70096997E /* EZCanvas.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1890813919C977E70096997E /* EZCanvas.mm */; };
 		1890813D19C97A0B0096997E /* EZDrawable.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1890813C19C97A0B0096997E /* EZDrawable.mm */; };
 		1890814319C97E460096997E /* EZCanvas2.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1890814219C97E460096997E /* EZCanvas2.mm */; };
@@ -360,6 +362,8 @@
 		189FD65919ED0FA6005B083F /* HPCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 189FD65419ED0FA6005B083F /* HPCollectionViewCell.m */; };
 		189FD65A19ED0FA6005B083F /* HPCollectionViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 189FD65619ED0FA6005B083F /* HPCollectionViewFlowLayout.m */; };
 		18A37044185BF97E0022F0A8 /* EZPhotoRelation.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A37043185BF97E0022F0A8 /* EZPhotoRelation.m */; };
+		18A7123519F0BABF0093D9A5 /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18A7123419F0BABE0093D9A5 /* JavaScriptCore.framework */; };
+		18A7123819F0F9C20093D9A5 /* RNCachingURLProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A7123719F0F9C20093D9A5 /* RNCachingURLProtocol.m */; };
 		18B3651A1920916300092AB8 /* EZMotionRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 18B365191920916300092AB8 /* EZMotionRecorder.m */; };
 		18B3651D1920926900092AB8 /* EZMotionImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 18B3651C1920926900092AB8 /* EZMotionImage.m */; };
 		18B365201920938F00092AB8 /* EZMotionRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 18B3651F1920938F00092AB8 /* EZMotionRecord.m */; };
@@ -670,8 +674,6 @@
 		180E2CFF1990E42600DE2AFA /* switch_camera@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "switch_camera@2x.png"; sourceTree = "<group>"; };
 		180E2D001990E42600DE2AFA /* switch_camera_h.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = switch_camera_h.png; sourceTree = "<group>"; };
 		180E2D011990E42600DE2AFA /* switch_camera_h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "switch_camera_h@2x.png"; sourceTree = "<group>"; };
-		180E7905198FB23900D85AD3 /* EZRegisterCtrl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZRegisterCtrl.h; sourceTree = "<group>"; };
-		180E7906198FB23900D85AD3 /* EZRegisterCtrl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZRegisterCtrl.m; sourceTree = "<group>"; };
 		1814A398195A913900FA0D6A /* EZPinchController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZPinchController.h; sourceTree = "<group>"; };
 		1814A399195A913900FA0D6A /* EZPinchController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZPinchController.m; sourceTree = "<group>"; };
 		1814A39D195AA5FE00FA0D6A /* EZPhotoDetail.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZPhotoDetail.h; sourceTree = "<group>"; };
@@ -726,21 +728,9 @@
 		182268F819BF2F9B00CD131E /* replace@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "replace@2x.png"; sourceTree = "<group>"; };
 		182268F919BF2F9B00CD131E /* trash@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "trash@2x.png"; sourceTree = "<group>"; };
 		182268FA19BF2F9B00CD131E /* add@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "add@2x.png"; sourceTree = "<group>"; };
-		1823DA3118D5674F00E6E8B3 /* EZLoginController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZLoginController.h; sourceTree = "<group>"; };
-		1823DA3218D5674F00E6E8B3 /* EZLoginController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZLoginController.m; sourceTree = "<group>"; };
-		1823DA3418D5A1E000E6E8B3 /* EZKeyboardController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZKeyboardController.h; sourceTree = "<group>"; };
-		1823DA3518D5A1E000E6E8B3 /* EZKeyboardController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZKeyboardController.m; sourceTree = "<group>"; };
-		1823DA3718D5B2AF00E6E8B3 /* EZRegisterCtrlOld.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZRegisterCtrlOld.h; sourceTree = "<group>"; };
-		1823DA3818D5B2AF00E6E8B3 /* EZRegisterCtrlOld.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZRegisterCtrlOld.m; sourceTree = "<group>"; };
 		1823DA3E18DA9AB900E6E8B3 /* EZNote.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZNote.h; sourceTree = "<group>"; };
 		1823DA3F18DA9AB900E6E8B3 /* EZNote.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZNote.m; sourceTree = "<group>"; };
-		1823DA4118E3CCFD00E6E8B3 /* EZPersonDetail.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZPersonDetail.h; sourceTree = "<group>"; };
-		1823DA4218E3CCFE00E6E8B3 /* EZPerosnDetail.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZPerosnDetail.m; sourceTree = "<group>"; };
 		18290CBE19276C1A00676423 /* shot_new.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = shot_new.caf; sourceTree = "<group>"; };
-		182AC31B194ECBB200055D19 /* EZPasswordFetcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZPasswordFetcher.h; sourceTree = "<group>"; };
-		182AC31C194ECBB200055D19 /* EZPasswordFetcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZPasswordFetcher.m; sourceTree = "<group>"; };
-		182AC323194EDB0800055D19 /* NIDropDown.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NIDropDown.h; sourceTree = "<group>"; };
-		182AC324194EDB0800055D19 /* NIDropDown.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NIDropDown.m; sourceTree = "<group>"; };
 		183BA65D19C7C0670019173B /* EZRectObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZRectObject.h; sourceTree = "<group>"; };
 		183BA65E19C7C0670019173B /* EZRectObject.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = EZRectObject.mm; sourceTree = "<group>"; };
 		183BA66019C7C81F0019173B /* EZRoundObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZRoundObject.h; sourceTree = "<group>"; };
@@ -752,10 +742,6 @@
 		183BA66919C7D8D20019173B /* EZImageObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZImageObject.h; sourceTree = "<group>"; };
 		183BA66A19C7D8D20019173B /* EZImageObject.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = EZImageObject.mm; sourceTree = "<group>"; };
 		1841DC111907782B00213EB6 /* feather_icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "feather_icon@2x.png"; sourceTree = "<group>"; };
-		184ADD6D18C4B3DD00367527 /* EZAvatarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZAvatarController.h; sourceTree = "<group>"; };
-		184ADD6E18C4B3DD00367527 /* EZAvatarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZAvatarController.m; sourceTree = "<group>"; };
-		184ADD7218C4B40D00367527 /* EZAvatarView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZAvatarView.h; sourceTree = "<group>"; };
-		184ADD7318C4B40D00367527 /* EZAvatarView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZAvatarView.m; sourceTree = "<group>"; };
 		184ADD7518C4C20F00367527 /* EZUIApplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZUIApplication.h; sourceTree = "<group>"; };
 		184ADD7618C4C20F00367527 /* EZUIApplication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZUIApplication.m; sourceTree = "<group>"; };
 		184ADD8118C8ACA200367527 /* EZShapeButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZShapeButton.h; sourceTree = "<group>"; };
@@ -1069,6 +1055,26 @@
 		18827F3019B8783F00DFC5A9 /* EZBgEditPage.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = EZBgEditPage.mm; sourceTree = "<group>"; };
 		18827F3219B8B76500DFC5A9 /* EZMainLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZMainLayout.h; sourceTree = "<group>"; };
 		18827F3319B8B76500DFC5A9 /* EZMainLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZMainLayout.m; sourceTree = "<group>"; };
+		188D8F7C19F4BF8B004901A0 /* EZShotCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZShotCell.h; sourceTree = "<group>"; };
+		188D8F7D19F4BF8B004901A0 /* EZShotCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZShotCell.m; sourceTree = "<group>"; };
+		188D8F7F19F50C48004901A0 /* unlock@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "unlock@2x.png"; sourceTree = "<group>"; };
+		188D8F8119F50CB8004901A0 /* lock@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "lock@2x.png"; sourceTree = "<group>"; };
+		188D8F8719F8A46A004901A0 /* EZAvatarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZAvatarController.h; sourceTree = "<group>"; };
+		188D8F8819F8A46A004901A0 /* EZAvatarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZAvatarController.m; sourceTree = "<group>"; };
+		188D8F8919F8A46A004901A0 /* EZAvatarView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZAvatarView.h; sourceTree = "<group>"; };
+		188D8F8A19F8A46A004901A0 /* EZAvatarView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZAvatarView.m; sourceTree = "<group>"; };
+		188D8F8B19F8A46A004901A0 /* EZLoginController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZLoginController.h; sourceTree = "<group>"; };
+		188D8F8C19F8A46A004901A0 /* EZLoginController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZLoginController.m; sourceTree = "<group>"; };
+		188D8F8D19F8A46A004901A0 /* EZKeyboardController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZKeyboardController.h; sourceTree = "<group>"; };
+		188D8F8E19F8A46A004901A0 /* EZKeyboardController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZKeyboardController.m; sourceTree = "<group>"; };
+		188D8F8F19F8A46A004901A0 /* EZPasswordFetcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZPasswordFetcher.h; sourceTree = "<group>"; };
+		188D8F9019F8A46A004901A0 /* EZPasswordFetcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZPasswordFetcher.m; sourceTree = "<group>"; };
+		188D8F9119F8A46A004901A0 /* EZRegisterCtrl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZRegisterCtrl.h; sourceTree = "<group>"; };
+		188D8F9219F8A46A004901A0 /* EZRegisterCtrl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZRegisterCtrl.m; sourceTree = "<group>"; };
+		188D8F9919F8BA70004901A0 /* EZSlidingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZSlidingView.h; sourceTree = "<group>"; };
+		188D8F9A19F8BA70004901A0 /* EZSlidingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZSlidingView.m; sourceTree = "<group>"; };
+		188D8F9C19F8C765004901A0 /* EZPersonDetail.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZPersonDetail.h; sourceTree = "<group>"; };
+		188D8F9D19F8C765004901A0 /* EZPersonDetail.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZPersonDetail.m; sourceTree = "<group>"; };
 		1890813819C977E70096997E /* EZCanvas.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZCanvas.h; sourceTree = "<group>"; };
 		1890813919C977E70096997E /* EZCanvas.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = EZCanvas.mm; sourceTree = "<group>"; };
 		1890813B19C97A0B0096997E /* EZDrawable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZDrawable.h; sourceTree = "<group>"; };
@@ -1097,6 +1103,9 @@
 		189FD65619ED0FA6005B083F /* HPCollectionViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HPCollectionViewFlowLayout.m; sourceTree = "<group>"; };
 		18A37042185BF97E0022F0A8 /* EZPhotoRelation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZPhotoRelation.h; sourceTree = "<group>"; };
 		18A37043185BF97E0022F0A8 /* EZPhotoRelation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZPhotoRelation.m; sourceTree = "<group>"; };
+		18A7123419F0BABE0093D9A5 /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		18A7123619F0F9C20093D9A5 /* RNCachingURLProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNCachingURLProtocol.h; sourceTree = "<group>"; };
+		18A7123719F0F9C20093D9A5 /* RNCachingURLProtocol.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNCachingURLProtocol.m; sourceTree = "<group>"; };
 		18B365181920916300092AB8 /* EZMotionRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZMotionRecorder.h; sourceTree = "<group>"; };
 		18B365191920916300092AB8 /* EZMotionRecorder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EZMotionRecorder.m; sourceTree = "<group>"; };
 		18B3651B1920926900092AB8 /* EZMotionImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZMotionImage.h; sourceTree = "<group>"; };
@@ -1479,6 +1488,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				18A7123519F0BABF0093D9A5 /* JavaScriptCore.framework in Frameworks */,
 				18D8A63A19DD872F00F7F3CA /* Social.framework in Frameworks */,
 				18D8A63819DD869F00F7F3CA /* libiconv.dylib in Frameworks */,
 				18D8A63619DD866700F7F3CA /* libstdc++.dylib in Frameworks */,
@@ -1665,6 +1675,10 @@
 				1815257119E4C9280005F5FC /* EZColorScheme.m */,
 				1815257319E53C8C0005F5FC /* EZShotButton.h */,
 				1815257419E53C8C0005F5FC /* EZShotButton.m */,
+				188D8F7C19F4BF8B004901A0 /* EZShotCell.h */,
+				188D8F7D19F4BF8B004901A0 /* EZShotCell.m */,
+				188D8F9919F8BA70004901A0 /* EZSlidingView.h */,
+				188D8F9A19F8BA70004901A0 /* EZSlidingView.m */,
 			);
 			name = UICustomization;
 			sourceTree = "<group>";
@@ -1672,6 +1686,8 @@
 		1815258219E7DB640005F5FC /* utils */ = {
 			isa = PBXGroup;
 			children = (
+				18A7123619F0F9C20093D9A5 /* RNCachingURLProtocol.h */,
+				18A7123719F0F9C20093D9A5 /* RNCachingURLProtocol.m */,
 				1815258319E7DBD30005F5FC /* EZConfigure.h */,
 				1815258419E7DBD40005F5FC /* EZConfigure.m */,
 			);
@@ -1681,24 +1697,20 @@
 		181608DD18B7333E00DD5995 /* login */ = {
 			isa = PBXGroup;
 			children = (
-				182AC323194EDB0800055D19 /* NIDropDown.h */,
-				182AC324194EDB0800055D19 /* NIDropDown.m */,
-				184ADD6D18C4B3DD00367527 /* EZAvatarController.h */,
-				184ADD6E18C4B3DD00367527 /* EZAvatarController.m */,
-				184ADD7218C4B40D00367527 /* EZAvatarView.h */,
-				184ADD7318C4B40D00367527 /* EZAvatarView.m */,
-				1823DA3118D5674F00E6E8B3 /* EZLoginController.h */,
-				1823DA3218D5674F00E6E8B3 /* EZLoginController.m */,
-				1823DA3418D5A1E000E6E8B3 /* EZKeyboardController.h */,
-				1823DA3518D5A1E000E6E8B3 /* EZKeyboardController.m */,
-				1823DA3718D5B2AF00E6E8B3 /* EZRegisterCtrlOld.h */,
-				1823DA3818D5B2AF00E6E8B3 /* EZRegisterCtrlOld.m */,
-				1823DA4118E3CCFD00E6E8B3 /* EZPersonDetail.h */,
-				1823DA4218E3CCFE00E6E8B3 /* EZPerosnDetail.m */,
-				182AC31B194ECBB200055D19 /* EZPasswordFetcher.h */,
-				182AC31C194ECBB200055D19 /* EZPasswordFetcher.m */,
-				180E7905198FB23900D85AD3 /* EZRegisterCtrl.h */,
-				180E7906198FB23900D85AD3 /* EZRegisterCtrl.m */,
+				188D8F8719F8A46A004901A0 /* EZAvatarController.h */,
+				188D8F8819F8A46A004901A0 /* EZAvatarController.m */,
+				188D8F8919F8A46A004901A0 /* EZAvatarView.h */,
+				188D8F8A19F8A46A004901A0 /* EZAvatarView.m */,
+				188D8F8B19F8A46A004901A0 /* EZLoginController.h */,
+				188D8F8C19F8A46A004901A0 /* EZLoginController.m */,
+				188D8F8D19F8A46A004901A0 /* EZKeyboardController.h */,
+				188D8F8E19F8A46A004901A0 /* EZKeyboardController.m */,
+				188D8F8F19F8A46A004901A0 /* EZPasswordFetcher.h */,
+				188D8F9019F8A46A004901A0 /* EZPasswordFetcher.m */,
+				188D8F9119F8A46A004901A0 /* EZRegisterCtrl.h */,
+				188D8F9219F8A46A004901A0 /* EZRegisterCtrl.m */,
+				188D8F9C19F8C765004901A0 /* EZPersonDetail.h */,
+				188D8F9D19F8C765004901A0 /* EZPersonDetail.m */,
 			);
 			name = login;
 			sourceTree = "<group>";
@@ -1924,6 +1936,8 @@
 				180E2CB61990C61E00DE2AFA /* EZMainPhotoCell.m */,
 				18826E5D19B1C97E00DFC5A9 /* EZDragPage.h */,
 				18826E5E19B1C97E00DFC5A9 /* EZDragPage.m */,
+				18E1AF6819A37352002F8A37 /* EZDetailPage.h */,
+				18E1AF6919A37352002F8A37 /* EZDetailPage.m */,
 				18826E7019B8284B00DFC5A9 /* EZBackgroundEraser.h */,
 				18826E7119B8284B00DFC5A9 /* EZBackgroundEraser.mm */,
 				1890814419CBC8DA0096997E /* EZEraserPage.h */,
@@ -1946,8 +1960,6 @@
 				180A579F1998B213003F017D /* EZPreviewView.m */,
 				18E1AF6E19A381FC002F8A37 /* EZEditPage.h */,
 				18E1AF6F19A381FC002F8A37 /* EZEditPage.m */,
-				18E1AF6819A37352002F8A37 /* EZDetailPage.h */,
-				18E1AF6919A37352002F8A37 /* EZDetailPage.m */,
 				1870B0271985313A005A663A /* EZRecorderCell.h */,
 				1870B0281985313A005A663A /* EZRecorderCell.m */,
 				1870B02419852E41005A663A /* EZRecordMain.h */,
@@ -2299,7 +2311,6 @@
 		18DE992F19405506008C1B3F /* demo_avatar */ = {
 			isa = PBXGroup;
 			children = (
-				18E1AF6419A351D0002F8A37 /* tiange.jpg */,
 				18DE993019405521008C1B3F /* demo_avatar_cook.png */,
 				18E1AF6619A354EC002F8A37 /* wall.jpg */,
 				18DE993219405521008C1B3F /* demo_avatar_jobs.png */,
@@ -2346,6 +2357,7 @@
 		18E3467C183DF54400C9D89D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				18A7123419F0BABE0093D9A5 /* JavaScriptCore.framework */,
 				18D8A63919DD872F00F7F3CA /* Social.framework */,
 				18D8A63719DD869F00F7F3CA /* libiconv.dylib */,
 				18D8A63519DD866700F7F3CA /* libstdc++.dylib */,
@@ -2380,6 +2392,7 @@
 		18E34685183DF54400C9D89D /* 3DCamera */ = {
 			isa = PBXGroup;
 			children = (
+				181608DD18B7333E00DD5995 /* login */,
 				1815258219E7DB640005F5FC /* utils */,
 				1815256F19E4C8DF0005F5FC /* UICustomization */,
 				18D8A5FC19DD83F200F7F3CA /* UMSocial_Sdk_Extra_Frameworks */,
@@ -2396,7 +2409,6 @@
 				186EC108193869DC0011C145 /* faceplus */,
 				18290CBE19276C1A00676423 /* shot_new.caf */,
 				185CE262190123DF0037947A /* umeng */,
-				181608DD18B7333E00DD5995 /* login */,
 				18E746C518A4A26A0023967B /* afnetwork */,
 				18C0E7691861A07200D694CE /* sound_effects */,
 				18E34829183F037400C9D89D /* facehandle */,
@@ -2454,7 +2466,9 @@
 		18E346D4183DF90600C9D89D /* images */ = {
 			isa = PBXGroup;
 			children = (
+				188D8F8119F50CB8004901A0 /* lock@2x.png */,
 				18CC322919E948D100FD1AF0 /* edit2@2x.png */,
+				188D8F7F19F50C48004901A0 /* unlock@2x.png */,
 				1896AF5D19BFD1C30065F7BD /* share2@2x.png */,
 				182268F719BF2F9B00CD131E /* sort@2x.png */,
 				182268F819BF2F9B00CD131E /* replace@2x.png */,
@@ -2625,6 +2639,7 @@
 				1870AF7319829485005A663A /* drawer_nav_settings@2x.png */,
 				1870AF7419829485005A663A /* drawer_nav_chat.png */,
 				1870AF7519829485005A663A /* drawer_nav_chat@2x.png */,
+				18E1AF6419A351D0002F8A37 /* tiange.jpg */,
 				18DE992F19405506008C1B3F /* demo_avatar */,
 				1841DC111907782B00213EB6 /* feather_icon@2x.png */,
 				18E346DE183DF99E00C9D89D /* buttons */,
@@ -3040,6 +3055,7 @@
 				1870AFD219829485005A663A /* header_btn_star.png in Resources */,
 				180E2D141990E42600DE2AFA /* flashing_on@2x.png in Resources */,
 				18E346FB183DF9C400C9D89D /* take_photo@2x.png in Resources */,
+				188D8F8219F50CB8004901A0 /* lock@2x.png in Resources */,
 				1870AF7F19829485005A663A /* header_icon_fs_white@2x.png in Resources */,
 				1870AFEC19829485005A663A /* btn_s.png in Resources */,
 				180E2D0A1990E42600DE2AFA /* camera_line_h@2x.png in Resources */,
@@ -3076,6 +3092,7 @@
 				182268FD19BF2F9B00CD131E /* trash@2x.png in Resources */,
 				18F58B5F1871750F006CB966 /* gradient_border.png in Resources */,
 				1870AFE119829485005A663A /* logo_qq@2x.png in Resources */,
+				188D8F8019F50C48004901A0 /* unlock@2x.png in Resources */,
 				1870AFB419829485005A663A /* icon_bb_white.png in Resources */,
 				1870B00519829485005A663A /* drawer_nav_diary.png in Resources */,
 				1841DC121907782B00213EB6 /* feather_icon@2x.png in Resources */,
@@ -3326,6 +3343,7 @@
 				1857B4CF196A911A00ED2632 /* EZProfileView.m in Sources */,
 				18E746ED18A4A26A0023967B /* AFNetworkReachabilityManager.m in Sources */,
 				18E34783183DFAA400C9D89D /* EZWeixinUtil.m in Sources */,
+				188D8F9E19F8C765004901A0 /* EZPersonDetail.m in Sources */,
 				180E2CD61990E18700DE2AFA /* SCCommon.m in Sources */,
 				180E2CE31990E1A200DE2AFA /* SCCaptureSessionManager.m in Sources */,
 				18E34747183DFA7300C9D89D /* EZPhoto.m in Sources */,
@@ -3338,6 +3356,7 @@
 				1866ADAE18966E7000DB46E2 /* ScaleAnimation.m in Sources */,
 				1896AF6A19C196990065F7BD /* DAScratchPadView.m in Sources */,
 				1870B0231984B847005A663A /* EZRecordTypeDesc.m in Sources */,
+				188D8F9519F8A46A004901A0 /* EZLoginController.m in Sources */,
 				18F58B5A18716C19006CB966 /* EZGradientLayerView.m in Sources */,
 				1857B4D5196BDF9300ED2632 /* EZInfoButton.m in Sources */,
 				18E1AF7E19A47AFA002F8A37 /* RACollectionViewCell.m in Sources */,
@@ -3354,14 +3373,13 @@
 				1890813D19C97A0B0096997E /* EZDrawable.mm in Sources */,
 				184ADD9818D045BD00367527 /* LocalPhotos.m in Sources */,
 				1890813A19C977E70096997E /* EZCanvas.mm in Sources */,
+				188D8F9719F8A46A004901A0 /* EZPasswordFetcher.m in Sources */,
 				183BA65F19C7C0670019173B /* EZRectObject.mm in Sources */,
 				180E2CCE1990E16800DE2AFA /* DCIntrospect.m in Sources */,
 				18DE992E19404A6F008C1B3F /* JSQDemoViewController.m in Sources */,
-				1823DA3318D5674F00E6E8B3 /* EZLoginController.m in Sources */,
 				1870B06D19866FB4005A663A /* CKCalendarView.m in Sources */,
 				182167B819B06541003410B9 /* EZInfoDotView.m in Sources */,
 				18E3477B183DFAA400C9D89D /* EZExtender.m in Sources */,
-				184ADD7418C4B40D00367527 /* EZAvatarView.m in Sources */,
 				18DE990519404734008C1B3F /* JSQSystemSoundPlayer+JSQMessages.m in Sources */,
 				1879BE23190BB1B60084FB27 /* EZCopyableLabel.m in Sources */,
 				18DE990719404734008C1B3F /* UIColor+JSQMessages.m in Sources */,
@@ -3381,7 +3399,6 @@
 				18E746F418A4A26A0023967B /* UIActivityIndicatorView+AFNetworking.m in Sources */,
 				18DE990619404734008C1B3F /* NSString+JSQMessages.m in Sources */,
 				18DE992319404734008C1B3F /* JSQMessagesTypingIndicatorFooterView.m in Sources */,
-				1823DA4318E3CCFE00E6E8B3 /* EZPerosnDetail.m in Sources */,
 				1815258B19E7E4FB0005F5FC /* EZInputItem.m in Sources */,
 				186EC127193869FD0011C145 /* FaceppFaceset.m in Sources */,
 				184ADD8618CB490E00367527 /* EZBlurAnimator.m in Sources */,
@@ -3391,11 +3408,11 @@
 				18DE991D19404734008C1B3F /* JSQMessagesInputToolbar.m in Sources */,
 				18E746F318A4A26A0023967B /* AFNetworkActivityIndicatorManager.m in Sources */,
 				1890814919CC06390096997E /* EZImageUtil.m in Sources */,
+				188D8F9B19F8BA70004901A0 /* EZSlidingView.m in Sources */,
 				18F58B7C187AF205006CB966 /* EZFaceResultObj.m in Sources */,
 				18DE991219404734008C1B3F /* JSQMessagesCollectionViewFlowLayout.m in Sources */,
 				185CE26A190299D30037947A /* EZEnlargedView.m in Sources */,
 				180E2CB41990C10500DE2AFA /* EZStoredPhoto.m in Sources */,
-				1823DA3618D5A1E000E6E8B3 /* EZKeyboardController.m in Sources */,
 				18DE990A19404734008C1B3F /* JSQMessagesKeyboardController.m in Sources */,
 				18F58B7F187AF540006CB966 /* EZFaceUtilWrapper.mm in Sources */,
 				183BA66819C7CEEF0019173B /* EZPoint.mm in Sources */,
@@ -3406,10 +3423,8 @@
 				18BD956419D90D55001EB28C /* EZSignView.mm in Sources */,
 				18E3468C183DF54400C9D89D /* main.m in Sources */,
 				18B365201920938F00092AB8 /* EZMotionRecord.m in Sources */,
-				1823DA3918D5B2AF00E6E8B3 /* EZRegisterCtrlOld.m in Sources */,
 				18E1AF8119A4AC1D002F8A37 /* EZPhotoEditPage.m in Sources */,
 				18DE991A19404734008C1B3F /* JSQMessagesCollectionViewCellOutgoing.m in Sources */,
-				182AC325194EDB0800055D19 /* NIDropDown.m in Sources */,
 				18FE43691982400300E975BD /* EZProfileHeader.m in Sources */,
 				18E3477A183DFAA400C9D89D /* EZClickView.m in Sources */,
 				18DE991319404734008C1B3F /* JSQMessagesCollectionViewFlowLayoutInvalidationContext.m in Sources */,
@@ -3450,6 +3465,7 @@
 				18DE991519404734008C1B3F /* JSQMessage.m in Sources */,
 				18E34777183DFAA400C9D89D /* EZCrossHair.m in Sources */,
 				184ADD9B18D046EC00367527 /* EZCoreAccessor.m in Sources */,
+				188D8F9619F8A46A004901A0 /* EZKeyboardController.m in Sources */,
 				180E2CE41990E1A200DE2AFA /* UIImage+Resize.m in Sources */,
 				1857B4D2196A973D00ED2632 /* EZToolStripe.m in Sources */,
 				18E746F818A4A26A0023967B /* UIProgressView+AFNetworking.m in Sources */,
@@ -3458,6 +3474,7 @@
 				1870AED0198283A5005A663A /* EZMenuItem.m in Sources */,
 				18E746EC18A4A26A0023967B /* AFHTTPSessionManager.m in Sources */,
 				18E3474A183DFA7300C9D89D /* EZPerson.m in Sources */,
+				188D8F9419F8A46A004901A0 /* EZAvatarView.m in Sources */,
 				18C8FA4E19726D4D003D6A77 /* EZTouchDetail.m in Sources */,
 				18E4FBB518F1415E00FA6C21 /* EZResult.m in Sources */,
 				186EC12D193869FD0011C145 /* FaceppTrainer.m in Sources */,
@@ -3498,7 +3515,6 @@
 				18DE990E19404734008C1B3F /* JSQMessagesBubbleImageFactory.m in Sources */,
 				18E746EA18A4A26A0023967B /* AFHTTPRequestOperation.m in Sources */,
 				184DBE7718BB476F00239F0F /* EZSimpleClick.m in Sources */,
-				182AC31D194ECBB200055D19 /* EZPasswordFetcher.m in Sources */,
 				18E3470B183DFA1A00C9D89D /* EZTestSuites.m in Sources */,
 				18E1AF7819A47AED002F8A37 /* RACollectionViewTripletLayout.m in Sources */,
 				18BD955F19D5207D001EB28C /* EZKeyPoint.cpp in Sources */,
@@ -3532,7 +3548,6 @@
 				18E34784183DFAA400C9D89D /* EZGeoUtility.m in Sources */,
 				18E746F018A4A26A0023967B /* AFURLRequestSerialization.m in Sources */,
 				18826E6219B359E800DFC5A9 /* EZEventEater.m in Sources */,
-				184ADD6F18C4B3DD00367527 /* EZAvatarController.m in Sources */,
 				1870AECB19827FA9005A663A /* EZMainCell.m in Sources */,
 				18DE991019404734008C1B3F /* JSQMessagesToolbarButtonFactory.m in Sources */,
 				18DE991F19404734008C1B3F /* JSQMessagesLoadEarlierHeaderView.m in Sources */,
@@ -3551,9 +3566,9 @@
 				18E346DC183DF96D00C9D89D /* UIImage2OpenCV.mm in Sources */,
 				186EC12E193869FD0011C145 /* FaceppError.m in Sources */,
 				18DE990819404734008C1B3F /* UIImage+JSQMessages.m in Sources */,
-				180E7907198FB23A00D85AD3 /* EZRegisterCtrl.m in Sources */,
 				182167C519B07F20003410B9 /* EZPopupInput.m in Sources */,
 				180E2CB71990C61E00DE2AFA /* EZMainPhotoCell.m in Sources */,
+				188D8F9319F8A46A004901A0 /* EZAvatarController.m in Sources */,
 				18827F3119B8783F00DFC5A9 /* EZBgEditPage.mm in Sources */,
 				18CC322419E9298700FD1AF0 /* EZCompleteSetting.m in Sources */,
 				183BA66B19C7D8D20019173B /* EZImageObject.mm in Sources */,
@@ -3562,11 +3577,14 @@
 				184EB9D11982603E0024A495 /* EZSeperator.m in Sources */,
 				184ADD9518D045BA00367527 /* LocalPersons.m in Sources */,
 				18826E7819B8465000DFC5A9 /* EZImageConverter.mm in Sources */,
+				188D8F9819F8A46A004901A0 /* EZRegisterCtrl.m in Sources */,
 				180E2CCF1990E16800DE2AFA /* DCStatusBarOverlay.m in Sources */,
+				188D8F7E19F4BF8B004901A0 /* EZShotCell.m in Sources */,
 				186EC12F193869FD0011C145 /* FaceppResult.m in Sources */,
 				18E1AF7D19A47AFA002F8A37 /* EZEditDrag.m in Sources */,
 				18BD956A19D947FA001EB28C /* EZUploadWrapper.m in Sources */,
 				189FD65719ED0FA6005B083F /* HorizontalPickerView.m in Sources */,
+				18A7123819F0F9C20093D9A5 /* RNCachingURLProtocol.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3668,7 +3686,7 @@
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = YES;
-				PROVISIONING_PROFILE = "71a27b10-aa5d-41d8-85d4-068a00e08f89";
+				PROVISIONING_PROFILE = "5ea0f5f0-3f12-4497-bd28-eab01f871589";
 				SDKROOT = iphoneos;
 				VALID_ARCHS = "armv7 armv7s";
 			};
@@ -3708,7 +3726,7 @@
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = YES;
-				PROVISIONING_PROFILE = "71a27b10-aa5d-41d8-85d4-068a00e08f89";
+				PROVISIONING_PROFILE = "5ea0f5f0-3f12-4497-bd28-eab01f871589";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 				VALID_ARCHS = "armv7 armv7s";
@@ -3752,7 +3770,7 @@
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = 3DCamera;
-				PROVISIONING_PROFILE = "71a27b10-aa5d-41d8-85d4-068a00e08f89";
+				PROVISIONING_PROFILE = "5ea0f5f0-3f12-4497-bd28-eab01f871589";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv7 armv7s arm64";
 				WRAPPER_EXTENSION = app;
@@ -3796,7 +3814,7 @@
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = 3DCamera;
-				PROVISIONING_PROFILE = "71a27b10-aa5d-41d8-85d4-068a00e08f89";
+				PROVISIONING_PROFILE = "5ea0f5f0-3f12-4497-bd28-eab01f871589";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv7 armv7s arm64";
 				WRAPPER_EXTENSION = app;

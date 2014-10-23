@@ -56,6 +56,10 @@
 #import "EZInputItem.h"
 #import "STHorizontalPicker.h"
 #import "HorizontalPickerView.h"
+#import "EZShotCell.h"
+#import "EZSlidingView.h"
+
+#import "EZPersonDetail.h"
 
 #define CELL_ID @"CELL_ID"
 
@@ -191,21 +195,7 @@
     }
     
     [[EZDataUtil getInstance]shareContent:shareText image:image url:url controller:self];
-    //[UMSocialSnsService presentSnsIconSheetView:self appKey:UMengAppKey shareText:shareText shareImage:image shareToSnsNames:nil delegate:self];
-    
-    /**
-    UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:nil];
-    
-    [self presentViewController:activityVC animated:YES completion:nil];
-    
-    
-    [activityVC setCompletionHandler:^(NSString *activityType, BOOL completed)
-     {
-         NSLog(@"Activity = %@",activityType);
-         NSLog(@"Completed Status = %d",completed);
-         
-    }];
-     **/
+
 }
 
 - (void) topClicked:(UIButton*)btn
@@ -296,13 +286,31 @@
 
 }
 
+- (void) startRefresh:(UIRefreshControl*)refresh
+{
+    EZDEBUG("Refreshed get called");
+    dispatch_later(0.5, ^(){[refresh endRefreshing];});
+    
+    
+}
+
 - (void) viewDidLoad
 {
     
+    UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
+    [refreshControl addTarget:self action:@selector(startRefresh:)
+             forControlEvents:UIControlEventValueChanged];
+    [self.collectionView addSubview:refreshControl];
+    
     _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:_layout];
     [self.collectionView registerClass:[EZMainPhotoCell class] forCellWithReuseIdentifier:CELL_ID];
+    
+    [self.collectionView registerClass:[EZShotCell class] forCellWithReuseIdentifier:@"ShotCell"];
+    
     _collectionView.delegate = self;
     _collectionView.dataSource = self;
+    _collectionView.alwaysBounceVertical = true;
+    
     //_collectionView.backgroundColor = [UIColor clearColor];
     _collectionView.backgroundColor = MainBackgroundColor;
     [self.view addSubview:_collectionView];
@@ -409,15 +417,16 @@
     }];
     EZDEBUG(@"loginID:%@", currentLoginID);
     
-    if(currentLoginID){
+    
+    //if(currentLoginID){
         /**
         [[EZDataUtil getInstance] queryTaskByPersonID:currentLoginID success:^(NSArray* tasks){
             _uploadedPhotos = [[NSMutableArray alloc] initWithArray:tasks];
             [_collectionView reloadData];
         } failed:^(id err){}];
          **/
-        [self btnClicked:_currentPos];
-    }
+    //    [self btnClicked:_currentPos];
+    //}
     
     
     [[EZMessageCenter getInstance] registerEvent:EZShotTaskChanged block:^(EZShotTask* task){
@@ -426,6 +435,9 @@
     }];
     
     self.collectionView.frame = CGRectMake(0, 44, self.view.bounds.size.width,CurrentScreenHeight-20);
+    _currentPos = 1;
+    //[self btnClicked:1];
+    [self topClicked:[_topBtns objectAtIndex:1]];
     //EZShotSetting* shit = [[EZShotSetting alloc] initWithFrame:CGRectMake(0, 100, 250, 300)];
     //shit.backgroundColor = [UIColor grayColor];
     //[self.view addSubview:shit];
@@ -442,8 +454,68 @@
     [self.view addSubview:clicked];
      **/
     //[self drawCanvas];
+    UIButton* configBtn = [UIButton createButton:CGRectMake(10, CurrentScreenHeight - 54, 44, 44) image:[UIImage imageNamed:@"track_btn_list"] imageRect:CGRectMake(12, 12, 20, 20) title:nil font:nil color:nil align:NSTextAlignmentCenter textFrame:CGRectZero];
+    [configBtn addTarget:self action:@selector(showSlide:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:configBtn];
+    
+    __weak EZMainPage* weakSelf = self;
+    _slidingView = [[EZSlidingView alloc] initWithFrame:CGRectMake(-CurrentScreenWidth * 0.7 , 20, CurrentScreenWidth*0.7, CurrentScreenHeight)
+          menuItems:@[@"我的信息",@"设置",@"使用指南",@"关于拼3D", @"版本号:V0.99"]
+          actionLists:@[
+                ^(id obj){
+                    [weakSelf configClicked:obj];
+                },
+                 ^(id obj){
+                     [weakSelf configClicked:obj];
+                },
+                 ^(id obj){
+                     [weakSelf configClicked:obj];
+                },
+                 ^(id obj){
+                     [weakSelf configClicked:obj];
+                },
+                 ^(id obj){
+                     [weakSelf configClicked:obj];
+                }
+                                                                                                                                                                                                                       
+                                                                                                                                    ]];
+    
 }
 
+
+
+- (void) hideSlidingView
+{
+    /**
+    [UIView animateWithDuration:0.5 animations:^(){
+        _slidingView.x = -_slidingView.width;
+    }];
+     **/
+    
+}
+
+- (void) showSlide:(id)obj
+{
+    [_slidingView showInView:self.view animated:YES];
+}
+
+- (void) configClicked:(NSNumber*)number
+{
+    if(number.integerValue == 0){
+        EZDEBUG(@"Current login user:%@, %@", currentLoginUser.name, currentLoginID);
+        if(!currentLoginUser.joined){
+        [[EZDataUtil getInstance] triggerLogin:^(EZPerson* ps){
+            EZDEBUG(@"login success:%@, id:%@", ps.name, ps.personID);
+        } failure:^(id obj){
+            EZDEBUG(@"login failed:%@", obj);
+        } reason:nil isLogin:YES];
+        }else{
+            EZPersonDetail* pd = [[EZPersonDetail alloc] initWithPerson:currentLoginUser];
+            [self.navigationController pushViewController:pd animated:YES];
+        }
+    }
+    [_slidingView dismiss:YES];
+}
 
 
 #pragma mark -  HPickerViewDataSource
@@ -507,6 +579,17 @@
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
+ 
+    __weak EZMainPage* weakSelf = self;
+    if(_uploadedPhotos.count == indexPath.item){
+        EZShotCell* shotCell = [collectionView dequeueReusableCellWithReuseIdentifier:@"ShotCell" forIndexPath:indexPath];
+        shotCell.addClicked = ^(id obj){
+            [weakSelf addClicked:obj];
+        };
+        EZDEBUG(@"Create Shot Cell:%i, shot Frame:%@", _uploadedPhotos.count, NSStringFromCGRect(shotCell.frame));
+        return shotCell;
+    };
+    
     EZMainPhotoCell* cell = [collectionView dequeueReusableCellWithReuseIdentifier:CELL_ID forIndexPath:indexPath];
         //NSDate* curDate = _date;
     EZShotTask* shotTask = [_uploadedPhotos objectAtIndex:indexPath.row];
@@ -535,7 +618,7 @@
     }else{
         cell.clickInfo.hidden = YES;
     }
-    __weak EZMainPage* weakSelf = self;
+    //__weak EZMainPage* weakSelf = self;
     
     cell.editClicked = ^(id obj){
         //NSMutableArray* photoURLs = [[NSMutableArray alloc] init];
@@ -562,7 +645,11 @@
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    return _uploadedPhotos.count;
+    if(_currentPos == 0){
+        return _uploadedPhotos.count + 1;
+    }else{
+        return _uploadedPhotos.count;
+    }
 }
 
 

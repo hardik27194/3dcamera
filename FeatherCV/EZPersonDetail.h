@@ -1,33 +1,29 @@
 //
-//  EZ.h
-//  FeatherCV
+//  EZPersonDetail.h
+//  3DCamera
 //
-//  Created by xietian on 14-3-27.
+//  Created by xietian on 14-10-23.
 //  Copyright (c) 2014年 tiange. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-#import <UIKit/UIKit.h>
+#import "EZKeyboardController.h"
 
-@class EZClickImage;
 @class EZPerson;
-@interface EZPersonDetail : UIViewController<UIActionSheetDelegate, UITextFieldDelegate>
-
-@property (nonatomic, strong) UITextField* titleInfo;
-
-@property (nonatomic, strong) UILabel* mobile;
+@interface EZPersonDetail : EZKeyboardController
 
 @property (nonatomic, strong) EZPerson* person;
 
-@property (nonatomic, strong) EZClickImage* uploadAvatar;
+@property (nonatomic, strong) UITextField* nickName;
 
-@property (nonatomic, strong) NSString* avatarURL;
+@property (nonatomic, strong) UITextField* mobileNumber;
 
-@property (nonatomic, strong) EZClickImage* quitButton;
+@property (nonatomic, strong) UITextField* password;
 
-@property (nonatomic, strong) UIButton* selectUser;
+@property (nonatomic, strong) UIButton* sendBtn;
 
-@property (nonatomic, strong) UIButton* quitUser;
+@property (nonatomic, strong) UIButton* quitBtn;
+
+@property (nonatomic, assign) BOOL isEditable;
 
 - (id) initWithPerson:(EZPerson*)person;
 

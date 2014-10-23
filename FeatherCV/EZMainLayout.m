@@ -12,7 +12,7 @@
 
 - (BOOL)shouldInvalidateLayoutForBoundsChange:(CGRect)newBounds
 {
-    EZDEBUG("flow layout changed %@", NSStringFromCGRect(newBounds));
+    //EZDEBUG("flow layout changed %@", NSStringFromCGRect(newBounds));
     return YES;
 }
 

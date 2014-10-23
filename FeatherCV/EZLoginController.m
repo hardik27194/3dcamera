@@ -118,6 +118,7 @@
     UIView* passWrap = [self createWrap:_passwordField.frame icon:[UIImage imageNamed:@"icon_pw"] background:[UIImage imageNamed:@"inputbox_s"]];
     _passwordField.textAlignment = NSTextAlignmentLeft;
     _passwordField.textColor = EZLoginInputTextColor;
+    _passwordField.autocapitalizationType = UITextAutocapitalizationTypeNone;
     //_passwordField.autocapitalizationType = UITextAutocapitalizationTypeNone;
     _passwordField.font = [UIFont systemFontOfSize:14];
     _passwordField.delegate = self;
@@ -244,7 +245,7 @@
 - (void) startLogin:(NSString*)mobile password:(NSString*)password
 {
     
-    __weak EZLoginController* weakSelf = self;
+    EZLoginController* weakSelf = self;
     if([_mobileField.text isEmpty]){
         [_mobileField becomeFirstResponder];
         return;
@@ -272,7 +273,7 @@
     coverView.backgroundColor = [UIColor clearColor];
     [self.view addSubview:coverView];
     [[EZDataUtil getInstance] loginUser:loginInfo success:^(EZPerson* person){
-        [[EZMessageCenter getInstance] postEvent:EZAlbumImageUpdate attached:nil];
+        //[[EZMessageCenter getInstance] postEvent:EZAlbumImageUpdate attached:nil];
         [activity stopAnimating];
         [activity removeFromSuperview];
         [coverView removeFromSuperview];

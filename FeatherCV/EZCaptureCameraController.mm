@@ -109,14 +109,18 @@
         return;
     }
     
+    [self setManualMode:FALSE];
     EZShotSetting* shotConfigre = [[EZShotSetting alloc] initWithFrame:CGRectMake(20, 100, CurrentScreenWidth - 40, 220)];
+    shotConfigre.cancelled = ^(id obj){
+        [self dismissBtnPressed:obj];
+    };
     [shotConfigre showInView:self.view aniamted:NO confirmed:^(id obj){
         EZConfigure* configure = [EZConfigure sharedEZConfigure];
         EZDEBUG(@"delay:%f, count:%i, isMute:%i", configure.shotDelay, configure.shotCount, configure.isMute);
         _proposedNumber = configure.shotCount;
         _totalCountDown = configure.shotDelay;
         _shotPalate.total = _proposedNumber;
-    }];
+    } isTouchDimiss:NO];
 }
 
 - (void)viewDidLoad
@@ -190,9 +194,14 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     [self.navigationController setNavigationBarHidden:YES animated:YES];
+    [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
     //[_buttonStealer startStealingVolumeButtonEvents];
 }
 
+- (void) viewWillDisappear:(BOOL)animated
+{
+    [[UIApplication sharedApplication] setIdleTimerDisabled:FALSE];
+}
 
 
 - (void)didReceiveMemoryWarning
@@ -265,13 +274,14 @@
          [_confirmButton addTarget:self action:@selector(confirmClicked:) forControlEvents:UIControlEventTouchUpInside];
          [_topContainerView addSubview:_confirmButton];
          **/
+        /**
         [self buildButton:CGRectMake(CurrentScreenWidth - 44, 0, 44, 44)
              normalImgStr:@"share2"
           highlightImgStr:@""
            selectedImgStr:@""
                    action:@selector(shareClicked:)
                parentView:_topContainerView];
-        
+        **/
         
         self.topLbl = _shotText;
     }
@@ -295,7 +305,7 @@
 {
     if(_dropDown.hidden){
         _dropDown.hidden = false;
-        UIView* cover = [self.view createCoverView:1349 color:RGBACOLOR(70, 70, 70, 128) below:_dropDown tappedTarget:self action:@selector(coverClicked:)];
+        [self.view createCoverView:1349 color:RGBACOLOR(70, 70, 70, 128) below:_dropDown tappedTarget:self action:@selector(coverClicked:)];
         [UIView animateWithDuration:0.4 animations:^(){
             _dropDown.height = 44 * 4;
         }];
@@ -309,15 +319,21 @@
     [self setManualMode:!_isManual];
 }
 
+
+
 - (void) setManualMode:(BOOL)isManual
 {
     _isManual = isManual;
     if(_isManual){
-        [_toggleMode setTitle:@"手动" forState:UIControlStateNormal];
+        //[_toggleMode setTitle:@"手动" forState:UIControlStateNormal];
+        _manualSwitch.on = false;
         _shotStatusSign.hidden = YES;
+        _switchLabel.text = @"手动拍摄";
     }else{
-        [_toggleMode setTitle:@"自动" forState:UIControlStateNormal];
+        //[_toggleMode setTitle:@"自动" forState:UIControlStateNormal];
+        _manualSwitch.on = true;
         _shotStatusSign.hidden = NO;
+        _switchLabel.text = @"自动拍摄";
     }
 }
 
@@ -415,6 +431,14 @@
     [self.navigationController pushViewController:ep animated:YES];
     
 }
+
+- (void) manualSwitched:(UISwitch*)switcher
+{
+    //_isManual = switcher.on;
+    [self setManualMode:!switcher.on];
+}
+
+
 //拍照菜单栏
 - (void)addCameraMenuView {
     
@@ -427,6 +451,21 @@
                   selectedImgStr:@""
                           action:@selector(takePictureBtnPressed:)
                       parentView:_bottomContainerView];
+    
+    
+    
+    
+    _manualSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(0, 0, 60, 44)];
+    _manualSwitch.center = CGPointMake(CurrentScreenWidth - 40, _shotBtn.center.y);
+    [_manualSwitch addTarget:self action:@selector(manualSwitched:) forControlEvents:UIControlEventValueChanged];
+    [_bottomContainerView addSubview:_manualSwitch];
+    
+    UILabel* btnLabel = [UILabel createLabel:CGRectMake(0, 0, 60, 20) font:[UIFont boldSystemFontOfSize:12] color:[UIColor whiteColor]];
+    btnLabel.text = @"自动拍摄";
+    btnLabel.textAlignment = NSTextAlignmentCenter;
+    btnLabel.center = CGPointMake(_manualSwitch.center.x, _shotBtn.center.y - 30);
+    [_bottomContainerView addSubview:btnLabel];
+    _switchLabel = btnLabel;
     
     _shotPalate = [[EZPalate alloc] initWithFrame:_shotBtn.bounds activeColor:[UIColor whiteColor] inactiveColor:[UIColor blackColor] background:[UIColor clearColor] total:_proposedNumber];
     [_shotBtn addSubview:_shotPalate];
@@ -469,23 +508,24 @@
 
 - (void) createDropDownButtons
 {
-    NSMutableArray *normalArr = [[NSMutableArray alloc] initWithObjects:@"flashing_off.png", @"camera_line.png", @"switch_camera.png", nil];
-    NSMutableArray *highlightArr = [[NSMutableArray alloc] initWithObjects:@"", @"", @"", nil];
-    NSMutableArray *selectedArr = [[NSMutableArray alloc] initWithObjects:@"", @"camera_line_h.png", @"switch_camera_h.png", @"", nil];
+    //@"camera_line.png",
+    NSMutableArray *normalArr = [[NSMutableArray alloc] initWithObjects:@"flashing_off.png",  @"switch_camera.png", nil];
+    NSMutableArray *highlightArr = [[NSMutableArray alloc] initWithObjects:@"", @"", nil];
+    NSMutableArray *selectedArr = [[NSMutableArray alloc] initWithObjects:@"",  @"switch_camera_h.png", nil];
     
     //NSMutableArray *actionArr = [[NSMutableArray alloc] initWithObjects:@"dismissBtnPressed:", @"gridBtnPressed:", @"switchCameraBtnPressed:", @"savePressed:", nil];
     
-    NSMutableArray *actionArr = [[NSMutableArray alloc] initWithObjects:@"flashBtnPressed:", @"gridBtnPressed:", @"switchCameraBtnPressed:", nil];
+    NSMutableArray *actionArr = [[NSMutableArray alloc] initWithObjects:@"flashBtnPressed:", @"switchCameraBtnPressed:", nil];
 
     for (int i = 0; i < actionArr.count; i++) {
 
         if([[actionArr objectAtIndex:i] isNotEmpty]){
-            UIButton * btn = [self buildButton:CGRectMake(0, 44 * i, 44, 44)
+            UIButton * btn = [self buildButton:CGRectMake(i == 0?10:CurrentScreenWidth - 54, _bottomContainerView.height - 44, 44, 44)
                                   normalImgStr:[normalArr objectAtIndex:i]
                                highlightImgStr:[highlightArr objectAtIndex:i]
                                 selectedImgStr:[selectedArr objectAtIndex:i]
                                         action:NSSelectorFromString([actionArr objectAtIndex:i])
-                                    parentView:_dropDown];
+                                    parentView:_bottomContainerView];
             
             btn.showsTouchWhenHighlighted = YES;
             //[_cameraBtnSet addObject:btn];
@@ -531,7 +571,7 @@
                            highlightImgStr:[highlightArr objectAtIndex:i]
                             selectedImgStr:[selectedArr objectAtIndex:i]
                                     action:NSSelectorFromString([actionArr objectAtIndex:i])
-                                parentView:parent];
+                                parentView:_topContainerView];
         
         btn.showsTouchWhenHighlighted = YES;
         
@@ -782,7 +822,9 @@ void c_slideAlpha() {
     
     EZDEBUG(@"Capturing is:%i, isPaused:%i, manual:%i, shotType:%i", _shotStatus, _isPaused, _isManual, _shotType);
     if(_isManual){
-        ++_proposedNumber;
+        if(_currentCount == _proposedNumber){
+            ++_proposedNumber;
+        }
         if(_shotType == kShotToReplace){
             _proposedNumber = 1;
         }
@@ -1017,8 +1059,8 @@ void c_slideAlpha() {
 //拍照页面，切换前后摄像头按钮按钮
 - (void)switchCameraBtnPressed:(UIButton*)sender {
     sender.selected = !sender.selected;
-    //[_captureManager switchCamera:sender.selected];
-    _frontFrame.hidden = !_frontFrame.hidden;
+    [_captureManager switchCamera:sender.selected];
+    //_frontFrame.hidden = !_frontFrame.hidden;
 }
 
 //拍照页面，闪光灯按钮

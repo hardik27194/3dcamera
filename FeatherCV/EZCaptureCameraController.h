@@ -47,6 +47,9 @@ typedef enum {
 
 @property (nonatomic, strong) UIView* dropDown;
 
+@property (nonatomic, strong) UISwitch* manualSwitch;
+@property (nonatomic, weak) UILabel* switchLabel;
+
 @property (nonatomic, strong) EZFrontFrame* frontFrame;
 @property (nonatomic, strong) UIButton* shotBtn;
 @property (nonatomic, strong) EZPalate* shotPalate;

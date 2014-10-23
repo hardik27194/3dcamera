@@ -61,7 +61,7 @@
         if(weakSelf.confirmClicked){
             weakSelf.confirmClicked(@(YES));
         }
-    }];
+    } isTouchDimiss:YES];
     
 }
 

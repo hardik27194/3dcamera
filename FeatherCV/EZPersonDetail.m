@@ -1,31 +1,26 @@
 //
-//  EZRegisterPage.m
-//  BabyCare
+//  EZPersonDetail.m
+//  3DCamera
 //
-//  Created by xietian on 14-8-4.
+//  Created by xietian on 14-10-23.
 //  Copyright (c) 2014年 tiange. All rights reserved.
 //
 
-#import "EZRegisterCtrl.h"
-//#import "EZExtender.h"
-#import "EZTextField.h"
+#import "EZPersonDetail.h"
 #import "EZDataUtil.h"
-#import "EZMessageCenter.h"
+#import "EZTextField.h"
 
-#define EZSmsCodeColor RGBCOLOR(65, 210, 193)
-
-@interface EZRegisterCtrl()
+@interface EZPersonDetail ()
 
 @end
 
-@implementation EZRegisterCtrl
+@implementation EZPersonDetail
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+- (id) initWithPerson:(EZPerson *)person
 {
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        // Custom initialization
-    }
+    self = [super initWithNibName:nil bundle:nil];
+    _person = person;
+    _isEditable = [currentLoginID isEqualToString:_person.personID];
     return self;
 }
 
@@ -58,52 +53,24 @@
     return wrapView;
 }
 
-- (void) sendSmsCode:(id)obj
-{
-    //EZDEBUG(@"Sms code send");
-    _sendSmsCode.enabled = false;
-    _countDown.hidden = false;
-    _smsCodeCounter = 60;
-    [self updateCounter];
-    [[EZDataUtil getInstance] requestSmsCode:_mobileNumber.text success:^(id obj){
-        EZDEBUG(@"send sms success");
-    } failure:^(id err){
-        EZDEBUG(@"failed to send sms");
-    }];
-    
-}
-
-- (void) updateCounter
-{
-    if(_smsCodeCounter > 0){
-        --_smsCodeCounter;
-        _countDown.text = int2str(_smsCodeCounter);
-    }else{
-        _sendSmsCode.enabled = true;
-        _countDown.hidden = true;
-        return;
-    }
-    
-    dispatch_later(1.0, ^(){
-        [self updateCounter];
-    });
-}
 
 - (void) sendRequest:(id)obj
 {
     EZDEBUG(@"send request");
     [self startActivity];
+    NSString* nickName = _nickName.text;
     
-    [[EZDataUtil getInstance] registerUser:@{@"mobile":_mobileNumber.text, @"password":_password.text, @"passCode":_mobileSmsCode.text,@"name":_nickName.text} success:^(EZPerson* obj){
-        
+    
+    [[EZDataUtil getInstance] updatePerson:@{@"name":nickName, @"personID":_person.personID} success:^(EZPerson* obj){
+        currentLoginUser.name = nickName;
         [self stopActivity];
         //[self.navigationController popToRootViewControllerAnimated:YES];
-        [[EZMessageCenter getInstance] postEvent:EZUserAuthenticated attached:obj];
-        
-    } error:^(id err){
+        //[[EZMessageCenter getInstance] postEvent:EZUserAuthenticated attached:obj];
+        [[EZUIUtility sharedEZUIUtility] raiseInfoWindow:BIINFO(@"更新成功") info:@""];
+    } failure:^(id err){
         EZDEBUG(@"Failed to register %@", err);
         [self stopActivity];
-        [[EZUIUtility sharedEZUIUtility] raiseInfoWindow:BIINFO(@"注册失败") info:BIINFO(@"稍后再试")];
+        [[EZUIUtility sharedEZUIUtility] raiseInfoWindow:BIINFO(@"更新失败") info:BIINFO(@"稍后再试")];
         
     }];
     
@@ -119,7 +86,7 @@
     if(!isRetina4){
         startGap = -40.0;
     }
-    UIView* navBar = [self createNavHeader:@"注册"];
+    UIView* navBar = [self createNavHeader:@"用户信息"];
     [self.view addSubview:navBar];
     UIView* holder = [[UIView alloc] initWithFrame:CGRectMake(0, 64, CurrentScreenWidth, CurrentScreenHeight - 64)];
     holder.backgroundColor = [UIColor whiteColor];
@@ -129,43 +96,72 @@
     _nickName.tag = 1;
     [holder addSubview:_nickName];
     _nickName.delegate = self;
+    _nickName.text = _person.name;
+    _nickName.enabled = _isEditable;
     
+    if(_isEditable){
     _mobileNumber = [self createTextField:CGRectMake(22, _nickName.bottom + 12, 180, EZPasswordInputHeight) holderText:@"手机号" keyboardType:UIKeyboardTypeNumbersAndPunctuation returnType:UIReturnKeyNext];
     [holder addSubview:_mobileNumber];
+    _mobileNumber.text = _person.mobile;
     _mobileNumber.tag = 2;
-    _sendSmsCode = [UIButton createButton:CGRectMake(210, _nickName.bottom + 17, 100, 34) font:[UIFont systemFontOfSize:15] color:[UIColor whiteColor] align:NSTextAlignmentCenter];
-    _sendSmsCode.layer.cornerRadius = 17;
-    [_sendSmsCode setBackgroundColor:EZSmsCodeColor];
-    [_sendSmsCode setTitle:@"发送验证码" forState:UIControlStateNormal];
-    [_sendSmsCode addTarget:self action:@selector(sendSmsCode:) forControlEvents:UIControlEventTouchUpInside];
-    //_sendSmsCode.tag = 3;
-    [holder addSubview:_sendSmsCode];
+        
+       
+    }
     
-    
-    _mobileSmsCode = [self createTextField:CGRectMake(22, _mobileNumber.bottom + 12 , 180, EZPasswordInputHeight) holderText:@"手机验证码" keyboardType:UIKeyboardTypeNumbersAndPunctuation returnType:UIReturnKeyNext];
-    _mobileSmsCode.tag = 3;
-    [holder addSubview:_mobileSmsCode];
-    
-    _countDown = [UILabel createLabel:CGRectMake(210, _mobileNumber.bottom + 12, 80, EZPasswordInputHeight) font:[UIFont systemFontOfSize:16] color:RGBCOLOR(54, 193, 191)];
-    _countDown.textAlignment = NSTextAlignmentCenter;
-    [holder addSubview:_countDown];
-    
-    _password = [self createTextField:CGRectMake(22, _mobileSmsCode.bottom + 12, 276, EZPasswordInputHeight) holderText:@"密码" keyboardType:UIKeyboardTypeDefault returnType:UIReturnKeyNext];
-    _password.tag = 4;
+   /**
+    _password = [self createTextField:CGRectMake(22, _mobileNumber.bottom + 12, 276, EZPasswordInputHeight) holderText:@"密码" keyboardType:UIKeyboardTypeDefault returnType:UIReturnKeyNext];
+    _password.tag = 3;
     _password.autocapitalizationType = UITextAutocapitalizationTypeNone;
     [holder addSubview:_password];
-    
-    /**
-    _confirmPassword = [self createTextField:CGRectMake(22, _password.bottom + 12, 276, EZPasswordInputHeight) holderText:@"重复密码" keyboardType:UIKeyboardTypeDefault returnType:UIReturnKeySend];
-    _confirmPassword.tag = 5;
-    [holder addSubview:_confirmPassword];
+    }
     **/
-    _sendBtn = [UIButton createButton:CGRectMake(22, _password.bottom + 24, 276, EZPasswordInputHeight) font:[UIFont boldSystemFontOfSize:18] color:[UIColor whiteColor] align:NSTextAlignmentCenter];
-    [_sendBtn setTitle:@"确  认" forState:UIControlStateNormal];
+    /**
+     _confirmPassword = [self createTextField:CGRectMake(22, _password.bottom + 12, 276, EZPasswordInputHeight) holderText:@"重复密码" keyboardType:UIKeyboardTypeDefault returnType:UIReturnKeySend];
+     _confirmPassword.tag = 5;
+     [holder addSubview:_confirmPassword];
+     **/
+    
+    if(_isEditable){
+    
+     CGFloat btnPos = _mobileNumber.bottom + 24;
+    
+    
+    _sendBtn = [UIButton createButton:CGRectMake(22, btnPos, CurrentScreenWidth - 44, EZPasswordInputHeight) font:[UIFont boldSystemFontOfSize:18] color:[UIColor whiteColor] align:NSTextAlignmentCenter];
+    [_sendBtn setTitle:@"确认修改" forState:UIControlStateNormal];
     [_sendBtn setBackgroundImage:[UIImage imageNamed:@"btn"] forState:UIControlStateNormal];
     [_sendBtn setBackgroundImage:[UIImage imageNamed:@"btn_sel"] forState:UIControlStateHighlighted];
     [_sendBtn addTarget:self action:@selector(sendRequest:) forControlEvents:UIControlEventTouchUpInside];
     [holder addSubview:_sendBtn];
+    
+    
+        _quitBtn = [UIButton createButton:CGRectMake(22, _sendBtn.bottom + 24, CurrentScreenWidth - 44, EZPasswordInputHeight) font:[UIFont boldSystemFontOfSize:18] color:[UIColor whiteColor] align:NSTextAlignmentCenter];
+        
+        [_quitBtn setTitle:@"退出登录" forState:UIControlStateNormal];
+        [_quitBtn setBackgroundImage:[UIImage imageNamed:@"btn"] forState:UIControlStateNormal];
+        [_quitBtn setBackgroundImage:[UIImage imageNamed:@"btn_sel"] forState:UIControlStateHighlighted];
+        [_quitBtn addTarget:self action:@selector(quitLogin:) forControlEvents:UIControlEventTouchUpInside];
+        [holder addSubview:_quitBtn];
+        
+    }
+}
+
+- (void) refreshValue
+{
+    _nickName.text = _person.name;
+    _mobileNumber.text = _person.mobile;
+}
+
+- (void) quitLogin:(id)obj
+{
+    //[[EZDataUtil getInstance] l]
+    [[EZDataUtil getInstance] setCurrentPersonID:nil];
+    [[EZDataUtil getInstance] setCurrentLoginPerson:nil];
+    [[EZDataUtil getInstance] triggerLogin:^(id obj){
+        _person = currentLoginUser;
+        [self refreshValue];
+    } failure:^(id err){
+        EZDEBUG(@"login failed:%@", err);
+    } reason:@"" isLogin:YES];
 }
 
 - (UITextField*) createTextField:(CGRect)frame holderText:(NSString*)holderText keyboardType:(UIKeyboardType)keyboardType returnType:(UIReturnKeyType)returnType
@@ -183,20 +179,21 @@
     return mobileField;
 }
 
-- (void)didReceiveMemoryWarning
-{
+
+
+- (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
 
 /*
- #pragma mark - Navigation
- 
- // In a storyboard-based application, you will often want to do a little preparation before navigation
- - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
- {
- // Get the new view controller using [segue destinationViewController].
- // Pass the selected object to the new view controller.
- }
- */
+#pragma mark - Navigation
+
+// In a storyboard-based application, you will often want to do a little preparation before navigation
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    // Get the new view controller using [segue destinationViewController].
+    // Pass the selected object to the new view controller.
+}
+*/
+
 @end

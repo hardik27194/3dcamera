@@ -384,6 +384,12 @@ NSString* doubleString(NSString* str)
 
 @implementation NSString(EZPrivate)
 
+- (BOOL) containString:(NSString*)str
+{
+    NSRange range = [self rangeOfString:str];
+    return range.length > 0;
+}
+
 
 - (BOOL) isEmpty
 {
@@ -1460,6 +1466,10 @@ NSString* doubleString(NSString* str)
 }
 
 @end
+
+
+
+
 
 
 @implementation NSArray(EZPrivate)

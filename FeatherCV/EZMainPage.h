@@ -12,6 +12,7 @@
 #import "HorizontalPickerView.h"
 
 @class EZScrollerView;
+@class EZSlidingView;
 @interface EZMainPage : UIViewController<UICollectionViewDataSource, UICollectionViewDelegate, UIActionSheetDelegate, UMSocialUIDelegate, HPickerViewDataSource, HPickerViewDelegate>//UICollectionViewController
 
 - (EZMainPage*) initPage:(NSArray*)arr;
@@ -28,6 +29,7 @@
 
 @property (nonatomic, strong) NSDate* date;
 
+@property (nonatomic, strong) EZSlidingView* slidingView;
 
 @property (nonatomic, strong) UIView* topBar;
 

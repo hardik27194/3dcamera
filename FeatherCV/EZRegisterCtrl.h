@@ -29,4 +29,6 @@
 
 @property (nonatomic, strong) UIButton* sendBtn;
 
+//@property (nonatomic, strong) UIActivityIndicatorView* activity;
+
 @end

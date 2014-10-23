@@ -88,6 +88,7 @@
 
 + (id) str2json:(NSString*)str;
 
++ (NSString*) json2str:(NSDictionary*)dict;
 
 + (EZNetworkUtility*) getInstance;
 

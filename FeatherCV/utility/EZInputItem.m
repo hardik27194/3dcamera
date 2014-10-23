@@ -57,6 +57,11 @@
 {
     EZDEBUG(@"keyboard will raise");
     //if(_floatingKeyboard){
+    if(_focusedBlock){
+        _focusedBlock(self);
+        return false;
+    }
+    
     [[EZMessageCenter getInstance] registerEvent:EventKeyboardWillRaise block:_keyboardRaise isWeak:true];
     //}
     return true;

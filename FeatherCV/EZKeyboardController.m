@@ -36,8 +36,9 @@
     EZDEBUG(@"updated navigation delegate:%i", (int)self.navigationController);
     
     
-    self.navigationController.delegate = self;
-    self.navigationController.transitioningDelegate = self;
+    
+    //self.navigationController.delegate = self;
+    //self.navigationController.transitioningDelegate = self;
     
     UIImageView* imageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
     imageView.image = [UIImage imageNamed:@"login_bg"]; //createBlurImage:20];
@@ -45,11 +46,23 @@
     UIView* blackCover = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
     blackCover.backgroundColor = ClickedColor;//RGBA(0, 0, 0, 50);
     [self.view addSubview:imageView];
+    
+    [[EZMessageCenter getInstance] registerEvent:EventKeyboardWillRaise block:_keyboardRaiseHandler isWeak:YES];
+    [[EZMessageCenter getInstance] registerEvent:EventKeyboardWillHide block:_keyboardHideHandler isWeak:YES];
+    
+
     //self.view.backgroundColor = ClickedColor;
     //[self.view addSubview:blackCover];
 	// Do any additional setup after loading the view.
 }
 
+
+- (void) dealloc
+{
+    EZDEBUG(@"KeyBoard dealloced");
+    //self.navigationController.delegate = nil;
+    //self.navigationController.transitioningDelegate = nil;
+}
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
@@ -62,19 +75,18 @@
     //[[EZKeyboadUtility getInstance] add]
     //[super viewWillAppear:animated];
     //__weak EZKeyboardController* weakSelf = self;
-    [[EZMessageCenter getInstance] registerEvent:EventKeyboardWillRaise block:_keyboardRaiseHandler];
-    [[EZMessageCenter getInstance] registerEvent:EventKeyboardWillHide block:_keyboardHideHandler];
-    
-}
+   }
 
 - (void) viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
+    /**
     __weak EZKeyboardController* weakSelf = self;
     //weakSelf.navigationController.delegate = nil;
     //weakSelf.navigationController.transitioningDelegate = nil;
     [[EZMessageCenter getInstance] unregisterEvent:EventKeyboardWillRaise forObject:_keyboardRaiseHandler];
     [[EZMessageCenter getInstance] unregisterEvent:EventKeyboardWillHide forObject:_keyboardHideHandler];
+     **/
 }
 
 

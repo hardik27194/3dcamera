@@ -124,7 +124,29 @@ SINGLETON_FOR_CLASS(EZHolder);
     //EZDEBUG(@"re1:%@, re2:%@", [[EZHolder sharedEZHolder].mapTable objectForKey:@"re1"],[[EZHolder sharedEZHolder].mapTable objectForKey:@"re2"]);
     //assert(false);
     //[self testImageCache];
+    
+    /**
+    NSString* fullURL = [EZFileUtil fileToURL:@"edit2@2x.png"];
+    NSString* fullFile = [EZFileUtil fileToAbosolute:@"edit2@2x.png"];
+    EZDEBUG(@"The full url is:%@, fullFile:%@", fullURL, fullFile);
+    
+    UIImage* img = [UIImage imageWithContentsOfFile:fullFile];
+    NSData* data = [NSData dataWithContentsOfFile:fullFile];
+    EZDEBUG(@"image size:%@, full data:%i", NSStringFromCGSize(img.size), data.length);
+    
+    assert([@"haha-hehe" containString:@"haha"]);
+    assert(![@"haha0hehe" containString:@"yaya"]);
+     **/
+    
+    /**
+    [[EZDataUtil getInstance] registerUser:@{@"name":@"tiange", @"mobile":@"15921942426",@"password":@"cool"} success:^(id obj){
+        EZDEBUG(@"success returned:%@", obj);
+    } error:^(id err){
+        EZDEBUG(@"register error:%@", err);
+    }];
+     **/
 }
+
 
 
 + (void) testImageCache

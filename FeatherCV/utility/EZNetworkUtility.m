@@ -522,6 +522,20 @@ static EZNetworkUtility* instance;
     return res;
 }
 
++ (NSString*) json2str:(NSDictionary*)dict
+{
+    
+    NSError* error = nil;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dict
+                                                       options:(NSJSONWritingOptions)0
+                                                         error:&error];
+    if(error){
+        EZDEBUG(@"Error:%@", error);
+        return nil;
+    }
+    return  [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+}
+
 + (NSString*) parseSessionID:(NSString*)sessionStr
 {
     EZDEBUG(@"start parsing sessionid");

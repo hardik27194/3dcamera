@@ -9,6 +9,8 @@
 #import "EZCompleteSetting.h"
 #import "EZInputItem.h"
 #import "EZConfigure.h"
+#import "EZDataUtil.h"
+#import "EZPerson.h"
 
 @implementation EZCompleteSetting
 
@@ -20,6 +22,15 @@
 }
 */
 
+- (id) initWithFrame:(CGRect)frame
+{
+    self = [super initWithFrame:frame];
+    
+    self.confirmBtn.hidden = YES;
+    self.cancelBtn.hidden = YES;
+    return self;
+}
+
 - (NSArray*) createItems
 {
     __weak EZCompleteSetting* weakSelf = self;
@@ -27,7 +38,22 @@
     EZInputItem* taskName = [[EZInputItem alloc] initWithName:BIINFO(@"作品名称") type:kStringValue defaultValue:@""];
     taskName.isFocused = true;
     
-    EZInputItem* authorName = [[EZInputItem alloc] initWithName:BIINFO(@"作者名称") type:kStringValue defaultValue:@"匿名用户"];
+    
+    
+    EZInputItem* authorName = [[EZInputItem alloc] initWithName:BIINFO(@"作者名称") type:kStringValue defaultValue:currentLoginUser.joined?currentLoginUser.name:@"匿名用户"];
+    if(!currentLoginUser.joined){
+        authorName.focusedBlock = ^(EZInputItem* item){
+            [[EZDataUtil getInstance] triggerLogin:^(id person){
+                item.textField.text = currentLoginUser.name;
+                item.focusedBlock = ^(id obj){
+                    EZDEBUG(@"do nothing");
+                };
+            } failure:^(id err){
+                EZDEBUG(@"Login failed:%@", err);
+            } reason:@"" isLogin:YES];
+        };
+    }
+    
     
     EZInputItem* publized = [[EZInputItem alloc] initWithName:BIINFO(@"是否广场可见") type:kBoolValue defaultValue:@(![EZConfigure sharedEZConfigure].isPrivate)];
     

@@ -161,8 +161,9 @@
                 [_hitQueue insertObject:ce atIndex:0];
                 [_cache setObject:ce forKey:key];
                 ce.image = [UIImage imageWithContentsOfFile:ce.cacheFileName];
-                [self checkLimit];
+                //[self checkLimit];
                 return ce.image;
+                //return [UIImage imageWithContentsOfFile:ce.cacheFileName];
                 
             }
         }
